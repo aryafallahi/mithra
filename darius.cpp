@@ -57,9 +57,9 @@ int main (int argc, char* argv[]) {
 
   /* Hello message                                                                                      */
   printmessage(std::string(__FILE__), __LINE__, std::string(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::") );
-  printmessage(std::string(__FILE__), __LINE__, std::string("Darius-1.0: Completely Numerical Calculation of Free Electron Laser Radiation)") );
-  printmessage(std::string(__FILE__), __LINE__, std::string("Version 1.0, copyright 2014, A. Fallahi") );
-  printmessage(std::string(__FILE__), __LINE__, std::string("written by Arya Fallahi, Center for Free Electron Laser (CFEL) Science, Hamburg") );
+  printmessage(std::string(__FILE__), __LINE__, std::string("MITHRA-2.0: Completely Numerical Calculation of Free Electron Laser Radiation)") );
+  printmessage(std::string(__FILE__), __LINE__, std::string("Version 2.0, Copyright 2019, Arya Fallahi") );
+  printmessage(std::string(__FILE__), __LINE__, std::string("Written by Arya Fallahi, IT'IS Foundation, Zurich, Switzerland") );
   printmessage(std::string(__FILE__), __LINE__, std::string(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::") );
 
   /* Parse the command line options                                                                     */

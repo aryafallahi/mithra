@@ -6,7 +6,7 @@ MITHRA-2.0 (Completely Numerical Calculation of Free Electron Laser Radiation)
 Version 2.0, copyright 2019, Arya Fallahi
 ********************************************************************************************************
  
-darius.cpp:     Main program file
+darius.cpp: \t Main program file
 
 stdinclude.hh: 	Set of different standard functions and constants used in the code.
 

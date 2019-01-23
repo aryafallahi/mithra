@@ -28,6 +28,6 @@ solver.hh: Mother class for solving the free-electron laser problem
   
 Compiling options used for gcc 4.7.3:
 
-MPI version should be compiled using: " mpiCC -O3 darius.cpp -o ../darius "
+MPI version should be compiled using: " mpiCC -O3 darius.cpp -o ../projects/darius "
 
 ********************************************************************************************************

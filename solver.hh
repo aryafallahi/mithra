@@ -14,7 +14,10 @@ namespace Darius
 
   public:
 
-    Solver( Mesh& mesh, Bunch& bunch, Seed& seed, Undulator& undulator, std::vector<ExtField>& extField, std::vector<FreeElectronLaser>& FEL)
+    Solver( Mesh& mesh, Bunch& bunch, Seed& seed,
+	    std::vector<Undulator>&		undulator,
+	    std::vector<ExtField>& 		extField,
+	    std::vector<FreeElectronLaser>& 	FEL)
   : mesh_ ( mesh ), bunch_ ( bunch ), seed_ ( seed ), undulator_ ( undulator ), extField_ (extField), FEL_ ( FEL )
   {
       /* Clear the vectors in the FdTd class.								*/
@@ -63,10 +66,13 @@ namespace Darius
       seed_.signal_.t0_ 	/= c0_;
       seed_.signal_.f0_ 	*= c0_;
       seed_.signal_.s_          /= c0_;
-      undulator_.c0_ 	         = c0_;
-      undulator_.signal_.t0_    /= c0_;
-      undulator_.signal_.f0_ 	*= c0_;
-      undulator_.signal_.s_ 	/= c0_;
+      for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
+	{
+	  iter->c0_ 	         = c0_;
+	  iter->signal_.t0_     /= c0_;
+	  iter->signal_.f0_ 	*= c0_;
+	  iter->signal_.s_ 	/= c0_;
+	}
       for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
 	{
 	  iter->signal_.t0_     /= c0_;
@@ -77,7 +83,8 @@ namespace Darius
       /* According to the set parameters for length and time scales correct the amplitudes of the seed
        * and undulator.											*/
       seed_.amplitude_ 	        *= EM * c0_ / EC;
-      undulator_.amplitude_ 	*= EM * c0_ * 2 * PI * undulator_.signal_.f0_ / EC;
+      for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
+	iter->amplitude_ 	*= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
       for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
 	iter->amplitude_        *= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
 
@@ -85,14 +92,15 @@ namespace Darius
       Double gamma = 0.0;
       for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
 	gamma += bunch_.bunchInit_[i].initialGamma_ / bunch_.bunchInit_.size();
-      if ( undulator_.type_ == STATIC )
-	undulator_.gamma_  = gamma / sqrt( 1.0 + undulator_.k_ * undulator_.k_ / 2.0 );
+      if ( undulator_[0].type_ == STATIC )
+	gamma_  = gamma / sqrt( 1.0 + undulator_[0].k_ * undulator_[0].k_ / 2.0 );
       else
-	undulator_.gamma_  = gamma / sqrt( 1.0 + pow( undulator_.amplitude_ * EC / ( EM * c0_ * 2.0 * PI * undulator_.signal_.f0_ ) , 2 ) / 2.0 );
+	gamma_  = gamma / sqrt( 1.0 + pow( undulator_[0].amplitude_ * EC / ( EM * c0_ * 2.0 * PI * undulator_[0].signal_.f0_ ) , 2 ) / 2.0 );
 
       /* Boost and initialize the undulator related parameters.						*/
-      undulator_.beta_	 = sqrt( 1.0 - 1.0 / ( undulator_.gamma_ * undulator_.gamma_ ));
-      if ( undulator_.type_ == OPTICAL ) undulator_.lu_ /= ( 1 + undulator_.beta_ );
+      beta_ = sqrt( 1.0 - 1.0 / ( gamma_ * gamma_ ) );
+      for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
+	if ( iter->type_ == OPTICAL ) iter->lu_ /= ( 1 + beta_ );
 
       /* If the beginning of the undulator is not given for static ones automatically set the begin of
        * the undulator.											*/
@@ -111,20 +119,24 @@ namespace Darius
 	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
 	    t = std::max(t, bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_);
 	}
-      undulator_.rb_ = t + undulator_.lu_ / ( 2.0 * undulator_.gamma_ * undulator_.gamma_ ) * 10;
+      for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
+	iter->rb_ += t + iter->lu_ / ( 2.0 * gamma_ * gamma_ ) * 10;
 
       /* Check if the given offset of the bunch is correct according to the MITHRA conditions.		*/
-      if ( undulator_.type_ == OPTICAL )
-	if ( undulator_.rb_  > ( undulator_.position_[2] + undulator_.signal_.t0_ - undulator_.signal_.s_ / 2.0 ) * c0_ )
-	  printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The offset value of the signal is not given properly. Part of a bunch is initialized in the undulator.") );
-      if ( undulator_.type_ == STATIC )
-	printmessage(std::string(__FILE__), __LINE__, std::string("The beginning of the undulator is set at the point " + stringify(undulator_.rb_)) );
+      for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
+	{
+	  if ( iter->type_ == OPTICAL )
+	    if ( iter->rb_  > ( iter->position_[2] + iter->signal_.t0_ - iter->signal_.s_ / 2.0 ) * c0_ )
+	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The offset value of the signal is not given properly. Part of a bunch is initialized in the undulator.") );
+	  if ( iter->type_ == STATIC )
+	    printmessage(std::string(__FILE__), __LINE__, std::string("The beginning of the undulator is set at the point " + stringify(iter->rb_)) );
+	}
 
       /* Boost the mesh data into the electron rest frame.						*/
-      mesh_.meshLength_[2] 	*= undulator_.gamma_;
-      mesh_.meshResolution_[2] 	*= undulator_.gamma_;
-      mesh_.meshCenter_[2] 	*= undulator_.gamma_;
-      mesh_.totalTime_          /= undulator_.gamma_;
+      mesh_.meshLength_[2] 	*= gamma_;
+      mesh_.meshResolution_[2] 	*= gamma_;
+      mesh_.meshCenter_[2] 	*= gamma_;
+      mesh_.totalTime_          /= gamma_;
 
       /* Adjust the transverse mesh resolution to match the stability criterion.			*/
       t = 1.0 / sqrt( pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[0], 2.0 ) + pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[1], 2.0 ) );
@@ -139,32 +151,32 @@ namespace Darius
 
       /* Based on the dispersion condition, the field time step can be obtained.			*/
       mesh_.timeStep_		 = mesh_.meshResolution_[2] / c0_;
-      printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the field update is set to " + stringify(mesh_.timeStep_ * undulator_.gamma_) ) );
+      printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the field update is set to " + stringify(mesh_.timeStep_ * gamma_) ) );
 
       /* Set the bunch update time step if it is given, otherwise set it according to the MITHRA rules.	*/
-      bunch_.timeStep_		/= undulator_.gamma_;
-      bunch_.timeStart_		/= undulator_.gamma_;
+      bunch_.timeStep_		/= gamma_;
+      bunch_.timeStart_		/= gamma_;
 
       /* Adjust the given bunch time step according to the given field time step.			*/
       t 	       = mesh_.timeStep_;
       bunch_.timeStep_ = mesh_.timeStep_ / ceil(mesh_.timeStep_ / bunch_.timeStep_);
       nUpdateBunch_    = mesh_.timeStep_ / bunch_.timeStep_;
-      printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the bunch update is set to " + stringify(bunch_.timeStep_ * undulator_.gamma_) ) );
+      printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the bunch update is set to " + stringify(bunch_.timeStep_ * gamma_) ) );
 
       /* Boost the bunch parameters into the electron rest frame.					*/
       for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
 	{
 	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	    bunch_.bunchInit_[i].position_[ia][2]	/= undulator_.gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * undulator_.beta_ );
-	  bunch_.bunchInit_[i].initialGamma_ 		*= undulator_.gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * undulator_.beta_ );
-	  bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= undulator_.gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * undulator_.beta_ );
-	  bunch_.bunchInit_[i].sigmaGammaBeta_[1] 	*= undulator_.gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * undulator_.beta_ );
-	  bunch_.bunchInit_[i].sigmaGammaBeta_[0] 	*= undulator_.gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * undulator_.beta_ );
-	  bunch_.bunchInit_[i].sigmaPosition_[2] 	/= undulator_.gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * undulator_.beta_ );
-	  bunch_.bunchInit_[i].longTrun_ 		/= undulator_.gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * undulator_.beta_ );
-	  Double zeta 					 = undulator_.gamma_ * ( 1.0 - undulator_.beta_ * bunch_.bunchInit_[i].initialBeta_ ) *
-	      undulator_.beta_ * undulator_.gamma_ / bunch_.bunchInit_[i].initialBeta_;
-	  bunch_.bunchInit_[i].lambda_  		 = undulator_.lu_ / undulator_.gamma_ / zeta;
+	    bunch_.bunchInit_[i].position_[ia][2]	/= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
+	  bunch_.bunchInit_[i].initialGamma_ 		*= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
+	  bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
+	  bunch_.bunchInit_[i].sigmaGammaBeta_[1] 	*= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
+	  bunch_.bunchInit_[i].sigmaGammaBeta_[0] 	*= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
+	  bunch_.bunchInit_[i].sigmaPosition_[2] 	/= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
+	  bunch_.bunchInit_[i].longTrun_ 		/= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
+	  Double zeta 					 = gamma_ * ( 1.0 - beta_ * bunch_.bunchInit_[i].initialBeta_ ) *
+	      beta_ * gamma_ / bunch_.bunchInit_[i].initialBeta_;
+	  bunch_.bunchInit_[i].lambda_  		 = undulator_[0].lu_ / gamma_ / zeta;
 
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
 
@@ -172,18 +184,18 @@ namespace Darius
 	    bunch_.bunchInit_[i].position_[ia][2]	-= bunch_.bunchInit_[i].sigmaPosition_[2] * ( 1.0 - zeta );
 	  bunch_.bunchInit_[i].initialBeta_ 	 	 = sqrt( 1.0 - 1.0 / ( bunch_.bunchInit_[i].initialGamma_ * bunch_.bunchInit_[i].initialGamma_ ) );
 	}
-      bunch_.rhythm_		/= undulator_.gamma_;
-      bunch_.bunchVTKRhythm_    /= undulator_.gamma_;
+      bunch_.rhythm_			/= gamma_;
+      bunch_.bunchVTKRhythm_    	/= gamma_;
       for (unsigned int i = 0; i < bunch_.bunchProfileTime_.size(); i++)
-	bunch_.bunchProfileTime_[i] /= undulator_.gamma_;
-      bunch_.bunchProfileRhythm_/= undulator_.gamma_;
+	bunch_.bunchProfileTime_[i] 	/= gamma_;
+      bunch_.bunchProfileRhythm_	/= gamma_;
 
       /* The Lorentz boost parameters should also be transfered to the seed class in order to correctly
        * compute the fields within the computational domain.						*/
-      seed_.beta_    = undulator_.beta_;
-      seed_.gamma_   = undulator_.gamma_;
-      seed_.dt_      = - seed_.beta_ * seed_.gamma_ / seed_.c0_ * undulator_.rb_;
-      undulator_.dt_ = - seed_.beta_ * seed_.gamma_ / seed_.c0_ * undulator_.rb_;
+      seed_.beta_    	= beta_;
+      seed_.gamma_   	= gamma_;
+      seed_.dt_      	= - beta_ * gamma_ / seed_.c0_ * undulator_[0].rb_;
+      dt_ 		= - beta_ * gamma_ / seed_.c0_ * undulator_[0].rb_;
 
       printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );
     }
@@ -476,11 +488,11 @@ namespace Darius
     void initializeSeedSampling()
     {
       /* Perform the lorentz boost for the sampling data.						*/
-      seed_.samplingRhythm_		/= undulator_.gamma_;
+      seed_.samplingRhythm_		/= gamma_;
       for (unsigned i = 0; i < seed_.samplingPosition_.size(); i++)
-	seed_.samplingPosition_[i][2] 	*= undulator_.gamma_;
-      seed_.samplingLineBegin_[2]	*= undulator_.gamma_;
-      seed_.samplingLineEnd_  [2]	*= undulator_.gamma_;
+	seed_.samplingPosition_[i][2] 	*= gamma_;
+      seed_.samplingLineBegin_[2]	*= gamma_;
+      seed_.samplingLineEnd_  [2]	*= gamma_;
 
       /* If sampling type is plot over line initialize the positions according to the line begin and line
        * end.                                                                              		*/
@@ -548,8 +560,8 @@ namespace Darius
       /* Perform the lorentz boost for the visualization data.						*/
       for (unsigned int i = 0; i < seed_.vtk_.size(); i++)
 	{
-	  seed_.vtk_[i].rhythm_			/= undulator_.gamma_;
-	  seed_.vtk_[i].position_[2]		*= undulator_.gamma_;
+	  seed_.vtk_[i].rhythm_			/= gamma_;
+	  seed_.vtk_[i].position_[2]		*= gamma_;
 
 	  if (!(isabsolute(seed_.vtk_[i].basename_)))
 	    seed_.vtk_[i].basename_ = seed_.vtk_[i].directory_ + seed_.vtk_[i].basename_;
@@ -611,9 +623,9 @@ namespace Darius
     void initializeSeedProfile()
     {
       /* Perform the lorentz boost for the profiling data.						*/
-      seed_.profileRhythm_	/= undulator_.gamma_;
+      seed_.profileRhythm_	/= gamma_;
       for (unsigned i = 0; i < seed_.profileTime_.size(); i++)
-	seed_.profileTime_[i] 	/= undulator_.gamma_;
+	seed_.profileTime_[i] 	/= gamma_;
 
       if (!(isabsolute(seed_.profileBasename_))) seed_.profileBasename_ = seed_.profileDirectory_ + seed_.profileBasename_;
 
@@ -634,16 +646,6 @@ namespace Darius
       ub_.dz	= mesh_.meshResolution_[2];
       ub_.r1    = - EC / ( EM * c0_ ) * bunch_.timeStep_ / 2.0;
       ub_.r2    = - EC / EM * bunch_.timeStep_ / 2.0;
-
-      /* Calculate the undulator magnetic field.							*/
-      ub_.b0 	 = (undulator_.lu_ != 0.0 ) ? EM * c0_ * 2 * PI / undulator_.lu_ * undulator_.k_ / EC : 0.0;
-
-      /* Calculate the undulator wave number.								*/
-      ub_.ku     = (undulator_.lu_ != 0.0 ) ? 2 * PI / undulator_.lu_ : 0.0;
-
-      /* Calculate the sine and cosine functions of the undulator angle.				*/
-      ub_.ct	 = cos( undulator_.theta_ );
-      ub_.st	 = sin( undulator_.theta_ );
 
       /* If bunch sampling is enabled, initialize the required data for sampling and saving the bunch.	*/
       if (bunch_.sampling_)
@@ -1070,8 +1072,8 @@ namespace Darius
 	    {
 	      gamma = sqrt( 1.0 + iter->gbnp.norm() );
 	      beta  = iter->gbnp[2] / gamma;
-	      *vb_.file << iter->q << " " <<  gamma * undulator_.gamma_ * ( 1.0 + undulator_.beta_ * beta )
-            			<< " " << gamma * undulator_.gamma_ * ( 1.0 + undulator_.beta_ * beta ) *0.512 << std::endl;
+	      *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
+            			    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	    }
 	}
       *vb_.file << 0.0 << " " << 0.0 << " " << 0.0						<< std::endl;
@@ -1165,184 +1167,203 @@ namespace Darius
 
     void undulatorField (UpdateBunchParallel& ubp,  FieldVector<Double>& r)
     {
+      /* Initialize the undulator fields.								*/
+      ubp.bt = 0.0;
+      ubp.et = 0.0;
 
-      if ( undulator_.type_ == STATIC )
+      /* For each external field given by the user, add the external fields to the undulator field.     */
+      for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
 	{
-	  /* First find the position of the undulator begin point.					*/
-	  ubp.lz = undulator_.gamma_ * ( r[2] + undulator_.beta_ * c0_ * timeBunch_ - undulator_.gamma_ * undulator_.rb_ );
-	  ubp.ly = r[0] * ub_.ct + r[1] * ub_.st;
 
-	  /* Now, calculate the undulator field according to the obtained position.               	*/
-	  if ( ubp.lz >= 0.0 && ubp.lz <= undulator_.length_ * undulator_.lu_ )
+	  /* Calculate the undulator magnetic field.							*/
+	  ub_.b0 	 = (iter->lu_ != 0.0 ) ? EM * c0_ * 2 * PI / iter->lu_ * iter->k_ / EC : 0.0;
+
+	  /* Calculate the undulator wave number.							*/
+	  ub_.ku     = (iter->lu_ != 0.0 ) ? 2 * PI / iter->lu_ : 0.0;
+
+	  /* Calculate the sine and cosine functions of the undulator angle.				*/
+	  ub_.ct	 = cos( iter->theta_ );
+	  ub_.st	 = sin( iter->theta_ );
+
+
+	  if ( iter->type_ == STATIC )
 	    {
-	      ubp.sz = sin (ub_.ku * ubp.lz);
-	      ubp.cy = cosh(ub_.ku * ubp.ly);
+	      /* First find the position of the undulator begin point.					*/
+	      ubp.lz = gamma_ * ( r[2] + beta_ * c0_ * timeBunch_ - gamma_ * iter->rb_ );
+	      ubp.ly = r[0] * ub_.ct + r[1] * ub_.st;
 
-	      ubp.d1    = ub_.b0 * ubp.cy * ubp.sz * undulator_.gamma_;
-	      ubp.bt[0] = ubp.d1 * ub_.ct;
-	      ubp.bt[1] = ubp.d1 * ub_.st;
-	      ubp.bt[2] = ub_.b0 * sqrt( ( ubp.cy * ubp.cy - 1.0 ) * ( 1.0 - ubp.sz * ubp.sz ) );
-
-	      ubp.d1   *= c0_ * undulator_.beta_;
-	      ubp.et[1] =   ubp.d1 * ub_.ct;
-	      ubp.et[0] = - ubp.d1 * ub_.st;
-	      ubp.et[2] = 0.0;
-	    }
-	  else if ( ubp.lz < 0.0 )
-	    {
-	      ubp.sz = exp( - pow( ub_.ku * ubp.lz , 2 ) / 2.0 );
-	      ubp.cy = cosh(ub_.ku * ubp.ly );
-
-	      ubp.d1    = ub_.b0 * ubp.cy * ubp.sz * ub_.ku * ubp.lz * undulator_.gamma_;
-	      ubp.bt[0] = ubp.d1 * ub_.ct;
-	      ubp.bt[1] = ubp.d1 * ub_.st;
-	      ubp.bt[2] = ub_.b0 * sqrt( ubp.cy * ubp.cy - 1.0 ) * ubp.sz;
-
-	      ubp.d1   *= c0_ * undulator_.beta_;
-	      ubp.et[1] =   ubp.d1 * ub_.ct;
-	      ubp.et[0] = - ubp.d1 * ub_.st;
-	      ubp.et[2] = 0.0;
-	    }
-	  else if ( ubp.lz > undulator_.length_ * undulator_.lu_ )
-	    {
-	      ubp.sz = exp( - pow( ub_.ku *  ( ubp.lz - undulator_.length_ * undulator_.lu_ ) , 2 ) / 2.0 );
-	      ubp.cy = cosh(ub_.ku * ubp.ly );
-
-	      ubp.d1    = ub_.b0 * ubp.cy * ubp.sz * ub_.ku * ( ubp.lz - undulator_.length_ * undulator_.lu_ ) * undulator_.gamma_;
-	      ubp.bt[0] = ubp.d1 * ub_.ct;
-	      ubp.bt[1] = ubp.d1 * ub_.st;
-	      ubp.bt[2] = ub_.b0 * sqrt( ubp.cy * ubp.cy - 1.0 ) * ubp.sz;
-
-	      ubp.d1   *= c0_ * undulator_.beta_;
-	      ubp.et[1] =   ubp.d1 * ub_.ct;
-	      ubp.et[0] = - ubp.d1 * ub_.st;
-	      ubp.et[2] = 0.0;
-	    }
-	}
-      else if ( undulator_.type_ == OPTICAL )
-	{
-	  /* Transfer the coordinate from the bunch rest frame to the lab frame.			*/
-	  ubp.rl[0] = r[0]; ubp.rl[1] = r[1];
-	  ubp.rl[2] = undulator_.gamma_ * ( r[2] + undulator_.beta_ * c0_ * ( timeBunch_ + undulator_.dt_ ) );
-	  ubp.t0    = undulator_.gamma_ * ( timeBunch_ + undulator_.dt_  + undulator_.beta_ / c0_ * r[2] );
-
-	  /* Calculate the distance to the reference position along the propagation direction.   	*/
-	  ubp.rv = ubp.rl; ubp.rv -= undulator_.position_;
-	  ubp.z  = ubp.rv * undulator_.direction_ ;
-
-	  /* Compute propagation delay and subtract it from the time.                         		*/
-	  ubp.tl = ubp.t0 - ubp.z / c0_;
-
-	  /* Reset the carrier envelope phase of the pulse.						*/
-	  ubp.p = 0.0;
-
-	  /* Now manipulate the electric field vector depending on the specific seed given.          	*/
-	  if ( undulator_.seedType_ == PLANEWAVE )
-	    {
-	      /* Retrieve signal value at corrected time.                                               */
-	      ubp.tsignal = undulator_.signal_.self(ubp.tl, ubp.p);
-
-	      /* Calculate the field only if the signal value is larger than a limit.			*/
-	      if ( fabs(ubp.tsignal) < 1.0e-100 ) { ubp.eT = 0.0; ubp.bT = 0.0; }
-	      else
+	      /* Now, calculate the undulator field according to the obtained position.               	*/
+	      if ( ubp.lz >= 0.0 && ubp.lz <= iter->length_ * iter->lu_ )
 		{
-		  /* Provide vector to store the electric field of the undulator.                       */
-		  ubp.eT.mv( undulator_.amplitude_ * ubp.tsignal, undulator_.polarization_ );
+		  ubp.sz = sin (ub_.ku * ubp.lz);
+		  ubp.cy = cosh(ub_.ku * ubp.ly);
 
-		  /* Provide vector to store the magnetic field of the undulator.                       */
-		  ubp.bT = cross( undulator_.direction_, undulator_.polarization_ );
-		  ubp.bT.mv( undulator_.amplitude_ * ubp.tsignal / c0_, ubp.bT );
+		  ubp.d1    = ub_.b0 * ubp.cy * ubp.sz * gamma_;
+		  ubp.bt[0] = ubp.d1 * ub_.ct;
+		  ubp.bt[1] = ubp.d1 * ub_.st;
+		  ubp.bt[2] = ub_.b0 * sqrt( ( ubp.cy * ubp.cy - 1.0 ) * ( 1.0 - ubp.sz * ubp.sz ) );
+
+		  ubp.d1   *= c0_ * beta_;
+		  ubp.et[1] =   ubp.d1 * ub_.ct;
+		  ubp.et[0] = - ubp.d1 * ub_.st;
+		  ubp.et[2] = 0.0;
+		}
+	      else if ( ubp.lz < 0.0 )
+		{
+		  ubp.sz = exp( - pow( ub_.ku * ubp.lz , 2 ) / 2.0 );
+		  ubp.cy = cosh(ub_.ku * ubp.ly );
+
+		  ubp.d1    = ub_.b0 * ubp.cy * ubp.sz * ub_.ku * ubp.lz * gamma_;
+		  ubp.bt[0] = ubp.d1 * ub_.ct;
+		  ubp.bt[1] = ubp.d1 * ub_.st;
+		  ubp.bt[2] = ub_.b0 * sqrt( ubp.cy * ubp.cy - 1.0 ) * ubp.sz;
+
+		  ubp.d1   *= c0_ * beta_;
+		  ubp.et[1] =   ubp.d1 * ub_.ct;
+		  ubp.et[0] = - ubp.d1 * ub_.st;
+		  ubp.et[2] = 0.0;
+		}
+	      else if ( ubp.lz > iter->length_ * iter->lu_ )
+		{
+		  ubp.sz = exp( - pow( ub_.ku *  ( ubp.lz - iter->length_ * iter->lu_ ) , 2 ) / 2.0 );
+		  ubp.cy = cosh(ub_.ku * ubp.ly );
+
+		  ubp.d1    = ub_.b0 * ubp.cy * ubp.sz * ub_.ku * ( ubp.lz - iter->length_ * iter->lu_ ) * gamma_;
+		  ubp.bt[0] = ubp.d1 * ub_.ct;
+		  ubp.bt[1] = ubp.d1 * ub_.st;
+		  ubp.bt[2] = ub_.b0 * sqrt( ubp.cy * ubp.cy - 1.0 ) * ubp.sz;
+
+		  ubp.d1   *= c0_ * beta_;
+		  ubp.et[1] =   ubp.d1 * ub_.ct;
+		  ubp.et[0] = - ubp.d1 * ub_.st;
+		  ubp.et[2] = 0.0;
 		}
 	    }
-	  else if ( undulator_.seedType_ == PLANEWAVECONFINED )
+	  else if ( iter->type_ == OPTICAL )
 	    {
-	      /* Retrieve signal value at corrected time.                                               */
-	      ubp.tsignal = undulator_.signal_.self(ubp.tl, ubp.p);
+	      /* Transfer the coordinate from the bunch rest frame to the lab frame.			*/
+	      ubp.rl[0] = r[0]; ubp.rl[1] = r[1];
+	      ubp.rl[2] = gamma_ * ( r[2] + beta_ * c0_ * ( timeBunch_ + dt_ ) );
+	      ubp.t0    = gamma_ * ( timeBunch_ + dt_  + beta_ / c0_ * r[2] );
 
-	      /* Calculate the transverse distance to the center line.   				*/
-	      ubp.x  = ubp.rv * undulator_.polarization_;
-	      ubp.yv = cross( undulator_.direction_, undulator_.polarization_ );
-	      ubp.y  = ubp.rv * ubp.yv;
+	      /* Calculate the distance to the reference position along the propagation direction.   	*/
+	      ubp.rv = ubp.rl; ubp.rv -= iter->position_;
+	      ubp.z  = ubp.rv * iter->direction_ ;
 
-	      /* Calculate the field only if the signal value is larger than a limit.			*/
-	      if ( fabs(ubp.tsignal) < 1.0e-100 || fabs(ubp.x) > undulator_.radius_[0] || fabs(ubp.y) > undulator_.radius_[1] )
+	      /* Compute propagation delay and subtract it from the time.                         	*/
+	      ubp.tl = ubp.t0 - ubp.z / c0_;
+
+	      /* Reset the carrier envelope phase of the pulse.						*/
+	      ubp.p = 0.0;
+
+	      /* Now manipulate the electric field vector depending on the specific seed given.		*/
+	      if ( iter->seedType_ == PLANEWAVE )
 		{
-		  ubp.eT = 0.0;
-		  ubp.bT = 0.0;
+		  /* Retrieve signal value at corrected time.                                   	*/
+		  ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+
+		  /* Calculate the field only if the signal value is larger than a limit.		*/
+		  if ( fabs(ubp.tsignal) < 1.0e-100 ) { ubp.eT = 0.0; ubp.bT = 0.0; }
+		  else
+		    {
+		      /* Provide vector to store the electric field of the undulator.              	*/
+		      ubp.eT.mv( iter->amplitude_ * ubp.tsignal, iter->polarization_ );
+
+		      /* Provide vector to store the magnetic field of the undulator.         		*/
+		      ubp.bT = cross( iter->direction_, iter->polarization_ );
+		      ubp.bT.mv( iter->amplitude_ * ubp.tsignal / c0_, ubp.bT );
+		    }
 		}
-	      else
+	      else if ( iter->seedType_ == PLANEWAVECONFINED )
 		{
-		  /* Provide vector to store the electric field of the undulator.                       */
-		  ubp.eT.mv( undulator_.amplitude_ * ubp.tsignal, undulator_.polarization_ );
-
-		  /* Provide vector to store the magnetic field of the undulator.                       */
-		  ubp.bT = cross( undulator_.direction_, undulator_.polarization_ );
-		  ubp.bT.mv( undulator_.amplitude_ * ubp.tsignal / c0_, ubp.bT );
-		}
-	    }
-	  else if ( undulator_.seedType_ == GAUSSIANBEAM )
-	    {
-	      /* Retrieve signal value at corrected time.                                      		*/
-	      ubp.tsignal =undulator_.signal_.self(ubp.tl, ubp.p);
-
-	      if ( fabs(ubp.tsignal) < 1.0e-100 ) { ubp.eT = 0.0; ubp.bT = 0.0; }
-	      else
-		{
-		  /* Provide vector to store transverse, longitudinal and total  electric field.      	*/
-		  ubp.ex = undulator_.polarization_;
-		  ubp.ez = undulator_.direction_;
+		  /* Retrieve signal value at corrected time.                                     	*/
+		  ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
 
 		  /* Calculate the transverse distance to the center line.   				*/
-		  ubp.x  = ubp.rv * undulator_.polarization_;
-		  ubp.yv = cross( undulator_.direction_, undulator_.polarization_ );
+		  ubp.x  = ubp.rv * iter->polarization_;
+		  ubp.yv = cross( iter->direction_, iter->polarization_ );
 		  ubp.y  = ubp.rv * ubp.yv;
 
-		  /* Calculate the wavelength corresponding to the given central frequency.		*/
-		  ubp.l = c0_ / undulator_.signal_.f0_;
+		  /* Calculate the field only if the signal value is larger than a limit.		*/
+		  if ( fabs(ubp.tsignal) < 1.0e-100 || sqrt( pow(ubp.x/iter->radius_[0],2) + pow(ubp.y/iter->radius_[1],2) ) > 1.0 )
+		    {
+		      ubp.eT = 0.0;
+		      ubp.bT = 0.0;
+		    }
+		  else
+		    {
+		      /* Provide vector to store the electric field of the undulator.                 	*/
+		      ubp.eT.mv( iter->amplitude_ * ubp.tsignal, iter->polarization_ );
 
-		  /* Calculate the Rayleigh length and the relative radius of the beam.                	*/
-		  ubp.zRp = PI * pow( undulator_.radius_[0] , 2 ) / ubp.l;
-		  ubp.zRs = PI * pow( undulator_.radius_[1] , 2 ) / ubp.l;
-		  ubp.wrp = sqrt( 1.0 + pow( ubp.z / ubp.zRp , 2 ) );
-		  ubp.wrs = sqrt( 1.0 + pow( ubp.z / ubp.zRs , 2 ) );
-
-		  /* Compute the transverse vector between the point and the reference point.          	*/
-		  ubp.p   = 0.5 * ( atan( ubp.z / ubp.zRp ) + atan( ubp.z / ubp.zRs ) ) - PI * ubp.z / ubp.l *
-		      ( pow( ubp.x / ( ubp.zRp * ubp.wrp) , 2 ) + pow( ubp.y / ( ubp.zRs * ubp.wrs ) , 2 ) );
-		  ubp.t   = exp( - pow( ubp.x/(undulator_.radius_[0]*ubp.wrp), 2) - pow( ubp.y/(undulator_.radius_[1]*ubp.wrs), 2) ) / sqrt(ubp.wrs*ubp.wrp);
-
-		  ubp.ex.mv( ubp.t * undulator_.amplitude_, 						undulator_.polarization_ );
-		  ubp.ez.mv( ubp.t * undulator_.amplitude_ * ( - ubp.x / ( ubp.wrp * ubp.zRp ) ), 	undulator_.direction_    );
-		  ubp.bz.mv( ubp.t * undulator_.amplitude_ * ( - ubp.y / ( ubp.wrs * ubp.zRs ) ) / c0_, undulator_.direction_    );
-		  ubp.by = cross( undulator_.direction_, ubp.ex); ubp.by /= c0_;
-
-		  /* Retrieve signal value at corrected time.                                         	*/
-		  ubp.p 	-= PI/2.0;
-		  ubp.tsignal	 = undulator_.signal_.self(ubp.tl, ubp.p);
-		  ubp.ex 	*= ubp.tsignal; ubp.by *= ubp.tsignal;
-
-		  ubp.p 	+= PI/2.0 + atan(ubp.z/ubp.zRp);
-		  ubp.tsignal	 = undulator_.signal_.self(ubp.tl, ubp.p);
-		  ubp.ez	*= ubp.tsignal;
-
-		  ubp.p 	+= atan(ubp.z/ubp.zRs) - atan(ubp.z/ubp.zRp);
-		  ubp.tsignal	 = undulator_.signal_.self(ubp.tl, ubp.p);
-		  ubp.bz	*= ubp.tsignal;
-
-		  /* Calculate the total electric and magnetic field.					*/
-		  ubp.eT = ubp.ex; ubp.eT += ubp.ez;
-		  ubp.bT = ubp.by; ubp.bT += ubp.bz;
+		      /* Provide vector to store the magnetic field of the undulator.              	*/
+		      ubp.bT = cross( iter->direction_, iter->polarization_ );
+		      ubp.bT.mv( iter->amplitude_ * ubp.tsignal / c0_, ubp.bT );
+		    }
 		}
+	      else if ( iter->seedType_ == GAUSSIANBEAM )
+		{
+		  /* Retrieve signal value at corrected time.                                     	*/
+		  ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+
+		  if ( fabs(ubp.tsignal) < 1.0e-100 ) { ubp.eT = 0.0; ubp.bT = 0.0; }
+		  else
+		    {
+		      /* Provide vector to store transverse, longitudinal and total  electric field. 	*/
+		      ubp.ex = iter->polarization_;
+		      ubp.ez = iter->direction_;
+
+		      /* Calculate the transverse distance to the center line.   			*/
+		      ubp.x  = ubp.rv * iter->polarization_;
+		      ubp.yv = cross( iter->direction_, iter->polarization_ );
+		      ubp.y  = ubp.rv * ubp.yv;
+
+		      /* Calculate the wavelength corresponding to the given central frequency.		*/
+		      ubp.l = c0_ / iter->signal_.f0_;
+
+		      /* Calculate the Rayleigh length and the relative radius of the beam.     	*/
+		      ubp.zRp = PI * pow( iter->radius_[0] , 2 ) / ubp.l;
+		      ubp.zRs = PI * pow( iter->radius_[1] , 2 ) / ubp.l;
+		      ubp.wrp = sqrt( 1.0 + pow( ubp.z / ubp.zRp , 2 ) );
+		      ubp.wrs = sqrt( 1.0 + pow( ubp.z / ubp.zRs , 2 ) );
+
+		      /* Compute the transverse vector between the point and the reference point.   	*/
+		      ubp.p   = 0.5 * ( atan( ubp.z / ubp.zRp ) + atan( ubp.z / ubp.zRs ) ) - PI * ubp.z / ubp.l *
+			  ( pow( ubp.x / ( ubp.zRp * ubp.wrp) , 2 ) + pow( ubp.y / ( ubp.zRs * ubp.wrs ) , 2 ) );
+		      ubp.t   = exp( - pow( ubp.x/(iter->radius_[0]*ubp.wrp), 2) - pow( ubp.y/(iter->radius_[1]*ubp.wrs), 2) ) / sqrt(ubp.wrs*ubp.wrp);
+
+		      ubp.ex.mv( ubp.t * iter->amplitude_, 						iter->polarization_ );
+		      ubp.ez.mv( ubp.t * iter->amplitude_ * ( - ubp.x / ( ubp.wrp * ubp.zRp ) ), 	iter->direction_    );
+		      ubp.bz.mv( ubp.t * iter->amplitude_ * ( - ubp.y / ( ubp.wrs * ubp.zRs ) ) / c0_, iter->direction_    );
+		      ubp.by = cross( iter->direction_, ubp.ex); ubp.by /= c0_;
+
+		      /* Retrieve signal value at corrected time.                                       */
+		      ubp.p 	-= PI/2.0;
+		      ubp.tsignal	 = iter->signal_.self(ubp.tl, ubp.p);
+		      ubp.ex 	*= ubp.tsignal; ubp.by *= ubp.tsignal;
+
+		      ubp.p 	+= PI/2.0 + atan(ubp.z/ubp.zRp);
+		      ubp.tsignal	 = iter->signal_.self(ubp.tl, ubp.p);
+		      ubp.ez	*= ubp.tsignal;
+
+		      ubp.p 	+= atan(ubp.z/ubp.zRs) - atan(ubp.z/ubp.zRp);
+		      ubp.tsignal	 = iter->signal_.self(ubp.tl, ubp.p);
+		      ubp.bz	*= ubp.tsignal;
+
+		      /* Calculate the total electric and magnetic field.				*/
+		      ubp.eT = ubp.ex; ubp.eT += ubp.ez;
+		      ubp.bT = ubp.by; ubp.bT += ubp.bz;
+		    }
+		}
+
+	      /* Now transfer the computed magnetic vector potential into the bunch rest frame.		*/
+	      ubp.bt[0] += gamma_ * ( ubp.bT[0] + beta_ / c0_ * ubp.eT[1] );
+	      ubp.bt[1] += gamma_ * ( ubp.bT[1] - beta_ / c0_ * ubp.eT[0] );
+	      ubp.bt[2] += ubp.bT[2];
+
+	      ubp.et[0] += gamma_ * ( ubp.eT[0] - beta_ * c0_ * ubp.bT[1] );
+	      ubp.et[1] += gamma_ * ( ubp.eT[1] + beta_ * c0_ * ubp.bT[0] );
+	      ubp.et[2] += ubp.eT[2];
 	    }
-
-	  /* Now transfer the computed magnetic vector potential into the bunch rest frame.		*/
-	  ubp.bt[0] = undulator_.gamma_ * ( ubp.bT[0] + undulator_.beta_ / c0_ * ubp.eT[1] );
-	  ubp.bt[1] = undulator_.gamma_ * ( ubp.bT[1] - undulator_.beta_ / c0_ * ubp.eT[0] );
-	  ubp.bt[2] = ubp.bT[2];
-
-	  ubp.et[0] = undulator_.gamma_ * ( ubp.eT[0] - undulator_.beta_ * c0_ * ubp.bT[1] );
-	  ubp.et[1] = undulator_.gamma_ * ( ubp.eT[1] + undulator_.beta_ * c0_ * ubp.bT[0] );
-	  ubp.et[2] = ubp.eT[2];
 	}
     };
 
@@ -1356,8 +1377,8 @@ namespace Darius
       /* Transfer the coordinate from the bunch rest frame to the lab frame.                            */
       ubp.rl[0] = r[0];
       ubp.rl[1] = r[1];
-      ubp.rl[2] = undulator_.gamma_ * ( r[2] + undulator_.beta_ * c0_ * ( timeBunch_ + undulator_.dt_ ) );
-      ubp.t0    = undulator_.gamma_ * ( timeBunch_ + undulator_.dt_  + undulator_.beta_ / c0_ * r[2] );
+      ubp.rl[2] = gamma_ * ( r[2] + beta_ * c0_ * ( timeBunch_ + dt_ ) );
+      ubp.t0    = gamma_ * ( timeBunch_ + dt_  + beta_ / c0_ * r[2] );
 
       /* For each external field given by the user, add the external fields to the undulator field.     */
       for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
@@ -1401,7 +1422,7 @@ namespace Darius
 	      ubp.y  = ubp.rv * ubp.yv;
 
 	      /* Calculate the field only if the signal value is larger than a limit.			*/
-	      if ( fabs(ubp.tsignal) < 1.0e-100 || fabs(ubp.x) > iter->radius_[0] || fabs(ubp.y) > iter->radius_[1] )
+	      if ( fabs(ubp.tsignal) < 1.0e-100 || sqrt( pow(ubp.x/iter->radius_[0],2) + pow(ubp.y/iter->radius_[1],2) ) > 1.0 )
 		{
 		  ubp.eT = 0.0;
 		  ubp.bT = 0.0;
@@ -1473,12 +1494,12 @@ namespace Darius
 	    }
 
 	  /* Now transfer the computed magnetic vector potential into the bunch rest frame.             */
-	  ubp.bt[0] += undulator_.gamma_ * ( ubp.bT[0] + undulator_.beta_ / c0_ * ubp.eT[1] );
-	  ubp.bt[1] += undulator_.gamma_ * ( ubp.bT[1] - undulator_.beta_ / c0_ * ubp.eT[0] );
+	  ubp.bt[0] += gamma_ * ( ubp.bT[0] + beta_ / c0_ * ubp.eT[1] );
+	  ubp.bt[1] += gamma_ * ( ubp.bT[1] - beta_ / c0_ * ubp.eT[0] );
 	  ubp.bt[2] += ubp.bT[2];
 
-	  ubp.et[0] += undulator_.gamma_ * ( ubp.eT[0] - undulator_.beta_ * c0_ * ubp.bT[1] );
-	  ubp.et[1] += undulator_.gamma_ * ( ubp.eT[1] + undulator_.beta_ * c0_ * ubp.bT[0] );
+	  ubp.et[0] += gamma_ * ( ubp.eT[0] - beta_ * c0_ * ubp.bT[1] );
+	  ubp.et[1] += gamma_ * ( ubp.eT[1] + beta_ * c0_ * ubp.bT[0] );
 	  ubp.et[2] += ubp.eT[2];
 	}
     };
@@ -1501,9 +1522,9 @@ namespace Darius
 
 	  /* Perform the lorentz boost for the sampling data.						*/
 	  for (unsigned int i = 0; i < FEL_[jf].radiationPower_.z_.size(); i++)
-	    FEL_[jf].radiationPower_.z_[i] 	*= undulator_.gamma_;
-	  FEL_[jf].radiationPower_.lineBegin_ 	*= undulator_.gamma_;
-	  FEL_[jf].radiationPower_.lineEnd_   	*= undulator_.gamma_;
+	    FEL_[jf].radiationPower_.z_[i] 	*= gamma_;
+	  FEL_[jf].radiationPower_.lineBegin_ 	*= gamma_;
+	  FEL_[jf].radiationPower_.lineEnd_   	*= gamma_;
 
 	  /* If sampling type is plot over line initialize the positions according to the line begin and
 	   * line end.                                                                              	*/
@@ -1514,7 +1535,7 @@ namespace Darius
 	      while ( fabs(l) < fabs(FEL_[jf].radiationPower_.lineEnd_ - FEL_[jf].radiationPower_.lineBegin_) )
 		{
 		  FEL_[jf].radiationPower_.z_.push_back( FEL_[jf].radiationPower_.lineBegin_ + l);
-		  l += FEL_[jf].radiationPower_.res_ * undulator_.gamma_;
+		  l += FEL_[jf].radiationPower_.res_ * gamma_;
 		}
 	    }
 
@@ -1552,7 +1573,7 @@ namespace Darius
 
 	      /* Determine the number of time points needed to calculate the amplitude of each
 	       * radiation harmonic.									*/
-	      Double dt = undulator_.lu_ / FEL_[jf].radiationPower_.lambda_[i] / ( undulator_.gamma_ * c0_ );
+	      Double dt = undulator_[0].lu_ / FEL_[jf].radiationPower_.lambda_[i] / ( gamma_ * c0_ );
 	      rp_[jf].Nf = ( int( dt / mesh_.timeStep_ ) > rp_[jf].Nf ) ? int(dt/mesh_.timeStep_) : rp_[jf].Nf;
 
 	      /* Calculate the angular frequency for each wavelength.					*/
@@ -1578,8 +1599,8 @@ namespace Darius
 	  if (!FEL_[jf].vtk_.sampling_) continue;
 
 	  /* Perform the Lorentz boost for the sampling data.						*/
-	  FEL_[jf].vtk_.z_ 	*= undulator_.gamma_;
-	  FEL_[jf].vtk_.rhythm_ /= undulator_.gamma_;
+	  FEL_[jf].vtk_.z_ 	*= gamma_;
+	  FEL_[jf].vtk_.rhythm_ /= gamma_;
 
 	  /* Set the number of sampling points in each processor.                                       */
 	  rp_[jf].N  = 1;
@@ -1605,7 +1626,7 @@ namespace Darius
 
 	  /* Determine the number of time points needed to calculate the amplitude of each
 	   * radiation harmonic.									*/
-	  Double dt = undulator_.lu_ / FEL_[jf].vtk_.lambda_ / ( undulator_.gamma_ * c0_ );
+	  Double dt = undulator_[0].lu_ / FEL_[jf].vtk_.lambda_ / ( gamma_ * c0_ );
 	  rp_[jf].Nf = int( dt / mesh_.timeStep_ );
 
 	  /* Calculate the angular frequency for each wavelength.					*/
@@ -1688,11 +1709,11 @@ namespace Darius
 		    bt[1] = ( 1.0 - rp_[jf].dzr ) * bn_[mi][1] + rp_[jf].dzr * bn_[mi+N1N0_][1];
 
 		    /* Transform the fields to the lab frame.                                           */
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][0] = undulator_.gamma_ * ( et[0] + c0_ * undulator_.beta_ * bt[1] );
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][1] = undulator_.gamma_ * ( et[1] - c0_ * undulator_.beta_ * bt[0] );
+		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][0] = gamma_ * ( et[0] + c0_ * beta_ * bt[1] );
+		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][1] = gamma_ * ( et[1] - c0_ * beta_ * bt[0] );
 
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][2] = undulator_.gamma_ * ( bt[0] - undulator_.beta_ / c0_ * et[1] );
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][3] = undulator_.gamma_ * ( bt[1]  + undulator_.beta_ / c0_ * et[0] );
+		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][2] = gamma_ * ( bt[0] - beta_ / c0_ * et[1] );
+		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
 
 		    /* Add the contribution of this field to the radiation power.                       */
 		    for ( l = 0; l < rp_[jf].Nl; l++)
@@ -1733,8 +1754,8 @@ namespace Darius
 	      if ( rank_ == ( l % size_ ) )
 		{
 		  for (k = 0; k < rp_[jf].N; ++k)
-		    *(rp_[jf].file[l]) << undulator_.gamma_ * ( FEL_[jf].radiationPower_.z_[k] + undulator_.beta_ * c0_ * timeBunch_ )
-		    - pow( undulator_.gamma_ * undulator_.beta_ , 2 ) * undulator_.rb_ << "\t" << rp_[jf].pG[k * rp_[jf].Nl + l] << "\t";
+		    *(rp_[jf].file[l]) << gamma_ * ( FEL_[jf].radiationPower_.z_[k] + beta_ * c0_ * timeBunch_ )
+		    - pow( gamma_ * beta_ , 2 ) * undulator_[0].rb_ << "\t" << rp_[jf].pG[k * rp_[jf].Nl + l] << "\t";
 		  *(rp_[jf].file[l]) << std::endl;
 		}
 	    }
@@ -1776,11 +1797,11 @@ namespace Darius
 		    bt[1] = ( 1.0 - rp_[jf].dzr ) * bn_[mi][1] + rp_[jf].dzr * bn_[mi+N1N0_][1];
 
 		    /* Transform the fields to the lab frame.                                           */
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][0] = undulator_.gamma_ * ( et[0] + c0_ * undulator_.beta_ * bt[1] );
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][1] = undulator_.gamma_ * ( et[1] - c0_ * undulator_.beta_ * bt[0] );
+		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][0] = gamma_ * ( et[0] + c0_ * beta_ * bt[1] );
+		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][1] = gamma_ * ( et[1] - c0_ * beta_ * bt[0] );
 
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][2] = undulator_.gamma_ * ( bt[0] - undulator_.beta_ / c0_ * et[1] );
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][3] = undulator_.gamma_ * ( bt[1] + undulator_.beta_ / c0_ * et[0] );
+		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][2] = gamma_ * ( bt[0] - beta_ / c0_ * et[1] );
+		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
 
 		    /* Add the contribution of this field to the radiation power.                       */
 		    ew1 = Complex (0.0, 0.0);
@@ -1873,9 +1894,9 @@ namespace Darius
 
 	  /* Perform the lorentz boost for the sampling data.                                           */
 	  for (unsigned int i = 0; i < FEL_[jf].radiationEnergy_.z_.size(); i++)
-	    FEL_[jf].radiationEnergy_.z_[i] = FEL_[jf].radiationEnergy_.z_[i] * undulator_.gamma_;
-	  FEL_[jf].radiationEnergy_.lineBegin_ = FEL_[jf].radiationEnergy_.lineBegin_ * undulator_.gamma_;
-	  FEL_[jf].radiationEnergy_.lineEnd_   = FEL_[jf].radiationEnergy_.lineEnd_   * undulator_.gamma_;
+	    FEL_[jf].radiationEnergy_.z_[i] = FEL_[jf].radiationEnergy_.z_[i] * gamma_;
+	  FEL_[jf].radiationEnergy_.lineBegin_ = FEL_[jf].radiationEnergy_.lineBegin_ * gamma_;
+	  FEL_[jf].radiationEnergy_.lineEnd_   = FEL_[jf].radiationEnergy_.lineEnd_   * gamma_;
 
 	  /* If sampling type is plot over line initialize the positions according to the line begin and line
 	   * end.                                                                                       */
@@ -1886,7 +1907,7 @@ namespace Darius
 	      while ( fabs(l) < fabs(FEL_[jf].radiationEnergy_.lineEnd_ - FEL_[jf].radiationEnergy_.lineBegin_) )
 		{
 		  FEL_[jf].radiationEnergy_.z_.push_back( FEL_[jf].radiationEnergy_.lineBegin_ + l);
-		  l += FEL_[jf].radiationEnergy_.res_ * undulator_.gamma_;
+		  l += FEL_[jf].radiationEnergy_.res_ * gamma_;
 		}
 	    }
 
@@ -1919,7 +1940,7 @@ namespace Darius
 
 	      /* Determine the number of time points needed to calculate the amplitude of each
 	       * radiation harmonic.                                                                    */
-	      Double dt = undulator_.lu_ / FEL_[jf].radiationEnergy_.lambda_[i] / ( undulator_.gamma_ * c0_ );
+	      Double dt = undulator_[0].lu_ / FEL_[jf].radiationEnergy_.lambda_[i] / ( gamma_ * c0_ );
 	      re_[jf].Nf = ( int( dt / mesh_.timeStep_ ) > re_[jf].Nf ) ? int(dt/mesh_.timeStep_) : re_[jf].Nf;
 
 	      /* Calculate the angular frequency for each wavelength.                                   */
@@ -1995,11 +2016,11 @@ namespace Darius
 		    bt[1] = ( 1.0 - re_[jf].dzr ) * bn_[mi][1] + re_[jf].dzr * bn_[mi+N1N0_][1];
 
 		    /* Transform the fields to the lab frame.                                   */
-		    re_[jf].fdt[nTime_ % re_[jf].Nf][ni][0] = undulator_.gamma_ * ( et[0] + c0_ * undulator_.beta_ * bt[1] );
-		    re_[jf].fdt[nTime_ % re_[jf].Nf][ni][1] = undulator_.gamma_ * ( et[1] - c0_ * undulator_.beta_ * bt[0] );
+		    re_[jf].fdt[nTime_ % re_[jf].Nf][ni][0] = gamma_ * ( et[0] + c0_ * beta_ * bt[1] );
+		    re_[jf].fdt[nTime_ % re_[jf].Nf][ni][1] = gamma_ * ( et[1] - c0_ * beta_ * bt[0] );
 
-		    re_[jf].fdt[nTime_ % re_[jf].Nf][ni][2] = undulator_.gamma_ * ( bt[0] - undulator_.beta_ / c0_ * et[1] );
-		    re_[jf].fdt[nTime_ % re_[jf].Nf][ni][3] = undulator_.gamma_ * ( bt[1] + undulator_.beta_ / c0_ * et[0] );
+		    re_[jf].fdt[nTime_ % re_[jf].Nf][ni][2] = gamma_ * ( bt[0] - beta_ / c0_ * et[1] );
+		    re_[jf].fdt[nTime_ % re_[jf].Nf][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
 
 		    /* Add the contribution of this field to the radiation power.                       */
 		    for ( l = 0; l < re_[jf].Nl; l++)
@@ -2037,8 +2058,8 @@ namespace Darius
 	      if ( rank_ == ( l % size_ ) )
 		{
 		  for (k = 0; k < re_[jf].N; ++k)
-		    *(re_[jf].file[l]) << undulator_.gamma_ * ( FEL_[jf].radiationEnergy_.z_[k] + undulator_.beta_ * c0_ * timeBunch_ )
-		    - pow( undulator_.gamma_ * undulator_.beta_ , 2 ) * undulator_.rb_ << "\t" << re_[jf].pG[k * re_[jf].Nl + l] << "\t";
+		    *(re_[jf].file[l]) << gamma_ * ( FEL_[jf].radiationEnergy_.z_[k] + beta_ * c0_ * timeBunch_ )
+		    - pow( gamma_ * beta_ , 2 ) * undulator_[0].rb_ << "\t" << re_[jf].pG[k * re_[jf].Nl + l] << "\t";
 		  *(re_[jf].file[l]) << std::endl;
 		}
 	    }
@@ -2074,7 +2095,7 @@ namespace Darius
     Bunch&								bunch_;
     Seed&								seed_;
     std::vector<ExtField>&                                              extField_;
-    Undulator&								undulator_;
+    std::vector<Undulator>&						undulator_;
     std::vector<FreeElectronLaser>&					FEL_;
 
     /* The vector potential at the nodes in the computational mesh at three different time points.	*/
@@ -2142,6 +2163,11 @@ namespace Darius
 
     /* Number of bunch updates within each field update.						*/
     Double 								nUpdateBunch_;
+
+    /* The gamma, beta and dt factor for the moving frame derived from the first undulator parameter.	*/
+    Double								gamma_;
+    Double								beta_;
+    Double								dt_;
 
     /* Define a structure containing the parameters needed to update the values. These parameters are
      * defined once in the class to avoid declaring them every time a field is updated.			*/

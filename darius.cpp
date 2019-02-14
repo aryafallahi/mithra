@@ -78,7 +78,8 @@ int main (int argc, char* argv[]) {
   Seed                                  seed;
 
   /* Create the undulator database.                                                                     */
-  Undulator                             undulator;
+  std::vector<Undulator>                undulator;
+  undulator.clear();
 
   /* Create the external field database.                                                                */
   std::vector<ExtField>                 extField;
@@ -96,8 +97,8 @@ int main (int argc, char* argv[]) {
   mesh.show();
   bunch.show();
   seed.show();
-  undulator.show();
-  for (unsigned int i = 0; i < extField.size(); i++) extField[i].show();
+  for (unsigned int i = 0; i < undulator.size(); i++) 	undulator[i].show();
+  for (unsigned int i = 0; i < extField.size();  i++) 	extField[i] .show();
 
   /* Initialize the class for the FDTD computations.                                                    */
   FdTd   fdtd   (mesh, bunch, seed, undulator, extField, FEL);

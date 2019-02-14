@@ -18,14 +18,15 @@ namespace Darius
     Mesh& 				mesh_;
     Bunch&				bunch_;
     Seed&				seed_;
-    Undulator&		                undulator_;
+    std::vector<Undulator>&		undulator_;
     std::vector<ExtField>&              extField_;
     std::vector<FreeElectronLaser>&	FEL_;
 
   public:
 
-    ParseDarius (std::list<std::string>& jobFile, Mesh& mesh, Bunch& bunch, Seed& seed, Undulator& undulator,
-		 std::vector<ExtField>& extField, std::vector<FreeElectronLaser>& FEL)
+    ParseDarius (std::list<std::string>& jobFile, Mesh& mesh, Bunch& bunch, Seed& seed,
+		 std::vector<Undulator>& undulator, std::vector<ExtField>& extField,
+		 std::vector<FreeElectronLaser>& FEL)
   :   jobFile_ ( jobFile ), mesh_ ( mesh ), bunch_ ( bunch ), seed_ ( seed ), undulator_ ( undulator ),
       extField_ ( extField ), FEL_ ( FEL )
   {
@@ -287,8 +288,8 @@ namespace Darius
 		  else if (parameterName(*iter) == "direction")                      	direction    	= vectorDoubleValue(*iter);
 		  else if (parameterName(*iter) == "polarization")                      polarization    = vectorDoubleValue(*iter);
 		  else if (parameterName(*iter) == "strength-parameter")                amplitude       = doubleValue(*iter);
-		  else if (parameterName(*iter) == "rayleigh-radius-parallel")          radius[0]       = doubleValue(*iter);
-		  else if (parameterName(*iter) == "rayleigh-radius-perpendicular")     radius[1]       = doubleValue(*iter);
+		  else if (parameterName(*iter) == "radius-parallel")          		radius[0]       = doubleValue(*iter);
+		  else if (parameterName(*iter) == "radius-perpendicular")     		radius[1]       = doubleValue(*iter);
 		  else if (parameterName(*iter) == "signal-type")                       signalType      = stringValue(*iter);
 		  else if (parameterName(*iter) == "offset")                            offset          = doubleValue(*iter);
 		  else if (parameterName(*iter) == "variance")                          variance        = doubleValue(*iter);
@@ -407,46 +408,124 @@ namespace Darius
       ++iter;
       if (*iter != "{") { std::cout << "The undulator directory is empty" << std::endl; exit(1); }
       else ++iter;
-
-      std::string		type, signalType;
-      std::vector<Double>	position (3,0.0), direction (3,0.0), polarization (3,0.0);
-      Double                	amplitude, offset, variance, wavelength, cep;
-      Signal                	signal;
-      std::vector<Double>   	radius (2,0.0);
-
       do
-        {
-          if      (parameterName(*iter) == "undulator-parameter")               undulator_.k_           = doubleValue(*iter);
-          else if (parameterName(*iter) == "undulator-type")                    undulator_.type_        = undulator_.undulatorType(stringValue(*iter));
-          else if (parameterName(*iter) == "period")                            undulator_.lu_          = doubleValue(*iter);
-          else if (parameterName(*iter) == "polarization-angle")                undulator_.theta_       = PI / 180.0 * doubleValue(*iter);
-          else if (parameterName(*iter) == "length")                            undulator_.length_      = intValue(*iter);
-          else if (parameterName(*iter) == "beam-type")                         type                    = stringValue(*iter);
-          else if (parameterName(*iter) == "position")                          position                = vectorDoubleValue(*iter);
-          else if (parameterName(*iter) == "direction")                         direction               = vectorDoubleValue(*iter);
-          else if (parameterName(*iter) == "polarization")                      polarization            = vectorDoubleValue(*iter);
-          else if (parameterName(*iter) == "strength-parameter")                amplitude               = doubleValue(*iter);
-          else if (parameterName(*iter) == "rayleigh-radius-parallel")          radius[0]               = doubleValue(*iter);
-          else if (parameterName(*iter) == "rayleigh-radius-perpendicular")     radius[1]               = doubleValue(*iter);
-          else if (parameterName(*iter) == "signal-type")                       signalType              = stringValue(*iter);
-          else if (parameterName(*iter) == "offset")                            offset                  = doubleValue(*iter);
-          else if (parameterName(*iter) == "variance")                          variance                = doubleValue(*iter);
-          else if (parameterName(*iter) == "wavelength")                        wavelength              = doubleValue(*iter);
-          else if (parameterName(*iter) == "CEP")                               cep                     = doubleValue(*iter);
-          else { std::cout << parameterName(*iter) << " is not defined in the optical-undulator group." << std::endl; exit(1); }
-          ++iter;
-        }
+	{
+	  /* The data related to the static undulator are to be parsed.                            	*/
+	  if (*iter == "static-undulator")
+	    {
+	      ++iter;
+	      if (*iter != "{") { std::cout << "The static undulator directory is empty" << std::endl; exit(1); }
+	      else ++iter;
+
+	      Undulator undulator; undulator.type_ = STATIC;
+
+	      do
+		{
+		  if      (parameterName(*iter) == "undulator-parameter")               undulator.k_            = doubleValue(*iter);
+		  else if (parameterName(*iter) == "period")                            undulator.lu_           = doubleValue(*iter);
+		  else if (parameterName(*iter) == "polarization-angle")                undulator.theta_        = PI / 180.0 * doubleValue(*iter);
+		  else if (parameterName(*iter) == "length")                            undulator.length_       = intValue(*iter);
+		  else if (parameterName(*iter) == "offset")                            undulator.rb_       	= doubleValue(*iter);
+		  else { std::cout << parameterName(*iter) << " is not defined in the static-undulator group." << std::endl; exit(1); }
+		  ++iter;
+		}
+	      while (*iter != "}");
+
+	      /* Ignore the value of offset if the first module is initialized.				*/
+	      if ( undulator_.size() == 0 ) undulator.rb_ = 0.0;
+
+	      /* Add the given undulator to the undulator vector.					*/
+	      undulator_.push_back(undulator);
+	    }
+
+	  /* The data related to the static undulator are to be parsed.                            	*/
+	  if (*iter == "static-undulator-array")
+	    {
+	      ++iter;
+	      if (*iter != "{") { std::cout << "The static undulator directory is empty" << std::endl; exit(1); }
+	      else ++iter;
+
+	      Double k, lu, theta, g, t;
+	      unsigned int l, N;
+
+	      do
+		{
+		  if      (parameterName(*iter) == "undulator-parameter")            k		= doubleValue(*iter);
+		  else if (parameterName(*iter) == "period")                         lu		= doubleValue(*iter);
+		  else if (parameterName(*iter) == "polarization-angle")             theta	= PI / 180.0 * doubleValue(*iter);
+		  else if (parameterName(*iter) == "length")                         l   	= intValue(*iter);
+		  else if (parameterName(*iter) == "gap")                            g		= doubleValue(*iter);
+		  else if (parameterName(*iter) == "number")                         N		= intValue(*iter);
+		  else if (parameterName(*iter) == "tapering-parameter")             t		= doubleValue(*iter);
+		  else { std::cout << parameterName(*iter) << " is not defined in the static-undulator-array group." << std::endl; exit(1); }
+		  ++iter;
+		}
+	      while (*iter != "}");
+
+	      /* Now add each undulator module to the array of undulators.				*/
+	      for (unsigned int i = 0; i < N; i++)
+		{
+
+		  /* First, calculate the values of the undulator module.				*/
+		  Undulator undulator;
+		  undulator.type_ 	= STATIC;
+		  undulator.k_  	= k + i * t;
+		  undulator.lu_ 	= lu;
+		  undulator.theta_ 	= theta;
+		  undulator.length_	= l;
+		  undulator.rb_		= i * ( l * lu + g );
+
+		  /* Now, add the undulator module ot the array of undulators.				*/
+		  undulator_.push_back(undulator);
+		}
+	    }
+
+	  /* The data related to the optical undulator are to be parsed.                            	*/
+	  else if (*iter == "optical-undulator")
+	    {
+	      ++iter;
+	      if (*iter != "{") { std::cout << "The optical undulator directory is empty" << std::endl; exit(1); }
+	      else ++iter;
+
+	      std::string		type, signalType;
+	      std::vector<Double>	position (3,0.0), direction (3,0.0), polarization (3,0.0);
+	      Double                	amplitude, offset, variance, wavelength, cep;
+	      Signal                	signal;
+	      std::vector<Double>   	radius (2,0.0);
+	      Undulator 		undulator; undulator.type_ = OPTICAL;
+
+	      do
+		{
+		  if 	  (parameterName(*iter) == "beam-type")                         type                    = stringValue(*iter);
+		  else if (parameterName(*iter) == "position")                          position                = vectorDoubleValue(*iter);
+		  else if (parameterName(*iter) == "direction")                         direction               = vectorDoubleValue(*iter);
+		  else if (parameterName(*iter) == "polarization")                      polarization            = vectorDoubleValue(*iter);
+		  else if (parameterName(*iter) == "strength-parameter")                amplitude               = doubleValue(*iter);
+		  else if (parameterName(*iter) == "radius-parallel")          		radius[0]               = doubleValue(*iter);
+		  else if (parameterName(*iter) == "radius-perpendicular")     		radius[1]               = doubleValue(*iter);
+		  else if (parameterName(*iter) == "signal-type")                       signalType              = stringValue(*iter);
+		  else if (parameterName(*iter) == "offset")                            offset                  = doubleValue(*iter);
+		  else if (parameterName(*iter) == "variance")                          variance                = doubleValue(*iter);
+		  else if (parameterName(*iter) == "wavelength")                        wavelength              = doubleValue(*iter);
+		  else if (parameterName(*iter) == "CEP")                               cep                     = doubleValue(*iter);
+		  else { std::cout << parameterName(*iter) << " is not defined in the optical-undulator group." << std::endl; exit(1); }
+		  ++iter;
+		}
+	      while (*iter != "}");
+
+	      if (signalType.compare("neumann") == 0 || signalType.compare("gaussian") == 0 || signalType.compare("secant-hyperbolic") == 0 ||
+		  signalType.compare("flat-top") == 0 )
+		signal.initialize(signalType, offset, variance, wavelength, cep);
+	      else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
+
+	      undulator.initialize(type, position, direction, polarization, amplitude, radius, wavelength, signal);
+
+	      undulator_.push_back(undulator);
+	    }
+
+	  ++iter;
+	}
       while (*iter != "}");
-
-      if (undulator_.type_ == OPTICAL)
-        {
-          if (signalType.compare("neumann") == 0 || signalType.compare("gaussian") == 0 || signalType.compare("secant-hyperbolic") == 0 ||
-              signalType.compare("flat-top") == 0 )
-            signal.initialize(signalType, offset, variance, wavelength, cep);
-          else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
-
-          undulator_.initialize(type, position, direction, polarization, amplitude, radius, wavelength, signal);
-        }
     }
 
     /* Read the parameters parsed for the seed in the darius solver.                                    */
@@ -459,53 +538,53 @@ namespace Darius
       ExtField          extField;
 
       do
-        {
-          /* The data related to the seed initialization are to be parsed.                              */
-          if (*iter == "electromagnetic-wave")
-            {
-              ++iter;
-              if (*iter != "{") { std::cout << "The electromagnetic-field directory is empty" << std::endl; exit(1); }
-              else ++iter;
+	{
+	  /* The data related to the seed initialization are to be parsed.                              */
+	  if (*iter == "electromagnetic-wave")
+	    {
+	      ++iter;
+	      if (*iter != "{") { std::cout << "The electromagnetic-field directory is empty" << std::endl; exit(1); }
+	      else ++iter;
 
-              extField.type_            = EMWAVE;
+	      extField.type_            = EMWAVE;
 
-              std::string               type, signalType;
-              std::vector<Double>       position (3,0.0), direction (3,0.0), polarization (3,0.0);
-              Double                    amplitude, offset, variance, wavelength, cep;
-              Signal                    signal;
-              std::vector<Double>       radius (2,0.0);
+	      std::string               type, signalType;
+	      std::vector<Double>       position (3,0.0), direction (3,0.0), polarization (3,0.0);
+	      Double                    amplitude, offset, variance, wavelength, cep;
+	      Signal                    signal;
+	      std::vector<Double>       radius (2,0.0);
 
-              do
-                {
-                  if      (parameterName(*iter) == "beam-type")                         type                    = stringValue(*iter);
-                  else if (parameterName(*iter) == "position")                          position                = vectorDoubleValue(*iter);
-                  else if (parameterName(*iter) == "direction")                         direction               = vectorDoubleValue(*iter);
-                  else if (parameterName(*iter) == "polarization")                      polarization            = vectorDoubleValue(*iter);
-                  else if (parameterName(*iter) == "strength-parameter")                amplitude               = doubleValue(*iter);
-                  else if (parameterName(*iter) == "rayleigh-radius-parallel")          radius[0]               = doubleValue(*iter);
-                  else if (parameterName(*iter) == "rayleigh-radius-perpendicular")     radius[1]               = doubleValue(*iter);
-                  else if (parameterName(*iter) == "signal-type")                       signalType              = stringValue(*iter);
-                  else if (parameterName(*iter) == "offset")                            offset                  = doubleValue(*iter);
-                  else if (parameterName(*iter) == "variance")                          variance                = doubleValue(*iter);
-                  else if (parameterName(*iter) == "wavelength")                        wavelength              = doubleValue(*iter);
-                  else if (parameterName(*iter) == "CEP")                               cep                     = doubleValue(*iter);
-                  else { std::cout << parameterName(*iter) << " is not defined in the electromagnetic external field group." << std::endl; exit(1); }
-                  ++iter;
-                }
-              while (*iter != "}");
+	      do
+		{
+		  if      (parameterName(*iter) == "beam-type")                         type                    = stringValue(*iter);
+		  else if (parameterName(*iter) == "position")                          position                = vectorDoubleValue(*iter);
+		  else if (parameterName(*iter) == "direction")                         direction               = vectorDoubleValue(*iter);
+		  else if (parameterName(*iter) == "polarization")                      polarization            = vectorDoubleValue(*iter);
+		  else if (parameterName(*iter) == "strength-parameter")                amplitude               = doubleValue(*iter);
+		  else if (parameterName(*iter) == "radius-parallel")          radius[0]               = doubleValue(*iter);
+		  else if (parameterName(*iter) == "radius-perpendicular")     radius[1]               = doubleValue(*iter);
+		  else if (parameterName(*iter) == "signal-type")                       signalType              = stringValue(*iter);
+		  else if (parameterName(*iter) == "offset")                            offset                  = doubleValue(*iter);
+		  else if (parameterName(*iter) == "variance")                          variance                = doubleValue(*iter);
+		  else if (parameterName(*iter) == "wavelength")                        wavelength              = doubleValue(*iter);
+		  else if (parameterName(*iter) == "CEP")                               cep                     = doubleValue(*iter);
+		  else { std::cout << parameterName(*iter) << " is not defined in the electromagnetic external field group." << std::endl; exit(1); }
+		  ++iter;
+		}
+	      while (*iter != "}");
 
-              if (signalType.compare("neumann") == 0 || signalType.compare("gaussian") == 0 || signalType.compare("secant-hyperbolic") == 0 ||
-                  signalType.compare("flat-top") == 0 )
-                  signal.initialize(signalType, offset, variance, wavelength, cep);
-              else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
+	      if (signalType.compare("neumann") == 0 || signalType.compare("gaussian") == 0 || signalType.compare("secant-hyperbolic") == 0 ||
+		  signalType.compare("flat-top") == 0 )
+		signal.initialize(signalType, offset, variance, wavelength, cep);
+	      else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
 
-              extField.initialize(type, position, direction, polarization, amplitude, radius, wavelength, signal);
+	      extField.initialize(type, position, direction, polarization, amplitude, radius, wavelength, signal);
 
-              extField_.push_back(extField);
-            }
+	      extField_.push_back(extField);
+	    }
 
-          ++iter;
-        }
+	  ++iter;
+	}
       while (*iter != "}");
     }
 
@@ -584,19 +663,19 @@ namespace Darius
 
 	      do
 		{
-	          if      (parameterName(*iter) == "sample")                            FEL.radiationPower_.sampling_   = boolValue(*iter);
-	          else if (parameterName(*iter) == "distance-from-bunch")               FEL.radiationPower_.z_.push_back( doubleValue(*iter) );
-	          else if (parameterName(*iter) == "directory")                         FEL.radiationPower_.directory_  = stringValue(*iter);
-	          else if (parameterName(*iter) == "base-name")                         FEL.radiationPower_.basename_   = stringValue(*iter);
-	          else if (parameterName(*iter) == "line-begin")                        FEL.radiationPower_.lineBegin_  = doubleValue(*iter);
-	          else if (parameterName(*iter) == "line-end")                          FEL.radiationPower_.lineEnd_    = doubleValue(*iter);
-	          else if (parameterName(*iter) == "resolution")                        FEL.radiationPower_.res_        = doubleValue(*iter);
-	          else if (parameterName(*iter) == "normalized-wavelength")             FEL.radiationPower_.lambda_.push_back(doubleValue(*iter));
-	          else if (parameterName(*iter) == "minimum-normalized-wavelength")     FEL.radiationPower_.lambdaMin_  = doubleValue(*iter);
-	          else if (parameterName(*iter) == "maximum-normalized-wavelength")     FEL.radiationPower_.lambdaMax_  = doubleValue(*iter);
-	          else if (parameterName(*iter) == "normalized-wavelength-resolution")  FEL.radiationPower_.lambdaRes_  = doubleValue(*iter);
-	          else if (parameterName(*iter) == "type")                              FEL.radiationPower_.samplingType(stringValue(*iter));
-	          else { std::cout << parameterName(*iter) << " is not defined in radiation-power group." << std::endl; exit(1); }
+		  if      (parameterName(*iter) == "sample")                            FEL.radiationPower_.sampling_   = boolValue(*iter);
+		  else if (parameterName(*iter) == "distance-from-bunch")               FEL.radiationPower_.z_.push_back( doubleValue(*iter) );
+		  else if (parameterName(*iter) == "directory")                         FEL.radiationPower_.directory_  = stringValue(*iter);
+		  else if (parameterName(*iter) == "base-name")                         FEL.radiationPower_.basename_   = stringValue(*iter);
+		  else if (parameterName(*iter) == "line-begin")                        FEL.radiationPower_.lineBegin_  = doubleValue(*iter);
+		  else if (parameterName(*iter) == "line-end")                          FEL.radiationPower_.lineEnd_    = doubleValue(*iter);
+		  else if (parameterName(*iter) == "resolution")                        FEL.radiationPower_.res_        = doubleValue(*iter);
+		  else if (parameterName(*iter) == "normalized-wavelength")             FEL.radiationPower_.lambda_.push_back(doubleValue(*iter));
+		  else if (parameterName(*iter) == "minimum-normalized-wavelength")     FEL.radiationPower_.lambdaMin_  = doubleValue(*iter);
+		  else if (parameterName(*iter) == "maximum-normalized-wavelength")     FEL.radiationPower_.lambdaMax_  = doubleValue(*iter);
+		  else if (parameterName(*iter) == "normalized-wavelength-resolution")  FEL.radiationPower_.lambdaRes_  = doubleValue(*iter);
+		  else if (parameterName(*iter) == "type")                              FEL.radiationPower_.samplingType(stringValue(*iter));
+		  else { std::cout << parameterName(*iter) << " is not defined in radiation-power group." << std::endl; exit(1); }
 		  ++iter;
 		}
 	      while (*iter != "}");

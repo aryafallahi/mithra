@@ -623,6 +623,7 @@ namespace Darius
 		return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) * exp( -1.3862 * pow((t-t0_-s_/2.0)*f0_/2.0,2) ) );
 	    }
 	}
+      return (0.0);
     }
 
     /* Show the stored values for this signal.                                                          */
@@ -1207,9 +1208,9 @@ namespace Darius
 	  + stringify(direction_[0]) + std::string("; ")
 	  + stringify(direction_[1]) + std::string("; ")
 	  + stringify(direction_[2]) + std::string("]"));
-	  printmessage(std::string(__FILE__), __LINE__, std::string("Beam amplitude = ") + stringify(amplitude_));
-	  if      ( seedType_ == PLANEWAVE || seedType_ == GAUSSIANBEAM )
-	    printmessage(std::string(__FILE__), __LINE__, std::string("Beam polarization [")
+	  printmessage(std::string(__FILE__), __LINE__, std::string("Beam amplitude = ")
+	  + stringify(amplitude_));
+	  printmessage(std::string(__FILE__), __LINE__, std::string("Beam polarization [")
 	  + stringify(polarization_[0]) + std::string("; ")
 	  + stringify(polarization_[1]) + std::string("; ")
 	  + stringify(polarization_[2]) + std::string("]"));

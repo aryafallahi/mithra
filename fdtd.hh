@@ -14,7 +14,10 @@ namespace Darius
 
   public:
 
-    FdTd( Mesh& mesh, Bunch& bunch, Seed& seed, Undulator& undulator, std::vector<ExtField>& extField, std::vector<FreeElectronLaser>& FEL )
+    FdTd( Mesh& mesh, Bunch& bunch, Seed& seed,
+	  std::vector<Undulator>&		undulator,
+	  std::vector<ExtField>& 		extField,
+	  std::vector<FreeElectronLaser>& 	FEL )
   : Solver ( mesh, bunch, seed, undulator, extField, FEL )
   {
   };
@@ -1022,7 +1025,7 @@ namespace Darius
 	  ( *(sf_.file) ).width(40);
 
 	  /* Write time into the first column.                                                       	*/
-	  *(sf_.file) << time_ * undulator_.gamma_ << "\t";
+	  *(sf_.file) << time_ * gamma_ << "\t";
 
 	  for (unsigned int n = 0; n < sf_.N; ++n)
 	    {
@@ -1095,16 +1098,16 @@ namespace Darius
 	      for (unsigned int i = 0; i < seed_.samplingField_.size(); i++)
 		{
 		  if 		( seed_.samplingField_[i] == Ex )
-		    *(sf_.file) << undulator_.gamma_ * sf_.et[0] + c0_ * sqrt( pow(undulator_.gamma_, 2) - 1 ) * sf_.bt[1] << "\t";
+		    *(sf_.file) << gamma_ * sf_.et[0] + c0_ * sqrt( pow(gamma_, 2) - 1 ) * sf_.bt[1] << "\t";
 		  else if 	( seed_.samplingField_[i] == Ey )
-		    *(sf_.file) << undulator_.gamma_ * sf_.et[1] - c0_ * sqrt( pow(undulator_.gamma_, 2) - 1 ) * sf_.bt[0] << "\t";
+		    *(sf_.file) << gamma_ * sf_.et[1] - c0_ * sqrt( pow(gamma_, 2) - 1 ) * sf_.bt[0] << "\t";
 		  else if	( seed_.samplingField_[i] == Ez )
 		    *(sf_.file) << sf_.et[2] << "\t";
 
 		  else if	( seed_.samplingField_[i] == Bx )
-		    *(sf_.file) << undulator_.gamma_ * sf_.bt[0] - sqrt( pow(undulator_.gamma_, 2) - 1 ) / c0_ * sf_.et[1] << "\t";
+		    *(sf_.file) << gamma_ * sf_.bt[0] - sqrt( pow(gamma_, 2) - 1 ) / c0_ * sf_.et[1] << "\t";
 		  else if	( seed_.samplingField_[i] == By )
-		    *(sf_.file) << undulator_.gamma_ * sf_.bt[1] + sqrt( pow(undulator_.gamma_, 2) - 1 ) / c0_ * sf_.et[0] << "\t";
+		    *(sf_.file) << gamma_ * sf_.bt[1] + sqrt( pow(gamma_, 2) - 1 ) / c0_ * sf_.et[0] << "\t";
 		  else if	( seed_.samplingField_[i] == Bz )
 		    *(sf_.file) << sf_.bt[2] << "\t";
 

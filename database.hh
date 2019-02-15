@@ -396,6 +396,7 @@ namespace Darius
     FieldVector<Double>			ex, ez, eT;
     FieldVector<Double>			by, bz, bT;
     Double				tl, t0;
+    Double				r0;
 
     UpdateBunchParallel()
     {

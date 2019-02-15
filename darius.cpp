@@ -29,6 +29,7 @@
 #include <list>
 #include <limits>
 #include <mpi.h>
+#include <algorithm>
 
 /** Include darius header files.                                                                        */
 #include "fieldvector.hh"

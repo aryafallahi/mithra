@@ -431,9 +431,6 @@ namespace Darius
 		}
 	      while (*iter != "}");
 
-	      /* Ignore the value of offset if the first module is initialized.				*/
-	      if ( undulator_.size() == 0 ) undulator.rb_ = 0.0;
-
 	      /* Add the given undulator to the undulator vector.					*/
 	      undulator_.push_back(undulator);
 	    }

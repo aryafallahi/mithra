@@ -102,8 +102,9 @@ namespace Darius
       for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
 	if ( iter->type_ == OPTICAL ) iter->lu_ /= ( 1 + beta_ );
 
-      /* If the beginning of the undulator is not given for static ones automatically set the begin of
-       * the undulator.											*/
+      /* The beginning of undulators are set automatically for static ones. Here, the array of undulators
+       * are first sorted according to their begin point and then the position of the bunch and undulator
+       * begin is set.											*/
       Double t = -1.0e100;
       for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
 	{
@@ -119,6 +120,15 @@ namespace Darius
 	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
 	    t = std::max(t, bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_);
 	}
+
+      /* Sort the undulators according to their beginning point.					*/
+      std::sort(undulator_.begin(), undulator_.end(), undulatorCompare);
+
+      /* Now shift all the undulator modules so that the first module starts at zero.			*/
+      for (std::vector<Undulator>::iterator iter = undulator_.end(); iter != undulator_.begin(); iter--)
+	iter->rb_ -= undulator_[0].rb_;
+
+      /* Add the required space for fringing field to the undulator begins.				*/
       for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
 	iter->rb_ += t + iter->lu_ / ( 2.0 * gamma_ * gamma_ ) * 10;
 
@@ -1185,11 +1195,12 @@ namespace Darius
 	  ub_.ct	 = cos( iter->theta_ );
 	  ub_.st	 = sin( iter->theta_ );
 
-
 	  if ( iter->type_ == STATIC )
 	    {
-	      /* First find the position of the undulator begin point.					*/
-	      ubp.lz = gamma_ * ( r[2] + beta_ * c0_ * timeBunch_ - gamma_ * iter->rb_ );
+	      /* First find the position with respect to the undulator begin point. The equation below
+	       * assumes that the bunch at time zero resides in a distance gamma*rb_ from the first
+	       * undulator.										*/
+	      ubp.lz = gamma_ * ( r[2] + beta_ * c0_ * timeBunch_ - gamma_ * undulator_[0].rb_ ) - ( iter->rb_ - undulator_[0].rb_ );
 	      ubp.ly = r[0] * ub_.ct + r[1] * ub_.st;
 
 	      /* Now, calculate the undulator field according to the obtained position.               	*/
@@ -1198,45 +1209,64 @@ namespace Darius
 		  ubp.sz = sin (ub_.ku * ubp.lz);
 		  ubp.cy = cosh(ub_.ku * ubp.ly);
 
-		  ubp.d1    = ub_.b0 * ubp.cy * ubp.sz * gamma_;
-		  ubp.bt[0] = ubp.d1 * ub_.ct;
-		  ubp.bt[1] = ubp.d1 * ub_.st;
-		  ubp.bt[2] = ub_.b0 * sqrt( ( ubp.cy * ubp.cy - 1.0 ) * ( 1.0 - ubp.sz * ubp.sz ) );
+		  ubp.d1     = ub_.b0 * ubp.cy * ubp.sz * gamma_;
+		  ubp.bt[0] += ubp.d1 * ub_.ct;
+		  ubp.bt[1] += ubp.d1 * ub_.st;
+		  ubp.bt[2] += ub_.b0 * sqrt( ( ubp.cy * ubp.cy - 1.0 ) * ( 1.0 - ubp.sz * ubp.sz ) );
 
-		  ubp.d1   *= c0_ * beta_;
-		  ubp.et[1] =   ubp.d1 * ub_.ct;
-		  ubp.et[0] = - ubp.d1 * ub_.st;
-		  ubp.et[2] = 0.0;
+		  ubp.d1    *= c0_ * beta_;
+		  ubp.et[1] +=   ubp.d1 * ub_.ct;
+		  ubp.et[0] += - ubp.d1 * ub_.st;
+		  ubp.et[2] += 0.0;
 		}
 	      else if ( ubp.lz < 0.0 )
 		{
-		  ubp.sz = exp( - pow( ub_.ku * ubp.lz , 2 ) / 2.0 );
+		  if ( iter == undulator_.begin() )
+		    ubp.sz = exp( - pow( ub_.ku * ubp.lz , 2 ) / 2.0 );
+		  else
+		    {
+		      ubp.i  = iter - undulator_.begin() - 1;
+		      ubp.r0 = undulator_[ubp.i].rb_ + undulator_[ubp.i].length_ * undulator_[ubp.i].lu_ - iter->rb_;
+		      if ( ubp.lz < ubp.r0 || ubp.r0 == 0.0 ) ubp.sz = 0.0;
+		      else
+			ubp.sz = 0.35875 + 0.48829 * cos( PI * ubp.lz / ubp.r0 ) + 0.14128 * cos( 2.0 * PI * ubp.lz / ubp.r0 ) + 0.01168 * cos( 3.0 * PI * ubp.lz / ubp.r0 );
+		    }
 		  ubp.cy = cosh(ub_.ku * ubp.ly );
 
-		  ubp.d1    = ub_.b0 * ubp.cy * ubp.sz * ub_.ku * ubp.lz * gamma_;
-		  ubp.bt[0] = ubp.d1 * ub_.ct;
-		  ubp.bt[1] = ubp.d1 * ub_.st;
-		  ubp.bt[2] = ub_.b0 * sqrt( ubp.cy * ubp.cy - 1.0 ) * ubp.sz;
+		  ubp.d1     = ub_.b0 * ubp.cy * ubp.sz * ub_.ku * ubp.lz * gamma_;
+		  ubp.bt[0] += ubp.d1 * ub_.ct;
+		  ubp.bt[1] += ubp.d1 * ub_.st;
+		  ubp.bt[2] += ub_.b0 * sqrt( ubp.cy * ubp.cy - 1.0 ) * ubp.sz;
 
-		  ubp.d1   *= c0_ * beta_;
-		  ubp.et[1] =   ubp.d1 * ub_.ct;
-		  ubp.et[0] = - ubp.d1 * ub_.st;
-		  ubp.et[2] = 0.0;
+		  ubp.d1    *= c0_ * beta_;
+		  ubp.et[1] +=   ubp.d1 * ub_.ct;
+		  ubp.et[0] += - ubp.d1 * ub_.st;
+		  ubp.et[2] += 0.0;
 		}
 	      else if ( ubp.lz > iter->length_ * iter->lu_ )
 		{
-		  ubp.sz = exp( - pow( ub_.ku *  ( ubp.lz - iter->length_ * iter->lu_ ) , 2 ) / 2.0 );
+		  ubp.t0 = ubp.lz - iter->length_ * iter->lu_;
+		  if ( iter == undulator_.end() )
+		    ubp.sz = exp( - pow( ub_.ku *  ubp.t0 , 2 ) / 2.0 );
+		  else
+		    {
+		      ubp.i  = iter - undulator_.begin() + 1;
+		      ubp.r0 = undulator_[ubp.i].rb_ - iter->rb_ - iter->length_ * iter->lu_;
+		      if ( ubp.t0 > ubp.r0 || ubp.r0 == 0.0 ) ubp.sz = 0.0;
+		      else
+			ubp.sz = 0.35875 + 0.48829 * cos( PI * ubp.t0 / ubp.r0 ) + 0.14128 * cos( 2.0 * PI * ubp.t0 / ubp.r0 ) + 0.01168 * cos( 3.0 * PI * ubp.t0 / ubp.r0 );
+		    }
 		  ubp.cy = cosh(ub_.ku * ubp.ly );
 
-		  ubp.d1    = ub_.b0 * ubp.cy * ubp.sz * ub_.ku * ( ubp.lz - iter->length_ * iter->lu_ ) * gamma_;
-		  ubp.bt[0] = ubp.d1 * ub_.ct;
-		  ubp.bt[1] = ubp.d1 * ub_.st;
-		  ubp.bt[2] = ub_.b0 * sqrt( ubp.cy * ubp.cy - 1.0 ) * ubp.sz;
+		  ubp.d1     = ub_.b0 * ubp.cy * ubp.sz * ub_.ku * ubp.t0 * gamma_;
+		  ubp.bt[0] += ubp.d1 * ub_.ct;
+		  ubp.bt[1] += ubp.d1 * ub_.st;
+		  ubp.bt[2] += ub_.b0 * sqrt( ubp.cy * ubp.cy - 1.0 ) * ubp.sz;
 
-		  ubp.d1   *= c0_ * beta_;
-		  ubp.et[1] =   ubp.d1 * ub_.ct;
-		  ubp.et[0] = - ubp.d1 * ub_.st;
-		  ubp.et[2] = 0.0;
+		  ubp.d1    *= c0_ * beta_;
+		  ubp.et[1] +=   ubp.d1 * ub_.ct;
+		  ubp.et[0] += - ubp.d1 * ub_.st;
+		  ubp.et[2] += 0.0;
 		}
 	    }
 	  else if ( iter->type_ == OPTICAL )
@@ -2084,6 +2114,12 @@ namespace Darius
      ****************************************************************************************************/
 
     virtual void fieldEvaluate (long int m) = 0;
+
+    /****************************************************************************************************
+     * Define the boolean function for comparing undulator begins.
+     ****************************************************************************************************/
+
+    static bool undulatorCompare (Undulator i, Undulator j) { return ( i.rb_ < j.rb_ ); }
 
     /******************************************************************************************************
      * List of required parameters in the FdTd code.

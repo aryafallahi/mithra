@@ -56,7 +56,35 @@ namespace Darius
     return (filename.compare(0,1,"/") == 0);
   };
 
-  /* Check if a path is an absolute path (beginning with an '/').                                       */
+  /* Check if a directory to save the data exists.							*/
+  bool pathExist(const std::string &s)
+  {
+    struct stat buffer;
+    return (stat (s.c_str(), &buffer) == 0);
+  }
+
+  /* Split the file name to two strings including its path and file name.                               */
+  void splitFilename (const std::string& str, std::string& path, std::string& file)
+  {
+    unsigned found = str.find_last_of("/");
+    path = str.substr(0,found+1);
+    file = str.substr(found+1);
+  }
+
+  /* Check if the directory referred to by the file-name exists. If not create the directory.		*/
+  void createDirectory(std::string filename, unsigned int rank)
+  {
+    std::string path, file;
+    splitFilename(filename, path, file);
+    if ( !(pathExist(path)) && rank == 0 )
+      if ( mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1 )
+	{
+	  std::cout << "Could not create the directory " << path << ". Probably the given address does not exist." << std::endl;
+	  exit(1);
+	}
+  }
+
+  /* Return the sign of the parameter.									*/
   template <typename T> inline int signof(T x)
   {
     return ( (x > 0) ? 1 : ( (x < 0) ? -1 : 0 ) );
@@ -107,14 +135,6 @@ namespace Darius
 
     return oStream.str();
   };
-
-  /* Split the file name to two strings including its path and file name.                               */
-  void splitFilename (const std::string& str, std::string& path, std::string& file)
-  {
-    unsigned found = str.find_last_of("/");
-    path = str.substr(0,found+1);
-    file = str.substr(found+1);
-  }
 
   /* Define the structure for each charge point.							*/
   struct Charge

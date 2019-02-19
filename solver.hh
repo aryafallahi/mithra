@@ -226,7 +226,8 @@ namespace Darius
       if (seed_.sampling_)				initializeSeedSampling();
 
       /* If visualization is enabled initialize the required data for visualizing and saving the field.	*/
-      if (seed_.vtk_.size() > 0)			initializeSeedVTK();
+      for (unsigned int i = 0; i < seed_.vtk_.size(); i++)
+	if (seed_.vtk_[i].sample_)			initializeSeedVTK();
 
       /* If profiling is enabled initialize the required data for profiling the field and saving it.	*/
       if (seed_.profile_)				initializeSeedProfile();
@@ -554,6 +555,10 @@ namespace Darius
 	  std::string baseFilename = "";
 	  if (!(isabsolute(seed_.samplingBasename_))) baseFilename = seed_.samplingDirectory_;
 	  baseFilename += seed_.samplingBasename_ + "-" + stringify(rank_) + TXT_FILE_SUFFIX;
+
+	  /* If the directory of the baseFilename does not exist create this directory.		*/
+	  createDirectory(baseFilename, rank_);
+
 	  sf_.file = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
 	}
     }
@@ -576,6 +581,9 @@ namespace Darius
 	  if (!(isabsolute(seed_.vtk_[i].basename_)))
 	    seed_.vtk_[i].basename_ = seed_.vtk_[i].directory_ + seed_.vtk_[i].basename_;
 	  splitFilename(seed_.vtk_[i].basename_, vf_[i].path, vf_[i].name);
+
+	  /* If the directory of the baseFilename does not exist create this directory.			*/
+	  createDirectory(seed_.vtk_[i].basename_, rank_);
 
 	  /* Initialize the vector to save the data and write to the vtk file.				*/
 	  std::vector<Double> ZERO_VECTOR ( (seed_.vtk_[i].field_).size(), 0.0);
@@ -639,6 +647,9 @@ namespace Darius
 
       if (!(isabsolute(seed_.profileBasename_))) seed_.profileBasename_ = seed_.profileDirectory_ + seed_.profileBasename_;
 
+      /* If the directory of the baseFilename does not exist create this directory.			*/
+      createDirectory(seed_.profileBasename_, rank_);
+
       pf_.dt = 2.0 * mesh_.timeStep_;
     }
 
@@ -665,6 +676,10 @@ namespace Darius
 	  std::string baseFilename = "";
 	  if (!(isabsolute(bunch_.basename_))) baseFilename = bunch_.directory_;
 	  baseFilename += bunch_.basename_ + TXT_FILE_SUFFIX;
+
+	  /* If the directory of the baseFilename does not exist create this directory.			*/
+	  createDirectory(baseFilename, rank_);
+
 	  sb_.file = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
 
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" The sampling data are initialized. :::") );
@@ -677,6 +692,9 @@ namespace Darius
 
 	  if (!(isabsolute(bunch_.bunchVTKBasename_))) bunch_.bunchVTKBasename_ = bunch_.bunchVTKDirectory_ + bunch_.bunchVTKBasename_;
 
+	  /* If the directory of the baseFilename does not exist create this directory.			*/
+	  createDirectory(bunch_.bunchVTKBasename_, rank_);
+
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" The bunch visualization data are initialized. :::") );
 	}
 
@@ -686,6 +704,9 @@ namespace Darius
 	  printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the bunch profiling data.") );
 
 	  if (!(isabsolute(bunch_.bunchProfileBasename_))) bunch_.bunchProfileBasename_ = bunch_.bunchProfileDirectory_ + bunch_.bunchProfileBasename_;
+
+	  /* If the directory of the baseFilename does not exist create this directory.			*/
+	  createDirectory(bunch_.bunchProfileBasename_, rank_);
 
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" The bunch profiling data are initialized. :::") );
 	}
@@ -1596,6 +1617,10 @@ namespace Darius
 	      std::string baseFilename = "";
 	      if (!(isabsolute(FEL_[jf].radiationPower_.basename_))) baseFilename = FEL_[jf].radiationPower_.directory_;
 	      baseFilename += FEL_[jf].radiationPower_.basename_ + "-" + stringify(i) + TXT_FILE_SUFFIX;
+
+	      /* If the directory of the baseFilename does not exist create this directory.			*/
+	      createDirectory(baseFilename, rank_);
+
 	      rp_[jf].file[i] = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
 	      ( *(rp_[jf].file[i]) ).setf(std::ios::scientific);
 	      ( *(rp_[jf].file[i]) ).precision(15);
@@ -1955,7 +1980,7 @@ namespace Darius
 
 	  re_[jf].Nf = 0;
 
-	  /* Initialize the file streams to save the data.                                                      */
+	  /* Initialize the file streams to save the data.                                       	*/
 	  re_[jf].file.resize(re_[jf].Nl);
 	  re_[jf].w.resize(re_[jf].Nl);
 	  for (unsigned int i = 0; i < re_[jf].Nl; i++)
@@ -1963,6 +1988,10 @@ namespace Darius
 	      std::string baseFilename = "";
 	      if (!(isabsolute(FEL_[jf].radiationEnergy_.basename_))) baseFilename = FEL_[jf].radiationEnergy_.directory_;
 	      baseFilename += FEL_[jf].radiationEnergy_.basename_ + "-" + stringify(i) + TXT_FILE_SUFFIX;
+
+	      /* If the directory of the baseFilename does not exist create this directory.		*/
+	      createDirectory(baseFilename, rank_);
+
 	      re_[jf].file[i] = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
 	      ( *(re_[jf].file[i]) ).setf(std::ios::scientific);
 	      ( *(re_[jf].file[i]) ).precision(15);
@@ -1977,7 +2006,7 @@ namespace Darius
 	      re_[jf].w[i] = 2 * PI / dt;
 	    }
 
-	  /* Based on the obtained Nf, resize the vectors for saving the time domain data.                      */
+	  /* Based on the obtained Nf, resize the vectors for saving the time domain data.          	*/
 	  re_[jf].fdt.resize(re_[jf].Nf, std::vector<std::vector<Double> > (re_[jf].N * N1_ * N0_, std::vector<Double> (4,0.0) ) );
 
 	  re_[jf].dt = mesh_.timeStep_;

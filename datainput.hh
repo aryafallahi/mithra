@@ -344,6 +344,7 @@ namespace Darius
 		  ++iter;
 		}
 	      while (*iter != "}");
+
 	    }
 
 	  /* The data related to the seed visualization are to be parsed.                            	*/

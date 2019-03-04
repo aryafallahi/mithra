@@ -138,8 +138,6 @@ namespace Darius
 		/* Obtain the number of beamlet.							*/
 		bmi = int( ( charge.rnp[2] - zmin ) / ( bunchInit.lambda_ / 2.0 ) );
 
-		std::cout << bF << std::endl;
-
 		/* Obtain the phase and amplitude of the modulation.					*/
 		bFi = bF * sqrt( - 2.0 * log( halton(8,bmi) ) );
 

@@ -170,18 +170,12 @@ namespace Darius
        * calculate the FEL bucket number.								*/
       if ( bunchInit.shotNoise_ )
 	{
-	  for (i = 0; i < Np / 8; i++)
+	  for (i = 0; i < Np / 4; i++)
 	    {
 	      if ( bunchInit.distribution_ == "uniform" )
-		{
-		  zmin = std::min(   ( 2.0 * halton(2, i + Np0) - 1.0 ) * bunchInit.sigmaPosition_[2] , zmin );
-		  zmin = std::min( - ( 2.0 * halton(2, i + Np0) - 1.0 ) * bunchInit.sigmaPosition_[2] , zmin );
-		}
+		zmin = std::min(   ( 2.0 * halton(2, i + Np0) - 1.0 ) * bunchInit.sigmaPosition_[2] , zmin );
 	      else if ( bunchInit.distribution_ == "gaussian" )
-		{
-		  zmin = std::min(   bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(2, i + Np0) ) ) * sin( 2.0 * PI * halton(3, i + Np0) ) , zmin );
-		  zmin = std::min( - bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(2, i + Np0) ) ) * sin( 2.0 * PI * halton(3, i + Np0) ) , zmin );
-		}
+		zmin = std::min(   bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(2, i + Np0) ) ) * sin( 2.0 * PI * halton(3, i + Np0) ) , zmin );
 	      else
 		{
 		  printmessage(std::string(__FILE__), __LINE__, std::string("The longitudinal type is not correctly given to the code !!!") );
@@ -190,36 +184,35 @@ namespace Darius
 	    }
 
 	  if ( bunchInit.distribution_ == "uniform" )
-	    for ( ; i < int( Np / 8 * ( 1.0 + bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
+	    for ( ; i < int( Np / 4 * ( 1.0 + bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
 	      {
-		t0  = bunchInit.lambda_ * sqrt( - 2.0 * log( halton(2,i+Np0) ) ) * sin( 2.0 * PI * halton(3,i+Np0) );
+		t0  = bunchInit.lambda_ * sqrt( - 2.0 * log( halton( 2, i + Np0 ) ) ) * sin( 2.0 * PI * halton( 3, i + Np0 ) );
 		t0 += ( t0 < 0.0 ) ? ( - bunchInit.sigmaPosition_[2] ) : ( bunchInit.sigmaPosition_[2] );
 
 		zmin = std::min(   t0 , zmin );
-		zmin = std::min( - t0 , zmin );
 	      }
 
 	  zmin = zmin + bunchInit.position_[ia][2];
 
-	  /* Obtain the average number of electrons per FEL beamlet.				*/
+	  /* Obtain the average number of electrons per FEL beamlet.					*/
 	  Ne = bunchInit.cloudCharge_ * ( bunchInit.lambda_ / 2.0 ) / ( 2.0 * bunchInit.sigmaPosition_[2] );
 
-	  /* Set the bunching factor level for the shot noise depending on the given values.	*/
+	  /* Set the bunching factor level for the shot noise depending on the given values.		*/
 	  bF = ( bunchInit.bF_ == 0.0 ) ? 1.0/sqrt(Ne) : bunchInit.bF_; bF /= sqrt(2.0);
 	}
 
       /* Determine the properties of each charge point and add them to the charge vector.               */
-      for (i = 0; i < Np / 8; i++)
+      for (i = 0; i < Np / 4; i++)
 	{
 	  /* Determine the transverse coordinate.							*/
-	  r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( halton(0,i+Np0) ) ) * cos( 2.0 * PI * halton(1,i+Np0) );
-	  r[1] = bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(0,i+Np0) ) ) * sin( 2.0 * PI * halton(1,i+Np0) );
+	  r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * cos( 2.0 * PI * halton(1, i + Np0) );
+	  r[1] = bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * sin( 2.0 * PI * halton(1, i + Np0) );
 
 	  /* Determine the longitudinal coordinate.							*/
 	  if ( bunchInit.distribution_ == "uniform" )
-	    r[2] = ( 2.0 * halton(2,i+Np0) - 1.0 ) * bunchInit.sigmaPosition_[2];
+	    r[2] = ( 2.0 * halton(2, i + Np0) - 1.0 ) * bunchInit.sigmaPosition_[2];
 	  else if ( bunchInit.distribution_ == "gaussian" )
-	    r[2] = bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(2,i+Np0) ) ) * sin( 2.0 * PI * halton(3,i+Np0) );
+	    r[2] = bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(2, i + Np0) ) ) * sin( 2.0 * PI * halton(3, i + Np0) );
 	  else
 	    {
 	      printmessage(std::string(__FILE__), __LINE__, std::string("The longitudinal type is not correctly given to the code !!!") );
@@ -227,14 +220,14 @@ namespace Darius
 	    }
 
 	  /* Determine the transverse momentum.								*/
-	  t[0] = bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(4,i+Np0) ) ) * cos( 2.0 * PI * halton(5,i+Np0) );
-	  t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4,i+Np0) ) ) * sin( 2.0 * PI * halton(5,i+Np0) );
+	  t[0] = bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * cos( 2.0 * PI * halton(5, i + Np0) );
+	  t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * sin( 2.0 * PI * halton(5, i + Np0) );
 
 	  /* Determine the longitudinal momentum.							*/
 	  if ( bunchInit.distribution_ == "uniform" )
-	    t[2] = ( 2.0 * halton(6,i+Np0) - 1.0 ) * bunchInit.sigmaGammaBeta_[2];
+	    t[2] = ( 2.0 * halton(6, i + Np0) - 1.0 ) * bunchInit.sigmaGammaBeta_[2];
 	  else if ( bunchInit.distribution_ == "gaussian" )
-	    t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6,i+Np0) ) ) * cos( 2.0 * PI * halton(7,i+Np0) );
+	    t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
 
 	  if ( fabs(r[0]) < bunchInit.tranTrun_ && fabs(r[1]) < bunchInit.tranTrun_ && fabs(r[2]) < bunchInit.longTrun_)
 	    {
@@ -247,59 +240,39 @@ namespace Darius
 
 	      /* Insert this charge and the mirrored ones into the charge vector.			*/
 	      insertCharge(charge);
-
-	      /* Shift the mirror charge to the center position and momentum space.			*/
-	      charge.rnp   = bunchInit.position_[ia];
-	      charge.rnp  -= r;
-
-	      (charge.gbnp).mv(gb, bunchInit.initialDirection_);
-	      charge.gbnp -= t;
-
-	      /* Insert this charge and the mirrored ones into the charge vector.			*/
-	      insertCharge(charge);
 	    }
 	}
 
       /* If the longitudinal type of the bunch is uniform a tapered part needs to be added to remove the
        * CSE from the tail of the bunch.								*/
       if ( bunchInit.distribution_ == "uniform" )
-	for ( ; i < int( Np / 8 * ( 1.0 + bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
+	for ( ; i < int( Np / 4 * ( 1.0 + bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
 	  {
-	    r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( halton(0,i+Np0) ) ) * cos( 2.0 * PI * halton(1,i+Np0) );
-	    r[1] = bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(0,i+Np0) ) ) * sin( 2.0 * PI * halton(1,i+Np0) );
+	    r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * cos( 2.0 * PI * halton(1, i + Np0) );
+	    r[1] = bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * sin( 2.0 * PI * halton(1, i + Np0) );
 
 	    /* Determine the longitudinal coordinate.							*/
-	    r[2] = bunchInit.lambda_ * sqrt( - 2.0 * log( halton(2,i+Np0) ) ) * sin( 2.0 * PI * halton(3,i+Np0) );
+	    r[2] = bunchInit.lambda_ * sqrt( - 2.0 * log( halton(2, i + Np0) ) ) * sin( 2.0 * PI * halton(3, i + Np0) );
 	    r[2] += ( r[2] < 0.0 ) ? ( - bunchInit.sigmaPosition_[2] ) : ( bunchInit.sigmaPosition_[2] );
 
 	    /* Determine the transverse momentum.							*/
-	    t[0] = bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(4,i+Np0) ) ) * cos( 2.0 * PI * halton(5,i+Np0) );
-	    t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4,i+Np0) ) ) * sin( 2.0 * PI * halton(5,i+Np0) );
+	    t[0] = bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * cos( 2.0 * PI * halton(5, i + Np0) );
+	    t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * sin( 2.0 * PI * halton(5, i + Np0) );
 
 	    /* Determine the longitudinal momentum.							*/
 	    if ( bunchInit.distribution_ == "uniform" )
-	      t[2] = ( 2.0 * halton(6,i+Np0) - 1.0 ) * bunchInit.sigmaGammaBeta_[2];
+	      t[2] = ( 2.0 * halton(6, i + Np0) - 1.0 ) * bunchInit.sigmaGammaBeta_[2];
 	    else if ( bunchInit.distribution_ == "gaussian" )
-	      t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6,i+Np0) ) ) * cos( 2.0 * PI * halton(7,i+Np0) );
+	      t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
 
 	    if ( fabs(r[0]) < bunchInit.tranTrun_ && fabs(r[1]) < bunchInit.tranTrun_ && fabs(r[2]) < bunchInit.longTrun_)
 	      {
-		/* Shift the generated charge to the center position and momentum space.			*/
+		/* Shift the generated charge to the center position and momentum space.		*/
 		charge.rnp   = bunchInit.position_[ia];
 		charge.rnp  += r;
 
 		(charge.gbnp).mv(gb, bunchInit.initialDirection_);
 		charge.gbnp += t;
-
-		/* Insert this charge and the mirrored ones into the charge vector.			*/
-		insertCharge(charge);
-
-		/* Shift the mirror charge to the center position and momentum space.			*/
-		charge.rnp   = bunchInit.position_[ia];
-		charge.rnp  -= r;
-
-		(charge.gbnp).mv(gb, bunchInit.initialDirection_);
-		charge.gbnp -= t;
 
 		/* Insert this charge and the mirrored ones into the charge vector.			*/
 		insertCharge(charge);

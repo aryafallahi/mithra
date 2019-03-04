@@ -194,11 +194,11 @@ namespace Darius
 	    bunch_.bunchInit_[i].position_[ia][2]	-= bunch_.bunchInit_[i].sigmaPosition_[2] * ( 1.0 - zeta );
 	  bunch_.bunchInit_[i].initialBeta_ 	 	 = sqrt( 1.0 - 1.0 / ( bunch_.bunchInit_[i].initialGamma_ * bunch_.bunchInit_[i].initialGamma_ ) );
 	}
-      bunch_.rhythm_			/= gamma_;
-      bunch_.bunchVTKRhythm_    	/= gamma_;
+      bunch_.rhythm_					/= gamma_;
+      bunch_.bunchVTKRhythm_    			/= gamma_;
       for (unsigned int i = 0; i < bunch_.bunchProfileTime_.size(); i++)
-	bunch_.bunchProfileTime_[i] 	/= gamma_;
-      bunch_.bunchProfileRhythm_	/= gamma_;
+	bunch_.bunchProfileTime_[i] 			/= gamma_;
+      bunch_.bunchProfileRhythm_			/= gamma_;
 
       /* The Lorentz boost parameters should also be transfered to the seed class in order to correctly
        * compute the fields within the computational domain.						*/

@@ -138,6 +138,8 @@ namespace Darius
 		/* Obtain the number of beamlet.							*/
 		bmi = int( ( charge.rnp[2] - zmin ) / ( bunchInit.lambda_ / 2.0 ) );
 
+		std::cout << bF << std::endl;
+
 		/* Obtain the phase and amplitude of the modulation.					*/
 		bFi = bF * sqrt( - 2.0 * log( halton(8,bmi) ) );
 
@@ -174,13 +176,13 @@ namespace Darius
 	    {
 	      if ( bunchInit.distribution_ == "uniform" )
 		{
-		  zmin = std::min(   ( 2.0 * halton(2,i+Np0) - 1.0 ) * bunchInit.sigmaPosition_[2] , zmin );
-		  zmin = std::min( - ( 2.0 * halton(2,i+Np0) - 1.0 ) * bunchInit.sigmaPosition_[2] , zmin );
+		  zmin = std::min(   ( 2.0 * halton(2, i + Np0) - 1.0 ) * bunchInit.sigmaPosition_[2] , zmin );
+		  zmin = std::min( - ( 2.0 * halton(2, i + Np0) - 1.0 ) * bunchInit.sigmaPosition_[2] , zmin );
 		}
 	      else if ( bunchInit.distribution_ == "gaussian" )
 		{
-		  zmin = std::min(   bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(2,i+Np0) ) ) * sin( 2.0 * PI * halton(3,i+Np0) ) , zmin );
-		  zmin = std::min( - bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(2,i+Np0) ) ) * sin( 2.0 * PI * halton(3,i+Np0) ) , zmin );
+		  zmin = std::min(   bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(2, i + Np0) ) ) * sin( 2.0 * PI * halton(3, i + Np0) ) , zmin );
+		  zmin = std::min( - bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(2, i + Np0) ) ) * sin( 2.0 * PI * halton(3, i + Np0) ) , zmin );
 		}
 	      else
 		{
@@ -193,7 +195,7 @@ namespace Darius
 	    for ( ; i < int( Np / 8 * ( 1.0 + bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
 	      {
 		t0  = bunchInit.lambda_ * sqrt( - 2.0 * log( halton(2,i+Np0) ) ) * sin( 2.0 * PI * halton(3,i+Np0) );
-		t0 += ( r[2] < 0.0 ) ? ( - bunchInit.sigmaPosition_[2] ) : ( bunchInit.sigmaPosition_[2] );
+		t0 += ( t0 < 0.0 ) ? ( - bunchInit.sigmaPosition_[2] ) : ( bunchInit.sigmaPosition_[2] );
 
 		zmin = std::min(   t0 , zmin );
 		zmin = std::min( - t0 , zmin );

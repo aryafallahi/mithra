@@ -139,11 +139,11 @@ namespace Darius
 		bmi = int( ( charge.rnp[2] - zmin ) / ( bunchInit.lambda_ / 2.0 ) );
 
 		/* Obtain the phase and amplitude of the modulation.					*/
-		bFi = bF * sqrt( - 2.0 * log( halton(8,bmi) ) );
+		bFi = bF * sqrt( - 2.0 * log( halton( 8 , bmi ) ) );
 
 		q.rnp[2]  = charge.rnp[2] - ( bunchInit.lambda_ / 2.0 ) / 4 * ii;
 
-		q.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bFi * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * q.rnp[2] + 2.0 * PI * halton(9,bmi) );
+		q.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bFi * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * q.rnp[2] + 2.0 * PI * halton( 9 , bmi ) );
 	      }
 	    else if ( bunchInit.lambda_ * bunchInit.bF_ != 0.0)
 	      {
@@ -198,7 +198,9 @@ namespace Darius
 	  Ne = bunchInit.cloudCharge_ * ( bunchInit.lambda_ / 2.0 ) / ( 2.0 * bunchInit.sigmaPosition_[2] );
 
 	  /* Set the bunching factor level for the shot noise depending on the given values.		*/
-	  bF = ( bunchInit.bF_ == 0.0 ) ? 1.0/sqrt(Ne) : bunchInit.bF_; bF /= sqrt(2.0);
+	  bF = ( bunchInit.bF_ == 0.0 ) ? 1.0 / sqrt(Ne) : bunchInit.bF_; //bF /= sqrt(2.0);
+
+	  printmessage(std::string(__FILE__), __LINE__, std::string("The standard deviation of the bunching factor for the shot noise implementation is set to ") + stringify(bF) );
 	}
 
       /* Determine the properties of each charge point and add them to the charge vector.               */

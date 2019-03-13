@@ -109,10 +109,10 @@ namespace Darius
       for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
 	{
 	  /* Correct the number of particles if it is not a multiple of four.				*/
-	  if ( bunch_.bunchInit_[i].numberOfParticles_ % 8 != 0 )
+	  if ( bunch_.bunchInit_[i].numberOfParticles_ % 4 != 0 )
 	    {
-	      unsigned int n = bunch_.bunchInit_[i].numberOfParticles_ % 8;
-	      bunch_.bunchInit_[i].numberOfParticles_ += 8 - n;
+	      unsigned int n = bunch_.bunchInit_[i].numberOfParticles_ % 4;
+	      bunch_.bunchInit_[i].numberOfParticles_ += 4 - n;
 	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The number of particles in the bunch is not a multiple of four. ") +
 			   std::string("It is corrected to ") +  stringify(bunch_.bunchInit_[i].numberOfParticles_) );
 	    }

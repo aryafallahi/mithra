@@ -49,9 +49,9 @@ namespace Darius
           {
             if ( (*it == ' ') || (*it == '\t') ) { (*iter).erase(it); --it; }
           }
-        if (!(*iter).size() == 0) { cleanJobFile.push_back(*iter); }
+        if (!(*iter).size() == 0) { cleanedJobFile.push_back(*iter); }
       }
-    jobFile.swap(cleanJobFile);
+    jobFile.swap(cleanedJobFile);
   };
 
   /* Read the ParamaterName at the line.                                                                */

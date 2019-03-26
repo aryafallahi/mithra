@@ -38,6 +38,7 @@ namespace Darius
   /* Clean the stored string vector and make it organized.                                              */
   void cleanJobFile (std::list<std::string>& jobFile)
   {
+    std::list<std::string> cleanedJobFile;
     for (std::list<std::string>::iterator iter = jobFile.begin(); iter != jobFile.end(); ++iter)
       {
         for (std::string::iterator it = (*iter).begin(); it != (*iter).end(); ++it)
@@ -48,8 +49,9 @@ namespace Darius
           {
             if ( (*it == ' ') || (*it == '\t') ) { (*iter).erase(it); --it; }
           }
-        if ((*iter).size() == 0) { jobFile.erase(iter); --iter; }
+        if (!(*iter).size() == 0) { cleanedJobFile.push_back(*iter); }
       }
+    jobFile.swap(cleanedJobFile);
   };
 
   /* Read the ParamaterName at the line.                                                                */

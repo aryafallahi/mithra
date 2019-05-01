@@ -4,7 +4,7 @@
  ********************************************************************************************************
  darius.cpp: Main program file
  MPI version should be compiled using:
- mpiCC -O3 /afs/desy.de/user/a/afallahi/workspace/mithra/darius.cpp -o ../darius
+ mpiCC -O3 darius.cpp -o ../darius
  to commit to git use
  git add --all - git commit -m "message" - git push
  on Mac:

@@ -70,11 +70,15 @@ A list of new features and applied changes in version 1.1 released with this man
 	%
 	\item The names {\tt \em \small rayleigh-radius-parallel} and {\tt \em \small rayleigh-radius-perpendicular} are changed to {\tt \em \small radius-parallel} and {\tt \em \small radius-perpendicular}.
 	%
-	\item The parameter {\tt \em \small resolution} in the field-sampling category is changed to {\tt \em \small number-of-points} which is more meaningful.
+	\item The parameter {\tt \em \small resolution} in the field-sampling category as well as the radiation-power subgroup is changed to {\tt \em \small number-of\-points} which is more meaningful. Similarly, in the radiation-power subgroup, the {\tt \em \small normalized-frequency-resolution} is changed to the {\tt \em \small number-of-frequency-points}. With these parameter name changes, the definition of the given value is also changed.
 	%
 	\item In the new version, the possibility to save 2D visualization data over Cartesian planes is added. In the field-visualization subgroup two parameters {\tt \em \small type} and {\tt \em \small plane} are added, which determine the type of the visualization (2D in-plane or 3D all-domain) and plane of the 2D data ($xy$, $xz$, or $yz$) respectively.
 	%
-	\item 
+	\item Several changes are applied to the undulator part. First, different undulator types are now introduced as subgroups in the undulator section. In the new version, a subgroup named {\em \tt \small static-undulator-array} is added that defines an array of undulators with or without the tapering of the undulator parameter. For detailed description on how undulator arrays are introduced to the code, the user interface chapter can be studied.
+	%
+	\item Possibility to visualize the radiated power in front of the bunch over a plane perpendicular to the undulator axis is an added feature to the software. This feature is added through th subgroup {\tt \em \small power-visualization}.
+	%
+	\item Besides this manual, a new reference card is prepared in addition to the chapter on user interface. The content of this reference card can be used as a cheat sheet when using MITHRA.
 \end{itemize}
 %
 In future, adding the following aspects to the software are planned:
@@ -105,4 +109,8 @@ However, this task can be done only after the ongoing projects are closed and th
 %
 Owing to my dedication to develop open-source softwares, I have placed the code in github for any interested user to download the code and work with it.
 %
-The source codes are available under 
+The source codes are available under the link https://github.com/aryafallahi/mithra.
+%
+Eventually, I welcome any feedback from users of the code which will be an indispensable help for further improving the software performance.
+%
+Besides, I appreciate if the users cite my article about the code \cite{fallahi2018mithra} in publications of the projects in which MITHRA is used.

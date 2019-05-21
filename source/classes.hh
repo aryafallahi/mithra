@@ -1364,7 +1364,7 @@ namespace Darius
       /* The begin and end of the line as well as the resolution on which the radiation data is saved.	*/
       Double                 			lineBegin_;
       Double                 			lineEnd_;
-      Double                              	res_;
+      unsigned int                              res_;
 
       /* Store the sampling type of the radiation power.						*/
       SamplingType                        	samplingType_;
@@ -1375,7 +1375,7 @@ namespace Darius
       /* The wavelength sweep data for the power computation.						*/
       Double					lambdaMin_;
       Double					lambdaMax_;
-      Double					lambdaRes_;
+      unsigned int				lambdaRes_;
 
 
       /* Set the sampling type of the radiation power.                                                	*/

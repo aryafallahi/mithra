@@ -721,8 +721,10 @@ Therefore, in addition to the field values, particle initial conditions should a
 For a SASE FEL problem, the initial field profile is zero everywhere, whereas for a seeded FEL the initial seed should enter the computational domain through the boundaries.
 %
 In both cases, the external field which is the undulator field should separately be initialized.
+%
+In what follows, the equations implemented in the code for initializing the undulator fields and seed fields are explained.
 
-\subsubsection{Undulator Field:}
+\subsubsection{Static Undulator Field:}
 
 By solving the Laplace equation for the magnetic field, the undulator field in the laboratory frame is found to be as the following (Fig.\,\ref{FDTDPICFig3}) \cite{FEL2}:
 %
@@ -752,7 +754,7 @@ The above approach, although adds few mathematical operations for the calculatio
 
 An important consideration in the initialization of undulator field is the entrance region of the undulator.
 %
-A direct usage of the equation (\ref{undulatorFieldRest}) with zero field for $z'<0$ causes an abrupt variation in the particles motion, which results in a spurious coherent radiation.
+A direct usage of the equation (\ref{undulatorField}) with zero field for $z'<0$ causes an abrupt variation in the particles motion, which results in a spurious coherent radiation.
 %
 In fact, in a real undulator, there exists fringing fields at the undulator entrance, which remove any abrupt transition in the undulator field and consequently the particle radiations  \cite{sagan2003magnetic}.
 %
@@ -766,12 +768,107 @@ The undulator field for $z'<0$ in the laboratory frame is obtained as the follow
 %
 \begin{align}
 B'_x & = 0, \nonumber \\
-B'_y & = B_0 \cosh(k_uy')k_uz'e^{-(k_uz')^2/2}, \\
+B'_y & = B_0 \cosh(k_uy')k_uz'e^{-(k_uz')^2/2}, \label{fringingField} \\
 B'_z & = B_0 \sinh(k_uy')e^{-(k_uz')^2/2}, \nonumber
-\label{fringingField}
+\end{align}
+
+Equations (\ref{undulatorField}) and (\ref{fringingField}) return the fields in the stationary frame of the undulator, i.e. the laboratory frame.
+%
+To obtain the fields in the bunch rest frame, MITHRA first transfers the coordinate of input bunch from rest frame to the laboratory frame using Lorentz coordinate transformations:
+%
+\begin{align}
+x' & = x, \nonumber \\
+y' & = y, \label{LorentzTransformR2L} \\
+z' & = \gamma_0(z+\beta_0ct), \nonumber
 \end{align}
 %
-The same transformations as in (\ref{undulatorFieldRest}) can be used to approximate the fringing field values in the bunch rest frame.
+Then, the undulator field is calculated at point $(x',y',z')$ using (\ref{undulatorField}) and (\ref{fringingField}).
+%
+Afterwards, the calculated field is transferred back to the bunch rest frame using the Lorentz transformation for the electromagnetic fields:
+%
+\begin{align}
+\label{LorentzTransformElectric}
+\vec{E} & = \gamma_0 (\vec{E'}+c\vec{\beta_0} \times \vec{B'}) - (\gamma_0 - 1) E'_z \hat{\vec{z}}, \\
+\label{LorentzTransformMagnetic}
+\vec{B} & = \gamma_0 (\vec{B'}-\frac{\vec{\beta_0} \times \vec{E'}}{c^2}) - (\gamma_0 - 1) B'_z \hat{\vec{z}},
+\end{align}
+%
+where $\vec{\beta_0}=\beta_0\hat{\vec{z}}$. Since the undulator field in the lab frame is purely magnetic, in the above equation $\vec{E'}=0$.
+
+\subsubsection{Static Undulator Array Field:}
+
+Calculating the field of an undulator array is identical to the field of a single module, except for the gap region between the undulator modules.
+%
+If the equation (\ref{fringingField}) is used for each module, and simply superposed at the gap, the field values close to the two undulator boundaries will be overestimated.
+%
+To solve this problem, suitable functions should on one side resemble the Gaussian damping of the field and on the other side vanish at the other end of the gap.
+%
+In MITHRA, the following field variation is assumed for the fringing fields inside the gap:
+%
+\begin{align}
+B'_x & = 0, \nonumber \\
+B'_y & = B_0 \cosh(k_uy')k_u\delta z \left( 0.35875 + 0.48829 \cos( \frac{\pi \delta z}{g} ) + 0.14128 \cos( \frac{2 \pi \delta z}{g} ) + 0.01168 \cos( \frac{3 \pi \delta z}{g} ) \right), \label{fringingFieldGap} \\
+B'_z & = B_0 \sinh(k_uy') \left( 0.35875 + 0.48829 \cos( \frac{\pi \delta z}{g} ) + 0.14128 \cos( \frac{2 \pi \delta z}{g} ) + 0.01168 \cos( \frac{3 \pi \delta z}{g} ) \right), \nonumber
+\end{align}
+%
+where $\delta z$ is the distance to the undulator entrance and $g$ is the gap length between the two undulators.
+%
+Note that both equations (\ref{fringingField}) and (\ref{fringingFieldGap}) are approximations of the field damping at the end of the undulator.
+%
+An accurate formulation is not possible since there exists no analytical solution for the fringing fields.
+%
+In order to better figure out the field variations in the gap region, the transverse magnetic field ($B'_y$) inside an undulator and an undulator array are compared with each other in Fig.\,\ref{fringingFieldVisualization}.
+
+\subsubsection{Optical Undulator Field:}
+
+The wiggling motion of electrons required for radiation generation can also be instigated by the oscillating fields of an electromagnetic wave.
+%
+This is the main idea behind another undulator type called as an optical undulator.
+%
+These undulators are typically in form of an electromagnetic beam propagating counter to the electron beam.
+%
+If the beam is a plane-wave, the fields are obtained as follows:
+%
+\begin{align}
+\label{opticalUndulatorPW}
+E_\parallel & = E_0 f(t,t_0,\phi) , \nonumber \\
+B_\bot & = \frac{E_0}{c} f(t,t_0,\phi), \\
+E_\bot & = B_\parallel = E_l = B_l = 0, \nonumber
+\end{align}
+%
+where $\bot$ and $\parallel$ indices represent field values perpendicular and parallel to the polarization direction respectively.
+%
+Subscript $l$ denotes the longitudinal direction along the propagation line, which can be different from the undulator axis $z$.
+%
+$f(t,t_0,\phi)$, with $t_0$ being the time offset and $\phi$ the carrier-envelope phase (CEP), is the time signature of the incoming pulse.
+%
+Various signatures are implemented in MITHRA, which are listed in equation (\ref{signalTypes}).
+
+A more practical assumption for the counter-propagating beam is a Gaussian beam.
+%
+The fields of a Gaussian beam is obtained from
+%
+\begin{align}
+\label{opticalUndulatorGB}
+& E_\parallel = E_0 \sqrt{\frac{w_{0\parallel}w_{0\bot}}{w_\parallel (l)w_\bot (l)}} 
+\exp\left( -\frac{r_\bot^2}{w_\bot^2}-\frac{r_\parallel^2}{w_\parallel^2} \right) 
+f\left(t,t_0,-\frac{k_0 r_\parallel^2}{2R_\parallel(l)} - \frac{k_0 r_\bot^2}{2R_\bot(l)} - \frac{\pi}{2} + \frac{ \tan^{-1} \left(\frac{l}{z_{R\parallel}}\right) + \tan^{-1} \left(\frac{l}{z_{R\bot}} \right) }{2} \right), \nonumber \\
+& E_l = E_0 \frac{r_\parallel w_{0\parallel}}{z_{R\parallel} w_\parallel(l)} \sqrt{\frac{w_{0\parallel}w_{0\bot}}{w_\parallel(l)w_\bot (l)}} 
+\exp\left( -\frac{r_\bot^2}{w_\bot^2}-\frac{r_\parallel^2}{w_\parallel^2} \right) 
+f\left(t,t_0,-\frac{k_0 r_\parallel^2}{2R_\parallel(l)} - \frac{k_0 r_\bot^2}{2R_\bot(l)} + \frac{ 3\tan^{-1} \left(\frac{l}{z_{R\parallel}}\right) + \tan^{-1} \left(\frac{l}{z_{R\bot}} \right) }{2} \right), \nonumber \\
+& B_l = \frac{E_0 r_\bot w_{0\bot}}{c z_{R\bot} w_\bot(l)} \sqrt{\frac{w_{0\parallel}w_{0\bot}}{w_\parallel (l)w_\bot (l)}} 
+\exp\left( -\frac{r_\bot^2}{w_\bot^2}-\frac{r_\parallel^2}{w_\parallel^2} \right) 
+f\left(t,t_0,-\frac{k_0 r_\parallel^2}{2R_\parallel(l)} - \frac{k_0 r_\bot^2}{2R_\bot(l)} + \frac{ \tan^{-1} \left(\frac{l}{z_{R\parallel}}\right) + 3 \tan^{-1} \left(\frac{l}{z_{R\bot}} \right) }{2} \right), \nonumber \\
+& B_\bot = \frac{E_\parallel}{c}, \qquad E_\parallel = B_\bot = 0
+\end{align}
+%
+where $\bot$ and $\parallel$ indices represent field components normal to the propagation direction, perpendicular and parallel to the polarization vector, respectively.
+%
+$l$ as a subscript for the fields denote for the component along propagation direction, and as a variable is the position along this direction, i.e. $r_l$.
+%
+$w_\parallel=w_{0\parallel}\sqrt{1+(r_\parallel/z_{R\parallel})^2}$ and $w_\bot=w_{0\bot}\sqrt{1+(r_\bot/z_{R\bot})^2}$ with $w_{0\parallel}$ being the beam radius along the polarization vector, $w_{0\bot}$ the beam radius normal to the polarization vector, and $z_{R\parallel}$ and $z_{R\bot}$ are the corresponding Rayleigh range values.
+%
+Parameters $R_\parallel(l)=l(1+(z_{R\parallel}/l)^2)$ and $R_\bot(l)=l(1+(z_{R\bot}/l)^2)$ are defined as radius of the curvature of the beam's wavefronts at position $l$.
 
 \subsubsection{Seed Field:}
 

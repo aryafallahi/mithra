@@ -1613,6 +1613,8 @@ namespace Darius
 	  FEL_[jf].radiationPower_.lineBegin_ 	*= gamma_;
 	  FEL_[jf].radiationPower_.lineEnd_   	*= gamma_;
 
+	  Double dl = fabs(FEL_[jf].radiationPower_.lineEnd_ - FEL_[jf].radiationPower_.lineBegin_) / FEL_[jf].radiationPower_.res_;
+
 	  /* If sampling type is plot over line initialize the positions according to the line begin and
 	   * line end.                                                                              	*/
 	  if ( FEL_[jf].radiationPower_.samplingType_ == OVERLINE )
@@ -1622,7 +1624,7 @@ namespace Darius
 	      while ( fabs(l) < fabs(FEL_[jf].radiationPower_.lineEnd_ - FEL_[jf].radiationPower_.lineBegin_) )
 		{
 		  FEL_[jf].radiationPower_.z_.push_back( FEL_[jf].radiationPower_.lineBegin_ + l);
-		  l += FEL_[jf].radiationPower_.res_ * gamma_;
+		  l += dl;
 		}
 	    }
 
@@ -1634,7 +1636,8 @@ namespace Darius
 	      ++rp_[jf].Nz;
 
 	  /* Add the normalized wavelength sweep to the vector of wavelengths.				*/
-	  for (Double rw = FEL_[jf].radiationPower_.lambdaMin_; rw < FEL_[jf].radiationPower_.lambdaMax_; rw += FEL_[jf].radiationPower_.lambdaRes_)
+	  dl = ( FEL_[jf].radiationPower_.lambdaMax_ - FEL_[jf].radiationPower_.lambdaMin_ ) / FEL_[jf].radiationPower_.lambdaRes_;
+	  for (Double rw = FEL_[jf].radiationPower_.lambdaMin_; rw < FEL_[jf].radiationPower_.lambdaMax_; rw += dl)
 	    FEL_[jf].radiationPower_.lambda_.push_back(rw);
 	  rp_[jf].Nl = FEL_[jf].radiationPower_.lambda_.size();
 

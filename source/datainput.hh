@@ -611,11 +611,11 @@ namespace Darius
 		  else if (parameterName(*iter) == "base-name")         	        FEL.radiationPower_.basename_	= stringValue(*iter);
 		  else if (parameterName(*iter) == "line-begin")		        FEL.radiationPower_.lineBegin_ 	= doubleValue(*iter);
 		  else if (parameterName(*iter) == "line-end")			        FEL.radiationPower_.lineEnd_ 	= doubleValue(*iter);
-		  else if (parameterName(*iter) == "resolution")		        FEL.radiationPower_.res_ 	= doubleValue(*iter);
+		  else if (parameterName(*iter) == "number-of-points")		        FEL.radiationPower_.res_ 	= intValue(*iter);
 		  else if (parameterName(*iter) == "normalized-frequency")	        FEL.radiationPower_.lambda_.push_back(doubleValue(*iter));
 		  else if (parameterName(*iter) == "minimum-normalized-frequency")	FEL.radiationPower_.lambdaMin_	= doubleValue(*iter);
 		  else if (parameterName(*iter) == "maximum-normalized-frequency")	FEL.radiationPower_.lambdaMax_	= doubleValue(*iter);
-		  else if (parameterName(*iter) == "normalized-frequency-resolution")	FEL.radiationPower_.lambdaRes_	= doubleValue(*iter);
+		  else if (parameterName(*iter) == "number-of-frequency-points")	FEL.radiationPower_.lambdaRes_	= intValue(*iter);
 		  else if (parameterName(*iter) == "type")              	        FEL.radiationPower_.samplingType(stringValue(*iter));
 		  else { std::cout << parameterName(*iter) << " is not defined in radiation-power group." << std::endl; exit(1); }
 		  ++iter;

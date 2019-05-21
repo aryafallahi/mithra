@@ -1,0 +1,153 @@
+\chapter{Introduction}
+\label{chapter_introduction}
+
+Free Electron Lasers (FELs) are currently serving as promising and viable solutions for the generation of radiation in the whole electromagnetic spectrum ranging from microwaves to hard X-rays \cite{FEL2,FEL1,freund2012principles}.
+%
+Particularly, in portions of spectrum where common solutions like lasers and other electronic sources do not offer efficient schemes, FEL based devices attract considerable attention and interest.
+%
+For example, soft and hard X-ray radiation sources as well as THz frequency range are parts of the spectrum where FEL sources are widely used.
+%
+In the optical regime, lasers currently serve as the most popular sources, where radiation is generated and amplified based on the stimulated emission.
+%
+More accurately, the excited electrons of the gain medium emit coherent photons when changing the energy level to the ground state \cite{siegman1986lasers}.
+%
+Since the energy bands of different gain media are fixed curves determined by the material atomic lattice, there are only specific wavelengths obtainable from lasers operating based on stimulated emission in a gain medium.
+%
+In contrast, there exist vacuum electronic devices like gyrotrons, klystrons and travelling wave tubes (TWT), in which free electrons travelling along a certain trajectory transform kinetic energy to an electromagnetic wave \cite{gilmour1986microwave}.
+%
+Although, these sources are usually not as efficient as medium based lasers, their broadband operations make them promising in portions of the spectrum where no gain media is available.
+
+In a free electron laser, relativistic electrons provided from linear accelerators travel through a static undulator and experience a wiggling motion.
+%
+The undulator performance is categorized into two main regimes: (\emph{i}) in a short undulator, each electron radiates as an independent moving charge, which yields an incoherent radiation of electron bunch.
+%
+Therefore, the radiation power and intensity is linearly proportional to the number of electrons.
+%
+(\emph{ii}) For long interaction lengths, the radiated electromagnetic wave interacts with the bunch and the well-known micro-bunching phenomenon takes place.
+%
+Micro-bunching leads to a periodic modulation of charge density inside the bunch with the periodicity equal to the radiation wavelength.
+%
+This effect results in a coherent radiation scaling with the square of the bunch numbers.
+%
+Coherent X-ray have shown unprecedented promises in enabling biologists, chemists and material scientists to study various evolutions and interactions with nanometer and sub-nanometer resolutions \cite{jaeschke2015synchrotron}.
+
+Owing to the desire of hard X-ray FEL machines for electrons with ultrarelativistic energies (0.5-1 GeV), these sources are usually giant research facilities with high operation costs and energy consumption.
+%
+Therefore, it is crucial and additionally very useful to develop sophisticated simulation tools, which are able to capture the important features in a FEL radiation process.
+%
+Such tools will be very helpful for designing and optimizing a complete FEL facility and additionally useful for detailed investigation of important effects.
+%
+The last decade had witnessed extensive research efforts aiming to develop such simulation tools.
+%
+As a result, various softwares like Genesis 1.3 \cite{reiche1999genesis}, MEDUSA \cite{biedron19993d}, TDA3D \cite{tran1989tda,faatz1997tda3d}, GINGER \cite{fawley2002user}, PERSEO \cite{giannessi2006overview}, EURA \cite{bacci2008compact}, RON \cite{dejus1999integral}, FAST \cite{saldin1999fast}, CHIMERA (previously PlaRes) \cite{andriyash2015spectral} and Puffin \cite{campbell2012puffin} are developed and introduced to the community.
+%
+However, all the currently existing simulation softwares are usually written to tackle special cases and therefore particular assumptions or approximations have been considered in their development \cite{biedron2000multi}.
+%
+Some of the common approximations in FEL simulation are tabulated in Table \ref{FELapproximations}.
+%
+\begin{table}[h]
+	\renewcommand{\arraystretch}{1.5}
+	\caption{Common approximations in modelling free electron laser radiation}
+	\label{FELapproximations} \centering
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline
+		\multirow{3}{*}{code name} & \multicolumn{6}{|c|}{approximation}  \\
+		\cline{2-7}
+		& steady state & wiggler-average & slow wave & forward & \multirow{2}{*}{no space-charge} & \multirow{2}{*}{slice} \\
+		& approximation & electron motion & approximation & wave & & \\
+		\hline
+		GENESIS 1.3 & optional & \checkmark & \checkmark & \checkmark & \textemdash &  optional \\
+		\hline
+		MEDUSA & optional & \textemdash & \checkmark & \checkmark & \textemdash & \checkmark \\
+		\hline
+		TDA3D & \checkmark & \checkmark & \checkmark & \checkmark & \textemdash & no time-domain \\
+		\hline
+		GINGER & \textemdash & \checkmark & \checkmark & \checkmark & \textemdash & \textemdash \\
+		\hline
+		PERSEO & \textemdash & \textemdash & \textemdash & \checkmark & \checkmark & \textemdash \\
+        \hline
+        CHIMERA & \textemdash & \textemdash & \textemdash & \checkmark & \textemdash & \textemdash \\
+		\hline
+		EURA & \textemdash & \checkmark & \checkmark & \checkmark & \textemdash & \textemdash \\
+		\hline
+		FAST & \textemdash  & \checkmark & \checkmark & \textemdash & \textemdash & \checkmark \\
+		\hline
+		PUFFIN & \textemdash  & \textemdash & \textemdash & \checkmark & \checkmark & \textemdash \\
+		\hline
+	\end{tabular}
+\end{table}
+%
+The main goal in the presented software is the analysis of the FEL interaction without considering any of the above approximation.
+%
+The outcome of the research and effort will be a sophisticated software with heavy computation loads.
+%
+Nonetheless, it provides a tool for testing the validity of various approximations in different operation regimes and also a reliable approach for preparing the final design of a FEL facility.
+
+Besides the wide investigations and studies on the conventional X-ray FELs, recently research efforts have been devoted to building compact X-ray FELs, where novel schemes for generating X-ray radiations in a so-called table-top setup are examined and assessed.
+%
+Various research topics such as laser-plasma wake-field acceleration (LPWA) \cite{mangles2004monoenergetic,faure2004laser,geddes2004high}, laser plasma accelerators (LPA) \cite{tajima1979laser,lundh2011few}, laser dielectric acceleration (LDA) \cite{england2014dielectric} and THz acceleration \cite{nanni2015terahertz,fallahi2016short}, pursue the development of compact accelerators capable of delivering the desired electron bunches to FEL undulators.
+%
+Besides such attempts, one promising approach to make a compact undulator is using optical undulators, where the oscillations in an electromagnetic wave realize the wiggling motion of the electrons \cite{kartner2016axsis}.
+%
+Many of the approximations in Table \ref{FELapproximations}, which sound reasonable for static undulators are not applicable for studying an optical undulator radiation.
+%
+In this regime, due to the various involved length-scales and remarkable impact of the parameter tolerances, having access to a rigorous and robust FEL simulation tool is essential.
+
+One of the difficulties in the X-ray FEL simulation stems from the involvement of dramatically multidimensional electromagnetic effects.
+%
+Some of the nominal numbers in a typical FEL simulation are:
+%
+\begin{itemize}
+  \item Size of the bunch: $\sim$ 100\,fs or 300\,{\textmu}m
+	\item Undulator period: $\sim$ 1\,cm
+	\item Undulator length: $\sim$ 10-500\,m
+	\item Radiation wavelength: $\sim$ 1-100\,nm
+\end{itemize}
+%
+Comparing the typical undulator lengths with radiation wavelengths immediately communicates the extremely large variation space for the values.
+%
+This in turn predicts very high computation costs to resolve all the physical phenomena, which is not practical even with the existing supercomputer technology.
+%
+In order to overcome this problem, we exploit Lorentz boosted coordinate system and implement Finite Difference Time Domain (FDTD) \cite{taflove2000computational} method combined with Particle in Cell (PIC) simulation in the electron rest frame.
+%
+This coordinate transformation makes the bunch size and optical wavelengths longer and shortens the undulator period.
+%
+Interestingly, these very different length scales transform to values with the same order after the coordinate transformation.
+%
+Consequently, the length of the computation domain is reduced to slightly more than the bunch length making the full-wave simulation numerically feasible.
+%
+We comment that the simulation of particle interaction with an electromagnetic wave in a Lorentz boosted framework is not a new concept.
+%
+The advantage of this technique for the study of relativistic interactions is widely discussed \cite{vay2007,sprangle1979stimulated}.
+%
+The method is currently the standard technique for the simulation of plasma-wakefield acceleration \cite{yu2014modeling,vay2013domain,vay2012novel}.
+%
+Using Lorentz-boosted equations to solve for FEL physics was previously presented in \cite{fawley2009use}, where the code Warp is adapted to simulate a FEL with static undulator.
+%
+In \cite{andriyash2012}, the dynamics of a FEL based on optical-lattice undulator is described in the electron rest frame.
+%
+Here, we are presenting a software dedicated to the analysis of FEL mechanism by solving principal equations in bunch rest frame.
+
+Along with all the benefits offered by numerical simulation in the Lorentz-boosted framework, there exists a disadvantage emanated from treating quantities different from real three-dimensional fields in the laboratory frame.
+%
+For instance, the field profile along the undulator axis at a certain time does not represent the real radiated field profile, because the fields at various points map to the corresponding values at different time points in the laboratory frame.
+%
+While this feature introduces difficulties in interpreting and investigating the numerical outputs, the huge gain in computational cost justifies the analysis in the moving frame.
+%
+In addition, separate modules and functions can be developed to extract the required plots in stationary frame from the computed values.
+%
+This approach is implemented in the code MITHRA to obtain the radiated power.
+
+The presented manual shows how one can numerically simulate a complete FEL interaction using merely Maxwell equations, equation of motion for a charged particle, and the relativity principles.
+%
+In chapter \ref{chapter_methodology}, the whole computational aspects of the software, including the Finite Difference Time Domain (FDTD), Particle In Cell (PIC), current deposition, Lorentz boosting, quantity initialization, and parallelization, are described in detail.
+%
+The implementation is explained in a way suitable for a graduate student to start writing the code on his own.
+%
+Chapter \ref{chapter_refcard} provides a reference card for a software user to get familiar with MITHRA and the required parameters for performing the simulations.
+%
+Finally, in chapter \ref{chapter_examples}, different examples of free electron lasers are analyzed and the results are presented in conjunction with some discussions.
+%
+As a new software entering the FEL community, we aim to keep updating this material with new implementations and examples.
+%
+In this regard, any assistance and help from the users of this software will be highly appreciated.

@@ -1,0 +1,246 @@
+\chapter{Finite Difference Time Domain-Particle In Cell Method}
+\label{chapter_FDTD-PIC}
+
+In this chapter, we present the detailed formalism of Finite Difference Time Domain (FDTD) method in the Lorentz boosted coordinate system as well as the modeling of the charged particle motion in the simulation domain using the Particle In Cell (PIC) algorithm. %%
+%%
+There are many small still very important considerations that one should take into account in order to obtain reliable results from the simulations converging to the real values. %%
+%%
+For example, the method for electron bunch generation, particle pusher algorithm and computational mesh truncation need particular attention. %%
+%%
+These are some of the issues that we try to address and explicitly discuss in this chapter. %%
+
+\section{Finite Difference Time Domain (FDTD)}
+\label{section FDTD}
+
+FDTD is perhaps the first choice coming to mind for solving partial differential equations governing the dynamics of a system. %%
+%%
+Despite its simple formulation and second order accuracy, there are certain features in this method like explicit time update and zero DC fields, which makes this method a superior choice compared to other algorithms. %%
+%%
+This method samples the field in space and time at discrete sampling points and represents the partial derivatives with their discrete counterparts. %%
+%%
+Subsequently, update equations are derived based on the governing differential equation. %%
+%%
+Using these updating equations, a time marching algorithm is acquired which evaluates the unknown functions in the whole simulation domain throughout the simulation time. %%
+%%
+In the following, we start with the Helmholtz equation which is the ruling partial differential equation for our electromagnetic problem.
+
+
+\subsection{Helmholtz Equation}
+The physics of electromagnetic wave and its interaction with charged particles in free space is mathematically formulated through the well-known Maxwell's equations: %%
+%%
+\begin{align}
+  \nabla \times \vec{E} &= -\mu_{0} \frac{\displaystyle \partial \vec{H}}{\displaystyle \partial t} \\
+  \nabla \times \vec{H} &= \vec{J} + \varepsilon_{0} \frac{\displaystyle \partial \vec{E}}{\displaystyle \partial t} \\
+  \nabla \cdot \vec{E} &= -\frac{\displaystyle \rho}{\displaystyle \varepsilon_{0}} \\
+  \nabla \cdot \vec{H} &= 0
+\end{align}
+%%
+These equations in conjunction with the electric current equation $\vec{J}=q\vec{v}$ ($\vec{v}$ is the charge velocity) and the Lorentz force equation:
+%%
+\begin{equation}
+  \vec{F} = -q[\vec{E}+ \mu_{0} \vec{v} \times \vec{H}]
+\end{equation}
+%%
+are sufficient to describe wave-electron interaction in free space. %%
+%%
+Moving free electrons introduce electric current which inters Maxwell's equations as the source. %%
+%%
+Electric and magnetic fields derived from these equation then are employed through Lorentz force equation to determine the force exerting on the electrons and in turn their motions. %%
+%%
+As it is clear from above equations there are two vectors ($\vec{E}$ and $\vec{H}$) which should be found out (six unknown components). %%
+%%
+However since these two vectors are interrelated and specially because there is no magnetic monopole in the nature ($\nabla \cdot \vec{H}=0 $) one can recast Maxwell's equation in a Helmholtz equation for the magnetic vector potential ($\vec{A}$) and a Helmholtz equation for the scaler electric potential ($\varphi$):
+
+\begin{equation}
+  {\vec{\nabla}}^{2}\vec{A} - \frac{1}{c^2} \frac{\displaystyle \partial^2}{\displaystyle \partial t^2}\vec{A} = -\mu_{0} \vec{J}
+\end{equation}
+\begin{equation}
+  {\nabla}^{2}\varphi- \frac{1}{c^2} \frac{\displaystyle \partial^2 \varphi}{\displaystyle \partial t^2} = -\frac{\displaystyle \rho}{\displaystyle \varepsilon_{0}}
+\end{equation}
+
+$c=1/\sqrt{\mu_0 \varepsilon_0}$ is the light velocity in vacuum.
+In the derivation of above equation the Lorenz gauge condition $\nabla \cdot \vec{A}=-\frac{1}{c}\frac{\partial \varphi}{\partial t}$ is used. %%
+%%
+The original $\vec{E}$ nad $\vec{H}$ vectors can be obtained from $\vec{A}$ and $\varphi$ as:
+\begin{equation}
+  \vec{H} = -\frac{1}{\displaystyle \mu_{0}}\displaystyle \nabla \times \vec{A}
+\end{equation}
+\begin{equation}
+  \vec{E} = -\frac{\displaystyle \partial}{\displaystyle \partial t}\vec{A}-\nabla \varphi
+\end{equation}
+
+\subsection{FDTD for Helmholtz Equation}
+In cartesian coordinates a vector Helmholtz equation can be written in there uncoupled scaler Helmholtz equations. %%
+%%
+Therefore it is enough for us to apply our discretization scheme only on a typical scaler Helmholtz equation: ${\nabla}^{2}\psi- \frac{1}{c^2} \frac{\displaystyle \partial^2 \psi}{\displaystyle \partial t^2} = -f_{s}$ where $\psi$ stands for $A_{i}$ ($i \in \{x,y,z\}$) and $\varphi$; and $f_{s}$ is a general source term. %%
+%%
+For various partial differential terms of the scalar Helmholtz equation at the point $(i\Delta x,j\Delta y,k\Delta z,n\Delta t)$ we apply the central-difference discretization scheme as follows:
+\begin{equation}
+\frac{\partial^{2}}{\partial x^{2}} \psi(x,y,z,t)\simeq\frac{\psi(i+1,j,k,n)-2\psi(i,j,k,n)+\psi(i-1,j,k,n)}{(\Delta x)^2}
+\end{equation}
+\begin{equation}
+\frac{\partial^{2}}{\partial y^{2}} \psi(x,y,z,t)\simeq\frac{\psi(i,j+1,k,n)-2\psi(i,j,k,n)+\psi(i,j-1,k,n)}{(\Delta y)^2}
+\end{equation}
+\begin{equation}
+\frac{\partial^{2}}{\partial z^{2}} \psi(x,y,z,t)\simeq\frac{\psi(i,j,k+1,n)-2\psi(i,j,k,n)+\psi(i,j,k-1,n)}{(\Delta z)^2}
+\end{equation}
+\begin{equation}
+\frac{\partial^{2}}{\partial t^{2}} \psi(x,y,z,t)\simeq\frac{\psi(i,j,k,n+1)-2\psi(i,j,k,n)+\psi(i,j,k,n-1)}{(\Delta t)^2}
+\end{equation}
+
+Combining these four equations, one can easily obtain the value of $\psi$ in the instance $(n+1)\Delta t$ in terms of its value in $n\Delta t$ and $(n-1)\Delta t$:
+
+\begin{align}
+\psi(i,j,k,n+1) =& \psi(i,j,k,n-1)+ \alpha_1 \psi(i,j,k,n) + \alpha_2 \psi(i+1,j,k,n) + \alpha_3 \psi(i-1,j,k,n) + \alpha_4 \psi(i,j+1,k,n) \\
+                 & + \alpha_5 \psi(i,j-1,k,n) + \alpha_6 \psi(i,j,k+1,n) + \alpha_7 \psi(i,j,k-1,n) + \alpha_8 f_s(i,j,k,n) \nonumber
+\end{align}
+
+where the coefficients $\alpha_1, \ldots ,\alpha_7$ are:
+
+\begin{equation}
+\alpha_1=2 \left[1-\left(\frac{c \Delta t}{\Delta x}\right)^2-\left(\frac{c \Delta t}{\Delta y}\right)^2-\left(\frac{c \Delta t}{\Delta z}\right)^2\right]
+\end{equation}
+\begin{equation}
+\alpha_2=\alpha_3=\left(\frac{c \Delta t}{\Delta x}\right)^2
+\end{equation}
+\begin{equation}
+\alpha_4=\alpha_5=\left(\frac{c \Delta t}{\Delta y}\right)^2
+\end{equation}
+\begin{equation}
+\alpha_6=\alpha_7=\left(\frac{c \Delta t}{\Delta z}\right)^2
+\end{equation}
+\begin{equation}
+\alpha_8=\left(c \Delta t\right)^2
+\end{equation}
+
+\subsection{Boundary Truncation}
+In order to simulate the FEL problem we consider a cube as our simulation domain. %%
+%%
+The six boundaries of the cube to are suppose to be at: $x=\pm l_{x}/2 $, $y=\pm l_{y}/2 $ and $z=\pm l_{z}/2 $. %%
+%%
+In the following the way we implemented absorbing boundary conditions (ABCs) of first and second order in Mithra are discussed. %%
+%%
+\subsubsection{First Order ABCs:}
+The partial differential equations implying first order ABCs at $ z=\pm l_{z}/2 $ are:
+\begin{equation}
+\mp \frac{\partial^2 \psi}{\partial z \partial t} - \frac{1}{c}\frac{\partial^2 \psi}{\partial t^2}=0
+\end{equation}
+The discretized version of different parts of the equations are: %%
+%%
+\begin{itemize}
+  \item At $z=-l_{z}/2 \; \; (k=0)$
+    \begin{equation}
+    \frac{\partial^2 \psi}{\partial z \partial t} = \frac{1}{2 \Delta t } \left[ \frac{\psi(i,j,1,n+1)-\psi(i,j,0,n+1)}{\Delta z}-\frac{\psi(i,j,1,n-1)-\psi(i,j,0,n-1)}{\Delta z} \right]
+    \end{equation}
+    \begin{equation}
+    \frac{1}{c}\frac{\partial^2 \psi}{\partial t^2} = \frac{1}{2c} \left[ \frac{\psi(i,j,1,n+1)-2\psi(i,j,1,n)+\psi(i,j,1,n-1)}{\Delta t^2}+\frac{\psi(i,j,0,n+1)-2\psi(i,j,0,n)+\psi(i,j,0,n-1)}{\Delta t^2} \right]
+    \end{equation}
+  \item At $z=+l_{z}/2 \; \; (k=K=l_{z}/\Delta z)$
+    \begin{equation}
+    \frac{\partial^2 \psi}{\partial z \partial t} = \frac{1}{2 \Delta t } \left[ \frac{\psi(i,j,K,n+1)-\psi(i,j,K-1,n+1)}{\Delta z}-\frac{\psi(i,j,K,n-1)-\psi(i,j,K-1,n-1)}{\Delta z} \right]
+    \end{equation}
+    \begin{align}
+    \frac{1}{c} \frac{\partial^2 \psi}{\partial t^2} &= \frac{1}{2c} \left[ \frac{\psi(i,j,K,n+1)-2\psi(i,j,K,n)+\psi(i,j,K,n-1)}{\Delta t^2} \right. \\
+    & \left. + \frac{\psi(i,j,K-1,n+1)-2\psi(i,j,K-1,n)+\psi(i,j,K-1,n-1)}{\Delta t^2} \right] \nonumber
+    \end{align}
+\end{itemize}
+
+Combining these equations, one can easily obtain the boundary value of $\psi$ in the instance $(n+1)\Delta t$ in terms of its value in $n\Delta t$ and $(n-1)\Delta t$: \\
+
+\begin{itemize}
+  \item At $z=-l_{z}/2 \; \; (k=0)$
+    \begin{equation}
+    {\beta_1}^- \psi(i,j,0,n+1)+ {\beta_2}^- \psi(i,j,1,n+1)+ {\beta_3}^- \psi(i,j,1,n-1)+ {\beta_4}^- \psi(i,j,0,n-1)+ {\beta_5}^- \psi(i,j,1,n)+ {\beta_6}^- \psi(i,j,0,n)=0
+    \end{equation}
+  \item At $z=+l_{z}/2 \; \; (k=K=l_{z}/\Delta z)$
+    \begin{align}
+    {\beta_1}^+ \psi(i,j,K-1,n+1) & + {\beta_2}^+ \psi(i,j,K,n+1)+ {\beta_3}^+ \psi(i,j,K,n-1) \\
+    & + {\beta_4}^+ \psi(i,j,K-1,n-1)+ {\beta_5}^+ \psi(i,j,K,n)+ {\beta_6}^+ \psi(i,j,K-1,n)=0 \nonumber
+    \end{align}
+\end{itemize}
+where:
+\begin{equation}
+{\beta_1}^\pm={\beta_3}^\pm=-\frac{1}{2 \Delta t \Delta z} \pm \frac{1}{2 c \Delta t^2}
+\end{equation}
+\begin{equation}
+{\beta_2}^\pm={\beta_4}^\pm=\frac{1}{2 \Delta t \Delta z} \pm \frac{1}{2 c \Delta t^2}
+\end{equation}
+\begin{equation}
+{\beta_5}^\pm={\beta_6}^\pm=\mp \frac{1}{c \Delta t^2}
+\end{equation}
+
+\subsubsection{Second Order ABCs:}
+The partial differential equations implying second order ABCs at $ z=\pm l_{z}/2 $ are:
+\begin{equation}
+\mp \frac{\partial^2 \psi}{\partial z \partial t} - \frac{1}{c}\frac{\partial^2 \psi}{\partial t^2} - \frac{c}{2}\frac{\partial^2 \psi}{\partial x^2} - \frac{c}{2}\frac{\partial^2 \psi}{\partial y^2}=0
+\end{equation}
+The discretized version of different parts of the equations are: %%
+%%
+\begin{itemize}
+  \item At $z=-l_{z}/2 \; \; (k=0)$
+    \begin{equation}
+    \frac{\partial^2 \psi}{\partial z \partial t} = \frac{1}{2 \Delta t } \left[ \frac{\psi(i,j,1,n+1)-\psi(i,j,0,n+1)}{\Delta z}-\frac{\psi(i,j,1,n-1)-\psi(i,j,0,n-1)}{\Delta z} \right]
+    \end{equation}
+    \begin{equation}
+    \frac{1}{c}\frac{\partial^2 \psi}{\partial t^2} = \frac{1}{2c} \left[ \frac{\psi(i,j,1,n+1)-2\psi(i,j,1,n)+\psi(i,j,1,n-1)}{\Delta t^2}+\frac{\psi(i,j,0,n+1)-2\psi(i,j,0,n)+\psi(i,j,0,n-1)}{\Delta t^2} \right]
+    \end{equation}
+    \begin{equation}
+    \frac{c}{2}\frac{\partial^2 \psi}{\partial x^2} = \frac{c}{4} \left[ \frac{\psi(i+1,j,1,n)-2\psi(i,j,1,n)+\psi(i-1,j,1,n)}{\Delta x^2}+\frac{\psi(i+1,j,0,n)-2\psi(i,j,0,n)+\psi(i-1,j,0,n)}{\Delta x^2} \right]
+    \end{equation}
+    \begin{equation}
+    \frac{c}{2}\frac{\partial^2 \psi}{\partial y^2} = \frac{c}{4} \left[ \frac{\psi(i+1,j,1,n)-2\psi(i,j,1,n)+\psi(i-1,j,1,n)}{\Delta y^2}+\frac{\psi(i+1,j,0,n)-2\psi(i,j,0,n)+\psi(i-1,j,0,n)}{\Delta y^2} \right]
+    \end{equation}
+  \item At $z=+l_{z}/2 \; \; (k=K=l_{z}/\Delta z)$
+    \begin{equation}
+    \frac{\partial^2 \psi}{\partial z \partial t} = \frac{1}{2 \Delta t } \left[ \frac{\psi(i,j,K,n+1)-\psi(i,j,K-1,n+1)}{\Delta z}-\frac{\psi(i,j,K,n-1)-\psi(i,j,K-1,n-1)}{\Delta z} \right]
+    \end{equation}
+    \begin{align}
+    \frac{1}{c} \frac{\partial^2 \psi}{\partial t^2} &= \frac{1}{2c} \left[ \frac{\psi(i,j,K,n+1)-2\psi(i,j,K,n)+\psi(i,j,K,n-1)}{\Delta t^2} \right. \\
+    & \left. + \frac{\psi(i,j,K-1,n+1)-2\psi(i,j,K-1,n)+\psi(i,j,K-1,n-1)}{\Delta t^2} \right] \nonumber
+    \end{align}
+    \begin{align}
+    \frac{c}{2}\frac{\partial^2 \psi}{\partial x^2} &= \frac{c}{4} \left[ \frac{\psi(i+1,j,K,n)-2\psi(i,j,K,n)+\psi(i-1,j,K,n)}{\Delta x^2} \right. \\
+    & \left. + \frac{\psi(i+1,j,K-1,n)-2\psi(i,j,K-1,n)+\psi(i-1,j,K-1,n)}{\Delta x^2} \right] \nonumber
+    \end{align}
+    \begin{align}
+    \frac{c}{2}\frac{\partial^2 \psi}{\partial y^2} &= \frac{c}{4} \left[ \frac{\psi(i+1,j,K,n)-2\psi(i,j,K,n)+\psi(i-1,j,K,n)}{\Delta y^2} \right. \\
+    & \left. + \frac{\psi(i+1,j,K-1,n)-2\psi(i,j,K-1,n)+\psi(i-1,j,K-1,n)}{\Delta y^2} \right] \nonumber
+    \end{align}
+\end{itemize}
+
+Combining these equations, one can easily obtain the boundary value of $\psi$ in the instance $(n+1)\Delta t$ in terms of its value in $n\Delta t$ and $(n-1)\Delta t$: \\
+
+\begin{itemize}
+  \item At $z=-l_{z}/2 \; \; (k=0)$
+    \begin{align}
+    &{\gamma_1}^- \psi(i,j,0,n+1)+ {\gamma_2}^- \psi(i,j,1,n+1)+ {\gamma_3}^- \psi(i,j,1,n-1)+ {\gamma_4}^- \psi(i,j,0,n-1) \\ \nonumber
+    &+ {\gamma_5}^- \psi(i,j,1,n)+ {\gamma_6}^- \psi(i,j,0,n) + {\gamma_7}^- \psi(i+1,j,1,n)+ {\gamma_8}^- \psi(i-1,j,1,n) \\ \nonumber
+    &+ {\gamma_9}^- \psi(i+1,j,0,n)+ {\gamma_{10}}^- \psi(i-1,j,0,n)+ {\gamma_{11}}^- \psi(i,j+1,1,n)+ {\gamma_{12}}^- \psi(i,j-1,1,n) \\ \nonumber
+    &+ {\gamma_{13}}^- \psi(i,j+1,0,n)+ {\gamma_{14}}^- \psi(i,j-1,0,n)=0 \nonumber
+    \end{align}
+  \item At $z=+l_{z}/2 \; \; (k=K=l_{z}/\Delta z)$
+    \begin{align}
+    &{\gamma_1}^+ \psi(i,j,K-1,n+1)+ {\gamma_2}^+ \psi(i,j,K,n+1)+ {\gamma_3}^+ \psi(i,j,K,n-1)+ {\gamma_4}^+ \psi(i,j,K-1,n-1) \\ \nonumber
+    &+ {\gamma_5}^+ \psi(i,j,K,n)+ {\gamma_6}^+ \psi(i,j,K-1,n) + {\gamma_7}^+ \psi(i+1,j,K,n)+ {\gamma_8}^+ \psi(i-1,j,K,n) \\ \nonumber
+    &+ {\gamma_9}^+ \psi(i+1,j,K-1,n)+ {\gamma_{10}}^+ \psi(i-1,j,K-1,n)+ {\gamma_{11}}^+ \psi(i,j+1,K,n)+ {\gamma_{12}}^+ \psi(i,j-1,K,n) \\ \nonumber
+    &+ {\gamma_{13}}^+ \psi(i,j+1,K-1,n)+ {\gamma_{14}}^+ \psi(i,j-1,K-1,n)=0 \nonumber
+    \end{align}
+\end{itemize}
+where:
+\begin{equation}
+{\gamma_1}^\pm={\gamma_3}^\pm=-\frac{1}{2 \Delta t \Delta z} \pm \frac{1}{2 c \Delta t^2}
+\end{equation}
+\begin{equation}
+{\gamma_2}^\pm={\gamma_4}^\pm=\frac{1}{2 \Delta t \Delta z} \pm \frac{1}{2 c \Delta t^2}
+\end{equation}
+\begin{equation}
+{\gamma_5}^\pm={\gamma_6}^\pm=\mp \frac{1}{c \Delta t^2} \pm \frac{c}{2 \Delta x^2} \pm \frac{c}{2 \Delta y^2}
+\end{equation}
+\begin{equation}
+{\gamma_7}^\pm={\gamma_8}^\pm={\gamma_9}^\pm={\gamma_{10}}^\pm=\mp \frac{c}{4 \Delta x^2}
+\end{equation}
+\begin{equation}
+{\gamma_{11}}^\pm={\gamma_{12}}^\pm={\gamma_{13}}^\pm={\gamma_{14}}^\pm=\mp \frac{c}{4 \Delta y^2}
+\end{equation}
+
+At the corners, it is not possible to implement the second order ABC. Therefore, the first order boundary condition is used at these points. 

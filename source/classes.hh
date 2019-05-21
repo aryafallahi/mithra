@@ -425,7 +425,7 @@ namespace Darius
     Double				timeStep_;
 
     /* Rhythm of writing the bunch macroscopic values in the output file.                              	*/
-    Double         			rhythm_;
+    unsigned int         		rhythm_;
 
     /* Time points at which the bunch is produced.                                                      */
     Double                    		timeStart_;
@@ -440,7 +440,7 @@ namespace Darius
     std::string				bunchVTKBasename_;
 
     /* Rhythm of producing the vtk files. It should be double value bigger than the time step.         	*/
-    Double				bunchVTKRhythm_;
+    unsigned int			bunchVTKRhythm_;
 
     /* Boolean parameter that determines if the bunch profile should be saved.                         	*/
     bool				bunchProfile_;
@@ -455,7 +455,7 @@ namespace Darius
     std::vector<Double>      		bunchProfileTime_;
 
     /* Rhythm of saving the bunch profile. It should be a double value bigger than the time step.	*/
-    Double				bunchProfileRhythm_;
+    unsigned int			bunchProfileRhythm_;
 
     /* Show the stored values for the bunch.                                                          	*/
     void show()
@@ -661,7 +661,7 @@ namespace Darius
     {
       /* Set the seed type according to the returned string for seedType.                   		*/
       if      ( type.compare("plane-wave"         ) == 0 ) seedType_ = PLANEWAVE;
-      else if ( type.compare("plane-wave-confined") == 0 ) seedType_ = PLANEWAVECONFINED;
+      else if ( type.compare("confined-plane-wave") == 0 ) seedType_ = PLANEWAVECONFINED;
       else if ( type.compare("gaussian-beam"      ) == 0 ) seedType_ = GAUSSIANBEAM;
       else    { std::cout << type << " is an unknown type." << std::endl; exit(1); }
 
@@ -856,7 +856,7 @@ namespace Darius
     std::vector<FieldType>              samplingField_;
     std::string                         samplingDirectory_;
     std::string                         samplingBasename_;
-    Double                              samplingRhythm_;
+    unsigned int                        samplingRhythm_;
     std::vector<FieldVector<Double> >   samplingPosition_;
     FieldVector<Double>                 samplingLineBegin_;
     FieldVector<Double>                 samplingLineEnd_;
@@ -872,7 +872,7 @@ namespace Darius
       std::string                       directory_;
       SamplingType			type_;
       std::string                       basename_;
-      Double                            rhythm_;
+      unsigned int                      rhythm_;
       PlaneType				plane_;
       FieldVector<Double>		position_;
 
@@ -897,7 +897,7 @@ namespace Darius
     std::string                         profileDirectory_;
     std::string                         profileBasename_;
     std::vector<Double>                 profileTime_;
-    Double                              profileRhythm_;
+    unsigned int                        profileRhythm_;
 
     /* Set the sampling type of the seed.                                                               */
     SamplingType samplingType(std::string samplingType)
@@ -910,8 +910,8 @@ namespace Darius
     /* Set the sampling type of the seed.                                                               */
     SamplingType vtkType(std::string vtkType)
     {
-      if      ( vtkType.compare("in-plane")       == 0 )	return( INPLANE   );
-      else if ( vtkType.compare("all-domain")     == 0 )	return( ALLDOMAIN );
+      if      ( vtkType.compare("in-plane") == 0 )	return( INPLANE   );
+      else if ( vtkType.compare("all-domain") == 0 )	return( ALLDOMAIN );
       else { std::cout << vtkType << " is an unknown vtk type." << std::endl; exit(1); }
     }
 
@@ -947,8 +947,9 @@ namespace Darius
     /* Show the stored values for this signal.                                                          */
     void show()
     {
-      if        (seedType_ == PLANEWAVE)      printmessage(std::string(__FILE__), __LINE__, std::string("Seed type = plane-wave"));
-      else if   (seedType_ == GAUSSIANBEAM)   printmessage(std::string(__FILE__), __LINE__, std::string("Seed type = gaussian-beam"));
+      if        (seedType_ == PLANEWAVE)      		printmessage(std::string(__FILE__), __LINE__, std::string("Seed type = plane-wave"));
+      else if   (seedType_ == PLANEWAVECONFINED)   	printmessage(std::string(__FILE__), __LINE__, std::string("Seed type = confined-plane-wave"));
+      else if   (seedType_ == GAUSSIANBEAM)   		printmessage(std::string(__FILE__), __LINE__, std::string("Seed type = gaussian-beam"));
       printmessage(std::string(__FILE__), __LINE__, std::string("Seed position [")
       + stringify(position_[0]) + std::string("; ")
       + stringify(position_[1]) + std::string("; ")
@@ -1419,7 +1420,7 @@ namespace Darius
       std::string				basename_;
 
       /* Store the rhythm for calculating and saving the radiation power.				*/
-      Double					rhythm_;
+      unsigned int				rhythm_;
 
       /* The wavelength of the harmonic whose power should be plotted.					*/
       Double					lambda_;

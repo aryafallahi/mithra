@@ -194,11 +194,8 @@ namespace Darius
 	    bunch_.bunchInit_[i].position_[ia][2]	-= bunch_.bunchInit_[i].sigmaPosition_[2] * ( 1.0 - zeta );
 	  bunch_.bunchInit_[i].initialBeta_ 	 	 = sqrt( 1.0 - 1.0 / ( bunch_.bunchInit_[i].initialGamma_ * bunch_.bunchInit_[i].initialGamma_ ) );
 	}
-      bunch_.rhythm_					/= gamma_;
-      bunch_.bunchVTKRhythm_    			/= gamma_;
       for (unsigned int i = 0; i < bunch_.bunchProfileTime_.size(); i++)
 	bunch_.bunchProfileTime_[i] 			/= gamma_;
-      bunch_.bunchProfileRhythm_			/= gamma_;
 
       /* The Lorentz boost parameters should also be transfered to the seed class in order to correctly
        * compute the fields within the computational domain.						*/
@@ -498,8 +495,14 @@ namespace Darius
 
     void initializeSeedSampling()
     {
+      /* Return an error if the seed sampling rhythm is still zero.					*/
+      if ( seed_.samplingRhythm_ == 0 )
+	{
+	  printmessage(std::string(__FILE__), __LINE__, std::string("The sampling rhythm of the field is zero although sampling is activated !!!") );
+	  exit(1);
+	}
+
       /* Perform the lorentz boost for the sampling data.						*/
-      seed_.samplingRhythm_		/= gamma_;
       for (unsigned i = 0; i < seed_.samplingPosition_.size(); i++)
 	seed_.samplingPosition_[i][2] 	*= gamma_;
       seed_.samplingLineBegin_[2]	*= gamma_;
@@ -556,7 +559,7 @@ namespace Darius
 	  if (!(isabsolute(seed_.samplingBasename_))) baseFilename = seed_.samplingDirectory_;
 	  baseFilename += seed_.samplingBasename_ + "-" + stringify(rank_) + TXT_FILE_SUFFIX;
 
-	  /* If the directory of the baseFilename does not exist create this directory.		*/
+	  /* If the directory of the baseFilename does not exist create this directory.			*/
 	  createDirectory(baseFilename, rank_);
 
 	  sf_.file = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
@@ -575,7 +578,13 @@ namespace Darius
       /* Perform the lorentz boost for the visualization data.						*/
       for (unsigned int i = 0; i < seed_.vtk_.size(); i++)
 	{
-	  seed_.vtk_[i].rhythm_			/= gamma_;
+	  /* Return an error if the seed visualization rhythm is still zero.				*/
+	  if ( seed_.vtk_[i].rhythm_ == 0 )
+	    {
+	      printmessage(std::string(__FILE__), __LINE__, std::string("The visualization rhythm of the field is zero although visualization is activated !!!") );
+	      exit(1);
+	    }
+
 	  seed_.vtk_[i].position_[2]		*= gamma_;
 
 	  if (!(isabsolute(seed_.vtk_[i].basename_)))
@@ -640,8 +649,14 @@ namespace Darius
 
     void initializeSeedProfile()
     {
+      /* Return an error if the bunch profiling rhythm is still zero and no time is set.		*/
+      if ( seed_.profileRhythm_ == 0 && seed_.profileTime_.size() == 0 )
+	{
+	  printmessage(std::string(__FILE__), __LINE__, std::string("The profiling rhythm of the field is zero and no time is set although profiling of the field is activated !!!") );
+	  exit(1);
+	}
+
       /* Perform the lorentz boost for the profiling data.						*/
-      seed_.profileRhythm_	/= gamma_;
       for (unsigned i = 0; i < seed_.profileTime_.size(); i++)
 	seed_.profileTime_[i] 	/= gamma_;
 
@@ -682,6 +697,13 @@ namespace Darius
 
 	  sb_.file = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
 
+	  /* Return an error if the bunch sampling rhythm is still zero.				*/
+	  if ( bunch_.rhythm_ == 0 )
+	    {
+	      printmessage(std::string(__FILE__), __LINE__, std::string("The sampling rhythm of the bunch is zero although sampling is activated !!!") );
+	      exit(1);
+	    }
+
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" The sampling data are initialized. :::") );
 	}
 
@@ -695,6 +717,13 @@ namespace Darius
 	  /* If the directory of the baseFilename does not exist create this directory.			*/
 	  createDirectory(bunch_.bunchVTKBasename_, rank_);
 
+	  /* Return an error if the bunch visualization rhythm is still zero.				*/
+	  if ( bunch_.bunchVTKRhythm_ == 0 )
+	    {
+	      printmessage(std::string(__FILE__), __LINE__, std::string("The visualization rhythm of the bunch is zero although visualization is activated !!!") );
+	      exit(1);
+	    }
+
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" The bunch visualization data are initialized. :::") );
 	}
 
@@ -707,6 +736,13 @@ namespace Darius
 
 	  /* If the directory of the baseFilename does not exist create this directory.			*/
 	  createDirectory(bunch_.bunchProfileBasename_, rank_);
+
+	  /* Return an error if the bunch profiling rhythm is still zero and no time is set.		*/
+	  if ( bunch_.bunchProfileRhythm_ == 0 && bunch_.bunchProfileTime_.size() == 0 )
+	    {
+	      printmessage(std::string(__FILE__), __LINE__, std::string("The profiling rhythm of the bunch is zero and no time is set although profiling of the bunch is activated !!!") );
+	      exit(1);
+	    }
 
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" The bunch profiling data are initialized. :::") );
 	}
@@ -1653,9 +1689,15 @@ namespace Darius
 	  /* Initialize if and only if the sampling of the power is enabled.				*/
 	  if (!FEL_[jf].vtk_.sampling_) continue;
 
+	  /* Return an error if the power visualization rhythm is still zero.				*/
+	  if ( FEL_[jf].vtk_.rhythm_ == 0 )
+	    {
+	      printmessage(std::string(__FILE__), __LINE__, std::string("The power visualization rhythm of the field is zero although power visualization is activated !!!") );
+	      exit(1);
+	    }
+
 	  /* Perform the Lorentz boost for the sampling data.						*/
 	  FEL_[jf].vtk_.z_ 	*= gamma_;
-	  FEL_[jf].vtk_.rhythm_ /= gamma_;
 
 	  /* Set the number of sampling points in each processor.                                       */
 	  rp_[jf].N  = 1;
@@ -1822,7 +1864,7 @@ namespace Darius
 	{
 
 	  /* Initialize if and only if the sampling of the power is enabled.                            */
-	  if (FEL_[jf].vtk_.sampling_ && rp_[jf].Nz == 1 && ( fmod(time_,FEL_[jf].vtk_.rhythm_) < mesh_.timeStep_ ) )
+	  if ( FEL_[jf].vtk_.sampling_ && rp_[jf].Nz == 1 && ( nTime_ % FEL_[jf].vtk_.rhythm_ == 0 ) )
 	    {
 
 	      /* Calculate the index of the cell at which the plane resides.				*/

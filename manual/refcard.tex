@@ -28,198 +28,198 @@
 %
 In the following, a general format for the input file of MITHRA is presented. The red icons or groups can be repeated in the text. 
 
-\begin{alltt}
+\begin{Verbatim}[fontsize=\footnotesize, tabsize=2, fontfamily=courier,	fontseries=b, commandchars=\\\{\}]
 MESH
 \{
-\tabto{0.3cm}length-scale \tabto{6cm} = < real value | METER | DECIMETER | CENTIMETER | 
-\tabto{6.3cm}MILLIMETER | MICROMETER | NANOMETER | ANGSTROM >
-\tabto{0.3cm}time-scale  \tabto{6cm} = < real value | SECOND | MILLISECOND | MICROSECOND | 
-\tabto{6.3cm}NANOSECOND | PICOSECOND | FEMTOSECOND | ATTOSECOND >
-\tabto{0.3cm}mesh-lengths \tabto{6cm} = < ( real value,  real value, real value) >
-\tabto{0.3cm}mesh-resolution  \tabto{6cm} = < ( real value,  real value, real value) >
-\tabto{0.3cm}mesh-center  \tabto{6cm} = < ( real value,  real value, real value) >
-\tabto{0.3cm}total-time \tabto{6cm} = < real value >
-\tabto{0.3cm}bunch-time-step  \tabto{6cm} = < real value >
-\tabto{0.3cm}bunch-time-start \tabto{6cm} = < real value >
-\tabto{0.3cm}mesh-truncation-order \tabto{6cm} = < 1 | 2 >
-\tabto{0.3cm}space-charge \tabto{6cm} = < true | false >
+	length-scale							= < double | METER | DECIMETER | CENTIMETER | MILLIMETER | MICROMETER | 
+																NANOMETER | ANGSTROM
+	time-scale								= < double | SECOND | MILLISECOND | MICROSECOND | NANOSECOND | 
+																PICOSECOND | FEMTOSECOND | ATTOSECOND >
+	mesh-lengths							= < ( double, double, double ) >
+	mesh-resolution		 			= < ( double, double, double ) >
+	mesh-center				 			= < ( double, double, double ) >
+	total-time								= < double >
+	bunch-time-step		 			= < double >
+	bunch-time-start  				= < double >
+	mesh-truncation-order 		= < 1 | 2 >
+	space-charge  						= < true | false >
 \}
 
 BUNCH
 \{
-\tabto{0.3cm}\textcolor{red}{bunch-initialization}
-\tabto{0.3cm}\textcolor{red}{\{}
-\tabto{0.6cm}type \tabto{6cm} = < manual | ellipsoid | 3D-crystal | file >
-\tabto{0.6cm}distribution \tabto{6cm} = < uniform | gaussian >
-\tabto{0.6cm}charge \tabto{6cm} = < real value >
-\tabto{0.6cm}number-of-particles \tabto{6cm} = < integer value >
-\tabto{0.6cm}gamma \tabto{6cm} = < real value >
-\tabto{0.6cm}beta \tabto{6cm} = < real value >
-\tabto{0.6cm}direction \tabto{6cm} = < ( real value, real value, real value ) >
-\tabto{0.6cm}position \tabto{6cm} = < ( real value, real value, real value ) >
-\tabto{0.6cm}sigma-position \tabto{6cm} = < ( real value, real value, real value ) >
-\tabto{0.6cm}sigma-momentum \tabto{6cm} = < ( real value, real value, real value ) >
-\tabto{0.6cm}transverse-truncation \tabto{6cm} = < real value >
-\tabto{0.6cm}longitudinal-truncation \tabto{6cm} = < real value >
-\tabto{0.6cm}bunching-factor \tabto{6cm} = < real value between zero and one >
-\tabto{0.3cm}\textcolor{red}{\}}
+\textcolor{red}{bunch-initialization}
+	\textcolor{red}{\{}
+		type  									= < manual | ellipsoid | 3D-crystal | file >
+		distribution  					= < uniform | gaussian >
+		charge  								= < double >
+		number-of-particles  	 = < int >
+		gamma  								 = < double >
+		beta  									= < double >
+		direction  = < ( double, double, double ) >
+		position  = < ( double, double, double ) >
+		sigma-position  = < ( double, double, double ) >
+		sigma-momentum  = < ( double, double, double ) >
+		transverse-truncation  = < double >
+		longitudinal-truncation  = < double >
+		bunching-factor  = < double between zero and one >
+	\textcolor{red}{\}}
 
-\tabto{0.3cm}bunch-sampling
-\tabto{0.3cm}\{
-\tabto{0.6cm}sample \tabto{6cm} = < true | false >
-\tabto{0.6cm}directory \tabto{6cm} = < address according to UNIX convention >
-\tabto{0.6cm}base-name \tabto{6cm} = < name of the file >
-\tabto{0.6cm}rhythm \tabto{6cm} = < real value >
-\tabto{0.3cm}\}
+bunch-sampling
+\{
+sample  = < true | false >
+directory  = < address according to UNIX convention >
+base-name  = < name of the file >
+rhythm  = < double >
+\}
 
-\tabto{0.3cm}bunch-visualization
-\tabto{0.3cm}\{
-\tabto{0.6cm}sample \tabto{6cm} = < true | false >
-\tabto{0.6cm}directory \tabto{6cm} = < address according to UNIX convention >
-\tabto{0.6cm}base-name \tabto{6cm} = < name of the file >
-\tabto{0.6cm}rhythm \tabto{6cm} = < real value >
-\tabto{0.3cm}\}
+bunch-visualization
+\{
+sample  = < true | false >
+directory  = < address according to UNIX convention >
+base-name  = < name of the file >
+rhythm  = < double >
+\}
 
-\tabto{0.3cm}bunch-profile
-\tabto{0.3cm}\{
-\tabto{0.6cm}sample \tabto{6cm} = < true | false >
-\tabto{0.6cm}directory \tabto{6cm} = < address according to UNIX convention >
-\tabto{0.6cm}base-name \tabto{6cm} = < name of the file >
-\tabto{0.6cm}time \tabto{6cm} = < real value >
-\tabto{0.6cm}rhythm \tabto{6cm} = < real value >
-\tabto{0.3cm}\}
+bunch-profile
+\{
+sample  = < true | false >
+directory  = < address according to UNIX convention >
+base-name  = < name of the file >
+time  = < double >
+rhythm  = < double >
+\}
 \}
 
 FIELD
 \{
-\tabto{0.3cm}field-initialization
-\tabto{0.3cm}\{
-\tabto{0.6cm}type \tabto{6cm} = < plane-wave | confined-plane-wave | gaussian-beam >
-\tabto{0.6cm}position \tabto{6cm} = < ( real value , real value , real value ) >
-\tabto{0.6cm}direction \tabto{6cm} = < ( real value , real value , real value ) >
-\tabto{0.6cm}polarization \tabto{6cm} = < ( real value , real value , real value ) >
-\tabto{0.6cm}radius-parallel \tabto{6cm} = < real value >
-\tabto{0.6cm}radius-perpendicular \tabto{6cm} = < real value >
-\tabto{0.6cm}signal-type \tabto{6cm} = < neumann | gaussian | secant-hyperbolic | flat-top >
-\tabto{0.6cm}strength-parameter \tabto{6cm} = < real value >
-\tabto{0.6cm}offset \tabto{6cm} = < real value >
-\tabto{0.6cm}variance \tabto{6cm} = < real value >
-\tabto{0.6cm}wavelength \tabto{6cm} = < real value >
-\tabto{0.6cm}CEP \tabto{6cm} = < real value >
-\tabto{0.3cm}\}
+field-initialization
+\{
+type  = < plane-wave | confined-plane-wave | gaussian-beam >
+position  = < ( double , double , double ) >
+direction  = < ( double , double , double ) >
+polarization  = < ( double , double , double ) >
+radius-parallel  = < double >
+radius-perpendicular  = < double >
+signal-type  = < neumann | gaussian | secant-hyperbolic | flat-top >
+strength-parameter  = < double >
+offset  = < double >
+variance  = < double >
+wavelength  = < double >
+CEP  = < double >
+\}
 
-\tabto{0.3cm}field-sampling
-\tabto{0.3cm}\{
-\tabto{0.6cm}sample \tabto{6cm} = < true | false >
-\tabto{0.6cm}type \tabto{6cm} = < over-line | at-point >
-\tabto{0.6cm}\textcolor{red}{field \tabto{6cm} = < Ex | Ey | Ez | Bx | By | Bz | Ax | Ay | Az | Jx | Jy 
+field-sampling
+\{
+sample  = < true | false >
+type  = < over-line | at-point >
+\textcolor{red}{field  = < Ex | Ey | Ez | Bx | By | Bz | Ax | Ay | Az | Jx | Jy 
 \tabto{6.3cm}| Jz | F | Q >}
-\tabto{0.6cm}directory \tabto{6cm} = < address according to UNIX convention >
-\tabto{0.6cm}base-name \tabto{6cm} = < name of the file >
-\tabto{0.6cm}rhythm \tabto{6cm} = < real value >
-\tabto{0.6cm}\textcolor{red}{position \tabto{6cm} = < ( real value , real value , real value ) >}
-\tabto{0.6cm}line-begin \tabto{6cm} = < ( real value , real value , real value ) >
-\tabto{0.6cm}line-end \tabto{6cm} = < ( real value , real value , real value ) >
-\tabto{0.6cm}resolution \tabto{6cm} = < real value >
-\tabto{0.3cm}\}
+directory  = < address according to UNIX convention >
+base-name  = < name of the file >
+rhythm  = < double >
+\textcolor{red}{position  = < ( double , double , double ) >}
+line-begin  = < ( double , double , double ) >
+line-end  = < ( double , double , double ) >
+resolution  = < double >
+\}
 
-\tabto{0.3cm}\textcolor{red}{field-visualization}
-\tabto{0.3cm}\textcolor{red}{\{}
-\tabto{0.6cm}sample \tabto{6cm} = < true | false >
-\tabto{0.6cm}\textcolor{red}{field \tabto{6cm} = < Ex | Ey | Ez | Bx | By | Bz | Ax | Ay | Az | Jx | Jy
+\textcolor{red}{field-visualization}
+\textcolor{red}{\{}
+sample  = < true | false >
+\textcolor{red}{field  = < Ex | Ey | Ez | Bx | By | Bz | Ax | Ay | Az | Jx | Jy
 \tabto{6.3cm}| Jz | F | Q >}
-\tabto{0.6cm}directory \tabto{6cm} = < address according to UNIX convention >
-\tabto{0.6cm}base-name \tabto{6cm} = < name of the file >
-\tabto{0.6cm}rhythm \tabto{6cm} = < real value >
-\tabto{0.3cm}\textcolor{red}{\}}
+directory  = < address according to UNIX convention >
+base-name  = < name of the file >
+rhythm  = < double >
+\textcolor{red}{\}}
 
-\tabto{0.3cm}field-profile
-\tabto{0.3cm}\{
-\tabto{0.6cm}sample \tabto{6cm} = < true | false >
-\tabto{0.6cm}\textcolor{red}{field \tabto{6cm} = < Ex | Ey | Ez | Bx | By | Bz | Ax | Ay | Az | Jx | Jy 
+field-profile
+\{
+sample  = < true | false >
+\textcolor{red}{field  = < Ex | Ey | Ez | Bx | By | Bz | Ax | Ay | Az | Jx | Jy 
 \tabto{6.3cm}| Jz | F | Q >}
-\tabto{0.6cm}directory \tabto{6cm} = < address according to UNIX convention >
-\tabto{0.6cm}base-name \tabto{6cm} = < name of the file >
-\tabto{0.6cm}rhythm \tabto{6cm} = < real value >
-\tabto{0.6cm}\textcolor{red}{time \tabto{6cm} = < real value >}
-\tabto{0.3cm}\}
+directory  = < address according to UNIX convention >
+base-name  = < name of the file >
+rhythm  = < double >
+\textcolor{red}{time  = < double >}
+\}
 \}
 
 UNDULATOR
 \{
-\tabto{0.3cm}\textcolor{red}{static-undulator}
-\tabto{0.3cm}\textcolor{red}{\{}
-\tabto{0.6cm}undulator-parameter \tabto{6cm} = < real value >
-\tabto{0.6cm}period \tabto{6cm} = < real value >
-\tabto{0.6cm}length \tabto{6cm} = < integer value >
-\tabto{0.6cm}polarization-angle \tabto{6cm} = < real value >
-\tabto{0.6cm}offset \tabto{6cm} = < real value >
-\tabto{0.3cm}\textcolor{red}{\}}
+\textcolor{red}{static-undulator}
+\textcolor{red}{\{}
+undulator-parameter  = < double >
+period  = < double >
+length  = < int >
+polarization-angle  = < double >
+offset  = < double >
+\textcolor{red}{\}}
 
-\tabto{0.3cm}\textcolor{red}{static-undulator-array}
-\tabto{0.3cm}\textcolor{red}{\{}
-\tabto{0.6cm}undulator-parameter \tabto{6cm} = < real value >
-\tabto{0.6cm}period \tabto{6cm} = < real value >
-\tabto{0.6cm}length \tabto{6cm} = < integer value >
-\tabto{0.6cm}polarization-angle \tabto{6cm} = < real value >
-\tabto{0.6cm}gap \tabto{6cm} = < real value >
-\tabto{0.6cm}number \tabto{6cm} = < integer value >
-\tabto{0.6cm}tapering-parameter \tabto{6cm} = < real value > 
-\tabto{0.3cm}\textcolor{red}{\}}
+\textcolor{red}{static-undulator-array}
+\textcolor{red}{\{}
+undulator-parameter  = < double >
+period  = < double >
+length  = < int >
+polarization-angle  = < double >
+gap  = < double >
+number  = < int >
+tapering-parameter  = < double > 
+\textcolor{red}{\}}
 
-\tabto{0.3cm}\textcolor{red}{optical-undulator}
-\tabto{0.3cm}\textcolor{red}{\{}
-\tabto{0.6cm}beam-type \tabto{6cm} = < plane-wave | confined-plane-wave | gaussian-beam >
-\tabto{0.6cm}position \tabto{6cm} = < ( real value , real value , real value ) >
-\tabto{0.6cm}direction \tabto{6cm} = < ( real value , real value , real value ) >
-\tabto{0.6cm}polarization \tabto{6cm} = < ( real value , real value , real value ) >
-\tabto{0.6cm}radius-parallel \tabto{6cm} = < real value >
-\tabto{0.6cm}radius-perpendicular \tabto{6cm} = < real value >
-\tabto{0.6cm}signal-type \tabto{6cm} = < neumann | gaussian | secant-hyperbolic | flat-top >
-\tabto{0.6cm}strength-parameter \tabto{6cm} = < real value >
-\tabto{0.6cm}offset \tabto{6cm} = < real value >
-\tabto{0.6cm}variance \tabto{6cm} = < real value >
-\tabto{0.6cm}wavelength \tabto{6cm} = < real value >
-\tabto{0.6cm}CEP \tabto{6cm} = < real value >
-\tabto{0.3cm}\textcolor{red}{\}}
+\textcolor{red}{optical-undulator}
+\textcolor{red}{\{}
+beam-type  = < plane-wave | confined-plane-wave | gaussian-beam >
+position  = < ( double , double , double ) >
+direction  = < ( double , double , double ) >
+polarization  = < ( double , double , double ) >
+radius-parallel  = < double >
+radius-perpendicular  = < double >
+signal-type  = < neumann | gaussian | secant-hyperbolic | flat-top >
+strength-parameter  = < double >
+offset  = < double >
+variance  = < double >
+wavelength  = < double >
+CEP  = < double >
+\textcolor{red}{\}}
 \}
 
 EXTERNAL-FIELD
-\tabto{0.3cm}\{
-\tabto{0.3cm}\textcolor{red}{electromagnetic-wave}
-\tabto{0.3cm}\textcolor{red}{\{}
-\tabto{0.6cm}type \tabto{6cm} = < plane-wave | confined-plane-wave | gaussian-beam >
-\tabto{0.6cm}position \tabto{6cm} = < ( real value , real value , real value ) >
-\tabto{0.6cm}direction \tabto{6cm} = < ( real value , real value , real value ) >
-\tabto{0.6cm}polarization \tabto{6cm} = < ( real value , real value , real value ) >
-\tabto{0.6cm}radius-parallel \tabto{6cm} = < real value >
-\tabto{0.6cm}radius-perpendicular \tabto{6cm} = < real value >
-\tabto{0.6cm}signal-type \tabto{6cm} = < neumann | gaussian | secant-hyperbolic | flat-top >
-\tabto{0.6cm}strength-parameter \tabto{6cm} = < real value >
-\tabto{0.6cm}offset \tabto{6cm} = < real value >
-\tabto{0.6cm}variance \tabto{6cm} = < real value >
-\tabto{0.6cm}wavelength \tabto{6cm} = < real value >
-\tabto{0.6cm}CEP \tabto{6cm} = < real value >
-\tabto{0.3cm}\textcolor{red}{\}}
+\{
+\textcolor{red}{electromagnetic-wave}
+\textcolor{red}{\{}
+type  = < plane-wave | confined-plane-wave | gaussian-beam >
+position  = < ( double , double , double ) >
+direction  = < ( double , double , double ) >
+polarization  = < ( double , double , double ) >
+radius-parallel  = < double >
+radius-perpendicular  = < double >
+signal-type  = < neumann | gaussian | secant-hyperbolic | flat-top >
+strength-parameter  = < double >
+offset  = < double >
+variance  = < double >
+wavelength  = < double >
+CEP  = < double >
+\textcolor{red}{\}}
 \}
 
 FEL-OUTPUT
 \{
-\tabto{0.3cm}\textcolor{red}{radiation-power}
-\tabto{0.3cm}\textcolor{red}{\{}
-\tabto{0.6cm}sample \tabto{6cm} = < false | true >
-\tabto{0.6cm}type \tabto{6cm} = < at-point | over-line >
-\tabto{0.6cm}directory \tabto{6cm} = < address according to UNIX convention >
-\tabto{0.6cm}base-name \tabto{6cm} = < name of the file >
-\tabto{0.6cm}\textcolor{red}{plane-position \tabto{6cm} = < real value >}
-\tabto{0.6cm}line-begin \tabto{6cm} = < real value >
-\tabto{0.6cm}line-end \tabto{6cm} = < real value >
-\tabto{0.6cm}resolution \tabto{6cm} = < real value >
-\tabto{0.6cm}\textcolor{red}{normalized-frequency \tabto{6cm} = < real value >}
-\tabto{0.6cm}minimum-normalized-frequency \tabto{8cm} = < real value >
-\tabto{0.6cm}maximum-normalized-frequency \tabto{8cm} = < real value >
-\tabto{0.6cm}normalized-frequency-resolution \tabto{8cm} = < real value >
-\tabto{0.3cm}\textcolor{red}{\}}
+\textcolor{red}{radiation-power}
+\textcolor{red}{\{}
+sample  = < false | true >
+type  = < at-point | over-line >
+directory  = < address according to UNIX convention >
+base-name  = < name of the file >
+\textcolor{red}{plane-position  = < double >}
+line-begin  = < double >
+line-end  = < double >
+resolution  = < double >
+\textcolor{red}{normalized-frequency  = < double >}
+minimum-normalized-frequency \tabto{8cm} = < double >
+maximum-normalized-frequency \tabto{8cm} = < double >
+normalized-frequency-resolution \tabto{8cm} = < double >
+\textcolor{red}{\}}
 \}
-\end{alltt}
+\end{Verbatim}
 \end{document}

@@ -807,9 +807,15 @@ In MITHRA, the following field variation is assumed for the fringing fields insi
 %
 \begin{align}
 B'_x & = 0, \nonumber \\
-B'_y & = B_0 \cosh(k_uy')k_u\delta z \left( 0.35875 + 0.48829 \cos( \frac{\pi \delta z}{g} ) + 0.14128 \cos( \frac{2 \pi \delta z}{g} ) + 0.01168 \cos( \frac{3 \pi \delta z}{g} ) \right), \label{fringingFieldGap} \\
-B'_z & = B_0 \sinh(k_uy') \left( 0.35875 + 0.48829 \cos( \frac{\pi \delta z}{g} ) + 0.14128 \cos( \frac{2 \pi \delta z}{g} ) + 0.01168 \cos( \frac{3 \pi \delta z}{g} ) \right), \nonumber
+B'_y & = B_0 \cosh(k_uy')k_u\delta z e^{-(k_u \delta z)^2/2} f(\delta z,g), \label{fringingFieldGap} \\
+B'_z & = B_0 \sinh(k_uy') e^{-(k_u \delta z)^2/2} f(\delta z,g), \nonumber
 \end{align}
+%
+with
+%
+\begin{equation}
+f(\delta z, g) = 0.35875 + 0.48829 \cos( \frac{\pi \delta z}{g} ) + 0.14128 \cos( \frac{2 \pi \delta z}{g} ) + 0.01168 \cos( \frac{3 \pi \delta z}{g} )
+\end{equation}
 %
 where $\delta z$ is the distance to the undulator entrance and $g$ is the gap length between the two undulators.
 %
@@ -817,13 +823,20 @@ Note that both equations (\ref{fringingField}) and (\ref{fringingFieldGap}) are 
 %
 An accurate formulation is not possible since there exists no analytical solution for the fringing fields.
 %
-In order to better figure out the field variations in the gap region, the transverse magnetic field ($B'_y$) inside an undulator and an undulator array are compared with each other in Fig.\,\ref{fringingFieldVisualization}.
+In order to better figure out the field variations in the gap region, the transverse magnetic field ($B'_y$) on the undulator axis inside an undulator and an undulator array are compared with each other in Fig.\,\ref{FDTDPICFig4}.
+%
+\begin{figure}
+	\centering
+	\includegraphics[width=3.4in]{./MITHRA_FDTDPIC/Fig4/Fig4.pdf}
+	\caption{Normalized magnetic field at the center of undulator within the undulator and in the fringing field regions. Four cases are visualized and compared: (i) a single undulator module, and two undulator modules with a gap equal to (ii) half the wavelength, (ii) one wavelength, and (iii) one and a half wavelength}
+	\label{FDTDPICFig4}
+\end{figure}
 
 \subsubsection{Optical Undulator Field:}
 
 The wiggling motion of electrons required for radiation generation can also be instigated by the oscillating fields of an electromagnetic wave.
 %
-This is the main idea behind another undulator type called as an optical undulator.
+This is the main idea behind another undulator type named as optical undulator.
 %
 These undulators are typically in form of an electromagnetic beam propagating counter to the electron beam.
 %
@@ -864,7 +877,7 @@ f\left(t,t_0,-\frac{k_0 r_\parallel^2}{2R_\parallel(l)} - \frac{k_0 r_\bot^2}{2R
 %
 where $\bot$ and $\parallel$ indices represent field components normal to the propagation direction, perpendicular and parallel to the polarization vector, respectively.
 %
-$l$ as a subscript for the fields denote for the component along propagation direction, and as a variable is the position along this direction, i.e. $r_l$.
+$l$, as a subscript for the fields, stands for the component along propagation direction, and as a variable is the position along this direction, i.e. $r_l$.
 %
 $w_\parallel=w_{0\parallel}\sqrt{1+(r_\parallel/z_{R\parallel})^2}$ and $w_\bot=w_{0\bot}\sqrt{1+(r_\bot/z_{R\bot})^2}$ with $w_{0\parallel}$ being the beam radius along the polarization vector, $w_{0\bot}$ the beam radius normal to the polarization vector, and $z_{R\parallel}$ and $z_{R\bot}$ are the corresponding Rayleigh range values.
 %
@@ -912,47 +925,51 @@ Among all the different methods, using the sophisticated methods to load the bun
 The Halton or Hammersley sequences, as generalizations of the bit-reverse techniques, are implemented in MITHRA for particle generation.
 %
 These sequences compared to random based filling of the phase space avoid the appearance of local clusters in the bunch distribution.
-%
-In addition, the uniform filling of the phase space prevents initial bunching factor of the generated electron bunch, making it well-suited for FEL simulations.
 
+Moreover, such a uniform filling of the phase space prevents initial bunching factor of the generated electron bunch.
+%
+This aspect is very beneficial in FEL simulations, since it removes any spurious initial radiation.
+%
+Subsequently, the initial bunching factor or shot noise can be manually added to the particle distribution in a controlled fashion. 
+%
 For details on the nature of Halton sequences, the reader is referred to the specialized documents.
 %
 Here, we only present the implemented algorithm to generate the required sequence of numbers filling the interval $[0,1]$.
 %
-The following C++ code is integrated into MITHRA which produces $N<20$ uncorrelated sequences of $M$ numbers in the interval $[0,1]$:
+The following C++ function is integrated into MITHRA which produces $N<20$ uncorrelated sequences including arbitrary number of elements in the interval $[0,1]$:
 %
-\begin{Verbatim}[frame=single, fontsize=\small, tabsize=4]
-std::vector<std::vector<Double> > haltonSequence (unsigned int N, unsigned int M)
-{
-	std::vector<std::vector<Double> > s (M, std::vector<Double> (N, 0.0) );
-	unsigned int prime [20] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,
-	                           61, 67, 71};
-	int p0, p, k, k0, a;
-	double x = 0.0;
-	for (unsigned int i = 0; i < size; i++)
+\begin{multicols}{2}
+	\setlength{\columnseprule}{0.2pt}
+	\begin{Verbatim}[fontsize=\footnotesize, tabsize=2, fontfamily=courier,	fontseries=b]
+	Double halton (unsigned int i, unsigned int j)
 	{
-		k0 = i;
-		for (unsigned int j = 0; j < dimension; j++)
-		{
-			p  = prime[j];
-			p0 = p;
-			k  = k0;
-			x  = 0.0;
-			while (k > 0)
+		unsigned int prime [20] = {2, 3, 5, 7, 11, 13, 
+			 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 
+			 61, 67, 71};
+		int p0, p, k, k0, a;
+		Double x = 0.0;
+	
+		k0 = j;
+	
+		p = prime[i];
+	
+		p0 = p;
+		k  = k0;
+		x  = 0.0;
+		while (k > 0)
 			{
 				a   = k % p;
 				x  += a / (double) p0;
 				k   = int (k/p);
 				p0 *= p;
 			}
-			s[i][j] = x;
-		}
+	
+		return 1.0 - x;
 	}
-	return s;
-}
-\end{Verbatim}
+	\end{Verbatim}
+\end{multicols}
 %
-By having the above uniform distributions, the 6D phase space of the initial bunch can be filled according to the desired bunch properties.
+\noindent By having the above uniform distributions, the 6D phase space of the initial bunch can be filled according to the desired bunch properties.
 
 In MITHRA, different schemes for the user is implemented to generate the initial electron bunch, which are described in chapter \ref{chapter_refcard}.
 %
@@ -1018,15 +1035,13 @@ Free electron laser radiation should start from a nonzero initial radiation.
 %
 This radiation can be in form of an initial seed field, initial modulation in the bunch, or the radiation from bunch shot noise.
 %
-In the current version of MITHRA, we have implemented the first two types.
-%
-The implementation of shot noise is postponed to the next versions of the software.
-%
 The implementation of seeding through an external excitation using TF/SF boundaries was described in \ref{fieldInitialization}.
 %
-Here, we explain how an initial bunching factor, $<e^{jk_uz}>$, is introduced to the electron bunch profile.
+Here, we explain how an initial bunching factor, $B = <e^{jk_uz}>$, is introduced to the electron bunch profile.
 
-For this purpose, a small variation $\delta z$ is applied to a particle distribution, which is generated using the above formulations.
+For this purpose, the methodology introduced in \cite{penman1992simulation} is followed. 
+%
+A small variation $\delta z$ is applied to a particle distribution generated using the described formulations.
 %
 $\delta z$ for each particle is obtained from
 %
@@ -1039,6 +1054,42 @@ where $b_f$ is the given bunching factor of the distribution, and $\xi=1+\bar{\b
 %
 The introduced variation to the bunch coordinates, i.e. $z \rightarrow z+\delta z$, yields a bunch with all the given particle and momentum distributions and the desired bunching factor, $b_f$.
 
+\subsubsection{Shot noise:}
+
+The number of particles (electrons) in a bunch is limited.
+%
+As a result, the average of bunching factor magnitudes over the whole bunch ($|B|^2=1/N_e$) does not tend to zero, meaning that there exists an initial total radiation in form of a noise.
+%
+This radiation commonly referred to as \emph{shot noise} can also be a trigger for the free-electron lasing process.
+%
+Such a mechanism is the basis for Self-Amplified Spontaneous Emission of radiation (SASE) type of FELs.
+%
+To simulate shot noise, bunch initialization starts with a uniform particle distribution obtained from Halton and Hammersley series.
+%
+Afterwards, a small variation $\delta z$ is applied to the particle distribution.
+%
+$\delta z$ for a particle residing in slice $j$ is obtained from
+%
+\begin{equation}
+\label{bunchingFactor}
+\delta z = \xi \gamma_0 k_u b_{fj} \sin (2 \xi \gamma_0 k_u z + \phi_j),
+\end{equation}
+%
+where $b_{fj}$ and $\phi_j$ are the bunching factor value and phase in the slice j.
+%
+The other parameters are defined in the same way as described in the bunching factor section.
+%
+The value of $b_{fj}$ for different slices is obtained from a negative exponential distribution according to
+%
+\begin{equation}
+\label{negativeExponential}
+b_{fj} = \frac{1}{\sqrt{N_e}} \sqrt{-2 \ln x_j},
+\end{equation}
+%
+where $x_j$ is obtained from a uniform Halton sequence.
+%
+The value of $\phi_j$ as the bunching factor phase in various slices is calculated based on a uniform distribution (i.e. Halton sequence) over the interval $[0,\pi]$.tttt 
+
 \section{Parallelization}
 
 The large and demanding computation cost needed for the simulation of the FEL process even in the Lorentz boosted coordinate frame necessitates solving the problem on multiple processors to achieve reasonable computation times.
@@ -1047,22 +1098,11 @@ Therefore, efficient parallelization techniques should be implemented in the FDT
 %
 Traditionally, there are two widely used techniques to run a computation in parallel on several processors: (1) \textit{shared} memory, and (2) \textit{distributed} memory parallelization.
 %
-In the shared memory parallelization or the so-called multi-threading technique, several processors run a code using the variables saved in one shared memory (Fig.\,\ref{FDTDPICFig4}a).
+In the shared memory parallelization or the so-called multi-threading technique, several processors run a code using the variables saved in one shared memory.
 %
 This technique is very suitable for PIC algorithms because it avoids the additional costs of communicating the particle position and momenta between the processors.
 %
-On the other hand, distributed memory technique distributes the involved variables among several processors, solves the problem in each processor independently and communicates the required variables whenever they are called (Fig.\,\ref{FDTDPICFig4}b).
-%
-\begin{figure}
-\centering
-$\begin{array}{ccc}
-\includegraphics[width=2.5in]{./MITHRA_FDTDPIC/Fig4/Fig4a.pdf} & &
-\includegraphics[width=2.5in]{./MITHRA_FDTDPIC/Fig4/Fig4b.pdf} \\
-(a) & &  (b)
-\end{array}$
-\caption{Schematic illustration of the (a) shared and (b)  distributed memory parallelization schemes.}
-\label{FDTDPICFig4}
-\end{figure}
+On the other hand, distributed memory technique distributes the involved variables among several processors, solves the problem in each processor independently and communicates the required variables whenever they are called.
 %
 The distributed memory technique is very suitable for FDTD algorithm due to the ease of problem decomposition beyond various machines.
 %

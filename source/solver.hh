@@ -1278,15 +1278,15 @@ namespace Darius
 		}
 	      else if ( ubp.lz < 0.0 )
 		{
-		  if ( iter == undulator_.begin() )
-		    ubp.sz = exp( - pow( ub_.ku * ubp.lz , 2 ) / 2.0 );
-		  else
+		  ubp.sz = exp( - pow( ub_.ku * ubp.lz , 2 ) / 2.0 );
+
+		  if ( iter != undulator_.begin() )
 		    {
 		      ubp.i  = iter - undulator_.begin() - 1;
 		      ubp.r0 = undulator_[ubp.i].rb_ + undulator_[ubp.i].length_ * undulator_[ubp.i].lu_ - iter->rb_;
 		      if ( ubp.lz < ubp.r0 || ubp.r0 == 0.0 ) ubp.sz = 0.0;
 		      else
-			ubp.sz = 0.35875 + 0.48829 * cos( PI * ubp.lz / ubp.r0 ) + 0.14128 * cos( 2.0 * PI * ubp.lz / ubp.r0 ) + 0.01168 * cos( 3.0 * PI * ubp.lz / ubp.r0 );
+			ubp.sz *= 0.35875 + 0.48829 * cos( PI * ubp.lz / ubp.r0 ) + 0.14128 * cos( 2.0 * PI * ubp.lz / ubp.r0 ) + 0.01168 * cos( 3.0 * PI * ubp.lz / ubp.r0 );
 		    }
 		  ubp.cy = cosh(ub_.ku * ubp.ly );
 
@@ -1303,15 +1303,16 @@ namespace Darius
 	      else if ( ubp.lz > iter->length_ * iter->lu_ )
 		{
 		  ubp.t0 = ubp.lz - iter->length_ * iter->lu_;
-		  if ( iter == undulator_.end() )
-		    ubp.sz = exp( - pow( ub_.ku *  ubp.t0 , 2 ) / 2.0 );
-		  else
+
+		  ubp.sz = exp( - pow( ub_.ku *  ubp.t0 , 2 ) / 2.0 );
+
+		  if ( iter != undulator_.end() )
 		    {
 		      ubp.i  = iter - undulator_.begin() + 1;
 		      ubp.r0 = undulator_[ubp.i].rb_ - iter->rb_ - iter->length_ * iter->lu_;
 		      if ( ubp.t0 > ubp.r0 || ubp.r0 == 0.0 ) ubp.sz = 0.0;
 		      else
-			ubp.sz = 0.35875 + 0.48829 * cos( PI * ubp.t0 / ubp.r0 ) + 0.14128 * cos( 2.0 * PI * ubp.t0 / ubp.r0 ) + 0.01168 * cos( 3.0 * PI * ubp.t0 / ubp.r0 );
+			ubp.sz *= 0.35875 + 0.48829 * cos( PI * ubp.t0 / ubp.r0 ) + 0.14128 * cos( 2.0 * PI * ubp.t0 / ubp.r0 ) + 0.01168 * cos( 3.0 * PI * ubp.t0 / ubp.r0 );
 		    }
 		  ubp.cy = cosh(ub_.ku * ubp.ly );
 

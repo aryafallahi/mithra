@@ -17,7 +17,7 @@ In fact, many of the proposed novel schemes pursuing coherent FEL radiation viol
 %
 This, of course, does not mean that such new schemes incorporatng brilliant ideas should be abandoned.
 %
-However, it leads to the invalidity of typical approximations that are originiated from these assumptions and typically considered in established FEL simulation tools.
+However, violation of such assumptions leads to the invalidity of typical approximations that are originiated from these assumptions and typically considered in established FEL simulation tools.
 %
 This situation provided me the motivation to develop a full-wave simulation tool for FEL process and the outcome is presented in this manual as the software MITHRA.
 %
@@ -45,18 +45,18 @@ In addition, using the code in new projects revealed small bugs which had to be 
 %
 This inspiring situation motivated me to prepare a second version of the software that successes the first version presented in \cite{fallahi2018mithra}.
 %
-Working on different aspects of the software to meet the needs of new project is an endless effort.
+Working on different aspects of the software to meet the needs of new projects is an endless effort.
 %
 As a result, there still exist features that are foreseen to be implemented in the future.
 
-A list of new features and applied changes in version 1.1 released with this manual is as the following:
+A list of new features and applied changes in version 2.0 released with this manual is as the following:
 %
 \begin{itemize}
 	\setlength{\parskip}{0pt}
 	\setlength{\itemsep}{0pt plus 1pt}
 	\item A new group in the job file is added which is named as external-field. Through this group, fields of other devices than the undulator will be added to the simulation. Currently, addition of external electromagnetic waves to the interaction is implemented.
 	%
-	\item Followed by the feedback from users which was inline with my own experience, the parallelization based on combined shared and distributed memory scheme (i.e. OpenMP and MPI) was not desired. Therefore, in the next versions parallelization is merely done based on distributed memory approach using MPI. Therefore, the previously existing parameter {\tt \em \small number-of-threads} is nor more parsed in the job file.
+	\item Followed by the feedback from users which was inline with my own experience, the parallelization based on combined shared and distributed memory scheme (i.e. OpenMP and MPI) was not desired. Therefore, in the next versions parallelization is merely done based on distributed memory approach using MPI. Therefore, the previously existing parameter {\tt \em \small number-of-threads} is no more parsed in the job file.
 	%
 	\item Possibility to adjust a bunching factor phase in the bunch initialization is added through {\tt \small \em bunching-factor-phase} parameter.
 	%
@@ -66,15 +66,15 @@ A list of new features and applied changes in version 1.1 released with this man
 	%
 	\item The previous version accepted values of {\tt \em \small rhythm} parameter as a real value. In the new version, it is given as an integer number, which corresponds to the multiple of time-step at which either sampling or visualization is fulfilled. Note that the sampling time values given as the parameter {\tt \em \small time} are still real numbers.
 	%
-	\item Because of an application of the code, a new field type is added to the code named as confined-plane-wave is added. This is fundamentally similar to plane-wave that is confined to an elliptical region determined by the two radius parameters.
+	\item Because of an application of the code, a new field type is added to the code named as confined-plane-wave. This is fundamentally similar to plane-wave that is confined to an elliptical region determined by the two radius parameters.
 	%
 	\item The names {\tt \em \small rayleigh-radius-parallel} and {\tt \em \small rayleigh-radius-perpendicular} are changed to {\tt \em \small radius-parallel} and {\tt \em \small radius-perpendicular}.
 	%
-	\item The parameter {\tt \em \small resolution} in the field-sampling category as well as the radiation-power subgroup is changed to {\tt \em \small number-of\-points} which is more meaningful. Similarly, in the radiation-power subgroup, the {\tt \em \small normalized-frequency-resolution} is changed to the {\tt \em \small number-of-frequency-points}. With these parameter name changes, the definition of the given value is also changed.
+	\item The parameter {\tt \em \small resolution} in the field-sampling category as well as the radiation-power subgroup is changed to {\tt \em \small number-of\-points} which is more meaningful. Similarly, in the radiation-power subgroup, the {\tt \em \small normalized-frequency-resolution} is changed to the {\tt \em \small number-of-frequency-points}. With these changes in parameter names, the definitions of the given values are correspondingly changed.
 	%
-	\item In the new version, the possibility to save 2D visualization data over Cartesian planes is added. In the field-visualization subgroup two parameters {\tt \em \small type} and {\tt \em \small plane} are added, which determine the type of the visualization (2D in-plane or 3D all-domain) and plane of the 2D data ($xy$, $xz$, or $yz$) respectively.
+	\item In the new version, the possibility to save 2D visualization data over Cartesian planes is added. In the field-visualization subgroup two parameters {\tt \em \small type} and {\tt \em \small plane} are added, which determine the type of the visualization (2D in-plane or 3D all-domain) and plane of the 2D data ($xy$, $xz$, or $yz$) respectively. Moreover, the field-visualization subgroup can be repeated in order to obtain different visualizations of the radiated fields.
 	%
-	\item Several changes are applied to the undulator part. First, different undulator types are now introduced as subgroups in the undulator section. In the new version, a subgroup named {\em \tt \small static-undulator-array} is added that defines an array of undulators with or without the tapering of the undulator parameter. For detailed description on how undulator arrays are introduced to the code, the user interface chapter can be studied.
+	\item Several changes are applied to the undulator part. First, different undulator types are now introduced as subgroups in the undulator section. In the new version, a subgroup named {\em \tt \small static-undulator-array} is added that defines an array of undulators with or without the tapering of the undulator parameter. For detailed description on how undulator arrays are introduced to the code, the user interface chapter can be studied. In addition, the undulator group is now repeatable, meaning that several undulators with different types can be given and superposed in a single FEL simulation.
 	%
 	\item Possibility to visualize the radiated power in front of the bunch over a plane perpendicular to the undulator axis is an added feature to the software. This feature is added through th subgroup {\tt \em \small power-visualization}.
 	%
@@ -92,7 +92,8 @@ In future, adding the following aspects to the software are planned:
 	%
 	\item Computing the bunching factor of the bunch as an output parameter. Currently, it can be extracted by saving the bunch profile with a certain rhythm and performing post-processing separately after the simulation.
 	%
-	\item Implementing a far-field transformation technique to more accurately estimate the radiated power. This will avoid the problem of power underestimation due to limited sampling plane of the power in front of the bunch.
+	\item Implementing a far-field transformation technique to more accurately estimate the radiated power. This will avoid the problem of power underestimation due to limited area of the power-sampling plane
+	 in front of the bunch.
 	%
 	\item Implementing UPML boundary condition to minimize the computational domain for FEL calculations
 	%
@@ -109,7 +110,7 @@ However, this task can be done only after the ongoing projects are closed and th
 %
 Owing to my dedication to develop open-source softwares, I have placed the code in github for any interested user to download the code and work with it.
 %
-The source codes are available under the link https://github.com/aryafallahi/mithra.
+The source codes are available under the link \href{https://github.com/aryafallahi/mithra}{https://github.com/aryafallahi/mithra}.
 %
 Eventually, I welcome any feedback from users of the code which will be an indispensable help for further improving the software performance.
 %

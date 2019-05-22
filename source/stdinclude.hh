@@ -124,13 +124,13 @@ namespace Darius
     std::ostringstream oStream;
     try
     {
-        oStream << value;
+	oStream << value;
     }
     catch(std::exception& error)
     {
-        printmessage(std::string(__FILE__), __LINE__, std::string("Cannot convert this variable to a string."));
-        printmessage(std::string(__FILE__), __LINE__, std::string("Error:") + error.what());
-        exit(1);
+	printmessage(std::string(__FILE__), __LINE__, std::string("Cannot convert this variable to a string."));
+	printmessage(std::string(__FILE__), __LINE__, std::string("Error:") + error.what());
+	exit(1);
     }
 
     return oStream.str();

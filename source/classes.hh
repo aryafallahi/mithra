@@ -918,9 +918,9 @@ namespace Darius
     /* Set the plane type for vtk in plane visualization.                                           	*/
     PlaneType planeType(std::string planeType)
     {
-      if      ( planeType.compare("x-normal")     == 0 )	return( XNORMAL );
-      else if ( planeType.compare("y-normal")     == 0 )	return( YNORMAL );
-      else if ( planeType.compare("z-normal")     == 0 )	return( ZNORMAL );
+      if      ( planeType.compare("yz")     == 0 )	return( XNORMAL );
+      else if ( planeType.compare("xz")     == 0 )	return( YNORMAL );
+      else if ( planeType.compare("xy")     == 0 )	return( ZNORMAL );
       else { std::cout << planeType << " is an unknown vtk plane type." << std::endl; exit(1); }
     }
 

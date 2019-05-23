@@ -1092,6 +1092,13 @@ The value of $\phi_j$ as the bunching factor phase in various slices is calculat
 
 \section{Parallelization}
 
+\begin{figure}
+	\centering
+	\includegraphics[width=5.0in]{./MITHRA_FDTDPIC/Fig5/Fig5.pdf}
+	\caption{Schematic illustration of the domain decomposition used for distributed memory parallelization in MITHRA}
+	\label{FDTDPICFig5}
+\end{figure}
+%
 The large and demanding computation cost needed for the simulation of the FEL process even in the Lorentz boosted coordinate frame necessitates solving the problem on multiple processors to achieve reasonable computation times.
 %
 Therefore, efficient parallelization techniques should be implemented in the FDTD/PIC algorithm to develop an efficient software.
@@ -1115,13 +1122,6 @@ In MITHRA, we use distributed memory technique for parallelization of the radiat
 The total computational domain is decomposed to several separate regions, each of them solved by one processor.
 %
 These sets of processors communicate the required variables based on the technique visualized in Fig.\,\ref{FDTDPICFig5}.
-%
-\begin{figure}
-\centering
-\includegraphics[width=5.0in]{./MITHRA_FDTDPIC/Fig5/Fig5.pdf}
-\caption{Schematic illustration of the domain decomposition used for distributed memory parallelization in MITHRA}
-\label{FDTDPICFig5}
-\end{figure}
 
 To parallelize the computation among $N$ processors, the whole computational domain is divided into $N$ domains along $z$ (undulator period) axis.
 %

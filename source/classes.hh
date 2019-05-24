@@ -425,7 +425,7 @@ namespace Darius
     Double				timeStep_;
 
     /* Rhythm of writing the bunch macroscopic values in the output file.                              	*/
-    unsigned int         		rhythm_;
+    Double         			rhythm_;
 
     /* Time points at which the bunch is produced.                                                      */
     Double                    		timeStart_;
@@ -440,7 +440,7 @@ namespace Darius
     std::string				bunchVTKBasename_;
 
     /* Rhythm of producing the vtk files. It should be double value bigger than the time step.         	*/
-    unsigned int			bunchVTKRhythm_;
+    Double				bunchVTKRhythm_;
 
     /* Boolean parameter that determines if the bunch profile should be saved.                         	*/
     bool				bunchProfile_;
@@ -455,7 +455,7 @@ namespace Darius
     std::vector<Double>      		bunchProfileTime_;
 
     /* Rhythm of saving the bunch profile. It should be a double value bigger than the time step.	*/
-    unsigned int			bunchProfileRhythm_;
+    Double				bunchProfileRhythm_;
 
     /* Show the stored values for the bunch.                                                          	*/
     void show()
@@ -856,7 +856,7 @@ namespace Darius
     std::vector<FieldType>              samplingField_;
     std::string                         samplingDirectory_;
     std::string                         samplingBasename_;
-    unsigned int                        samplingRhythm_;
+    Double                        	samplingRhythm_;
     std::vector<FieldVector<Double> >   samplingPosition_;
     FieldVector<Double>                 samplingLineBegin_;
     FieldVector<Double>                 samplingLineEnd_;
@@ -872,7 +872,7 @@ namespace Darius
       std::string                       directory_;
       SamplingType			type_;
       std::string                       basename_;
-      unsigned int                      rhythm_;
+      Double                      	rhythm_;
       PlaneType				plane_;
       FieldVector<Double>		position_;
 
@@ -897,7 +897,7 @@ namespace Darius
     std::string                         profileDirectory_;
     std::string                         profileBasename_;
     std::vector<Double>                 profileTime_;
-    unsigned int                        profileRhythm_;
+    Double                        	profileRhythm_;
 
     /* Set the sampling type of the seed.                                                               */
     SamplingType samplingType(std::string samplingType)
@@ -1420,7 +1420,7 @@ namespace Darius
       std::string				basename_;
 
       /* Store the rhythm for calculating and saving the radiation power.				*/
-      unsigned int				rhythm_;
+      Double					rhythm_;
 
       /* The wavelength of the harmonic whose power should be plotted.					*/
       Double					lambda_;

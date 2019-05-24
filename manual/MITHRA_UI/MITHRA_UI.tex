@@ -202,7 +202,7 @@ In what follows, the parameters in each group are introduced:
 	%
 	\item {\tt \small \em directory} is the address where the above file should be saved. The file name with the address can also be given in the base-name section. The software eventually considers the combination of directory and base-name as the final complete file name.
 	%
-	\item {\tt \small \em rhythm} is an integer returning the rhythm of bunch sampling, i.e. the number of bunch time-steps between two consecutive sampling times.
+	\item {\tt \small \em rhythm} is a real value returning the rhythm of bunch sampling, i.e. the time interval between two consecutive sampling times.
 \end{itemize}
 %%
 \item {\tt \small \em bunch-visualization:} This group defines the required parameters for visualizing the charge distribution in the whole computational domain. The output will be a set of {\tt \small \em .vtu} files at each time for each processor, which are connected with a set of {\tt \small \em .pvtu} files. They can be very nicely visualized using the open source ParaView package. There are different parameters required for this definition which include:
@@ -214,7 +214,7 @@ In what follows, the parameters in each group are introduced:
 	%
 	\item {\tt \small \em directory} is the address where the above file should be saved. The file name with the address can also be given in the base-name section. The software eventually considers the combination of directory and base-name as the final complete file name.
 	%
-	\item {\tt \small \em rhythm} is the rhythm of charge visualization, i.e. the number of bunch time-steps between two consecutive visualization times.
+	\item {\tt \small \em rhythm} is the rhythm of charge visualization, i.e. the time interval between two consecutive visualization times.
 \end{itemize}
 %
 \item {\tt \small \em bunch-profile:} This group defines the required parameters for saving a histogram of the charges. It means that at a specific time instant the charge values, positions and momenta of all the particles (or macro-particles) will be written and saved in a file. The parameters entered by the user for saving the histogram include:
@@ -228,7 +228,7 @@ In what follows, the parameters in each group are introduced:
 	%
 	\item {\tt \small \em time} is the time instant for saving the histogram. If this needs to be done in several time instants, simply this line should be repeated with different time values.
 	%
-    \item {\tt \small \em rhythm} is the rhythm of writing the bunch profile, i.e. the number of bunch time-steps between two consecutive profiling times. If this value is nonzero, the sequence of times will be considered in addition to the specific time points given by the time variable.
+    \item {\tt \small \em rhythm} is the rhythm of writing the bunch profile, i.e. the time interval between two consecutive profiling times. If this value is nonzero, the sequence of times will be considered in addition to the specific time points given by the time variable.
 \end{itemize}
 \end{enumerate}
 
@@ -263,7 +263,7 @@ BUNCH
 		sample  				 = < true | false >
 		directory  				 = < /path/to/location >
 		base-name  				 = < string >
-		rhythm  				 = < int >
+		rhythm  				 = < real >
 	\}
 
 	bunch-visualization
@@ -271,7 +271,7 @@ BUNCH
 		sample  				 = < true | false >
 		directory  				 = < /path/to/location >
 		base-name  				 = < string >
-		rhythm  				 = < int >
+		rhythm  				 = < real >
 	\}
 
 	bunch-profile
@@ -280,7 +280,7 @@ BUNCH
 		directory  				 = < /path/to/location >
 		base-name  				 = < string >
 		\textcolor{red}{time}					\textcolor{red}{ = < real >}
-		rhythm  				 = < int >
+		rhythm  				 = < real >
 	\}
 \}
 \end{Verbatim}
@@ -314,7 +314,7 @@ BUNCH
 		sample					  = false
 		directory				  = ./
 		base-name				  = bunch-sampling/bunch
-		rhythm					  = 2
+		rhythm					  = 3.2
 	\}
 	
 	bunch-visualization
@@ -322,7 +322,7 @@ BUNCH
 		 sample					  = true
 		 directory				  = ./
 		 base-name				  = bunch-visualization/bunch
-		 rhythm					  = 20
+		 rhythm					  = 32
 	\}
 	
 	bunch-profile
@@ -404,7 +404,7 @@ In what follows, the parameters in each group are introduced:
 	%
 	\item {\tt \small \em directory} is the address where the above file should be saved. The file name with the address can also be given in the base-name section. The software eventually considers the combination of directory and base-name as the final complete file name.
 	%
-	\item {\tt \small \em rhythm} is an integer determining the rhythm of field sampling, i.e. the number of time steps between two consecutive sampling times.
+	\item {\tt \small \em rhythm} is a real value determining the rhythm of field sampling, i.e. the time interval between two consecutive sampling times.
 	%
 	\item {\tt \small \em position} is the coordinate of the points where the fields should be sampled. By repeating this line any number of points can be added to the set of sampling locations. This option is merely used when the sampling type is set to {\tt \small \em at-point}.
 	%
@@ -428,7 +428,7 @@ In what follows, the parameters in each group are introduced:
 	%
 	\item {\tt \small \em plane} is the plane of field-visualization if the visualization is to be done over a 2D plane. This parameter is read only if {\tt \small \em type} is set to {\tt \small \em in-plane}.
 	%
-	\item {\tt \small \em rhythm} is the rhythm of field visualization, i.e. the number of time-steps between two consecutive visualization instants.
+	\item {\tt \small \em rhythm} is the rhythm of field visualization, i.e. the time interval between two consecutive visualization instants.
 	%
 	\item {\tt \small \em field} determines which electromagnetic field is to be visualized. The available options are the electric field, magnetic field, magnetic vector potential, scalar electric potential, charge and current. This item can be repeated to assign several fields for the sampling. In the vtk file, the fields appear with the same order. To make the output compatible with the visualizer ParaView, it is most suitable if three consistent parameters are given here.
 \end{itemize}
@@ -444,7 +444,7 @@ In what follows, the parameters in each group are introduced:
 	%
 	\item {\tt \small \em time} is the time instant for saving the histogram. If this needs to be done in several time instants, simply this line should be repeated with different time values.
 	%
-	\item {\tt \small \em rhythm} is the rhythm of field profiling, i.e. the time interval between two consecutive visualization times. Both rhythmic profiling and saving the fields at specific times can be given to the software.
+	\item {\tt \small \em rhythm} is the rhythm of field profiling, i.e. the time interval between two consecutive profiling times. Both rhythmic profiling and saving the fields at specific times can be given to the software.
 	%
 	\item {\tt \small \em field} determines which electromagnetic field is to be profiled. The available options are the electric field, magnetic field, magnetic vector potential, scalar electric potential, charge and current. This item can be repeated to assign several fields for the sampling. In the text file, the fields appear with the same order.
 \end{itemize}
@@ -479,7 +479,7 @@ FIELD
 									 \textcolor{red}{F  | Q >}
 		directory  				 = < /path/to/location >
 		base-name  				 = < string >
-		rhythm  				 = < int >
+		rhythm  				 = < real >
 		\textcolor{red}{position}  				 \textcolor{red}{= < ( real, real, real ) >}
 		line-begin  			 = < ( real, real, real ) >
 		line-end  				 = < ( real, real, real ) >
@@ -496,7 +496,7 @@ FIELD
 									 \textcolor{red}{F  | Q >}
 		directory  				 = < /path/to/location >
 		base-name  				 = < string >
-		rhythm  				 = < int >
+		rhythm  				 = < real >
 	\textcolor{red}{\}}
 
 	field-profile
@@ -506,7 +506,7 @@ FIELD
 									 \textcolor{red}{F  | Q >}
 		directory  				 = < /path/to/location >
 		base-name  				 = < string >
-		rhythm  				 = < int >
+		rhythm  				 = < real >
 		\textcolor{red}{time}  					 \textcolor{red}{= < real >}
 	\}
 \}

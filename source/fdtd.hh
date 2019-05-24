@@ -71,13 +71,13 @@ namespace Darius
 
 	  /* If sampling of the field is enabled and the rhythm for sampling is achieved. Sample the
 	   * field at the given position and save them into the file.					*/
-	  if (seed_.sampling_ && ( nTime_ % seed_.samplingRhythm_ == 0 ) && ( time_ > 0.0 ) ) fieldSample();
+	  if ( seed_.sampling_ && fmod(time_, seed_.samplingRhythm_) < mesh_.timeStep_ && time_ > 0.0 ) fieldSample();
 
 	  /* If visualization of the field is enabled and the rhythm for visualization is achieved,
 	   * visualize the fields and save the vtk data in the given file name.				*/
 	  for (unsigned int i = 0; i < seed_.vtk_.size(); i++)
 	    {
-	      if (seed_.vtk_[i].sample_ && ( nTime_ % seed_.vtk_[i].rhythm_ == 0 ) && ( time_ > 0.0 ) )
+	      if ( seed_.vtk_[i].sample_ && fmod(time_, seed_.vtk_[i].rhythm_) < mesh_.timeStep_ && time_ > 0.0 )
 		{
 		  if 		( seed_.vtk_[i].type_ == ALLDOMAIN ) fieldVisualizeAllDomain(i);
 		  else if 	( seed_.vtk_[i].type_ == INPLANE   ) fieldVisualizeInPlane(i);
@@ -92,7 +92,7 @@ namespace Darius
 		if ( time_ - seed_.profileTime_[i] < mesh_.timeStep_ && time_ > seed_.profileTime_[i] )
 		  fieldProfile();
 
-	      if ( ( nTime_ % seed_.profileRhythm_ == 0 ) && ( time_ > 0.0 ) && ( seed_.profileRhythm_ != 0 ) )
+	      if ( fmod(time_, seed_.profileRhythm_) < mesh_.timeStep_ && time_ > 0.0 && seed_.profileRhythm_ != 0 )
 		fieldProfile();
 	    }
 
@@ -137,11 +137,11 @@ namespace Darius
 
 	      /* If sampling of the bunch is enabled and the rhythm for sampling is achieved. Sample the
 	       * bunch and save them into the file.							*/
-	      if ( bunch_.sampling_ && ( nTime_ % bunch_.rhythm_ == 0 ) && ( time_ > 0.0 ) ) bunchSample();
+	      if ( bunch_.sampling_ && fmod(time_, bunch_.rhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchSample();
 
 	      /* If visualization of the bunch is enabled and the rhythm for visualization is achieved,
 	       * visualize the bunch and save the vtk data in the given file name.			*/
-	      if ( bunch_.bunchVTK_ && ( nTime_ % bunch_.bunchVTKRhythm_ == 0 ) && ( time_ > 0.0 ) ) bunchVisualize();
+	      if ( bunch_.bunchVTK_ && fmod(time_, bunch_.bunchVTKRhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchVisualize();
 
 	      /* If profiling of the bunch is enabled and the time for profiling is achieved, write the
 	       * bunch profile and save the data in the given file name.				*/
@@ -150,7 +150,7 @@ namespace Darius
 		  for (unsigned int i = 0; i < (bunch_.bunchProfileTime_).size(); i++)
 		    if ( time_ - bunch_.bunchProfileTime_[i] < mesh_.timeStep_ && time_ > bunch_.bunchProfileTime_[i] )
 		      bunchProfile();
-		  if ( ( nTime_ % bunch_.bunchProfileRhythm_ == 0 ) && ( time_ > 0.0 ) && ( bunch_.bunchProfileRhythm_ != 0.0 ) )
+		  if ( fmod(time_, bunch_.bunchProfileRhythm_) < mesh_.timeStep_ && time_ > 0.0 && bunch_.bunchProfileRhythm_ != 0.0 )
 		    bunchProfile();
 		}
 	    }

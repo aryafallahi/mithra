@@ -194,8 +194,11 @@ namespace Darius
 	    bunch_.bunchInit_[i].position_[ia][2]	-= bunch_.bunchInit_[i].sigmaPosition_[2] * ( 1.0 - zeta );
 	  bunch_.bunchInit_[i].initialBeta_ 	 	 = sqrt( 1.0 - 1.0 / ( bunch_.bunchInit_[i].initialGamma_ * bunch_.bunchInit_[i].initialGamma_ ) );
 	}
+      bunch_.rhythm_			/= gamma_;
+      bunch_.bunchVTKRhythm_		/= gamma_;
       for (unsigned int i = 0; i < bunch_.bunchProfileTime_.size(); i++)
-	bunch_.bunchProfileTime_[i] 			/= gamma_;
+	bunch_.bunchProfileTime_[i] 	/= gamma_;
+      bunch_.bunchProfileRhythm_	/= gamma_;
 
       /* The Lorentz boost parameters should also be transfered to the seed class in order to correctly
        * compute the fields within the computational domain.						*/
@@ -502,6 +505,9 @@ namespace Darius
 	  exit(1);
 	}
 
+      /* Lorentz boost the seed sampling rhythm to the electron rest frame.				*/
+      seed_.samplingRhythm_		/= gamma_;
+
       /* Perform the lorentz boost for the sampling data.						*/
       for (unsigned i = 0; i < seed_.samplingPosition_.size(); i++)
 	seed_.samplingPosition_[i][2] 	*= gamma_;
@@ -585,6 +591,10 @@ namespace Darius
 	      exit(1);
 	    }
 
+	  /* Lorentz boost the seed visualization rhythm to the electron rest frame.			*/
+	  seed_.vtk_[i].rhythm_			/= gamma_;
+
+	  /* Lorentz boost the plane-position to the electron rest frame.				*/
 	  seed_.vtk_[i].position_[2]		*= gamma_;
 
 	  if (!(isabsolute(seed_.vtk_[i].basename_)))
@@ -655,6 +665,9 @@ namespace Darius
 	  printmessage(std::string(__FILE__), __LINE__, std::string("The profiling rhythm of the field is zero and no time is set although profiling of the field is activated !!!") );
 	  exit(1);
 	}
+
+      /* Lorentz boost the seed profiling rhythm to the electron rest frame.				*/
+      seed_.profileRhythm_	/= gamma_;
 
       /* Perform the lorentz boost for the profiling data.						*/
       for (unsigned i = 0; i < seed_.profileTime_.size(); i++)
@@ -1700,8 +1713,11 @@ namespace Darius
 	      exit(1);
 	    }
 
+	  /* Lorentz boost the power-visualization sampling rhythm to the electron rest frame.		*/
+	  FEL_[jf].vtk_.rhythm_		/= gamma_;
+
 	  /* Perform the Lorentz boost for the sampling data.						*/
-	  FEL_[jf].vtk_.z_ 	*= gamma_;
+	  FEL_[jf].vtk_.z_ 		*= gamma_;
 
 	  /* Set the number of sampling points in each processor.                                       */
 	  rp_[jf].N  = 1;
@@ -1868,7 +1884,7 @@ namespace Darius
 	{
 
 	  /* Initialize if and only if the sampling of the power is enabled.                            */
-	  if ( FEL_[jf].vtk_.sampling_ && rp_[jf].Nz == 1 && ( nTime_ % FEL_[jf].vtk_.rhythm_ == 0 ) )
+	  if ( FEL_[jf].vtk_.sampling_ && rp_[jf].Nz == 1 && fmod(time_, FEL_[jf].vtk_.rhythm_) < mesh_.timeStep_ )
 	    {
 
 	      /* Calculate the index of the cell at which the plane resides.				*/

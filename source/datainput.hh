@@ -212,7 +212,7 @@ namespace Darius
 		  if 	  (parameterName(*iter) == "sample") 		bunch_.sampling_	= boolValue(*iter);
 		  else if (parameterName(*iter) == "directory")         bunch_.directory_	= stringValue(*iter);
 		  else if (parameterName(*iter) == "base-name")         bunch_.basename_	= stringValue(*iter);
-		  else if (parameterName(*iter) == "rhythm")            bunch_.rhythm_   	= intValue(*iter);
+		  else if (parameterName(*iter) == "rhythm")            bunch_.rhythm_   	= doubleValue(*iter);
 		  else { std::cout << parameterName(*iter) << " is not defined in the bunch-sampling group." << std::endl; exit(1); }
 		  ++iter;
 		}
@@ -230,7 +230,7 @@ namespace Darius
 		  if      (parameterName(*iter) == "sample")    	bunch_.bunchVTK_                = boolValue(*iter);
 		  else if (parameterName(*iter) == "directory")         bunch_.bunchVTKDirectory_	= stringValue(*iter);
 		  else if (parameterName(*iter) == "base-name") 	bunch_.bunchVTKBasename_        = stringValue(*iter);
-		  else if (parameterName(*iter) == "rhythm")    	bunch_.bunchVTKRhythm_          = intValue(*iter);
+		  else if (parameterName(*iter) == "rhythm")    	bunch_.bunchVTKRhythm_          = doubleValue(*iter);
 		  else { std::cout << parameterName(*iter) << " is not defined in the bunch-visualization group." << std::endl; exit(1); }
 		  ++iter;
 		}
@@ -248,7 +248,7 @@ namespace Darius
 		  else if (parameterName(*iter) == "directory") bunch_.bunchProfileDirectory_	= stringValue(*iter);
 		  else if (parameterName(*iter) == "base-name") bunch_.bunchProfileBasename_    = stringValue(*iter);
 		  else if (parameterName(*iter) == "time")      (bunch_.bunchProfileTime_).push_back(doubleValue(*iter));
-		  else if (parameterName(*iter) == "rhythm")    bunch_.bunchProfileRhythm_      = intValue(*iter);
+		  else if (parameterName(*iter) == "rhythm")    bunch_.bunchProfileRhythm_      = doubleValue(*iter);
 		  else { std::cout << parameterName(*iter) << " is not defined in the bunch-profile group." << std::endl; exit(1); }
 		  ++iter;
 		}
@@ -322,7 +322,7 @@ namespace Darius
 		  else if (parameterName(*iter) == "field")             seed_.samplingField_.push_back(seed_.fieldType(stringValue(*iter)));
 		  else if (parameterName(*iter) == "directory")         seed_.samplingDirectory_       	= stringValue(*iter);
 		  else if (parameterName(*iter) == "base-name")         seed_.samplingBasename_		= stringValue(*iter);
-		  else if (parameterName(*iter) == "rhythm")            seed_.samplingRhythm_          	= intValue(*iter);
+		  else if (parameterName(*iter) == "rhythm")            seed_.samplingRhythm_          	= doubleValue(*iter);
 		  else if (parameterName(*iter) == "position")
 		    {
 		      std::vector<Double> position = vectorDoubleValue(*iter);
@@ -365,7 +365,7 @@ namespace Darius
 		  else if (parameterName(*iter) == "plane")         	seed_.vtk_[i].plane_ 		= seed_.planeType(stringValue(*iter));
 		  else if (parameterName(*iter) == "base-name")         seed_.vtk_[i].basename_		= stringValue(*iter);
 		  else if (parameterName(*iter) == "field")             seed_.vtk_[i].field_.push_back(seed_.fieldType(stringValue(*iter)));
-		  else if (parameterName(*iter) == "rhythm")            seed_.vtk_[i].rhythm_   	= intValue(*iter);
+		  else if (parameterName(*iter) == "rhythm")            seed_.vtk_[i].rhythm_   	= doubleValue(*iter);
 		  else if (parameterName(*iter) == "position")
 		    {
 		      std::vector<Double> position = vectorDoubleValue(*iter);
@@ -391,7 +391,7 @@ namespace Darius
 		  else if (parameterName(*iter) == "base-name")         seed_.profileBasename_	= stringValue(*iter);
 		  else if (parameterName(*iter) == "time")            	seed_.profileTime_.push_back(doubleValue(*iter));
 		  else if (parameterName(*iter) == "field")             seed_.profileField_.push_back(seed_.fieldType(stringValue(*iter)));
-		  else if (parameterName(*iter) == "rhythm")            seed_.profileRhythm_    = intValue(*iter);
+		  else if (parameterName(*iter) == "rhythm")            seed_.profileRhythm_    = doubleValue(*iter);
 		  else { std::cout << parameterName(*iter) << " is not defined in seed-profile group." << std::endl; exit(1); }
 		  ++iter;
 		}
@@ -640,7 +640,7 @@ namespace Darius
 		  else if (parameterName(*iter) == "directory")         		FEL.vtk_.directory_	= stringValue(*iter);
 		  else if (parameterName(*iter) == "base-name")         		FEL.vtk_.basename_	= stringValue(*iter);
 		  else if (parameterName(*iter) == "plane-position")	        	FEL.vtk_.z_		= doubleValue(*iter);
-		  else if (parameterName(*iter) == "rhythm")            		FEL.vtk_.rhythm_   	= intValue(*iter);
+		  else if (parameterName(*iter) == "rhythm")            		FEL.vtk_.rhythm_   	= doubleValue(*iter);
 		  else if (parameterName(*iter) == "normalized-frequency")	        FEL.vtk_.lambda_        = doubleValue(*iter);
 		  else { std::cout << parameterName(*iter) << " is not defined in power-visualization group." << std::endl; exit(1); }
 		  ++iter;

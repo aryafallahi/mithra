@@ -564,17 +564,24 @@ namespace Darius
       MPI_Reduce(&sf_.N, &Ntotal, 1,MPI_TYPE,MPI_SUM,0,MPI_COMM_WORLD);
 
       /* Create the file stream and directories for saving the seed sampling data.			*/
-      std::string baseFilename = "";
       if ( sf_.N > 0 )
 	{
+	  std::string baseFilename = "";
 	  if (!(isabsolute(seed_.samplingBasename_))) baseFilename = seed_.samplingDirectory_;
 	  baseFilename += seed_.samplingBasename_ + "-" + stringify(rank_) + TXT_FILE_SUFFIX;
 
 	  sf_.file = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
 	}
-      /* If the directory of the baseFilename does not exist create this directory.			*/
-      if ( Ntotal > 0 )	createDirectory(baseFilename, rank_);
 
+      /* If the directory of the baseFilename does not exist create this directory.			*/
+      if ( Ntotal > 0 )
+	{
+	  std::string baseFilename = "";
+	  if (!(isabsolute(seed_.samplingBasename_))) baseFilename = seed_.samplingDirectory_;
+	  baseFilename += seed_.samplingBasename_ + TXT_FILE_SUFFIX;
+
+	  createDirectory(baseFilename, rank_);
+	}
     }
 
     /****************************************************************************************************

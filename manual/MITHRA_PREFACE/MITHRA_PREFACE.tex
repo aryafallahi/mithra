@@ -64,8 +64,6 @@ A list of new features and applied changes in version 2.0 released with this man
 	%
 	\item In the previous version, the {\tt \small \em bunch-initialization} subgroup could be repeated to initialize multiple bunches in a single simulation. While this feature is kept in the new version, the {\tt \small \em bunch-initialization} subgroup now accepts arbitrary number of {\tt \small \em position} vectors. As a result, at each position, determined by the position vector, the bunch is initialized. This feature is useful in initializing an array of bunches to be injected into the undulator.
 	%
-	\item The previous version accepted values of {\tt \em \small rhythm} parameter as a real value. In the new version, it is given as an integer number, which corresponds to the multiple of time-step at which either sampling or visualization is fulfilled. Note that the sampling time values given as the parameter {\tt \em \small time} are still real numbers.
-	%
 	\item Because of an application of the code, a new field type is added to the code named as confined-plane-wave. This is fundamentally similar to plane-wave that is confined to an elliptical region determined by the two radius parameters.
 	%
 	\item The names {\tt \em \small rayleigh-radius-parallel} and {\tt \em \small rayleigh-radius-perpendicular} are changed to {\tt \em \small radius-parallel} and {\tt \em \small radius-perpendicular}.

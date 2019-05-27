@@ -859,68 +859,120 @@ EXTERNAL-FIELD
 
 The typical parameters for a free electron laser instrument are calculated from the radiated fields using the parameter definitions at this section.
 %
-Currently, there is only one group implemented in MITHRA, which calculates the total radiated power in the $+z$ direction and saves the power versus the undulator position to a text file.
+Currently, there are two groups implemented in MITHRA, for computation of radiated power and visualization of this power on a detector in front of the bunch.
 %
 In what follows, the parameters in each group are introduced:
 
 \begin{enumerate}
-\item {\tt \small \em radiation-power:} This group mainly determines the parameters whose values are needed for calculating the radiation power from the field distribution. The output is a .txt file with the first column the time point and the second column the radiated power at the given point. For multiple points the column is repeated. If multiple wavelengths are given there will be several rows with similar time value listing the radiated power with different wavelengths. This group can be repeated to obtain various files for different output definitions. %%
-
+%
+\item {\tt \small \em radiation-power:} This group mainly determines the parameters whose values are needed for calculating the radiation power from the field distribution. The output is a .txt file with the first column the time point and the second column the radiated power at the given point. For multiple points the column is repeated. If multiple frequencies are given, there will be several rows with similar time value listing the radiated power with different wavelengths. This group can be repeated to obtain various files for different output definitions. 
+%
 The set of values accepted in this group include:
+%
 \begin{itemize}
 	\item {\tt \small \em sample} is a boolean parameter which activates the computation of the total radiated power at each instant.
+	%
 	\item {\tt \small \em base-name} is the file name (no suffix) with the required address of the file to save the output data.
+	%
 	\item {\tt \small \em directory} is the address where the above file should be saved. The file name with the address can also be given in the base-name section. The software eventually considers the combination of directory and base-name as the final complete file name.
-	\item {\tt \small \em type} determines if the radiated power should be sampled at given distances from the bunch (at-point) or should be sampled at the points over a line (over-line).
-	\item {\tt \small \em plane-position} gives the total distance from the bunch where a sampling plate to capture the whole radiated power will be placed.  One can enter several sampling positions by repeating this line. This option is only considered if the type variable is set to "at-point".
-	\item {\tt \small \em line-begin} defines the distance from the bunch center for the line begin over which the fields should be sampled and is used when the sampling type is set to "over-line" option. In case of multiple bunches, the center of the first bunch is considered as the reference position.
-	\item {\tt \small \em line-end} defines the distance from the bunch center for the line end over which the fields should be sampled and is used when the sampling type is set to "over-line" option. In case of multiple bunches, the center of the first bunch is considered as the reference position.
-	\item {\tt \small \em resolution} defines the resolution of the line discretization for sampling. In other words, the value is the distance between two adjacent sampling points. This value is used when the type variable is set to "over-line" option.
+	%
+	\item {\tt \small \em type} determines if the radiated power should be sampled at given distances from the bunch ({\tt \small \em at-point}) or should be sampled at the points over a line ({\tt \small \em over-line}).
+	%
+	\item {\tt \small \em plane-position} gives the total distance from the bunch where a sampling plate to capture the whole radiated power will be placed. The sampling plate should exist inside the computational domain. This may change after far-field transformation is implemented in the code. One can enter several sampling positions by repeating this line. This option is only considered if the type variable is set to {\tt \small \em at-point}.
+	%
+	\item {\tt \small \em line-begin} defines the distance from the bunch center for the line begin over which the fields should be sampled and is used when the sampling type is set to {\tt \small \em over-line} option. In case of multiple bunches, the center of the first bunch is considered as the reference position.
+	%
+	\item {\tt \small \em line-end} defines the distance from the bunch center for the line end over which the fields should be sampled and is used when the sampling type is set to {\tt \small \em over-line} option. In case of multiple bunches, the center of the first bunch is considered as the reference position.
+	%
+	\item {\tt \small \em number-of-points} is the number of points between line-begin and line-end for the computation of radiation. This value is used when the type variable is set to {\tt \small \em over-line}.
+	%
 	\item {\tt \small \em normalized-frequency} is the central frequency normalized to the radiation frequency of the radiation spectrum.
-	\item {\tt \small \em minimum-normalized-frequency} is the minimum frequency normalized to the radiation frequency. This parameters and the next two parameters are used to sweep over the normalized frequency and save the radiation power spectrum.
+	%
+	\item {\tt \small \em minimum-normalized-frequency} is the minimum frequency normalized to the radiation frequency. This parameters and the next two parameters are used to sweep over the normalized frequency and save the spectrum of the total radiated power.
+	%
 	\item {\tt \small \em maximum-normalized-frequency} is the maximum frequency normalized to the radiation frequency.
-	\item {\tt \small \em normalized-frequency-resolution} is the sweep resolution for the frequency normalized to the radiation frequency.
+	%
+	\item {\tt \small \em number-of-frequency-points} is the number of frequency points between the minimum and maximum normalized frequencies for the computation of radiation spectrum.
 \end{itemize}
+%
+\item {\tt \small \em power-visualization:} This group is designed to visualize the radiated power on a detector in front of the bunch. This detector needs to reside insider the computational grid, since there is no far-field transformation implemented in the code. The output in this group will be a set of 2D {\tt \small .vtk} files that can be read by a visualization software like Paraview.
+%
+The set of values accepted in this group include:
+%
+\begin{itemize}
+	\item {\tt \small \em sample} is a boolean parameter which activates the visualization of power at a detector-plane in front of the bunch.
+	%
+	\item {\tt \small \em base-name} is the file name (no suffix) with the required address of the file to save the output data.
+	%
+	\item {\tt \small \em directory} is the address where the above file should be saved. The file name with the address can also be given in the base-name section. The software eventually considers the combination of directory and base-name as the final complete file name.
+	%
+	\item {\tt \small \em plane-position} gives the total distance from the bunch where a visualization plane for the local radiated power will be placed. The visualization plane should exist inside the computational domain. This may change after far-field transformation is implemented in the code. 
+	%
+	\item {\tt \small \em normalized-frequency} is the central frequency normalized to the radiation frequency of the radiation spectrum.
+	%
+	\item {\tt \small \em rhythm} is a real value determining the intervals for power-visualization. Note that because of the requirements on the Fourier transform, the power computation is accomplished at each time step. However, the saving of the visualization files will be done according to the set value for this parameter.
+\end{itemize}
+%
 \end{enumerate}
 
-The format of the \texttt{FEL-OUTPUT} group is:
+The format of the \texttt{FEL-OUTPUT} group is (the red groups and parameters are repeatable parts):
 %%
-\begin{Verbatim}[frame=single,fontsize=\small,tabsize=4]
+\begin{Verbatim}[frame=single, fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
 FEL-OUTPUT
-{
-	radiation-power
-	{
-		sample                           = < false | true >
-		type                             = < at-point | over-line >
-		directory                        = < address according to UNIX convention >
-		base-name                        = < name of the file >
-		plane-position 		          = < real value >
-		line-begin                       = < real value >
-		line-end                         = < real value >
-		resolution                       = < real value >
-		normalized-frequency             = < real value >
-		minimum-normalized-frequency     = < real value >
-		maximum-normalized-frequency     = < real value >
-		normalized-frequency-resolution  = < real value >
-	}
-}
+\{
+	\textcolor{red}{radiation-power}
+	\textcolor{red}{\{}
+		sample					  = < false | true >
+		type					  = < at-point | over-line >
+		directory				  = < /path/to/location >
+		base-name				  = < string >
+		\textcolor{red}{plane-position}  		  \textcolor{red}{= < real >}
+		line-begin				  = < real >
+		line-end				  = < real >
+		number-of-points		  = < int >
+		\textcolor{red}{normalized-frequency}	  \textcolor{red}{= < real >}
+		minimum-normalized-frequency	  = < real >
+		maximum-normalized-frequency	  = < real >
+		number-of-frequency-points		  = < int >
+	\textcolor{red}{\}}
+
+	\textcolor{red}{power-visualization}
+	\textcolor{red}{\{}
+		sample					  = < false | true >
+		directory				  = < /path/to/location >
+		base-name				  = < string >
+		plane-position			  = < real >
+		normalized-frequency	  = < real >
+		rhythm					  = < real >
+	\textcolor{red}{\}}
+\}
 \end{Verbatim}
 %%
 An example of the FEL output category definition looks as the following:
 %%
 \begin{snugshade}
-\begin{Verbatim}[fontsize=\small, tabsize = 4]
+\begin{Verbatim}[fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
 FEL-OUTPUT
-{
+\{
 	radiation-power
-	{
-		sample                           = true
-		type                             = at-point
-		directory                        = ./
-		base-name                        = power-sampling/power
-		plane-position                   = 110.0
-		normalized-frequency             = 1.00
-	}
-}
+	\{
+		sample					  = true
+		type					  = at-point
+		directory				  = ./
+		base-name				  = power-sampling/power
+		plane-position			  = 110.0
+		normalized-frequency	  = 1.00
+	\}
+	
+	power-visualization
+	\{
+		sample					  = true
+		directory				  = ./
+		base-name				  = power-visualization/power
+		plane-position			  = 110.0
+		normalized-frequency	  = 1.00
+		rhythm					  = 32.0
+	\}
+\}
 \end{Verbatim}
 \end{snugshade} 

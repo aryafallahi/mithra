@@ -54,6 +54,8 @@ A list of new features and applied changes in version 2.0 released with this man
 \begin{itemize}
 	\setlength{\parskip}{0pt}
 	\setlength{\itemsep}{0pt plus 1pt}
+	\item In the new version, user can specify the field update algorithm to be based on non-standard finite-difference or a simple finite-difference by setting the new parameter {\tt \small \em solver} in the {\tt \small \em MESH} group.
+	%
 	\item A new group in the job file is added which is named as external-field. Through this group, fields of other devices than the undulator will be added to the simulation. Currently, addition of external electromagnetic waves to the interaction is implemented.
 	%
 	\item Followed by the feedback from users which was inline with my own experience, the parallelization based on combined shared and distributed memory scheme (i.e. OpenMP and MPI) was not desired. Therefore, in the next versions parallelization is merely done based on distributed memory approach using MPI. Therefore, the previously existing parameter {\tt \em \small number-of-threads} is no more parsed in the job file.

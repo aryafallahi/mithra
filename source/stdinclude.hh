@@ -29,6 +29,9 @@ namespace Darius
   /* Define the types of the undulator supported by the code.                                           */
   enum UndulatorType		{STATIC, OPTICAL};
 
+  /* Define the type of the solver to be used for the FEL interaction.					*/
+  enum SolverType		{FD, NSFD};
+
   /* Scientific constants.                                                                              */
   const Double PI           	= 3.1415926535;
   const Double EPSILON_ZERO  	= 8.85418782e-12;

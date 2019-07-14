@@ -462,20 +462,40 @@ namespace Darius
        * for the points in the computational domain are different from the ones on the boundary, we will
        * do a loop first on the internal points. After all of them are updated, the points on the
        * boundary will be updated accordingly.								*/
-      for (i = 1; i < uf_.N0m1; i++)
-	for (j = 1; j < uf_.N1m1; j++)
-	  for (k = 1; k < uf_.npm1; k++)
-	    {
-	      l = 3 * ( N1N0_ * k + N1_ * i + j );
+      if ( mesh_.solver_ == NSFD )
+	{
+	  for (i = 1; i < uf_.N0m1; i++)
+	    for (j = 1; j < uf_.N1m1; j++)
+	      for (k = 1; k < uf_.npm1; k++)
+		{
+		  l = 3 * ( N1N0_ * k + N1_ * i + j );
 
-	      uf_.af.advanceMagneticPotential(
-		  uf_.anp1+l,    uf_.anm1+l,    uf_.an+l,
-		  uf_.an  +l+L0, uf_.an  +l+L2, uf_.an+l+L3,
-		  uf_.an  +l-L0, uf_.an  +l-L3, uf_.an+l-L2,
-		  uf_.an  +l+3 , uf_.an  +l+L4, uf_.an+l+L5,
-		  uf_.an  +l-3 , uf_.an  +l-L5, uf_.an+l-L4,
-		  uf_.an  +l+L1, uf_.an  +l-L1, uf_.jn+l);
-	    }
+		  uf_.af.advanceMagneticPotentialNSFD(
+		      uf_.anp1+l,    uf_.anm1+l,    uf_.an+l,
+		      uf_.an  +l+L0, uf_.an  +l+L2, uf_.an+l+L3,
+		      uf_.an  +l-L0, uf_.an  +l-L3, uf_.an+l-L2,
+		      uf_.an  +l+3 , uf_.an  +l+L4, uf_.an+l+L5,
+		      uf_.an  +l-3 , uf_.an  +l-L5, uf_.an+l-L4,
+		      uf_.an  +l+L1, uf_.an  +l-L1, uf_.jn+l);
+		}
+	}
+      else if ( mesh_.solver_ == FD )
+	{
+	  for (i = 1; i < uf_.N0m1; i++)
+	    for (j = 1; j < uf_.N1m1; j++)
+	      for (k = 1; k < uf_.npm1; k++)
+		{
+		  l = 3 * ( N1N0_ * k + N1_ * i + j );
+
+		  uf_.af.advanceMagneticPotentialFD(
+		      uf_.anp1+l,    uf_.anm1+l,    uf_.an+l,
+		      uf_.an  +l+L0, uf_.an  +l+L2, uf_.an+l+L3,
+		      uf_.an  +l-L0, uf_.an  +l-L3, uf_.an+l-L2,
+		      uf_.an  +l+3 , uf_.an  +l+L4, uf_.an+l+L5,
+		      uf_.an  +l-3 , uf_.an  +l-L5, uf_.an+l-L4,
+		      uf_.an  +l+L1, uf_.an  +l-L1, uf_.jn+l);
+		}
+	}
 
       /* If the amplitude of the seed exceeds a certain limit inject the seed into the computational
        * domain through TF/SF boundaries.								*/

@@ -105,16 +105,16 @@ namespace Darius
   {
   public:
 
-    void advanceMagneticPotential (T* v0,
-                                   T* v1,
-                                   T* v2,
-                                   T* v3, T* v31, T* v32,
-                                   T* v4, T* v41, T* v42,
-                                   T* v5, T* v51, T* v52,
-                                   T* v6, T* v61, T* v62,
-                                   T* v7,
-                                   T* v8,
-                                   T* v9)
+    void advanceMagneticPotentialNSFD (T* v0,
+				       T* v1,
+				       T* v2,
+				       T* v3, T* v31, T* v32,
+				       T* v4, T* v41, T* v42,
+				       T* v5, T* v51, T* v52,
+				       T* v6, T* v61, T* v62,
+				       T* v7,
+				       T* v8,
+				       T* v9)
     {
       *v0 =
 	  *ufa_     * *v2 - *v1 + alpha_ * (
@@ -136,16 +136,16 @@ namespace Darius
 	  *(ufa_+4) * *(v9+2);
     };
 
-    void advanceScalarPotential (T* v0,
-                                 T* v1,
-                                 T* v2,
-                                 T* v3, T* v31, T* v32,
-                                 T* v4, T* v41, T* v42,
-                                 T* v5, T* v51, T* v52,
-                                 T* v6, T* v61, T* v62,
-                                 T* v7,
-                                 T* v8,
-                                 T* v9)
+    void advanceScalarPotentialNSFD (T* v0,
+				     T* v1,
+				     T* v2,
+				     T* v3, T* v31, T* v32,
+				     T* v4, T* v41, T* v42,
+				     T* v5, T* v51, T* v52,
+				     T* v6, T* v61, T* v62,
+				     T* v7,
+				     T* v8,
+				     T* v9)
     {
       *v0 =
 	  *ufa_     * *v2 - *v1 + alpha_ * (
@@ -153,6 +153,56 @@ namespace Darius
 	  *(ufa_+2) * ( *v5 + *v6 + beta_ * ( *v51 + *v52 + *v61 + *v62 ) ) ) +
 	  *(ufa_+3) * ( *v7 + *v8 ) +
 	  *(ufa_+5) * *v9;
+    }
+
+    void advanceMagneticPotentialFD (T* v0,
+				     T* v1,
+				     T* v2,
+				     T* v3, T* v31, T* v32,
+				     T* v4, T* v41, T* v42,
+				     T* v5, T* v51, T* v52,
+				     T* v6, T* v61, T* v62,
+				     T* v7,
+				     T* v8,
+				     T* v9)
+    {
+      *v0 =
+	  *ufa_     * *v2 - *v1 +
+	  *(ufa_+1) * ( *v3 + *v4 ) +
+	  *(ufa_+2) * ( *v5 + *v6 ) +
+	  *(ufa_+3) * ( *v7 + *v8 ) +
+	  *(ufa_+4) * *v9;
+      *(v0+1) =
+	  *ufa_     * *(v2+1) - *(v1+1) +
+	  *(ufa_+1) * ( *(v3+1) + *(v4+1) ) +
+	  *(ufa_+2) * ( *(v5+1) + *(v6+1) ) +
+	  *(ufa_+3) * ( *(v7+1) + *(v8+1) ) +
+	  *(ufa_+4) * *(v9+1);
+      *(v0+2) =
+	  *ufa_     * *(v2+2) - *(v1+2) +
+	  *(ufa_+1) * ( *(v3+2) + *(v4+2) ) +
+	  *(ufa_+2) * ( *(v5+2) + *(v6+2) ) +
+	  *(ufa_+3) * ( *(v7+2) + *(v8+2) ) +
+	  *(ufa_+4) * *(v9+2);
+    };
+
+    void advanceScalarPotentialFD (T* v0,
+				   T* v1,
+				   T* v2,
+				   T* v3, T* v31, T* v32,
+				   T* v4, T* v41, T* v42,
+				   T* v5, T* v51, T* v52,
+				   T* v6, T* v61, T* v62,
+				   T* v7,
+				   T* v8,
+				   T* v9)
+    {
+      *v0 =
+	  *ufa_     * *v2 - *v1 +
+	      *(ufa_+1) * ( *v3 + *v4 ) +
+	      *(ufa_+2) * ( *v5 + *v6 ) +
+	      *(ufa_+3) * ( *v7 + *v8 ) +
+	      *(ufa_+5) * *v9;
     }
 
     void advanceBoundaryF(T* v0,

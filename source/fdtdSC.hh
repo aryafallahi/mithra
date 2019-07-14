@@ -514,29 +514,58 @@ namespace Darius
        * for the points in the computational domain are different from the ones on the boundary, we will
        * do a loop first on the internal points. After all of them are updated, the points on the
        * boundary will be updated accordingly.								*/
-      for (i = 1; i < uf_.N0m1; i++)
-	for (j = 1; j < uf_.N1m1; j++)
-	  for (k = 1; k < uf_.npm1; k++)
-	    {
-	      m = N1N0_ * k + N1_ * i + j;
-	      l = 3 * m;
+      if ( mesh_.solver_ == NSFD )
+	{
+	  for (i = 1; i < uf_.N0m1; i++)
+	    for (j = 1; j < uf_.N1m1; j++)
+	      for (k = 1; k < uf_.npm1; k++)
+		{
+		  m = N1N0_ * k + N1_ * i + j;
+		  l = 3 * m;
 
-	      uf_.af.advanceMagneticPotential(
-		  uf_.anp1+l,    uf_.anm1+l,    uf_.an+l,
-		  uf_.an  +l+L0, uf_.an  +l+L2, uf_.an+l+L3,
-		  uf_.an  +l-L0, uf_.an  +l-L3, uf_.an+l-L2,
-		  uf_.an  +l+3 , uf_.an  +l+L4, uf_.an+l+L5,
-		  uf_.an  +l-3 , uf_.an  +l-L5, uf_.an+l-L4,
-		  uf_.an  +l+L1, uf_.an  +l-L1, uf_.jn+l);
+		  uf_.af.advanceMagneticPotentialNSFD(
+		      uf_.anp1+l,    uf_.anm1+l,    uf_.an+l,
+		      uf_.an  +l+L0, uf_.an  +l+L2, uf_.an+l+L3,
+		      uf_.an  +l-L0, uf_.an  +l-L3, uf_.an+l-L2,
+		      uf_.an  +l+3 , uf_.an  +l+L4, uf_.an+l+L5,
+		      uf_.an  +l-3 , uf_.an  +l-L5, uf_.an+l-L4,
+		      uf_.an  +l+L1, uf_.an  +l-L1, uf_.jn+l);
 
-	      uf_.af.advanceScalarPotential(
-		  uf_.fnp1+m,    uf_.fnm1+m,    uf_.fn+m,
-		  uf_.fn  +m+M0, uf_.fn  +m+M2, uf_.fn+m+M3,
-		  uf_.fn  +m-M0, uf_.fn  +m-M3, uf_.fn+m-M2,
-		  uf_.fn  +m+1 , uf_.fn  +m+M4, uf_.fn+m+M5,
-		  uf_.fn  +m-1 , uf_.fn  +m-M5, uf_.fn+m-M4,
-		  uf_.fn  +m+M1, uf_.fn  +m-M1, uf_.rn+m);
-	    }
+		  uf_.af.advanceScalarPotentialNSFD(
+		      uf_.fnp1+m,    uf_.fnm1+m,    uf_.fn+m,
+		      uf_.fn  +m+M0, uf_.fn  +m+M2, uf_.fn+m+M3,
+		      uf_.fn  +m-M0, uf_.fn  +m-M3, uf_.fn+m-M2,
+		      uf_.fn  +m+1 , uf_.fn  +m+M4, uf_.fn+m+M5,
+		      uf_.fn  +m-1 , uf_.fn  +m-M5, uf_.fn+m-M4,
+		      uf_.fn  +m+M1, uf_.fn  +m-M1, uf_.rn+m);
+		}
+	}
+      else if ( mesh_.solver_ == FD )
+	{
+	  for (i = 1; i < uf_.N0m1; i++)
+	    for (j = 1; j < uf_.N1m1; j++)
+	      for (k = 1; k < uf_.npm1; k++)
+		{
+		  m = N1N0_ * k + N1_ * i + j;
+		  l = 3 * m;
+
+		  uf_.af.advanceMagneticPotentialFD(
+		      uf_.anp1+l,    uf_.anm1+l,    uf_.an+l,
+		      uf_.an  +l+L0, uf_.an  +l+L2, uf_.an+l+L3,
+		      uf_.an  +l-L0, uf_.an  +l-L3, uf_.an+l-L2,
+		      uf_.an  +l+3 , uf_.an  +l+L4, uf_.an+l+L5,
+		      uf_.an  +l-3 , uf_.an  +l-L5, uf_.an+l-L4,
+		      uf_.an  +l+L1, uf_.an  +l-L1, uf_.jn+l);
+
+		  uf_.af.advanceScalarPotentialFD(
+		      uf_.fnp1+m,    uf_.fnm1+m,    uf_.fn+m,
+		      uf_.fn  +m+M0, uf_.fn  +m+M2, uf_.fn+m+M3,
+		      uf_.fn  +m-M0, uf_.fn  +m-M3, uf_.fn+m-M2,
+		      uf_.fn  +m+1 , uf_.fn  +m+M4, uf_.fn+m+M5,
+		      uf_.fn  +m-1 , uf_.fn  +m-M5, uf_.fn+m-M4,
+		      uf_.fn  +m+M1, uf_.fn  +m-M1, uf_.rn+m);
+		}
+	}
 
       /* If the amplitude of the seed exceeds a certain limit inject the seed into the computational
        * domain through TF/SF boundaries.								*/

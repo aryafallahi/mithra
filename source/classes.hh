@@ -35,6 +35,9 @@ namespace Darius
     /* Boolean flag returning the status of space charge assumption.					*/
     bool			spaceCharge_;
 
+    /* Solver type that will be used to update the field values.					*/
+    SolverType			solver_;
+
     /* Show the stored values for the undulator.                                                      	*/
     void show()
     {

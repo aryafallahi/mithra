@@ -121,6 +121,19 @@ namespace Darius
 	      else                                              	mesh_.timeScale_      	= doubleValue(*iter);
 	    }
 	  else if (parameterName(*iter) == "space-charge") 		mesh_.spaceCharge_ 	= boolValue(*iter);
+	  else if (parameterName(*iter) == "solver")
+	    {
+	      std::string solver 	= stringValue(*iter);
+	      if 	( solver == "FD" )
+		mesh_.solver_ = FD;
+	      else if 	( solver == "NSFD" )
+		mesh_.solver_ = NSFD;
+	      else
+		{
+		  printmessage(std::string(__FILE__), __LINE__, std::string("The solver type is not among the accepted solvers.") );
+		  exit(1);
+		}
+	    }
 	  else { std::cout << parameterName(*iter) << " is not defined in solver group." << std::endl; exit(1); }
 	  ++iter;
 	}
@@ -149,7 +162,7 @@ namespace Darius
 		  if      (parameterName(*iter) == "type")              	bunchInit.bunchType_		= stringValue(*iter);
 		  else if (parameterName(*iter) == "distribution") 		bunchInit.distribution_		= stringValue(*iter);
 		  else if (parameterName(*iter) == "charge")            	bunchInit.cloudCharge_		= doubleValue(*iter);
-		  else if (parameterName(*iter) == "number-of-particles")       bunchInit.numberOfParticles_       = intValue(*iter);
+		  else if (parameterName(*iter) == "number-of-particles")       bunchInit.numberOfParticles_    = intValue(*iter);
 		  else if (parameterName(*iter) == "gamma")
 		    {
 		      bunchInit.initialGamma_ 	= doubleValue(*iter);

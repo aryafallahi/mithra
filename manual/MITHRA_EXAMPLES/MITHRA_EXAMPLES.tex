@@ -5,9 +5,11 @@ The goal in this chapter is to present several examples for the MITHRA users to 
 %
 In addition, through the presented examples the pros and cons of using the developed FDTD/PIC algorithm are more accurately evaluated.
 %
-For example, the computation time, numerical stability and numerical convergence and more importantly the reliability of the results are studied based on some standard examples.
+For example, the computation time, numerical stability and numerical convergence and more importantly the reliability of results are studied based on some standard examples.
 %
 The software developers aim to update this chapter with the most recent examples where MITHRA is used for the FEL simulation.
+%
+The job files needed by the MITHRA code for the examples provided in this chapter are all available in the github repository under the link \href{https://github.com/aryafallahi/mithra}{https://github.com/aryafallahi/mithra}.
 
 \section{Example 1: Infrared FEL}
 
@@ -45,6 +47,10 @@ As the first example, we consider an infrared FEL with the parameters tabulated 
 The bunch distribution is assumed to be uniform in order to compare the results with one-dimensional FEL theory.
 %
 For the same purpose, the transverse energy spread is considered to be zero and a minimal longitudinal energy spread is assumed.
+%
+In this first example, saturation of the FEL gain is obtained after a small number of microbunches compared to a typical x-ray FEL, which leads to a short simulation time.
+%
+As a results, we use this problem to assess the simulation results, verify the convergence and reliability of the algorithm, and finally compare the output with well-established softwares in the community.
 
 To simulate the considered FEL configuration, the following job file is written and given to the software to analyze the interaction.
 %
@@ -54,16 +60,16 @@ In the contrary, the longitudinal size of the mesh is only three times larger th
 %
 This needs to be considered due to the failure of absorbing boundary conditions for the oblique incidence of the field.
 %
-Furthermore, the bunch and undulator both have some tapering sections to avoid abrupt transitions which produce coherent scattering emission (CSE).
+During the simulation, the code adds tapering sections to both bunch and undulator to avoid abrupt transitions which produce coherent scattering emission (CSE).
 %
-It is recommended that the undulator begin is initialized at least ten radiation wavelengths apart from the bunch head to reduce the CSE.
+To consider such the additional tepreing sections, the undulator begin is initialized at least ten radiation wavelengths apart from the bunch head to reduce the CSE.
 %
 This also introduces corresponding limitations on the mesh size, meaning that the minimum distance from the bunch tail and the mesh boundary should be at least ten radiation wavelengths.
 %
 In the illustrated job file, some of the output formats are turned off which can always be activated to obtain the required data.
 %
 \begin{snugshade}
-\begin{Verbatim}[fontsize=\small, tabsize = 4]
+\begin{Verbatim}[fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
 MESH
 {
   length-scale                     = MICROMETER

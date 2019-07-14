@@ -148,20 +148,29 @@ namespace Darius
       mesh_.meshCenter_[2] 	*= gamma_;
       mesh_.totalTime_          /= gamma_;
 
-      /* Adjust the transverse mesh resolution to match the stability criterion.			*/
-      t = 1.0 / sqrt( pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[0], 2.0 ) + pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[1], 2.0 ) );
-      if ( t < 1.02 )
+      if ( mesh_.solver_ == NSFD )
 	{
-	  mesh_.meshResolution_[0] *= 1.02 / t;
-	  mesh_.meshResolution_[1] *= 1.02 / t;
+	  /* Adjust the transverse mesh resolution to match the stability criterion.			*/
+	  t = 1.0 / sqrt( pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[0], 2.0 ) + pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[1], 2.0 ) );
+	  if ( t < 1.02 )
+	    {
+	      mesh_.meshResolution_[0] *= 1.02 / t;
+	      mesh_.meshResolution_[1] *= 1.02 / t;
 
-	  printmessage(std::string(__FILE__), __LINE__, std::string("Transverse discretization along x is set to " + stringify(mesh_.meshResolution_[0]) ) );
-	  printmessage(std::string(__FILE__), __LINE__, std::string("Transverse discretization along y is set to " + stringify(mesh_.meshResolution_[1]) ) );
+	      printmessage(std::string(__FILE__), __LINE__, std::string("Transverse discretization along x is set to " + stringify(mesh_.meshResolution_[0]) ) );
+	      printmessage(std::string(__FILE__), __LINE__, std::string("Transverse discretization along y is set to " + stringify(mesh_.meshResolution_[1]) ) );
+	    }
+
+	  /* Based on the dispersion condition, the field time step can be obtained.			*/
+	  mesh_.timeStep_		 = mesh_.meshResolution_[2] / c0_;
+	  printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the field update is set to " + stringify(mesh_.timeStep_ * gamma_) ) );
 	}
-
-      /* Based on the dispersion condition, the field time step can be obtained.			*/
-      mesh_.timeStep_		 = mesh_.meshResolution_[2] / c0_;
-      printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the field update is set to " + stringify(mesh_.timeStep_ * gamma_) ) );
+      else if ( mesh_.solver_ == FD )
+	{
+	  /* Based on the dispersion condition, the field time step can be obtained.			*/
+	  mesh_.timeStep_		 = 1.0 / ( c0_ * sqrt( 1.0 / pow(mesh_.meshResolution_[0], 2.0) + 1.0 / pow(mesh_.meshResolution_[1], 2.0) + 1.0 / pow(mesh_.meshResolution_[2], 2.0) ) );
+	  printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the field update is set to " + stringify(mesh_.timeStep_ * gamma_) ) );
+	}
 
       /* Set the bunch update time step if it is given, otherwise set it according to the MITHRA rules.	*/
       bunch_.timeStep_		/= gamma_;

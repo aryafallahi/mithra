@@ -82,6 +82,8 @@ The mesh and update parameters of the solver are defined through the following t
 	\item {\tt \em \small mesh-truncation-order} is the truncation order of the absorbing boundary condition in the computational domain. This parameter can be either 1 or 2, representing the first order and second order absorbing boundary condition.
 	%
 	\item {\tt \em \small space-charge} is a boolean flag determining if the space-charge effect should be considered or not. If this flag is false, the scalar potential $\phi$ is zero throughout the calculation. Otherwise, the scalar potential is calculated using the corresponding Helmholtz equation.
+	%
+	\item {\tt \em \small solver} determines if the non-standard finite-difference (NSFD) algorithm should be used to remove the effects of numerical dispersion or the simulation should be done with a simple finite-difference (FD) algorithm. Default is the non-standard finite-difference.
 \end{itemize}
 
 The format of the {\tt \em \small MESH} group is:
@@ -101,6 +103,7 @@ MESH
 	bunch-time-start  			= < real >
 	mesh-truncation-order 		= < 1 | 2 >
 	space-charge  				= < true | false >
+	solver						= < NSFD | FD >
 \}
 \end{Verbatim}
 %%
@@ -120,6 +123,7 @@ MESH
 	bunch-time-start			 = 0.0
 	mesh-truncation-order		 = 2
 	space-charge				 = false
+	solver						 = NSFD
 \}
 \end{Verbatim}
 \end{snugshade}

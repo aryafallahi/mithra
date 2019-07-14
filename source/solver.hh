@@ -1896,7 +1896,7 @@ namespace Darius
 	{
 
 	  /* Initialize if and only if the sampling of the power is enabled.                            */
-	  if ( FEL_[jf].vtk_.sampling_ && rp_[jf].Nz == 1 && fmod(time_, FEL_[jf].vtk_.rhythm_) < mesh_.timeStep_ )
+	  if ( FEL_[jf].vtk_.sampling_ && rp_[jf].Nz == 1 )
 	    {
 
 	      /* Calculate the index of the cell at which the plane resides.				*/
@@ -1954,52 +1954,56 @@ namespace Darius
 		    rp_[jf].pL[ni] = rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );
 		  }
 
-	      /* The old files if existing should be deleted.                                          	*/
-	      std::string baseFilename = FEL_[jf].vtk_.basename_ + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
-	      rp_[jf].file[0] = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
+	      if ( fmod(time_, FEL_[jf].vtk_.rhythm_) < mesh_.timeStep_ )
+		{
 
-	      /* Write the initial data for the vtk file.                                             	*/
-	      *rp_[jf].file[0] << "<?xml version=\"1.0\"?>"						<< std::endl;
-	      *rp_[jf].file[0] << "<VTKFile type=\"StructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" "
-		  "compressor=\"vtkZLibDataCompressor\">" 						<< std::endl;
-	      *rp_[jf].file[0] << "<StructuredGrid WholeExtent=\"0 " << N0_ - 1 << " 0 " << N1_ - 1 << " " <<
-		  0 << " " << 0 << "\">"								<< std::endl;
-	      *rp_[jf].file[0] << "<Piece Extent=\"0 " << N0_ - 1 << " 0 " << N1_ - 1 << " " <<
-		  0 << " " << 0 << "\">"								<< std::endl;
+		  /* The old files if existing should be deleted.					*/
+		  std::string baseFilename = FEL_[jf].vtk_.basename_ + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
+		  rp_[jf].file[0] = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
 
-	      /* Insert the coordinates of the grid for the charge points.                              */
-	      *rp_[jf].file[0] << "<Points>"                                                            << std::endl;
-	      *rp_[jf].file[0] << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\">"<< std::endl;
-	      for (j = 0; j < N1_; j++)
-		for (i = 0; i < N0_; i++)
-		  {
-		    m = rp_[jf].k * N1_ * N0_ + i * N1_ + j;
-		    *rp_[jf].file[0] << r_[m][0] * ( 1.0 - rp_[jf].dzr ) + r_[m + N1N0_][0] * rp_[jf].dzr << " "
-			<< r_[m][1] << " " << r_[m][2] 							<< std::endl;
-		  }
-	      *rp_[jf].file[0] << "</DataArray>"                                                       	<< std::endl;
-	      *rp_[jf].file[0] << "</Points>"                                                         	<< std::endl;
+		  /* Write the initial data for the vtk file.						*/
+		  *rp_[jf].file[0] << "<?xml version=\"1.0\"?>"						<< std::endl;
+		  *rp_[jf].file[0] << "<VTKFile type=\"StructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" "
+		      "compressor=\"vtkZLibDataCompressor\">" 						<< std::endl;
+		  *rp_[jf].file[0] << "<StructuredGrid WholeExtent=\"0 " << N0_ - 1 << " 0 " << N1_ - 1 << " " <<
+		      0 << " " << 0 << "\">"								<< std::endl;
+		  *rp_[jf].file[0] << "<Piece Extent=\"0 " << N0_ - 1 << " 0 " << N1_ - 1 << " " <<
+		      0 << " " << 0 << "\">"								<< std::endl;
 
-	      /* Insert each cell data into the vtk file.                                            	*/
-	      *rp_[jf].file[0] << "<CellData>"                                                        	<< std::endl;
-	      *rp_[jf].file[0] << "</CellData>"                                                          	<< std::endl;
+		  /* Insert the coordinates of the grid for the charge points.				*/
+		  *rp_[jf].file[0] << "<Points>"                                                        << std::endl;
+		  *rp_[jf].file[0] << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\">"<< std::endl;
+		  for (j = 0; j < N1_; j++)
+		    for (i = 0; i < N0_; i++)
+		      {
+			m = rp_[jf].k * N1_ * N0_ + i * N1_ + j;
+			*rp_[jf].file[0] << r_[m][0] * ( 1.0 - rp_[jf].dzr ) + r_[m + N1N0_][0] * rp_[jf].dzr << " "
+			    << r_[m][1] << " " << r_[m][2] 						<< std::endl;
+		      }
+		  *rp_[jf].file[0] << "</DataArray>"                                                    << std::endl;
+		  *rp_[jf].file[0] << "</Points>"                                                       << std::endl;
 
-	      /* Insert the point data based on the computed electric field.				*/
-	      *rp_[jf].file[0] << "<PointData Vectors = \"power\">"                                    	<< std::endl;
-	      *rp_[jf].file[0] << "<DataArray type=\"Float32\" Name=\"power\" NumberOfComponents=\"" << 1 << "\" format=\"ascii\">"
-		  << std::endl;
-	      for (j = 0; j < N1_; j++)
-		for (i = 0; i < N0_; i++)
-		  *rp_[jf].file[0] << rp_[jf].pL[i * N1_ + j] 						<< std::endl;
+		  /* Insert each cell data into the vtk file.                                         	*/
+		  *rp_[jf].file[0] << "<CellData>"                                                       << std::endl;
+		  *rp_[jf].file[0] << "</CellData>"                                                      << std::endl;
 
-	      *rp_[jf].file[0] << "</DataArray>"                                                   	<< std::endl;
-	      *rp_[jf].file[0] << "</PointData>"                                                        << std::endl;
-	      *rp_[jf].file[0] << "</Piece>"                                                            << std::endl;
-	      *rp_[jf].file[0] << "</StructuredGrid>"                                                   << std::endl;
-	      *rp_[jf].file[0] << "</VTKFile>"                                                         	<< std::endl;
+		  /* Insert the point data based on the computed electric field.			*/
+		  *rp_[jf].file[0] << "<PointData Vectors = \"power\">"                                 << std::endl;
+		  *rp_[jf].file[0] << "<DataArray type=\"Float32\" Name=\"power\" NumberOfComponents=\"" << 1 << "\" format=\"ascii\">"
+		      << std::endl;
+		  for (j = 0; j < N1_; j++)
+		    for (i = 0; i < N0_; i++)
+		      *rp_[jf].file[0] << rp_[jf].pL[i * N1_ + j] 					<< std::endl;
 
-	      /* Close the file.                                                                      	*/
-	      (*rp_[jf].file[0]).close();
+		  *rp_[jf].file[0] << "</DataArray>"                                                   	<< std::endl;
+		  *rp_[jf].file[0] << "</PointData>"                                                    << std::endl;
+		  *rp_[jf].file[0] << "</Piece>"                                                        << std::endl;
+		  *rp_[jf].file[0] << "</StructuredGrid>"                                               << std::endl;
+		  *rp_[jf].file[0] << "</VTKFile>"                                                      << std::endl;
+
+		  /* Close the file.                                                                    */
+		  (*rp_[jf].file[0]).close();
+		}
 	    }
 	}
     }

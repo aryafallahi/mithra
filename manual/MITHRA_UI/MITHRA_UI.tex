@@ -536,38 +536,38 @@ FIELD
 	
 	field-sampling
 	\{
-		sample                              = true
-		type                                = at-point
-		field                               = Ex
-		field                               = Ey
-		field                               = Ez
-		directory                           = ./
-		base-name                           = field-sampling/field
-		rhythm                              = 3.2
-		position                            = (0.0, 0.0, 110.0)
+		sample					  = true
+		type					  = at-point
+		field					  = Ex
+		field					  = Ey
+		field					  = Ez
+		directory				  = ./
+		base-name				  = field-sampling/field
+		rhythm					  = 3.2
+		position				  = (0.0, 0.0, 110.0)
 	\}
 	
 	field-visualization
 	\{
-		sample                              = true
-		field                               = Ex
-		field                              = Ey
-		field                               = Ez
-		field                               = Q
-		directory                           = ./
-		base-name                           = field-visualization/field
-		rhythm                              = 32
+		sample					  = true
+		field					  = Ex
+		field					  = Ey
+		field					  = Ez
+		field					  = Q
+		directory				  = ./
+		base-name				  = field-visualization/field
+		rhythm					  = 32
 	\}
 	
 	field-profile
 	\{
-		sample                              = false
-		field                               = Ex
-		field                               = Ey
-		field                               = Ez
-		directory                           = ./
-		base-name                           = field-profile/field
-		rhythm                              = 100
+		sample					  = false
+		field					  = Ex
+		field					  = Ey
+		field					  = Ez
+		directory				  = ./
+		base-name				  = field-profile/field
+		rhythm					  = 80
 	\}
 \}
 \end{Verbatim}
@@ -586,129 +586,159 @@ By adding additional groups, the fileds of these undulators are superposed.
 Note that the reference undulator for initializing bunches or setting the electron rest frame is the first undulator given in the list.
 
 \begin{enumerate}
+%
 \item {\tt \small \em static-undulator:} This group mainly determines the parameters for defining a static undulator. The set of values accepted in this group include:
+%
 \begin{itemize}
 	\item {\tt \small \em undulator-parameter} is the undulator parameter of the undulator, i.e. the so-called K parameter.
+	%
 	\item {\tt \small \em period} is the period of the undulator in the given length-scale determined in the mesh class.
-	\item {\tt \small \em length} is the total length of the undulator.
+	%
+	\item {\tt \small \em length} is an integer returning the total length of the undulator in one period scale. In other words, it determines the number of undulator periods in the module.
+	%
     \item {\tt \small \em polarization-angle} is the angle between the magnetic field polarization and the $x$-axis in degrees.
+    %
     \item {\tt \small \em offset} determines the point where the beginning of undulator resides. For the first undulator, it is automatically set to zero.
+    %
 \end{itemize}
+%
 \item {\tt \small \em static-undulator-array:} This group determines the required parameters for defining an array of static undulators. The set of values accepted in this group include:
+%
 \begin{itemize}
 	\item {\tt \small \em undulator-parameter} is the undulator parameter of the undulators, i.e. the so-called K parameter. For a non-zero tapering parameter, this value corresponds to the K-parameter of the first undulator.
+	%
 	\item {\tt \small \em period} is the period of the undulators in the given length-scale determined in the mesh class.
-	\item {\tt \small \em length} is the total length of the undulators.
+	%
+	\item {\tt \small \em length} is an integer returning the total length of the undulator in one period scale. In other words, it determines the number of undulator periods in the module.
+	%
 	\item {\tt \small \em polarization-angle} is the angle between the magnetic field polarization and the $x$-axis in degrees.
+	%
 	\item {\tt \small \em gap} determines the gap between the adjacent undulators.
+	%
     \item {\tt \small \em number} is the total number of undulator modules in the array.
-    \item {\tt \small \em tapering-parameter} is the tapering parameter of the undulator array, i.e. $\delta K$ in $K_i=K_0+i \delta K$. 
+    %
+    \item {\tt \small \em tapering-parameter} is the tapering parameter of the undulator array, i.e. $\delta K$ in $K_i=K_0+i \delta K$ giving the K parameters of the $i$'th undulator module. 
 \end{itemize}
+%
 \item {\tt \small \em optical-undulator:} This group mainly determines the parameters for defining an optical undulator. The set of values accepted in this group include:
+%
 \begin{itemize}
 	\item {\tt \small \em beam-type} is the type of the pulse for an optical undulator. The accepted undulator beam types in MITHRA include plane wave, confined plane-wave, and Gaussian beam. A confined plane-wave is a plane-wave that introduces fields to the particle only over an ellipse determined by beam waist.
-	\item {\tt \small \em position} is the reference position of the undulator. It is the reference position of the plane wave propagation in the plane wave undulator and the focusing point in the Gaussian beam undulator.
-	\item {\tt \small \em direction} is the propagation direction of the optical undulator in the plane wave and Gaussian beam types.
-	\item {\tt \small \em polarization} is the polarization of the undulator and is used by both plane wave and Gaussian beam types.
-	\item {\tt \small \em radius-parallel} is the Rayleigh beam radius of the Gaussian beam in the direction parallel to the polarization. For the confined plane-wave it is the radius of the ellipse along the polarization direction confining the plane wave.
-	\item {\tt \small \em radius-perpendicular} is the Rayleigh radius of the Gaussian beam in the direction perpendicular to the polarization. For the confined plane-wave it is the radius of the ellipse perpendicular to the polarization direction confining the plane-wave.
+	%
+	\item {\tt \small \em position} is the reference position of the undulator. It is the reference position of the plane-wave propagation in the plane-wave undulator and the focusing point in the Gaussian beam undulator.
+	%
+	\item {\tt \small \em direction} is the propagation direction of the optical undulator in the plane-wave and Gaussian beam types.
+	%
+	\item {\tt \small \em polarization} is the polarization of the undulator and is used by both plane-wave and Gaussian beam types.
+	%
+	\item {\tt \small \em radius-parallel} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction parallel to the polarization. For the confined plane-wave it is the radius of the ellipse along the polarization direction confining the plane-wave.
+	%
+	\item {\tt \small \em radius-perpendicular} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction perpendicular to the polarization. For the confined plane-wave it is the radius of the ellipse perpendicular to the polarization direction confining the plane-wave.
+	%
 	\item {\tt \small \em signal-type} determines the time signature of the undulator. The accepted signal types in MITHRA are listed in the field section. Here, the same set of signal can be given as an undulator envelope.
+	%
 	\item {\tt \small \em strength-parameter} is the normalized amplitude $a_0 = e A_0 / m_ec $ of the undulator, which is equivalent to the undulator-parameter in the static case.
+	%
 	\item {\tt \small \em offset} is the distance offset of the signal $ct_0$.
+	%
 	\item {\tt \small \em variance} is the time variance of the signal in length unit $c\tau$.
+	%
 	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal.
+	%
 	\item {\tt \small \em CEP} is the carrier envelope phase $\phi_{\mathrm{CEP}}$ of the modulated signal.
 \end{itemize}
+%
 \end{enumerate}
 
-The format of the \texttt{UNDULATOR} group is:
+The format of the \texttt{UNDULATOR} group is (the read groups are repeatable groups):
 %
-\begin{Verbatim}[frame=single,fontsize=\small,tabsize=4]
+\begin{Verbatim}[frame=single, fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
 UNDULATOR
-{
-	static-undulator
-	{
-	  undulator-parameter           = < real value >
-	  period                        = < real value >
-	  length                        = < integer value >
-      polarization-angle            = < real value >
-      offset                        = < real value >
-    }
-    
-    static-undulator-array
-    {
-      undulator-parameter           = < real value >
-      period                        = < real value >
-      length                        = < integer value >
-      polarization-angle            = < real value >
-      gap                           = < real value >
-      number                        = < integer value >
-      tapering-parameter            = < real value > 
-    }
-    
-    optical-undulator
-    {
-      beam-type                     = < plane-wave | confined-plane-wave | gaussian-beam >
-	  position                      = < ( real value , real value , real value ) >
-	  direction                     = < ( real value , real value , real value ) >
-	  polarization                  = < ( real value , real value , real value ) >
-	  radius-parallel               = < real value >
-	  radius-perpendicular          = < real value >
-	  signal-type                   = < neumann | gaussian | secant-hyperbolic | flat-top >
-	  strength-parameter            = < real value >
-	  offset                        = < real value >
-	  variance                      = < real value >
-	  wavelength                    = < real value >
-	  CEP                           = < real value >
-	}
-}
+\{
+	\textcolor{red}{static-undulator}
+	\textcolor{red}{\{}
+		undulator-parameter		  = < real >
+		period					  = < real >
+		length					  = < int >
+		polarization-angle		  = < real >
+		offset					  = < real >
+	\textcolor{red}{\}}
+
+	\textcolor{red}{static-undulator-array}
+	\textcolor{red}{\{}
+		undulator-parameter		  = < real >
+		period					  = < real >
+		length					  = < int >
+		polarization-angle		  = < real >
+		gap						  = < real >
+		number					  = < int >
+		tapering-parameter		  = < real >
+	\textcolor{red}{\}}
+
+	\textcolor{red}{optical-undulator}
+	\textcolor{red}{\{}
+		beam-type				  = < plane-wave | confined-plane-wave | gaussian-beam >
+		position				  = < ( real, real, real ) >
+		direction				  = < ( real, real, real ) >
+		polarization			  = < ( real, real, real ) >
+		radius-parallel			  = < real >
+		radius-perpendicular	  = < real >
+		signal-type				  = < neumann | gaussian | secant-hyperbolic | flat-top >
+		strength-parameter		  = < real >
+		offset					  = < real >
+		variance				  = < real >
+		wavelength				  = < real >
+		CEP						  = < real >
+	\textcolor{red}{\}}
+\}
 \end{Verbatim}
 %
 As explained before, MITHRA always initializes the bunch outside the undulator.
 %
-It may be already noticed that there exists no option to determine the beginning of the static undulator with respect to the bunch.
+It may be already noticed that there exists no option to determine the beginning of the first static undulator with respect to the bunch, because MITHRA ignores this parameter for the first undulator.
 %
-This is automatically set by the solver, to avoid particle initialization inside the undulator.
+This value is automatically set by the solver, to avoid particle initialization inside the undulator.
 %
 For the optical undulator type, the user should control this effect through the parameter offset.
 %
 An example of the undulator category definition looks as the following:
 %
 \begin{snugshade}
-\begin{Verbatim}[fontsize=\small, tabsize = 4]
+\begin{Verbatim}[fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
 UNDULATOR
-{
-  static-undulator
-  {
-    undulator-parameter             = 1.417
-    period                          = 3.0e4
-    length                          = 300
-    polarization-angle              = 0.0
-  }
-}
+\{
+	static-undulator
+	\{
+		undulator-parameter		  = 1.417
+    	period					  = 3.0e4
+    	length					  = 300
+    	polarization-angle		  = 0.0
+    	offset					  = 0.0
+    \}
+\}
 \end{Verbatim}
 \end{snugshade}
 %
 An instance of optical undulator definition reads as follows:
 %
 \begin{snugshade}
-\begin{Verbatim}[fontsize=\small, tabsize = 4]
+\begin{Verbatim}[fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
 UNDULATOR
-{
-  optical-undulator
-  {
-    beam-type                       = plane-wave
-    position                        = ( 0.0, 0.0, 0.0 )
-    direction                       = ( 0.0, 0.0,-1.0 )
-    polarization                    = ( 0.0, 1.0, 0.0 )
-    strength-parameter              = 0.5
-    signal-type                     = flat-top
-    wavelength                      = 1.0e3
-    variance                        = 1200.0e3
-    offset                          = 600118.0
-    CEP                             = 0.0
-  }
-}
+\{
+	optical-undulator
+	\{
+		beam-type				  = plane-wave
+		position				  = ( 0.0, 0.0, 0.0 )
+		direction				  = ( 0.0, 0.0,-1.0 )
+		polarization			  = ( 0.0, 1.0, 0.0 )
+		strength-parameter		  = 0.5
+		signal-type				  = flat-top
+		wavelength				  = 1.0e3
+		variance				  = 1200.0e3
+		offset					  = 600118.0
+		CEP						  = 0.0
+  \}
+\}
 \end{Verbatim}
 \end{snugshade}
 
@@ -723,15 +753,25 @@ Put differently, the components used in the project over the undulator section i
 The current version of MITHRA accepts the following set of external fields:
 
 \begin{enumerate}
+%
 \item {\tt \small \em electromagnetic-wave:} This group mainly determines the parameters for superposing the field of an electromagnetic beam over the undulator section. This external field in principle fulfills the same thing as a general seed in the FEL interaction. However, if the seed is defined as an external plane-wave, the output radiation does not include the field of seeded beam. In other words, it starts from a zero initial radiation. This group can be repeated to superpose a number of plane waves over each other during the interaction. The set of values accepted in this group include:
+%
 \begin{itemize}
-    \item {\tt \small \em type} is the type of the excitation. The accepted excitation types in MITHRA include plane wave, confined plane wave and Gaussian beam. A confined plane-wave is a plane-wave that introduces fields to the particle only over an ellipse determined by beam radii.
-    \item {\tt \small \em position} is the reference position of the excitation. It is the reference position of the plane wave propagation in the plane wave excitation and the focusing point in the Gaussian beam excitation.
-	\item {\tt \small \em direction} is the propagation direction of the excitation in the plane wave and Gaussian beam types.
-	\item {\tt \small \em polarization} is the polarization of the incoming excitation and is used by both plane wave and Gaussian beam types.
-	\item {\tt \small \em radius-parallel} is the Rayleigh beam radius of the Gaussian beam in the direction parallel to the polarization. For the confined plane-wave it is the radius of the ellipse along the polarization direction confining the plane wave.
-	\item {\tt \small \em radius-perpendicular} is the Rayleigh radius of the Gaussian beam in the direction perpendicular to the polarization. For the confined plane-wave it is the radius of the ellipse perpendicular to the polarization direction confining the plane-wave.
-	\item {\tt \small \em signal-type} determines the time signature of the signal exciting the fields according to the particular type. The accepted signal types in MITHRA include modulated Neumann, modulated Gaussian, modulated secant hyperbolic and the sinusoidal pulse. The equation representing the time domain variation of each pulse is as follows:
+	%
+    \item {\tt \small \em beam-type} is the type of the beam. The accepted excitation types in MITHRA include plane-wave, confined plane-wave and Gaussian beam. A confined plane-wave is a plane-wave that introduces fields to the particle only over an ellipse determined by beam radii.
+    %
+    \item {\tt \small \em position} is the reference position of the excitation. It is the reference position of the plane-wave propagation in the plane-wave excitation and the focusing point in the Gaussian beam excitation.
+    %
+	\item {\tt \small \em direction} is the propagation direction of the excitation in the plane-wave and Gaussian beam types.
+	%
+	\item {\tt \small \em polarization} is the polarization of the incoming excitation and is used by both plane-wave and Gaussian beam types.
+	%
+	\item {\tt \small \em radius-parallel} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction parallel to the polarization. For the confined plane-wave, it is the radius of the ellipse along the polarization direction confining the plane-wave.
+	%
+	\item {\tt \small \em radius-perpendicular} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction perpendicular to the polarization. For the confined plane-wave, it is the radius of the ellipse perpendicular to the polarization direction confining the plane-wave.
+	%
+	\item {\tt \small \em signal-type} determines the time signature of the signal exciting the fields according to the particular type. The accepted signal types in MITHRA include modulated Neumann, modulated Gaussian, modulated secant-hyperbolic and the sinusoidal pulse. The equation representing the time domain variation of each pulse is as follows:
+	%
 	\begin{equation}
 	\renewcommand{\arraystretch}{1.5}
 	\begin{array}{lrcl}
@@ -742,70 +782,75 @@ The current version of MITHRA accepts the following set of external fields:
 	\end{array}
 	\end{equation}
 	\item {\tt \small \em strength-parameter} is the normalized amplitude $a_0 = e A_0 / m_ec $ of the beam.
+	%
 	\item {\tt \small \em offset} is the distance offset of the signal $ct_0$.
+	%
 	\item {\tt \small \em variance} is the variance of the signal in length units $c\tau$.
+	%
 	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal.
+	%
 	\item {\tt \small \em CEP} is the carrier envelope phase $\phi_{\mathrm{CEP}}$ of the modulated signal.
+	%
 \end{itemize}
 \end{enumerate}
 
 The format of the \texttt{FIELD} group is:
 %%
-\begin{Verbatim}[frame=single,fontsize=\small,tabsize=4]
+\begin{Verbatim}[frame=single, fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
 EXTERNAL-FIELD
-{
-	electromagnetic-wave
-	{
-		type                            = < plane-wave | confined-plane-wave | gaussian-beam >
-		position                        = < ( real value , real value , real value ) >
-		direction                       = < ( real value , real value , real value ) >
-		polarization                    = < ( real value , real value , real value ) >
-		radius-parallel                 = < real value >
-		radius-perpendicular            = < real value >
-		signal-type                     = < neumann | gaussian | secant-hyperbolic | flat-top >
-		strength-parameter              = < real value >
-		offset                          = < real value >
-		variance                        = < real value >
-		wavelength                      = < real value >
-		CEP                             = < real value >
-	}
-}
+\{
+	\textcolor{red}{electromagnetic-wave}
+	\textcolor{red}{\{}
+		beam-type				  = < plane-wave | confined-plane-wave | gaussian-beam >
+		position				  = < ( real, real, real ) >
+		direction				  = < ( real, real, real ) >
+		polarization			  = < ( real, real, real ) >
+		radius-parallel			  = < real >
+		radius-perpendicular	  = < real >
+		signal-type				  = < neumann | gaussian | secant-hyperbolic | flat-top >
+		strength-parameter		  = < real >
+		offset					  = < real >
+		variance				  = < real >
+		wavelength				  = < real >
+		CEP						  = < real >
+	\textcolor{red}{\}}
+\}
 \end{Verbatim}
 
 An example of the external field definition looks as the following:
 %
 \begin{snugshade}
-\begin{Verbatim}[fontsize=\small, tabsize = 4]
+\begin{Verbatim}[fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
 EXTERNAL-FIELD
-{
-  electromagnetic-wave
-  {
-    type                                = plane-wave
-    position                            = ( 0.0, 0.0, 0.0)
-    direction                           = ( 0.0, 1.0, 0.0)
-    polarization                        = ( 0.0, 0.0, 1.0)
-    strength-parameter                  = 1.0
-    signal-type                         = flat-top
-    offset                              = 0.00
-    variance                            = 1.00
-    wavelength                          = 0.0
-    CEP                                 = 0.0
-  }
-
-  electromagnetic-wave
-  {
-    type                                = plane-wave
-    position                            = ( 0.0, 0.0, 0.0)
-    direction                           = ( 0.0,-1.0, 0.0)
-    polarization                        = ( 0.0, 0.0, 1.0)
-    strength-parameter                  = 1.0
-    signal-type                         = flat-top
-    offset                              = 0.00
-    variance                            = 1.00
-    wavelength                          = 0.0
-    CEP                                 = 0.0
-  }
-}
+\{
+	electromagnetic-wave
+	\{
+		beam-type				  = plane-wave
+		position				  = ( 0.0, 0.0, 0.0)
+    	direction				  = ( 0.0, 1.0, 0.0)
+    	polarization			  = ( 0.0, 0.0, 1.0)
+    	strength-parameter		  = 1.0
+    	signal-type				  = flat-top
+    	offset					  = 0.00
+    	variance				  = 1.00
+    	wavelength				  = 0.0
+    	CEP						  = 0.0
+	\}
+	
+	electromagnetic-wave
+	\{
+		beam-type				  = plane-wave
+		position				  = ( 0.0, 0.0, 0.0)
+		direction				  = ( 0.0,-1.0, 0.0)
+		polarization			  = ( 0.0, 0.0, 1.0)
+		strength-parameter		  = 1.0
+		signal-type				  = flat-top
+		offset					  = 0.00
+		variance				  = 1.00
+		wavelength				  = 0.0
+		CEP						  = 0.0
+	\}
+\}
 \end{Verbatim}
 \end{snugshade}
 %
@@ -814,68 +859,120 @@ EXTERNAL-FIELD
 
 The typical parameters for a free electron laser instrument are calculated from the radiated fields using the parameter definitions at this section.
 %
-Currently, there is only one group implemented in MITHRA, which calculates the total radiated power in the $+z$ direction and saves the power versus the undulator position to a text file.
+Currently, there are two groups implemented in MITHRA, for computation of radiated power and visualization of this power on a detector in front of the bunch.
 %
 In what follows, the parameters in each group are introduced:
 
 \begin{enumerate}
-\item {\tt \small \em radiation-power:} This group mainly determines the parameters whose values are needed for calculating the radiation power from the field distribution. The output is a .txt file with the first column the time point and the second column the radiated power at the given point. For multiple points the column is repeated. If multiple wavelengths are given there will be several rows with similar time value listing the radiated power with different wavelengths. This group can be repeated to obtain various files for different output definitions. %%
-
+%
+\item {\tt \small \em radiation-power:} This group mainly determines the parameters whose values are needed for calculating the radiation power from the field distribution. The output is a .txt file with the first column the time point and the second column the radiated power at the given point. For multiple points the column is repeated. If multiple frequencies are given, there will be several rows with similar time value listing the radiated power with different wavelengths. This group can be repeated to obtain various files for different output definitions. 
+%
 The set of values accepted in this group include:
+%
 \begin{itemize}
 	\item {\tt \small \em sample} is a boolean parameter which activates the computation of the total radiated power at each instant.
+	%
 	\item {\tt \small \em base-name} is the file name (no suffix) with the required address of the file to save the output data.
+	%
 	\item {\tt \small \em directory} is the address where the above file should be saved. The file name with the address can also be given in the base-name section. The software eventually considers the combination of directory and base-name as the final complete file name.
-	\item {\tt \small \em type} determines if the radiated power should be sampled at given distances from the bunch (at-point) or should be sampled at the points over a line (over-line).
-	\item {\tt \small \em plane-position} gives the total distance from the bunch where a sampling plate to capture the whole radiated power will be placed.  One can enter several sampling positions by repeating this line. This option is only considered if the type variable is set to "at-point".
-	\item {\tt \small \em line-begin} defines the distance from the bunch center for the line begin over which the fields should be sampled and is used when the sampling type is set to "over-line" option. In case of multiple bunches, the center of the first bunch is considered as the reference position.
-	\item {\tt \small \em line-end} defines the distance from the bunch center for the line end over which the fields should be sampled and is used when the sampling type is set to "over-line" option. In case of multiple bunches, the center of the first bunch is considered as the reference position.
-	\item {\tt \small \em resolution} defines the resolution of the line discretization for sampling. In other words, the value is the distance between two adjacent sampling points. This value is used when the type variable is set to "over-line" option.
+	%
+	\item {\tt \small \em type} determines if the radiated power should be sampled at given distances from the bunch ({\tt \small \em at-point}) or should be sampled at the points over a line ({\tt \small \em over-line}).
+	%
+	\item {\tt \small \em plane-position} gives the total distance from the bunch where a sampling plate to capture the whole radiated power will be placed. The sampling plate should exist inside the computational domain. This may change after far-field transformation is implemented in the code. One can enter several sampling positions by repeating this line. This option is only considered if the type variable is set to {\tt \small \em at-point}.
+	%
+	\item {\tt \small \em line-begin} defines the distance from the bunch center for the line begin over which the fields should be sampled and is used when the sampling type is set to {\tt \small \em over-line} option. In case of multiple bunches, the center of the first bunch is considered as the reference position.
+	%
+	\item {\tt \small \em line-end} defines the distance from the bunch center for the line end over which the fields should be sampled and is used when the sampling type is set to {\tt \small \em over-line} option. In case of multiple bunches, the center of the first bunch is considered as the reference position.
+	%
+	\item {\tt \small \em number-of-points} is the number of points between line-begin and line-end for the computation of radiation. This value is used when the type variable is set to {\tt \small \em over-line}.
+	%
 	\item {\tt \small \em normalized-frequency} is the central frequency normalized to the radiation frequency of the radiation spectrum.
-	\item {\tt \small \em minimum-normalized-frequency} is the minimum frequency normalized to the radiation frequency. This parameters and the next two parameters are used to sweep over the normalized frequency and save the radiation power spectrum.
+	%
+	\item {\tt \small \em minimum-normalized-frequency} is the minimum frequency normalized to the radiation frequency. This parameters and the next two parameters are used to sweep over the normalized frequency and save the spectrum of the total radiated power.
+	%
 	\item {\tt \small \em maximum-normalized-frequency} is the maximum frequency normalized to the radiation frequency.
-	\item {\tt \small \em normalized-frequency-resolution} is the sweep resolution for the frequency normalized to the radiation frequency.
+	%
+	\item {\tt \small \em number-of-frequency-points} is the number of frequency points between the minimum and maximum normalized frequencies for the computation of radiation spectrum.
 \end{itemize}
+%
+\item {\tt \small \em power-visualization:} This group is designed to visualize the radiated power on a detector in front of the bunch. This detector needs to reside insider the computational grid, since there is no far-field transformation implemented in the code. The output in this group will be a set of 2D {\tt \small .vtk} files that can be read by a visualization software like Paraview.
+%
+The set of values accepted in this group include:
+%
+\begin{itemize}
+	\item {\tt \small \em sample} is a boolean parameter which activates the visualization of power at a detector-plane in front of the bunch.
+	%
+	\item {\tt \small \em base-name} is the file name (no suffix) with the required address of the file to save the output data.
+	%
+	\item {\tt \small \em directory} is the address where the above file should be saved. The file name with the address can also be given in the base-name section. The software eventually considers the combination of directory and base-name as the final complete file name.
+	%
+	\item {\tt \small \em plane-position} gives the total distance from the bunch where a visualization plane for the local radiated power will be placed. The visualization plane should exist inside the computational domain. This may change after far-field transformation is implemented in the code. 
+	%
+	\item {\tt \small \em normalized-frequency} is the central frequency normalized to the radiation frequency of the radiation spectrum.
+	%
+	\item {\tt \small \em rhythm} is a real value determining the intervals for power-visualization. Note that because of the requirements on the Fourier transform, the power computation is accomplished at each time step. However, the saving of the visualization files will be done according to the set value for this parameter.
+\end{itemize}
+%
 \end{enumerate}
 
-The format of the \texttt{FEL-OUTPUT} group is:
+The format of the \texttt{FEL-OUTPUT} group is (the red groups and parameters are repeatable parts):
 %%
-\begin{Verbatim}[frame=single,fontsize=\small,tabsize=4]
+\begin{Verbatim}[frame=single, fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
 FEL-OUTPUT
-{
-	radiation-power
-	{
-		sample                           = < false | true >
-		type                             = < at-point | over-line >
-		directory                        = < address according to UNIX convention >
-		base-name                        = < name of the file >
-		plane-position 		          = < real value >
-		line-begin                       = < real value >
-		line-end                         = < real value >
-		resolution                       = < real value >
-		normalized-frequency             = < real value >
-		minimum-normalized-frequency     = < real value >
-		maximum-normalized-frequency     = < real value >
-		normalized-frequency-resolution  = < real value >
-	}
-}
+\{
+	\textcolor{red}{radiation-power}
+	\textcolor{red}{\{}
+		sample					  = < false | true >
+		type					  = < at-point | over-line >
+		directory				  = < /path/to/location >
+		base-name				  = < string >
+		\textcolor{red}{plane-position}  		  \textcolor{red}{= < real >}
+		line-begin				  = < real >
+		line-end				  = < real >
+		number-of-points		  = < int >
+		\textcolor{red}{normalized-frequency}	  \textcolor{red}{= < real >}
+		minimum-normalized-frequency	  = < real >
+		maximum-normalized-frequency	  = < real >
+		number-of-frequency-points		  = < int >
+	\textcolor{red}{\}}
+
+	\textcolor{red}{power-visualization}
+	\textcolor{red}{\{}
+		sample					  = < false | true >
+		directory				  = < /path/to/location >
+		base-name				  = < string >
+		plane-position			  = < real >
+		normalized-frequency	  = < real >
+		rhythm					  = < real >
+	\textcolor{red}{\}}
+\}
 \end{Verbatim}
 %%
 An example of the FEL output category definition looks as the following:
 %%
 \begin{snugshade}
-\begin{Verbatim}[fontsize=\small, tabsize = 4]
+\begin{Verbatim}[fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
 FEL-OUTPUT
-{
+\{
 	radiation-power
-	{
-		sample                           = true
-		type                             = at-point
-		directory                        = ./
-		base-name                        = power-sampling/power
-		plane-position                   = 110.0
-		normalized-frequency             = 1.00
-	}
-}
+	\{
+		sample					  = true
+		type					  = at-point
+		directory				  = ./
+		base-name				  = power-sampling/power
+		plane-position			  = 110.0
+		normalized-frequency	  = 1.00
+	\}
+	
+	power-visualization
+	\{
+		sample					  = true
+		directory				  = ./
+		base-name				  = power-visualization/power
+		plane-position			  = 110.0
+		normalized-frequency	  = 1.00
+		rhythm					  = 32.0
+	\}
+\}
 \end{Verbatim}
 \end{snugshade} 

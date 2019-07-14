@@ -1694,7 +1694,7 @@ namespace Darius
 	      /* Determine the number of time points needed to calculate the amplitude of each
 	       * radiation harmonic.									*/
 	      Double dt = undulator_[0].lu_ / FEL_[jf].radiationPower_.lambda_[i] / ( gamma_ * c0_ );
-	      rp_[jf].Nf = ( int( dt / mesh_.timeStep_ ) > rp_[jf].Nf ) ? int(dt/mesh_.timeStep_) : rp_[jf].Nf;
+	      rp_[jf].Nf = ( int( dt / mesh_.timeStep_ ) > rp_[jf].Nf ) ? int( dt / mesh_.timeStep_ ) : rp_[jf].Nf;
 
 	      /* Calculate the angular frequency for each wavelength.					*/
 	      rp_[jf].w[i] = 2 * PI / dt;
@@ -1851,7 +1851,7 @@ namespace Darius
 			bw1 = Complex (0.0, 0.0);
 			for ( m = 0; m < rp_[jf].Nf; m++)
 			  {
-			    ex  = exp( I * ( rp_[jf].w[l] * m * mesh_.timeStep_ ) );
+			    ex   = exp( I * ( rp_[jf].w[l] * m * mesh_.timeStep_ ) );
 			    ew1 += rp_[jf].fdt[m][ni][0] * ex;
 			    bw1 += rp_[jf].fdt[m][ni][3] / ex;
 			  }
@@ -1860,7 +1860,7 @@ namespace Darius
 			bw2 = Complex (0.0, 0.0);
 			for ( m = 0; m < rp_[jf].Nf; m++)
 			  {
-			    ex  = exp( I * ( rp_[jf].w[l] * m * mesh_.timeStep_ ) );
+			    ex   = exp( I * ( rp_[jf].w[l] * m * mesh_.timeStep_ ) );
 			    ew2 += rp_[jf].fdt[m][ni][1] * ex;
 			    bw2 += rp_[jf].fdt[m][ni][2] / ex;
 			  }

@@ -507,6 +507,8 @@ namespace Darius
 
     void initializeSeedSampling()
     {
+      printmessage(std::string(__FILE__), __LINE__, std::string(" ::: Initializing the field sampling data") );
+
       /* Return an error if the seed sampling rhythm is still zero.					*/
       if ( seed_.samplingRhythm_ == 0 )
 	{
@@ -568,20 +570,6 @@ namespace Darius
       seed_.samplingPosition_ = samplingPosition;
       sf_.N  = seed_.samplingPosition_.size();
 
-      /* Get the total number of sampling points throughout the processors.				*/
-      unsigned int Ntotal = 0;
-      MPI_Reduce(&sf_.N, &Ntotal, 1,MPI_TYPE,MPI_SUM,0,MPI_COMM_WORLD);
-
-      /* If the directory of the baseFilename does not exist create this directory.			*/
-      if ( Ntotal > 0 )
-	{
-	  std::string baseFilename = "";
-	  if (!(isabsolute(seed_.samplingBasename_))) baseFilename = seed_.samplingDirectory_;
-	  baseFilename += seed_.samplingBasename_ + TXT_FILE_SUFFIX;
-
-	  createDirectory(baseFilename, rank_);
-	}
-
       /* Create the file stream and directories for saving the seed sampling data.			*/
       if ( sf_.N > 0 )
 	{
@@ -589,8 +577,11 @@ namespace Darius
 	  if (!(isabsolute(seed_.samplingBasename_))) baseFilename = seed_.samplingDirectory_;
 	  baseFilename += seed_.samplingBasename_ + "-" + stringify(rank_) + TXT_FILE_SUFFIX;
 
+	  createDirectory(baseFilename, 0);
 	  sf_.file = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
 	}
+
+      printmessage(std::string(__FILE__), __LINE__, std::string(" The field sampling data are initialized. :::") );
     }
 
     /****************************************************************************************************

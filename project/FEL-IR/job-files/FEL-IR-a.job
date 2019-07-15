@@ -12,7 +12,7 @@ MESH
   length-scale						= MICROMETER
   time-scale						= PICOSECOND
   mesh-lengths						= ( 3200, 3200.0, 280.0) 
-  mesh-resolution					= ( 50.0,  50.0,   0.2)
+  mesh-resolution					= ( 100.0,  100.0,   0.1)
   mesh-center						= ( 0.0,     0.0,   0.0)
   total-time						= 30000
   bunch-time-step					= 1.6

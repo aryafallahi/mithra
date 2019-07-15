@@ -554,8 +554,8 @@ namespace Darius
 
 	  /* Check if the sampling point resides in the computational mesh.				*/
 	  if ( sf_.position[0] < xmax_ - ub_.dx && sf_.position[0] > xmin_ + ub_.dx &&
-	      sf_.position[1] < ymax_ - ub_.dy && sf_.position[1] > ymin_ + ub_.dy &&
-	      sf_.position[2] < zmax_ - ub_.dz && sf_.position[2] > zmin_ + ub_.dz )
+	       sf_.position[1] < ymax_ - ub_.dy && sf_.position[1] > ymin_ + ub_.dy &&
+	       sf_.position[2] < zmax_ - ub_.dz && sf_.position[2] > zmin_ + ub_.dz )
 	    {
 	      if ( sf_.position[2] < zp_[1] && sf_.position[2] >= zp_[0] )
 		samplingPosition.push_back(seed_.samplingPosition_[n]);
@@ -572,16 +572,6 @@ namespace Darius
       unsigned int Ntotal = 0;
       MPI_Reduce(&sf_.N, &Ntotal, 1,MPI_TYPE,MPI_SUM,0,MPI_COMM_WORLD);
 
-      /* Create the file stream and directories for saving the seed sampling data.			*/
-      if ( sf_.N > 0 )
-	{
-	  std::string baseFilename = "";
-	  if (!(isabsolute(seed_.samplingBasename_))) baseFilename = seed_.samplingDirectory_;
-	  baseFilename += seed_.samplingBasename_ + "-" + stringify(rank_) + TXT_FILE_SUFFIX;
-
-	  sf_.file = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
-	}
-
       /* If the directory of the baseFilename does not exist create this directory.			*/
       if ( Ntotal > 0 )
 	{
@@ -590,6 +580,16 @@ namespace Darius
 	  baseFilename += seed_.samplingBasename_ + TXT_FILE_SUFFIX;
 
 	  createDirectory(baseFilename, rank_);
+	}
+
+      /* Create the file stream and directories for saving the seed sampling data.			*/
+      if ( sf_.N > 0 )
+	{
+	  std::string baseFilename = "";
+	  if (!(isabsolute(seed_.samplingBasename_))) baseFilename = seed_.samplingDirectory_;
+	  baseFilename += seed_.samplingBasename_ + "-" + stringify(rank_) + TXT_FILE_SUFFIX;
+
+	  sf_.file = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
 	}
     }
 

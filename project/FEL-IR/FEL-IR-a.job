@@ -1,0 +1,146 @@
+#  Darius input file                                                                                                                                          
+#                                                                                                        
+#  physics - model an infra-red free electron laser based on a magnetic undulator (manual: example 1, Fig. 5.1a and Fig. 5.1b) 
+#                                                                                                 
+#  mpirun -np 4 ../darius FEL-IR-a.job
+#  
+#  in the LSF system: 
+#  bsub -n 48 -W 2:00 -J "FEL-IR-a" -o mithra.out 'mpirun ../darius FEL-IR-a.job'
+
+MESH
+{
+  length-scale						= MICROMETER
+  time-scale						= PICOSECOND
+  mesh-lengths						= ( 3200, 3200.0, 280.0) 
+  mesh-resolution					= ( 50.0,  50.0,   0.2)
+  mesh-center						= ( 0.0,     0.0,   0.0)
+  total-time						= 30000
+  bunch-time-step					= 1.6
+  bunch-time-start              			= 0.0
+  mesh-truncation-order					= 2
+  space-charge						= false
+}
+ 
+BUNCH
+{
+  bunch-initialization
+  {
+    type    						= ellipsoid
+    distribution					= uniform
+    charge						= 1.846e8
+    number-of-particles					= 131072
+    gamma						= 100.41
+    direction     	    				= (    0.0,     0.0,       1.0)
+    position						= (    0.0,     0.0,       0.0)
+    sigma-position					= (  260.0,   260.0,     50.25)
+    sigma-momentum					= ( 1.0e-8,  1.0e-8, 100.41e-4)
+    transverse-truncation				= 1040.0
+    longitudinal-truncation     			= 90.0
+    bunching-factor					= 0.01
+  }
+}
+
+FIELD
+{
+  field-initialization
+  {
+    type      						= gaussian-beam
+    position  						= ( 0.0, 0.0, -2500.0)
+    direction						= ( 0.0, 0.0, 1.0)
+    polarization 					= ( 0.0, 1.0, 0.0)
+    radius-parallel					= 0.5
+    radius-perpendicular				= 0.5
+    strength-parameter					= 0.0
+    signal-type    					= gaussian
+    offset    						= 0.00e-9
+    variance  						= 1.00
+    wavelength						= 0.0
+    CEP  						= 0.0
+  }
+  
+  field-sampling
+  {
+    sample						= false
+    type						= over-line
+    field						= Ex
+    field                           			= Ey
+    field                           			= Ez
+    directory						= ./
+    base-name						= field-sampling/field
+    rhythm						= 30
+    line-begin						= (0.0, 0.0, 100.0)
+    line-end						= (0.0, 0.0, 130.0)
+    number-of-points					= 100
+  }
+  
+  field-visualization
+  {
+    sample						= false
+    type						= in-plane
+    field						= Ex
+    field						= Ey
+    field						= Ez
+    plane						= yz
+    position						= (0.0, 0.0, 110.0)
+    directory						= ./
+    base-name						= $SCRATCH/field-visualization/field1
+    rhythm						= 5.0
+  }
+  
+  field-visualization
+  {
+    sample						= false
+    type						= in-plane
+    field						= Ex
+    field						= Ey
+    field						= Ez
+    plane						= xz
+    position						= (0.0, 0.0, 110.0)
+    directory						= ./
+    base-name						= field-visualization/field2
+    rhythm						= 30.0
+  }
+    
+  field-profile
+  {
+    sample						= false
+    field                           			= Q
+    directory						= ./
+    base-name						= field-profile/field
+    rhythm						= 100
+  }
+}
+
+UNDULATOR
+{
+  static-undulator
+  {  
+    undulator-parameter					= 1.417
+    period						= 3.0e4
+    length						= 300
+    polarization-angle					= 0.0
+  }
+}
+
+FEL-OUTPUT
+{
+  radiation-power
+  {
+    sample						= true
+    type						= at-point
+    directory						= ./
+    base-name						= power-sampling/powerA
+    plane-position					= 110
+    normalized-frequency				= 1.00
+  }
+
+  radiation-power
+  {
+    sample                                              = true
+    type                                                = at-point
+    directory                                           = ./
+    base-name                                           = power-sampling/powerB
+    plane-position                                      = 110
+    normalized-frequency                                = 3.00
+  }
+}

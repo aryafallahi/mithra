@@ -72,6 +72,7 @@ int main (int argc, char* argv[]) {
 
   /* Create the solver database.                                                                        */
   Mesh                                  mesh;
+  mesh.initialize();
 
   /* Create the bunch database.                                                                         */
   Bunch                                 bunch;

@@ -38,7 +38,7 @@ namespace Darius
     /* Solver type that will be used to update the field values.					*/
     SolverType			solver_;
 
-    /* Show the stored values for the undulator.                                                      	*/
+    /* Show the stored values for the mesh.                                                      	*/
     void show()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string(" Length scale = ") + stringify(lengthScale_));
@@ -47,6 +47,22 @@ namespace Darius
       printmessage(std::string(__FILE__), __LINE__, std::string(" Time scale = ") + stringify(timeScale_));
       printmessage(std::string(__FILE__), __LINE__, std::string(" Total simulation time = ") + stringify(totalTime_));
       printmessage(std::string(__FILE__), __LINE__, std::string(" Mesh truncation order = ") + stringify(truncationOrder_));
+      if 	( spaceCharge_ == true )
+	printmessage(std::string(__FILE__), __LINE__, std::string(" Space-charge = true "));
+      else if 	( spaceCharge_ == false )
+	printmessage(std::string(__FILE__), __LINE__, std::string(" Space-charge = false "));
+      if 	( solver_ == NSFD )
+	printmessage(std::string(__FILE__), __LINE__, std::string(" Solver = Non-standard finite-difference "));
+      else if 	( solver_ == FD )
+	printmessage(std::string(__FILE__), __LINE__, std::string(" Solver = finite-difference "));
+
+    }
+
+    /* Initialize the parameters in the mesh initializer.						*/
+    void initialize()
+    {
+      spaceCharge_ 	= false;
+      solver_		= NSFD;
     }
   };
 

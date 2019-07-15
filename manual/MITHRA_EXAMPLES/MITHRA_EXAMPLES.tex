@@ -23,7 +23,7 @@ The job files needed by the MITHRA code for the examples provided in this chapte
 \hline
 FEL parameter & Value \\ \hline \hline
 Current profile & Uniform \\ \hline
-Bunch size & $(260\times260\times100)\,\mu$m \\ \hline
+Bunch size & $(260\times260\times100.5)$\,{\textmu}m \\ \hline
 Bunch charge & 29.5\,pC \\ \hline
 Bunch energy & 51.4\,MeV \\	\hline
 Bunch current & 88.5\,A \\ \hline
@@ -37,7 +37,7 @@ Radiation wavelength & 3\,$\mu$ m \\ \hline
 Electron density & $2.72\times10^{13} 1/\text{cm}^3$ \\ \hline
 Gain length (1D) & 22.4\,cm \\ \hline
 FEL parameter & 0.006 \\ \hline
-Cooperation length & $39.7\,\mu$m \\ \hline
+Cooperation length & 39.7\,{\textmu}m \\ \hline
 Initial bunching factor & $0.01$ \\ \hline
 \end{tabular}
 \end{table}
@@ -71,7 +71,7 @@ In the illustrated job file, some of the output formats are turned off which can
 \begin{snugshade}
 \begin{Verbatim}[fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
 MESH
-{
+\{
   length-scale                     = MICROMETER
   time-scale                       = PICOSECOND
   mesh-lengths                     = ( 3200,  3200.0,    280.0)
@@ -82,12 +82,12 @@ MESH
   bunch-time-start                 = 0.0
   mesh-truncation-order            = 2
   space-charge                     = false
-}
+\}
 
 BUNCH
-{
+\{
   bunch-initialization
-  {
+  \{
     type                           = ellipsoid
     distribution                   = uniform
     charge                         = 1.846e8
@@ -100,21 +100,21 @@ BUNCH
     transverse-truncation          = 1040.0
     longitudinal-truncation        = 90.0
     bunching-factor                = 0.01
-  }
+  \}
 
   bunch-visualization
-  {
+  \{
     sample                         = true
     directory                      = ./
     base-name                      = bunch-visualization/bunch
     rhythm                         = 32
-  }
-}
+  \}
+\}
 
 FIELD
-{
+\{
   field-sampling
-  {
+  \{
     sample                         = true
     type                           = at-point
     field                          = Ex
@@ -124,10 +124,10 @@ FIELD
     base-name                      = field-sampling/field
     rhythm                         = 3.2
     position                       = (0.0, 0.0, 110.0)
-  }
+  \}
 
   field-visualization
-  {
+  \{
     sample                         = true
     field                          = Ex
     field                          = Ey
@@ -136,29 +136,29 @@ FIELD
     directory                      = ./
     base-name                      = field-visualization/field
     rhythm                         = 32
-  }
-}
+  \}
+\}
 
 UNDULATOR
-{
+\{
   undulator-parameter              = 1.417
   period                           = 3.0e4
   length                           = 300
   polarization-angle               = 0.0
-}
+\}
 
 FEL-OUTPUT
-{
+\{
   radiation-power
-  {
+  \{
     sample                         = true
     type                           = at-point
     directory                      = ./
     base-name                      = power-sampling/power
     distance-from-bunch            = 110.0
     normalized-frequency           = 1.00
-  }
-}
+  \}
+\}
 \end{Verbatim}
 \end{snugshade}
 

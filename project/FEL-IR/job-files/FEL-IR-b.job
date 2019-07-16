@@ -4,10 +4,10 @@
 #
 #  manual: example 1, Fig. 5.1b (simulation results with finite-difference) 
 #                                                                                                 
-#  mpirun -np 4 ../darius ./job/FEL-IR-b.job
+#  mpirun -np 4 ../darius ./job-files/FEL-IR-b.job
 #  
 #  in the LSF system: 
-#  bsub -n 48 -W 2:00 -J "FEL-IR-b" -o mithra.out 'mpirun ../darius ./job/FEL-IR-b.job'
+#  bsub -n 48 -W 2:00 -J "FEL-IR-b" -o mithra.out 'mpirun ../darius ./job-files/FEL-IR-b.job'
 
 MESH
 {

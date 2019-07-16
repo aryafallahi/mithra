@@ -1,0 +1,94 @@
+#  Darius input file                                                                                                                                          
+#                                                                                                        
+#  physics - model an infra-red free electron laser based on a magnetic undulator 
+#
+#  manual: example 1, Fig. 5.2 
+#                                                                                                 
+#  mpirun -np 4 ../darius ./job-files/FEL-IR-c.job
+#  
+#  in the LSF system: 
+#  bsub -n 48 -W 2:00 -J "FEL-IR-c" -o mithra.out 'mpirun ../darius ./job-files/FEL-IR-c.job'
+
+MESH
+{
+  length-scale						= MICROMETER
+  time-scale						= PICOSECOND
+  mesh-lengths						= ( 3200, 3200.0, 280.0) 
+  mesh-resolution					= ( 50.0,   50.0,   0.1)
+  mesh-center						= ( 0.0,     0.0,   0.0)
+  total-time						= 30000
+  bunch-time-step					= 1.6
+  bunch-time-start              			= 0.0
+  mesh-truncation-order					= 2
+  space-charge						= false
+  solver						= NSFD
+}
+ 
+BUNCH
+{
+  bunch-initialization
+  {
+    type    						= ellipsoid
+    distribution					= uniform
+    charge						= 1.846e8
+    number-of-particles					= 131072
+    gamma						= 100.41
+    direction     	    				= (    0.0,     0.0,       1.0)
+    position						= (    0.0,     0.0,       0.0)
+    sigma-position					= (  260.0,   260.0,     50.25)
+    sigma-momentum					= ( 1.0e-8,  1.0e-8, 100.41e-4)
+    transverse-truncation				= 1040.0
+    longitudinal-truncation     			= 90.0
+    bunching-factor					= 0.01
+  }
+
+  bunch-visualization
+  {
+    sample                                              = true
+    directory                                           = ./
+    base-name                                           = bunch-visualization/bunch
+    rhythm                                              = 100.0
+  }
+}
+
+FIELD
+{
+  field-visualization
+  {
+    sample                                              = true
+    type                                                = in-plane
+    field                                               = Ex
+    field                                               = Ey
+    field                                               = Ez
+    plane                                               = yz
+    position                                            = (0.0, 0.0, 110.0)
+    directory                                           = ./
+    base-name                                           = field-visualization/field-yz
+    rhythm                                              = 100.0
+  }
+
+  field-visualization
+  {
+    sample                                              = true
+    type                                                = in-plane
+    field                                               = Ex
+    field                                               = Ey
+    field                                               = Ez
+    plane                                               = xz
+    position                                            = (0.0, 0.0, 110.0)
+    directory                                           = ./
+    base-name                                           = field-visualization/field-xz
+    rhythm                                              = 100.0
+  }
+}
+
+UNDULATOR
+{
+  static-undulator
+  {  
+    undulator-parameter					= 1.417
+    period						= 3.0e4
+    length						= 300
+    polarization-angle					= 0.0
+  }
+}

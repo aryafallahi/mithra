@@ -234,9 +234,8 @@ namespace Darius
       /* If sampling is enabled initialize the required data for sampling the field and saving it.	*/
       if (seed_.sampling_)				initializeSeedSampling();
 
-      /* If visualization is enabled initialize the required data for visualizing and saving the field.	*/
-      for (unsigned int i = 0; i < seed_.vtk_.size(); i++)
-	if (seed_.vtk_[i].sample_)			initializeSeedVTK();
+      /* Initialize the required data for visualizing and saving the field.				*/
+      initializeSeedVTK();
 
       /* If profiling is enabled initialize the required data for profiling the field and saving it.	*/
       if (seed_.profile_)				initializeSeedProfile();
@@ -596,6 +595,9 @@ namespace Darius
       /* Perform the lorentz boost for the visualization data.						*/
       for (unsigned int i = 0; i < seed_.vtk_.size(); i++)
 	{
+	  /* Continue the loop if the sampling option for this vtk file is not enabled.			*/
+	  if ( !seed_.vtk_[i].sample_ ) continue;
+
 	  /* Return an error if the seed visualization rhythm is still zero.				*/
 	  if ( seed_.vtk_[i].rhythm_ == 0 )
 	    {

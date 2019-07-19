@@ -1041,8 +1041,7 @@ namespace Darius
       if ( sf_.N > 0 )
 	{
 	  ( *(sf_.file) ).setf(std::ios::scientific);
-	  ( *(sf_.file) ).precision(15);
-	  ( *(sf_.file) ).width(40);
+	  ( *(sf_.file) ).precision(4);
 
 	  /* Write time into the first column.                                                       	*/
 	  *(sf_.file) << time_ * gamma_ << "\t";
@@ -1165,6 +1164,9 @@ namespace Darius
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
       (vf_[ivtk].file) = new std::ofstream(vf_[ivtk].fileName.c_str(),std::ios::trunc);
 
+      vf_[ivtk].file->setf(std::ios::scientific);
+      vf_[ivtk].file->precision(4);
+
       /* Calculate the field to be visualized in the vtk files.						*/
       for ( k = 0; k < np_; k++ )
 	for (j = 1; j < N1_-1; j++)
@@ -1204,7 +1206,7 @@ namespace Darius
 
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
-      *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+      *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
       for (k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
 	for (j = 0; j < N1_; j++)
 	  for (i = 0; i < N0_; i++)
@@ -1221,7 +1223,7 @@ namespace Darius
 
       /* Insert the point data based on the computed electric field.					*/
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    		<< std::endl;
-      *vf_[ivtk].file << "<DataArray type=\"Float32\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
+      *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
 	  << std::endl;
       for ( k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
 	for (j = 0; j < N1_; j++)
@@ -1259,11 +1261,11 @@ namespace Darius
 
 	  /* Insert the coordinates of the grid for the charge cloud.                            	*/
 	  *vf_[ivtk].file << "<PPoints>"                                                          	<< std::endl;
-	  *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\" />"	<< std::endl;
+	  *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\" />"	<< std::endl;
 	  *vf_[ivtk].file << "</PPoints>"                                                             	<< std::endl;
 
 	  *vf_[ivtk].file << "<PPointData>"                                                           	<< std::endl;
-	  *vf_[ivtk].file << "<DataArray type=\"Float32\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" Name=\"field\" format=\"ascii\" />"
+	  *vf_[ivtk].file << "<DataArray type=\"Float64\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" Name=\"field\" format=\"ascii\" />"
 	      << std::endl;
 	  *vf_[ivtk].file << "</PPointData>"                                                          	<< std::endl;
 
@@ -1337,6 +1339,9 @@ namespace Darius
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
       (vf_[ivtk].file) = new std::ofstream(vf_[ivtk].fileName.c_str(),std::ios::trunc);
 
+      vf_[ivtk].file->setf(std::ios::scientific);
+      vf_[ivtk].file->precision(4);
+
       /* Calculate the index of the cell at which the plane resides.					*/
       dxr = modf( ( seed_.vtk_[ivtk].position_[0] - xmin_ ) / mesh_.meshResolution_[0] , &c);
       i   = (int) c;
@@ -1381,7 +1386,7 @@ namespace Darius
 
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
-      *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+      *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
       for (k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
 	for (j = 0; j < N1_; j++)
 	  {
@@ -1398,7 +1403,7 @@ namespace Darius
 
       /* Insert the point data based on the computed electric field.					*/
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    	<< std::endl;
-      *vf_[ivtk].file << "<DataArray type=\"Float32\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
+      *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
 	  << std::endl;
       for ( k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
 	for (j = 0; j < N1_; j++)
@@ -1435,11 +1440,11 @@ namespace Darius
 
 	  /* Insert the coordinates of the grid for the charge cloud.                            	*/
 	  *vf_[ivtk].file << "<PPoints>"                                                          	<< std::endl;
-	  *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\" />"	<< std::endl;
+	  *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\" />"	<< std::endl;
 	  *vf_[ivtk].file << "</PPoints>"                                                             	<< std::endl;
 
 	  *vf_[ivtk].file << "<PPointData>"                                                           	<< std::endl;
-	  *vf_[ivtk].file << "<DataArray type=\"Float32\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" Name=\"field\" format=\"ascii\" />"
+	  *vf_[ivtk].file << "<DataArray type=\"Float64\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" Name=\"field\" format=\"ascii\" />"
 	      << std::endl;
 	  *vf_[ivtk].file << "</PPointData>"                                                          	<< std::endl;
 
@@ -1498,6 +1503,9 @@ namespace Darius
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
       (vf_[ivtk].file) = new std::ofstream(vf_[ivtk].fileName.c_str(),std::ios::trunc);
 
+      vf_[ivtk].file->setf(std::ios::scientific);
+      vf_[ivtk].file->precision(4);
+
       /* Calculate the index of the cell at which the plane resides.					*/
       dyr = modf( ( seed_.vtk_[ivtk].position_[1] - ymin_ ) / mesh_.meshResolution_[1] , &c);
       j   = (int) c;
@@ -1542,7 +1550,7 @@ namespace Darius
 
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
-      *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+      *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
       for (k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
 	for (i = 0; i < N0_; i++)
 	  {
@@ -1559,7 +1567,7 @@ namespace Darius
 
       /* Insert the point data based on the computed electric field.					*/
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    	<< std::endl;
-      *vf_[ivtk].file << "<DataArray type=\"Float32\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
+      *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
 	  << std::endl;
       for ( k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
 	for (i = 0; i < N0_; i++)
@@ -1596,11 +1604,11 @@ namespace Darius
 
 	  /* Insert the coordinates of the grid for the charge cloud.                            	*/
 	  *vf_[ivtk].file << "<PPoints>"                                                          	<< std::endl;
-	  *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\" />"	<< std::endl;
+	  *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\" />"	<< std::endl;
 	  *vf_[ivtk].file << "</PPoints>"                                                             	<< std::endl;
 
 	  *vf_[ivtk].file << "<PPointData>"                                                           	<< std::endl;
-	  *vf_[ivtk].file << "<DataArray type=\"Float32\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" Name=\"field\" format=\"ascii\" />"
+	  *vf_[ivtk].file << "<DataArray type=\"Float64\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" Name=\"field\" format=\"ascii\" />"
 	      << std::endl;
 	  *vf_[ivtk].file << "</PPointData>"                                                          	<< std::endl;
 
@@ -1659,6 +1667,9 @@ namespace Darius
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
       (vf_[ivtk].file) = new std::ofstream(vf_[ivtk].fileName.c_str(),std::ios::trunc);
 
+      vf_[ivtk].file->setf(std::ios::scientific);
+      vf_[ivtk].file->precision(4);
+
       /* Calculate the index of the cell at which the plane resides.					*/
       dzr = modf( ( seed_.vtk_[ivtk].position_[2] - zmin_ ) / mesh_.meshResolution_[2] , &c);
       k   = (int) c - k0_;
@@ -1701,7 +1712,7 @@ namespace Darius
 
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
-      *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+      *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
       for (j = 0; j < N1_; j++)
 	for (i = 0; i < N0_; i++)
 	  {
@@ -1718,14 +1729,15 @@ namespace Darius
 
       /* Insert the point data based on the computed electric field.					*/
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    		<< std::endl;
-      *vf_[ivtk].file << "<DataArray type=\"Float32\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size()
+      *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size()
 	      << "\" format=\"ascii\">"									<< std::endl;
       for (j = 0; j < N1_; j++)
 	for (i = 0; i < N0_; i++)
 	  {
 	    n = i * N1_ + j;
 	    *vf_[ivtk].file << vf_[ivtk].v[n][0];
-	    for (l = 1; l < seed_.vtk_[ivtk].field_.size(); l++) *vf_[ivtk].file << " " << vf_[ivtk].v[n][l];
+	    for (l = 1; l < seed_.vtk_[ivtk].field_.size(); l++)
+	      *vf_[ivtk].file << " " << vf_[ivtk].v[n][l];
 	    *vf_[ivtk].file 										<< std::endl;
 	  }
       *vf_[ivtk].file << "</DataArray>"                                                   		<< std::endl;
@@ -1747,6 +1759,9 @@ namespace Darius
       /* Declare the iterators for the loop over the points.						*/
       pf_.fileName = seed_.profileBasename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + TXT_FILE_SUFFIX;
       pf_.file = new std::ofstream(pf_.fileName.c_str(),std::ios::trunc);
+
+      pf_.file->setf(std::ios::scientific);
+      pf_.file->precision(4);
 
       /* Perform a loop over the points of the mesh and save the field data into a text file.		*/
       for ( pf_.i = 0; pf_.i < N0_; pf_.i++ )

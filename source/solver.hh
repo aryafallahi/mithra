@@ -1083,8 +1083,7 @@ namespace Darius
 	  sb_.gb2T /= sb_.qT;
 
 	  (*sb_.file).setf(std::ios::scientific);
-	  (*sb_.file).precision(15);
-	  (*sb_.file).width(40);
+	  (*sb_.file).precision(4);
 
 	  /** Write time into the first column.                                                 	*/
 	  *sb_.file << timeBunch_ << "\t";
@@ -1116,6 +1115,9 @@ namespace Darius
       vb_.fileName = bunch_.bunchVTKBasename_ + "-p" + stringify(rank_) + "-" + stringify(nTimeBunch_) + VTU_FILE_SUFFIX;
       vb_.file = new std::ofstream(vb_.fileName.c_str(),std::ios::trunc);
 
+      vb_.file->setf(std::ios::scientific);
+      vb_.file->precision(4);
+
       /* Store the number of particles in the simulation.						*/
       vb_.N = 0;
       for (iter = iterQB_; iter != iterQE_; iter++)
@@ -1131,7 +1133,7 @@ namespace Darius
 
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vb_.file << "<Points>"                                                             	<< std::endl;
-      *vb_.file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\">" 	<< std::endl;
+      *vb_.file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">" 	<< std::endl;
 
       for (iter = iterQB_; iter != iterQE_; iter++)
 	{
@@ -1158,7 +1160,7 @@ namespace Darius
       *vb_.file << "</Cells>"                                                                	<< std::endl;
 
       *vb_.file << "<PointData Vectors = \"charge\">"                                    	<< std::endl;
-      *vb_.file << "<DataArray type=\"Float32\" Name=\"charge\" NumberOfComponents=\"3\" format=\"ascii\">"
+      *vb_.file << "<DataArray type=\"Float64\" Name=\"charge\" NumberOfComponents=\"3\" format=\"ascii\">"
 	  << std::endl;
       for (iter = iterQB_; iter != iterQE_; iter++)
 	{
@@ -1196,12 +1198,12 @@ namespace Darius
 
 	  /* Insert the coordinates of the grid for the charge cloud.                                   */
 	  *vb_.file << "<PPoints>"                                                                    	<< std::endl;
-	  *vb_.file << "<PDataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\" />"
+	  *vb_.file << "<PDataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\" />"
 	      << std::endl;
 	  *vb_.file << "</PPoints>"                                                                  	<< std::endl;
 
 	  *vb_.file << "<PPointData>"                                                                	<< std::endl;
-	  *vb_.file << "<PDataArray type=\"Float32\" Name=\"charge\" NumberOfComponents=\"3\" format=\"ascii\" />"
+	  *vb_.file << "<PDataArray type=\"Float64\" Name=\"charge\" NumberOfComponents=\"3\" format=\"ascii\" />"
 	      << std::endl;
 	  *vb_.file << "</PPointData>"                                                                	<< std::endl;
 	  for (vb_.i = 0; vb_.i < size_; ++vb_.i )
@@ -1733,6 +1735,13 @@ namespace Darius
 	  /* Perform the Lorentz boost for the sampling data.						*/
 	  FEL_[jf].vtk_.z_ 		*= gamma_;
 
+	  /* Create the filename for saving the visualization data.					*/
+	  if (!(isabsolute(FEL_[jf].vtk_.basename_)))
+	    FEL_[jf].vtk_.basename_ = FEL_[jf].vtk_.directory_ + FEL_[jf].vtk_.basename_;
+
+	  /* If the directory of the baseFilename does not exist create this directory.			*/
+	  createDirectory(FEL_[jf].vtk_.basename_, rank_);
+
 	  /* Set the number of sampling points in each processor.                                       */
 	  rp_[jf].N  = 1;
 	  rp_[jf].Nz = ( FEL_[jf].vtk_.z_ < zp_[1] && FEL_[jf].vtk_.z_ >= zp_[0] ) ? 1 : 0;
@@ -1751,9 +1760,6 @@ namespace Darius
 	  /* Initialize the file streams to save the data.						*/
 	  rp_[jf].file.resize(rp_[jf].Nz);
 	  rp_[jf].w.resize(rp_[jf].Nz);
-
-	  if (!(isabsolute(FEL_[jf].vtk_.basename_)))
-	    FEL_[jf].vtk_.basename_ = FEL_[jf].vtk_.directory_ + FEL_[jf].vtk_.basename_;
 
 	  /* Determine the number of time points needed to calculate the amplitude of each
 	   * radiation harmonic.									*/
@@ -1963,6 +1969,9 @@ namespace Darius
 		  std::string baseFilename = FEL_[jf].vtk_.basename_ + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
 		  rp_[jf].file[0] = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
 
+		  rp_[jf].file[0]->setf(std::ios::scientific);
+		  rp_[jf].file[0]->precision(4);
+
 		  /* Write the initial data for the vtk file.						*/
 		  *rp_[jf].file[0] << "<?xml version=\"1.0\"?>"						<< std::endl;
 		  *rp_[jf].file[0] << "<VTKFile type=\"StructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" "
@@ -1974,7 +1983,7 @@ namespace Darius
 
 		  /* Insert the coordinates of the grid for the charge points.				*/
 		  *rp_[jf].file[0] << "<Points>"                                                        << std::endl;
-		  *rp_[jf].file[0] << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\">"<< std::endl;
+		  *rp_[jf].file[0] << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"<< std::endl;
 		  for (j = 0; j < N1_; j++)
 		    for (i = 0; i < N0_; i++)
 		      {
@@ -1991,7 +2000,7 @@ namespace Darius
 
 		  /* Insert the point data based on the computed electric field.			*/
 		  *rp_[jf].file[0] << "<PointData Vectors = \"power\">"                                 << std::endl;
-		  *rp_[jf].file[0] << "<DataArray type=\"Float32\" Name=\"power\" NumberOfComponents=\"" << 1 << "\" format=\"ascii\">"
+		  *rp_[jf].file[0] << "<DataArray type=\"Float64\" Name=\"power\" NumberOfComponents=\"" << 1 << "\" format=\"ascii\">"
 		      << std::endl;
 		  for (j = 0; j < N1_; j++)
 		    for (i = 0; i < N0_; i++)

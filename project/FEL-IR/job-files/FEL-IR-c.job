@@ -45,7 +45,7 @@ BUNCH
   bunch-visualization
   {
     sample                                              = true
-    directory                                           = ./
+    directory                                           = /cluster/scratch/afallahi/
     base-name                                           = bunch-visualization/bunch
     rhythm                                              = 100.0
   }
@@ -62,22 +62,8 @@ FIELD
     field                                               = Ez
     plane                                               = yz
     position                                            = (0.0, 0.0, 110.0)
-    directory                                           = ./
+    directory                                           = /cluster/scratch/afallahi/
     base-name                                           = field-visualization/field-yz
-    rhythm                                              = 100.0
-  }
-
-  field-visualization
-  {
-    sample                                              = true
-    type                                                = in-plane
-    field                                               = Ex
-    field                                               = Ey
-    field                                               = Ez
-    plane                                               = xz
-    position                                            = (0.0, 0.0, 110.0)
-    directory                                           = ./
-    base-name                                           = field-visualization/field-xz
     rhythm                                              = 100.0
   }
 }
@@ -92,3 +78,17 @@ UNDULATOR
     polarization-angle					= 0.0
   }
 }
+
+FEL-OUTPUT
+{
+  power-visualization
+  {
+    sample                                              = true
+    directory                                           = ./
+    base-name                                           = power-visualization/power
+    plane-position                                      = 110
+    normalized-frequency                                = 1.00
+    rhythm						= 100.0
+  }
+}
+

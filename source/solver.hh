@@ -189,8 +189,6 @@ namespace Darius
 	    bunch_.bunchInit_[i].position_[ia][2]	/= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
 	  bunch_.bunchInit_[i].initialGamma_ 		*= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
 	  bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
-	  bunch_.bunchInit_[i].sigmaGammaBeta_[1] 	*= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
-	  bunch_.bunchInit_[i].sigmaGammaBeta_[0] 	*= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
 	  bunch_.bunchInit_[i].sigmaPosition_[2] 	/= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
 	  bunch_.bunchInit_[i].longTrun_ 		/= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
 	  Double zeta 					 = gamma_ * ( 1.0 - beta_ * bunch_.bunchInit_[i].initialBeta_ ) *

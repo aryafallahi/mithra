@@ -705,8 +705,8 @@ Using the relativistic velocity transformation \cite{JacksonClassical}, the tran
 %
 \begin{align}
 \gamma & = \gamma' \gamma_0 (1 - \bar{\beta'}_z \beta_0), \\
-( \bar{\beta}_x, \bar{\beta}_y, \bar{\beta}_z ) & = ( \bar{\beta'}_x, \bar{\beta'}_y, \sqrt{1 - 1/\gamma^2} ), \\
-(\sigma_{\gamma \beta_x}, \sigma_{\gamma \beta_y}, \sigma_{\gamma \beta_z}) & = (\sigma'_{\gamma \beta_x}, \sigma'_{\gamma \beta_y}, \sigma'_{\gamma \beta_z} ) \gamma_0 (1 - \bar{\beta'}_z \beta_0). \label{LorentzTransformE}
+( \overline{\gamma \beta}_x, \overline{\gamma \beta}_y, \overline{\gamma \beta}_z ) & = ( \overline{\gamma' \beta'}_x, \overline{\gamma' \beta'}_y, \sqrt{\gamma^2-1} ), \\
+(\sigma_{\gamma \beta_x}, \sigma_{\gamma \beta_y}, \sigma_{\gamma \beta_z}) & = ( \sigma'_{\gamma \beta_x}, \sigma'_{\gamma \beta_y}, \sigma'_{\gamma \beta_z} \gamma_0 (1 - \bar{\beta'}_z \beta_0) ). \label{LorentzTransformE}
 \end{align}
 %
 Equations (\ref{LorentzTransformB})-(\ref{LorentzTransformE}) provide a sufficient set of equations to perform the Lorentz boost to the bunch rest frame.
@@ -743,6 +743,10 @@ B'_z & = B_0 \sinh(k_uy')\cos(k_uz'), \nonumber
 \end{align}
 %
 where $B_0$ is the maximum transverse field of the undulator.
+%
+Note that the equations here are written for cases where magnetic field is zero along $x$-axis.
+%
+As described in chapter \ref{chapter_refcard}, there exists a possibility in MITHRA to consider dominant field directed along a vector in the $xy$-plane.
 %
 To calculate the undulator field in the bunch rest frame, first the position is transformed to laboratory frame $(x',y',z')$ through the Lorentz boost equations.
 %
@@ -1047,7 +1051,7 @@ $\delta z$ for each particle is obtained from
 %
 \begin{equation}
 \label{bunchingFactor}
-\delta z = \xi \gamma_0 k_u b_f \sin (2 \xi \gamma_0 k_u z),
+\delta z = \xi \gamma_0 b_f / k_u \sin (2 \xi \gamma_0 k_u z),
 \end{equation}
 %
 where $b_f$ is the given bunching factor of the distribution, and $\xi=1+\bar{\beta}_z/\beta_0$ accounts for the change in the bunch longitudinal velocity after entering the undulator.

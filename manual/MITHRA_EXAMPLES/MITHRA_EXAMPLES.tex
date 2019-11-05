@@ -52,7 +52,7 @@ In this first example, saturation of the FEL gain is obtained after a small numb
 %
 As a results, we use this problem to assess the simulation results, verify the convergence and reliability of the algorithm, and finally compare the output with well-established softwares in the community.
 
-To simulate the considered FEL configuration, the following job file is written and given to the software to analyze the interaction.
+To simulate the considered FEL configuration, the following job file is written and given to the software to analyze the interaction and produce the results shown in Fig.\,\ref{power-example1}.
 %
 As observed in the mesh definition, the transverse size of the computational domain is almost 10 times larger than the bunch transverse size.
 %
@@ -72,92 +72,73 @@ In the illustrated job file, some of the output formats are turned off which can
 \begin{Verbatim}[fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
 MESH
 \{
-  length-scale                     = MICROMETER
-  time-scale                       = PICOSECOND
-  mesh-lengths                     = ( 3200,  3200.0,    280.0)
-  mesh-resolution                  = ( 50.0,    50.0,      0.1)
-  mesh-center                      = ( 0.0,      0.0,      0.0)
-  total-time                       = 30000
-  bunch-time-step                  = 1.6
-  bunch-time-start                 = 0.0
-  mesh-truncation-order            = 2
-  space-charge                     = false
+	length-scale					= MICROMETER
+	time-scale						= PICOSECOND
+	mesh-lengths					= ( 3200,  3200.0,    280.0)
+	mesh-resolution					= ( 50.0,    50.0,      0.1)
+	mesh-center						= ( 0.0,      0.0,      0.0)
+	total-time						= 30000
+	bunch-time-step					= 1.6
+	bunch-time-start				= 0.0
+	mesh-truncation-order			= 2
+	space-charge					= false
+	solver							= NSFD
 \}
 
 BUNCH
 \{
-  bunch-initialization
-  \{
-    type                           = ellipsoid
-    distribution                   = uniform
-    charge                         = 1.846e8
-    number-of-particles            = 131072
-    gamma                          = 100.41
-    direction                      = (    0.0,     0.0,       1.0)
-    position                       = (    0.0,     0.0,       0.0)
-    sigma-position                 = (  260.0,   260.0,     50.25)
-    sigma-momentum                 = ( 1.0e-8,  1.0e-8, 100.41e-4)
-    transverse-truncation          = 1040.0
-    longitudinal-truncation        = 90.0
-    bunching-factor                = 0.01
-  \}
-
-  bunch-visualization
-  \{
-    sample                         = true
-    directory                      = ./
-    base-name                      = bunch-visualization/bunch
-    rhythm                         = 32
-  \}
+	bunch-initialization
+	\{
+		type						= ellipsoid
+		distribution				= uniform
+		charge						= 1.846e8
+		number-of-particles			= 131072
+		gamma						= 100.41
+		direction					= (    0.0,     0.0,       1.0)
+		position					= (    0.0,     0.0,       0.0)
+		sigma-position				= (  260.0,   260.0,     50.25)
+		sigma-momentum				= ( 1.0e-8,  1.0e-8, 100.41e-4)
+		transverse-truncation		= 1040.0
+		longitudinal-truncation		= 90.0
+		bunching-factor				= 0.01
+	\}
 \}
 
 FIELD
 \{
-  field-sampling
-  \{
-    sample                         = true
-    type                           = at-point
-    field                          = Ex
-    field                          = Ey
-    field                          = Ez
-    directory                      = ./
-    base-name                      = field-sampling/field
-    rhythm                         = 3.2
-    position                       = (0.0, 0.0, 110.0)
-  \}
-
-  field-visualization
-  \{
-    sample                         = true
-    field                          = Ex
-    field                          = Ey
-    field                          = Ez
-    field                          = Q
-    directory                      = ./
-    base-name                      = field-visualization/field
-    rhythm                         = 32
-  \}
+	field-sampling
+	\{
+		sample						= true
+		type						= at-point
+		field						= Ex
+		field						= Ey
+		field						= Ez
+		directory					= ./
+		base-name					= field-sampling/field
+		rhythm						= 3.2
+		position					= (0.0, 0.0, 110.0)
+	\}
 \}
 
 UNDULATOR
 \{
-  undulator-parameter              = 1.417
-  period                           = 3.0e4
-  length                           = 300
-  polarization-angle               = 0.0
+	undulator-parameter				= 1.417
+	period							= 3.0e4
+	length							= 300
+	polarization-angle				= 0.0
 \}
 
 FEL-OUTPUT
 \{
-  radiation-power
-  \{
-    sample                         = true
-    type                           = at-point
-    directory                      = ./
-    base-name                      = power-sampling/power
-    distance-from-bunch            = 110.0
-    normalized-frequency           = 1.00
-  \}
+	radiation-power
+	\{
+		sample						= true
+		type						= at-point
+		directory					= ./
+		base-name					= power-sampling/power
+		distance-from-bunch			= 110.0
+		normalized-frequency		= 1.00
+	\}
 \}
 \end{Verbatim}
 \end{snugshade}
@@ -168,7 +149,7 @@ In the beginning, we neglect the space-charge effect only to achieve a good asse
 %
 The investigation of space-charge effect will be performed in the second step.
 %
-Fig.\,\ref{power-example1}a shows the transverse electric field sampled at 110\,$\mu$m in front of the bunch center.
+Fig.\,\ref{power-example1}a shows the transverse electric field sampled at 110\,{\textmu}m in front of the bunch center.
 %
 The logarithmic plot of the radiated power for different propagation lengths ($z$) is also depicted in Fig.\,\ref{power-example1}b.
 %
@@ -176,7 +157,7 @@ We comment that the full-wave analysis offered by MITHRA obtains the total radia
 %
 In an FEL simulation, one is often interested in the forward radiation component, which can only be extracted at a distance in front of the radiation source, namely the electron bunch.
 %
-This is the main reason for illustrating the radiated power and field at 110\,$\mu$m in front of the bunch center.
+This is the main reason for illustrating the radiated power and field at 110\,{\textmu}m in front of the bunch center.
 
 According to the 1D FEL theory the gain length of the considered SASE FEL configuration is $L_G=22.4\,\mathrm{cm}$.
 %
@@ -184,7 +165,7 @@ The gain length calculated from the slope of the power curve is $L_G=22\,\mathrm
 %
 There exists also a good agreement in the computed saturation power.
 %
-The beam energy according to the data in table \ref{example1} is 1.52\,mJ which for the bunch length of 100\,$\mu$m corresponds to $P_{beam}=4.55\,\mathrm{GW}$ beam power.
+The beam energy according to the data in table \ref{example1} is 1.52\,mJ which for the bunch length of 100\,{\textmu}m corresponds to $P_{beam}=4.55\,\mathrm{GW}$ beam power.
 %
 The estimated saturation power according to the 1D theory is equal to $P_{sat} = \rho P_{beam} = 2.7\,\mathrm{GW}$.
 %
@@ -212,7 +193,7 @@ However, the backward radiation although is seldom used due to its long waveleng
 %
 The influence of low-frequency backward radiation on the performance of free electron lasers has been already studied in a 1D regime \cite{maroli2000effects}.
 %
-The effect becomes stronger in the saturation regime, when the electrons are microbunched and the FEL forward radiation is a strong function of the particles distribution.
+The effect becomes stronger in the saturation regime, where the electron bunch is modulated and the FEL radiation is a strong function of the particles distribution.
 %
 To demonstrate this effect, we used a mathematical trick in MITHRA through the domain decomposition algorithm to suppress the propagation of backward radiation.
 %
@@ -254,14 +235,12 @@ In Fig.\,\ref{profile-example1}, snapshots of the radiated field profile at diff
 %
 The emergence of lasing radiation at the end of the undulator motion is clearly observed in the field profile.
 %
-\begin{landscape}
 \begin{figure}
 \centering
-\includegraphics[width=8.5in]{./MITHRA_EXAMPLES/Fig2/Fig2.pdf}
+\includegraphics[width=6.0in]{./MITHRA_EXAMPLES/Fig2/Fig2.pdf}
 \caption{Snapshots of the radiated field profile taken at (a) $x=0$ and (b) $z=60\,\mu m$ plane and (c) the bunch profile viewed from the $x$ axis.}
 \label{profile-example1}
 \end{figure}
-\end{landscape}
 %
 Furthermore, snapshots of the bunch profile are also presented beside the field profile.
 %

@@ -2,7 +2,7 @@
 #                                                                                                        
 #  physics - model an infra-red free electron laser based on a magnetic undulator 
 #
-#  manual: example 1, Fig. 5.2 
+#  manual: example 1, Fig. 5.2 visualization of the radiation and micro-bunching 
 #                                                                                                 
 #  mpirun -np 4 ../darius ./job-files/FEL-IR-c.job
 #  

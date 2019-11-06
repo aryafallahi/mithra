@@ -189,14 +189,14 @@ namespace Darius
 	  t5  = ( tf.tv_usec - ti.tv_usec ) / 1.0e6;
 	  t5 += ( tf.tv_sec  - ti.tv_sec );
 
-	  if ( rank_ == 0 )
-	    {
-	      std::cout << "time number = " << nTime_ << "\t"
-		  << "total calculation = " << t5 << " s" << "\t"
-		  << "field calculation = " << t2 << " s" << "\t"
-		  << "bunch calculation = " << t3 << " s" << "\t"
-		  << "radiation calculation = " << t4 << " s" << std::endl;
-	    }
+//	  if ( rank_ == 0 )
+//	    {
+//	      std::cout << "time number = " << nTime_ << "\t"
+//		  << "total calculation = " << t5 << " s" << "\t"
+//		  << "field calculation = " << t2 << " s" << "\t"
+//		  << "bunch calculation = " << t3 << " s" << "\t"
+//		  << "radiation calculation = " << t4 << " s" << std::endl;
+//	    }
 
 	  gettimeofday(&simulationEnd, NULL);
 	  deltaTime  = ( simulationEnd.tv_usec - simulationStart.tv_usec ) / 1.0e6;

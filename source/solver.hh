@@ -125,7 +125,7 @@ namespace Darius
       std::sort(undulator_.begin(), undulator_.end(), undulatorCompare);
 
       /* Now shift all the undulator modules so that the first module starts at zero.			*/
-      for (std::vector<Undulator>::iterator iter = undulator_.end(); iter != undulator_.begin(); iter--)
+      for (std::vector<Undulator>::reverse_iterator iter = undulator_.rbegin(); iter != undulator_.rend(); iter++)
 	iter->rb_ -= undulator_[0].rb_;
 
       /* Add the required space for fringing field to the undulator begins.				*/

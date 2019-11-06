@@ -14,10 +14,10 @@ MESH
   length-scale						= MICROMETER
   time-scale						= PICOSECOND
   mesh-lengths						= ( 3200, 3200.0, 280.0) 
-  mesh-resolution					= ( 25.0,   25.0,   0.025)
+  mesh-resolution					= ( 50.0,   50.0,   0.1)
   mesh-center						= ( 0.0,     0.0,   0.0)
   total-time						= 30000
-  bunch-time-step					= 0.05
+  bunch-time-step					= 1.6
   bunch-time-start              			= 0.0
   mesh-truncation-order					= 2
   space-charge						= false

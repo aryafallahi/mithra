@@ -47,10 +47,7 @@
 int main (int argc, char* argv[]) {
 
   /* initialize MPI, finalize is done automatically on exit                                             */
-  int rank, size;
   MPI_Init(&argc,&argv);
-  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-  MPI_Comm_size(MPI_COMM_WORLD,&size);
 
   /* Activate namespaces                                                                                */
   using namespace Darius;

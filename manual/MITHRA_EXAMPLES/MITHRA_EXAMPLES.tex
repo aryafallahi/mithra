@@ -311,6 +311,8 @@ Indeed, this is observed after repeating the simulation for longer electron bunc
 %
 The results of such a study is illustrated in Fig.\,\ref{spaceChargeEffect}b.
 %
+Note that in the performed simulations covering the space-charge effects, the grid size along $z$ direction had to be decreased to 50\,{\textmu}m to obtain results with acceptable accuracy.
+%
 \begin{figure}
 \centering
 $\begin{array}{cc}
@@ -329,15 +331,13 @@ To clarify such features, the study on the computation performance for MPI paral
 %
 The simulation with 131072 macro-particles, a grid with 11'468'800 cells and 37'500 time steps is taken into account.
 %
-The code is run on a E5-2698 v4 \@ 2.20 GHz machine with 80 CPUs, 20 Cores, and 512 GB Memory.
+The code is run on euler cluster of the scientific computing facility at ETH Z\"urich.
 %
-It is observed that running on 40 CPUs is optimal for this problem.
+It is observed that running on 48 CPUs is optimal for this problem.
 %
 This number increases for larger and more demanding examples.
 %
 In case of the run on 40 CPUs, field update on the computational grid, motion update of the bunch macro-particles and the computation of the total radiated field together with the required Fourier transform take 44\%, 28\%, and 28\% of the total computational time, respectively.
-%
-The reason for equal computation time for one and two processors lies behind the structure of the machine.
 %
 \begin{figure}
 	\centering

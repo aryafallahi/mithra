@@ -1,0 +1,90 @@
+#  Darius input file                                                                                                                                          
+#                                                                                                        
+#  physics - model a free electron laser based on a magnetic undulator
+#                                                                                                 
+#  mpirun -np 4 darius FEL-IR.job
+
+MESH
+{
+  length-scale					= MICROMETER
+  time-scale					= PICOSECOND
+  mesh-lengths					= ( 1600.0, 1600.0, 165.0) 
+  mesh-resolution				= ( 10.0,   10.0,   0.01 )
+  mesh-center					= ( 0.0,    0.0,    0.0  )
+  total-time					= 50000
+  bunch-time-step				= 0.8
+  bunch-time-start                              = 0.0
+  mesh-truncation-order				= 2
+  space-charge					= false
+}
+ 
+BUNCH
+{
+  bunch-initialization
+  {
+    type					= ellipsoid
+    distribution				= uniform
+    charge					= 3.4332e8
+    number-of-particles				= 1048576
+    gamma					= 391.36
+    direction					= ( 0.0,  0.0,  1.0 )
+    position					= ( 0.0,  0.0,  0.0 )
+    sigma-position				= ( 95.3, 95.3, 75.0)
+    sigma-momentum				= ( 0.0105, 0.0105, 391.36e-4)
+    transverse-truncation			= 400.0
+    longitudinal-truncation                     = 78.0
+    bunching-factor				= 0.0
+  }
+    
+  bunch-visualization
+  {
+    sample					= false
+    directory					= /scratch/afallahi/
+    base-name					= bunch-visualization/bunch
+    rhythm					= 1000
+  }
+}
+
+FIELD
+{
+  field-initialization
+  {
+    type					= gaussian-beam
+    position					= ( 0.0, 0.0, 700000)
+    direction					= ( 0.0, 0.0, 1.0)
+    polarization				= ( 0.0, 1.0, 0.0)
+    rayleigh-radius-parallel			= 183.74
+    rayleigh-radius-perpendicular		= 183.74
+    strength-parameter				= 9.857e-7
+    signal-type					= gaussian
+    offset					= 700000.0
+    variance					= 0.0589
+    wavelength					= 0.265187
+    CEP						= 0.0
+  }
+}
+
+UNDULATOR
+{
+  static-undulator
+  {
+    undulator-parameter				= 1.95
+    period					= 2.8e4
+    length					= 535
+    polarization-angle				= 0.0
+    offset					= 0.0
+  }
+}
+
+FEL-OUTPUT
+{
+  radiation-power
+  {
+    sample					= true
+    type					= at-point
+    directory					= ./
+    base-name					= power-sampling/power
+    distance-from-bunch				= 78.0
+    normalized-frequency			= 1.00
+  }
+}

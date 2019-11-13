@@ -361,7 +361,8 @@ In what follows, the parameters in each group are introduced:
 \begin{itemize}
 	\item {\tt \small \em type} is the type of the excitation. The accepted excitation types in MITHRA include plane wave, confined plane-wave, and Gaussian beam. A confined plane-wave is a plane-wave that introduces fields to the particle only over an ellipse determined by beam radii.
 	%
-	\item {\tt \small \em position} is the reference position of the excitation. It is the reference position of the plane wave propagation in the plane-wave excitation and the focusing point in the Gaussian beam excitation.
+	\item {\tt \small \em position} is the reference position of the excitation. It is the reference position of the plane wave propagation in the plane-wave excitation and the focusing point in the Gaussian beam excitation. The coordinate system for this position vector is the same as for bunch position vector. Typically, the focal point or the reference position of the seed is given with respect to the undulator begin. Therefore, special care should be exercised with this position vector;
+	If the reference position with respect to undulator begin is $z_0$, then the value for seed reference position should be given as $z_0 + l_z + 10\lambda_X$, where $l_z$ is the {\tt \small \em longitudinal truncation} value and $\lambda_X$ is the radiation wavelength.
 	%
 	\item {\tt \small \em direction} is the propagation direction of the excitation in the plane-wave and Gaussian beam types.
 	%

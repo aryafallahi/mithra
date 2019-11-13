@@ -50,15 +50,15 @@ FIELD
   field-initialization
   {
     type					= gaussian-beam
-    position					= ( 0.0, 0.0, 700000)
+    position					= ( 0.0, 0.0, 700080.65)
     direction					= ( 0.0, 0.0, 1.0)
     polarization				= ( 0.0, 1.0, 0.0)
-    rayleigh-radius-parallel			= 183.74
-    rayleigh-radius-perpendicular		= 183.74
+    radius-parallel				= 183.74
+    radius-perpendicular			= 183.74
     strength-parameter				= 9.857e-7
     signal-type					= gaussian
-    offset					= 700000.0
-    variance					= 0.0589
+    offset					= 700000.0 #not really needed
+    variance					= 1.0e12
     wavelength					= 0.265187
     CEP						= 0.0
   }

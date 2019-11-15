@@ -1,4 +1,4 @@
-#  Darius input file                                                                                                                                          
+#  Mithra input file                                                                                                                                          
 #                                                                                                        
 #  physics - model an infra-red free electron laser based on a magnetic undulator 
 #
@@ -78,7 +78,7 @@ FEL-OUTPUT
     type						= at-point
     directory						= ./
     base-name						= power-sampling/power-NSFD
-    plane-position					= 110
+    plane-position					= 110.0
     normalized-frequency				= 1.00
   }
 }

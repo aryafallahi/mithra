@@ -1,8 +1,13 @@
-#  Darius input file                                                                                                                                          
-#                                                                                                        
-#  physics - model a free electron laser based on a magnetic undulator
-#                                                                                                 
-#  mpirun -np 4 darius FEL-IR.job
+#  Mithra input file
+#
+#  physics - model a seeded ultraviolet free electron laser based on a magnetic undulator
+#
+#  manual: example 2, Fig. 5.6a and Fig. 5.6b (simulation results without space-charge)
+#
+#  mpirun -np 4 ../darius ./job-files/FEL-SEEDED.job
+#
+#  in the LSF system:
+#  bsub -n 48 -W 20:00 -J "FEL-SEEDED" -o mithra.out 'mpirun ../darius ./job-files/FEL-SEEDED.job'
 
 MESH
 {
@@ -16,6 +21,7 @@ MESH
   bunch-time-start                              = 0.0
   mesh-truncation-order				= 2
   space-charge					= false
+  solver					= NSFD
 }
  
 BUNCH
@@ -38,10 +44,10 @@ BUNCH
     
   bunch-visualization
   {
-    sample					= false
-    directory					= /scratch/afallahi/
+    sample					= true
+    directory					= /cluster/scratch/afallahi/
     base-name					= bunch-visualization/bunch
-    rhythm					= 1000
+    rhythm					= 500
   }
 }
 
@@ -84,7 +90,7 @@ FEL-OUTPUT
     type					= at-point
     directory					= ./
     base-name					= power-sampling/power
-    distance-from-bunch				= 78.0
+    plane-position				= 78.0
     normalized-frequency			= 1.00
   }
 }

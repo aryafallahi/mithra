@@ -3,12 +3,12 @@
  Version 1.0, copyright 2014, A. Fallahi
  ********************************************************************************************************
  darius.cpp: Main program file
- MPI version should be compiled using:
- mpiCC -O3 darius.cpp -o ../darius
+ MPI version should be compiled in the mithra folder using:
+ mpiCC -O3 source/darius.cpp -o project/darius
  to commit to git use
  git add --all - git commit -m "message" - git push
  on Mac:
- mpiCC -lstdc++ -O3 darius.cpp -o ../darius
+ mpiCC -lstdc++ -O3 source/darius.cpp -o project/darius
  ********************************************************************************************************/
 
 /* standard C++ header files 										*/

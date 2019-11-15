@@ -164,7 +164,7 @@ namespace Darius
 
 		q.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bFi * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * q.rnp[2] + 2.0 * PI * halton( 9 , bmi ) );
 	      }
-	    else if ( bunchInit.lambda_ * bunchInit.bF_ != 0.0)
+	    else if ( bunchInit.lambda_ != 0.0)
 	      {
 		q.rnp[2]  = charge.rnp[2] - ( bunchInit.lambda_ / 2.0 ) / 4 * ii;
 
@@ -1164,10 +1164,10 @@ namespace Darius
       /* Initialize the Rayleigh radius of the Gaussian beam.                                           */
       radius_ 		= radius;
 
-      /* Initialize the undulator period according to the fiven wavelength for the signal.		*/
+      /* Initialize the undulator period according to the given wavelength for the signal.		*/
       lu_		= wavelength;
 
-      /* check if length of polarization vector is zero and normalize the vector.                       */
+      /* check if the given radius of the gaussian beam makes sense.                       		*/
       if ( seedType_ == GAUSSIANBEAM && radius_[0] * radius_[1] == 0.0)
 	{
 	  printmessage(std::string(__FILE__), __LINE__, std::string("One of the radii of the Gaussian beam is set to zero."));

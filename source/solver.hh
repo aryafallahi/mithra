@@ -102,45 +102,12 @@ namespace Darius
       for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
 	if ( iter->type_ == OPTICAL ) iter->lu_ /= ( 1 + beta_ );
 
-      /* The beginning of undulators are set automatically for static ones. Here, the array of undulators
-       * are first sorted according to their begin point and then the position of the bunch and undulator
-       * begin is set.											*/
-      Double t = -1.0e100;
-      for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
-	{
-	  /* Correct the number of particles if it is not a multiple of four.				*/
-	  if ( bunch_.bunchInit_[i].numberOfParticles_ % 4 != 0 )
-	    {
-	      unsigned int n = bunch_.bunchInit_[i].numberOfParticles_ % 4;
-	      bunch_.bunchInit_[i].numberOfParticles_ += 4 - n;
-	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The number of particles in the bunch is not a multiple of four. ") +
-			   std::string("It is corrected to ") +  stringify(bunch_.bunchInit_[i].numberOfParticles_) );
-	    }
-
-	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	    t = std::max(t, bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_);
-	}
-
       /* Sort the undulators according to their beginning point.					*/
       std::sort(undulator_.begin(), undulator_.end(), undulatorCompare);
 
       /* Now shift all the undulator modules so that the first module starts at zero.			*/
       for (std::vector<Undulator>::reverse_iterator iter = undulator_.rbegin(); iter != undulator_.rend(); iter++)
 	iter->rb_ -= undulator_[0].rb_;
-
-      /* Add the required space for fringing field to the undulator begins.				*/
-      for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
-	iter->rb_ += t + iter->lu_ / ( 2.0 * gamma_ * gamma_ ) * 10;
-
-      /* Check if the given offset of the bunch is correct according to the MITHRA conditions.		*/
-      for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
-	{
-	  if ( iter->type_ == OPTICAL )
-	    if ( iter->rb_  > ( iter->position_[2] + iter->signal_.t0_ - iter->signal_.s_ / 2.0 ) * c0_ )
-	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The offset value of the signal is not given properly. Part of a bunch is initialized in the undulator.") );
-	  if ( iter->type_ == STATIC )
-	    printmessage(std::string(__FILE__), __LINE__, std::string("The beginning of the undulator is set at the point " + stringify(iter->rb_)) );
-	}
 
       /* Boost the mesh data into the electron rest frame.						*/
       mesh_.meshLength_[2] 	*= gamma_;
@@ -151,7 +118,7 @@ namespace Darius
       if ( mesh_.solver_ == NSFD )
 	{
 	  /* Adjust the transverse mesh resolution to match the stability criterion.			*/
-	  t = 1.0 / sqrt( pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[0], 2.0 ) + pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[1], 2.0 ) );
+	  Double t = 1.0 / sqrt( pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[0], 2.0 ) + pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[1], 2.0 ) );
 	  if ( t < 1.02 )
 	    {
 	      mesh_.meshResolution_[0] *= 1.02 / t;
@@ -177,7 +144,6 @@ namespace Darius
       bunch_.timeStart_		/= gamma_;
 
       /* Adjust the given bunch time step according to the given field time step.			*/
-      t 	       = mesh_.timeStep_;
       bunch_.timeStep_ = mesh_.timeStep_ / ceil(mesh_.timeStep_ / bunch_.timeStep_);
       nUpdateBunch_    = mesh_.timeStep_ / bunch_.timeStep_;
       printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the bunch update is set to " + stringify(bunch_.timeStep_ * gamma_) ) );
@@ -185,20 +151,21 @@ namespace Darius
       /* Boost the bunch parameters into the electron rest frame.					*/
       for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
 	{
+
+	  /* Boosting the position is done considering that the start of simulation is at t = 0.	*/
+	  Double zeta 					 = gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
 	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	    bunch_.bunchInit_[i].position_[ia][2]	/= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
-	  bunch_.bunchInit_[i].initialGamma_ 		*= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
-	  bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
-	  bunch_.bunchInit_[i].sigmaPosition_[2] 	/= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
-	  bunch_.bunchInit_[i].longTrun_ 		/= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
-	  Double zeta 					 = gamma_ * ( 1.0 - beta_ * bunch_.bunchInit_[i].initialBeta_ ) *
-	      beta_ * gamma_ / bunch_.bunchInit_[i].initialBeta_;
-	  bunch_.bunchInit_[i].lambda_  		 = undulator_[0].lu_ / gamma_ / zeta;
+	    bunch_.bunchInit_[i].position_[ia][2]	/= zeta;
+	  bunch_.bunchInit_[i].sigmaPosition_[2] 	/= zeta;
+	  bunch_.bunchInit_[i].longTrun_ 		/= zeta;
+
+	  bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= zeta;
+
+	  bunch_.bunchInit_[i].lambda_  		 = undulator_[0].lu_ / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].initialBeta_ * zeta );
 
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
 
-	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	    bunch_.bunchInit_[i].position_[ia][2]	-= bunch_.bunchInit_[i].sigmaPosition_[2] * ( 1.0 - zeta );
+	  bunch_.bunchInit_[i].initialGamma_ 		*= zeta;
 	  bunch_.bunchInit_[i].initialBeta_ 	 	 = sqrt( 1.0 - 1.0 / ( bunch_.bunchInit_[i].initialGamma_ * bunch_.bunchInit_[i].initialGamma_ ) );
 	}
       bunch_.rhythm_			/= gamma_;
@@ -207,12 +174,53 @@ namespace Darius
 	bunch_.bunchProfileTime_[i] 	/= gamma_;
       bunch_.bunchProfileRhythm_	/= gamma_;
 
+      /* The beginning of undulators are set automatically for static ones. Here, the array of undulators
+       * are first sorted according to their begin point and then the position of the bunch and undulator
+       * begin is set.											*/
+      Double zmax = -1.0e100;
+      for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
+	{
+	  /* Correct the number of particles if it is not a multiple of four.				*/
+	  if ( bunch_.bunchInit_[i].numberOfParticles_ % 4 != 0 )
+	    {
+	      unsigned int n = bunch_.bunchInit_[i].numberOfParticles_ % 4;
+	      bunch_.bunchInit_[i].numberOfParticles_ += 4 - n;
+	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The number of particles in the bunch is not a multiple of four. ") +
+			   std::string("It is corrected to ") +  stringify(bunch_.bunchInit_[i].numberOfParticles_) );
+	    }
+
+	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
+	    zmax = std::max(zmax, bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_);
+	}
+
+      /* Check if the given offset of the bunch is correct according to the MITHRA conditions.		*/
+      for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
+	{
+	  if ( iter->type_ == OPTICAL )
+	    if ( zmax / gamma_  > ( iter->position_[2] + iter->signal_.t0_ - iter->signal_.s_ / 2.0 ) )
+	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The offset value of the signal is not given properly. Part of a bunch is initialized in the undulator.") );
+	  if ( iter->type_ == STATIC )
+	    printmessage(std::string(__FILE__), __LINE__, std::string("The beginning of the undulator is set automatically in the static mode.") );
+	}
+
       /* The Lorentz boost parameters should also be transfered to the seed class in order to correctly
        * compute the fields within the computational domain.						*/
       seed_.beta_    	= beta_;
       seed_.gamma_   	= gamma_;
-      seed_.dt_      	= - beta_ * gamma_ / seed_.c0_ * undulator_[0].rb_;
-      dt_ 		= - beta_ * gamma_ / seed_.c0_ * undulator_[0].rb_;
+
+      /* Here, we define the shift in time such that the bunch end is at the begin of fringing field
+       * section.											*/
+      if ( undulator_[0].type_ == STATIC )
+	{
+	  /* This shift in time makes sure that the maximum z in the bunch at time zero is 2 undulator
+	   * periods away from the undulator begin.							*/
+	  dt_ 		= - 1.0 / ( beta_ * seed_.c0_ ) * ( zmax - 2.0 * undulator_[0].lu_ / gamma_ );
+	}
+      else if ( undulator_[0].type_ == OPTICAL )
+	{
+	  /* This shift in time causes the starting time in the lab frame to be zero.			*/
+	  seed_.dt_	= - beta_ / seed_.c0_ * zmax;
+	}
 
       printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );
     }
@@ -1270,21 +1278,21 @@ namespace Darius
 	{
 
 	  /* Calculate the undulator magnetic field.							*/
-	  ub_.b0 	 = (iter->lu_ != 0.0 ) ? EM * c0_ * 2 * PI / iter->lu_ * iter->k_ / EC : 0.0;
+	  ub_.b0 	= (iter->lu_ != 0.0 ) ? EM * c0_ * 2 * PI / iter->lu_ * iter->k_ / EC : 0.0;
 
 	  /* Calculate the undulator wave number.							*/
-	  ub_.ku     = (iter->lu_ != 0.0 ) ? 2 * PI / iter->lu_ : 0.0;
+	  ub_.ku     	= (iter->lu_ != 0.0 ) ? 2 * PI / iter->lu_ : 0.0;
 
 	  /* Calculate the sine and cosine functions of the undulator angle.				*/
-	  ub_.ct	 = cos( iter->theta_ );
-	  ub_.st	 = sin( iter->theta_ );
+	  ub_.ct	= cos( iter->theta_ );
+	  ub_.st	= sin( iter->theta_ );
 
 	  if ( iter->type_ == STATIC )
 	    {
 	      /* First find the position with respect to the undulator begin point. The equation below
 	       * assumes that the bunch at time zero resides in a distance gamma*rb_ from the first
 	       * undulator.										*/
-	      ubp.lz = gamma_ * ( r[2] + beta_ * c0_ * timeBunch_ - gamma_ * undulator_[0].rb_ ) - ( iter->rb_ - undulator_[0].rb_ );
+	      ubp.lz = gamma_ * ( r[2] + beta_ * c0_ * ( timeBunch_ + dt_ ) ) - iter->rb_;
 	      ubp.ly = r[0] * ub_.ct + r[1] * ub_.st;
 
 	      /* Now, calculate the undulator field according to the obtained position.               	*/
@@ -1889,8 +1897,7 @@ namespace Darius
 	      if ( rank_ == ( l % size_ ) )
 		{
 		  for (k = 0; k < rp_[jf].N; ++k)
-		    *(rp_[jf].file[l]) << gamma_ * ( FEL_[jf].radiationPower_.z_[k] + beta_ * c0_ * timeBunch_ )
-		    - pow( gamma_ * beta_ , 2 ) * undulator_[0].rb_ << "\t" << rp_[jf].pG[k * rp_[jf].Nl + l] << "\t";
+		    *(rp_[jf].file[l]) << gamma_ * ( FEL_[jf].radiationPower_.z_[k] + beta_ * c0_ * ( timeBunch_ + dt_ ) ) << "\t" << rp_[jf].pG[k * rp_[jf].Nl + l] << "\t";
 		  *(rp_[jf].file[l]) << std::endl;
 		}
 	    }
@@ -2320,6 +2327,7 @@ namespace Darius
     Double								gamma_;
     Double								beta_;
     Double								dt_;
+    Double								dz_;
 
     /* Define a structure containing the parameters needed to update the values. These parameters are
      * defined once in the class to avoid declaring them every time a field is updated.			*/

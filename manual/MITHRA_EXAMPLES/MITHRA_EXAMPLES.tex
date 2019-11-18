@@ -136,7 +136,7 @@ FEL-OUTPUT
 		type						= at-point
 		directory					= ./
 		base-name					= power-sampling/power
-		distance-from-bunch			= 110.0
+		plane-position				= 110.0
 		normalized-frequency		= 1.00
 	\}
 \}
@@ -311,7 +311,7 @@ Indeed, this is observed after repeating the simulation for longer electron bunc
 %
 The results of such a study is illustrated in Fig.\,\ref{spaceChargeEffect}b.
 %
-Note that in the performed simulations covering the space-charge effects, the grid size along $z$ direction had to be decreased to 50\,{\textmu}m to obtain results with acceptable accuracy.
+Note that in the performed simulations covering the space-charge effects, the grid size along $z$ direction had to be decreased to 50\,nm to obtain results with acceptable accuracy.
 %
 \begin{figure}
 \centering
@@ -337,7 +337,7 @@ It is observed that running on 48 CPUs is optimal for this problem.
 %
 This number increases for larger and more demanding examples.
 %
-In case of the run on 40 CPUs, field update on the computational grid, motion update of the bunch macro-particles and the computation of the total radiated field together with the required Fourier transform take 44\%, 28\%, and 28\% of the total computational time, respectively.
+In case of the run on 48 CPUs, field update on the computational grid, motion update of the bunch macro-particles and the computation of the total radiated field together with the required Fourier transform take 44\%, 28\%, and 28\% of the total computational time, respectively.
 %
 \begin{figure}
 	\centering

@@ -1,8 +1,13 @@
-#  Darius input file                                                                                                                                          
-#                                                                                                        
-#  physics - model a free electron laser based on a magnetic undulator
-#                                                                                                 
-#  mpirun -np 4 darius FEL-IR.job
+#  Mithra input file
+#
+#  physics - model a seeded ultraviolet free electron laser based on a magnetic undulator
+#
+#  manual: example 2, Fig. 5.6a and Fig. 5.6b (simulation results without space-charge)
+#
+#  mpirun -np 4 ../darius ./job-files/FEL-SEEDED.job
+#
+#  in the LSF system:
+#  bsub -n 48 -W 20:00 -J "FEL-SEEDED" -o mithra.out 'mpirun ../darius ./job-files/FEL-SEEDED.job'
 
 MESH
 {
@@ -16,6 +21,7 @@ MESH
   bunch-time-start                              = 0.0
   mesh-truncation-order				= 2
   space-charge					= false
+  solver					= NSFD
 }
  
 BUNCH
@@ -39,9 +45,9 @@ BUNCH
   bunch-visualization
   {
     sample					= false
-    directory					= /scratch/afallahi/
+    directory					= /cluster/scratch/afallahi/
     base-name					= bunch-visualization/bunch
-    rhythm					= 1000
+    rhythm					= 500
   }
 }
 
@@ -53,12 +59,12 @@ FIELD
     position					= ( 0.0, 0.0, 700000)
     direction					= ( 0.0, 0.0, 1.0)
     polarization				= ( 0.0, 1.0, 0.0)
-    rayleigh-radius-parallel			= 183.74
-    rayleigh-radius-perpendicular		= 183.74
+    radius-parallel				= 183.74
+    radius-perpendicular			= 183.74
     strength-parameter				= 9.857e-7
     signal-type					= gaussian
-    offset					= 700000.0
-    variance					= 0.0589
+    offset					= 700000.0 #not really needed
+    variance					= 1.0e12
     wavelength					= 0.265187
     CEP						= 0.0
   }
@@ -83,8 +89,8 @@ FEL-OUTPUT
     sample					= true
     type					= at-point
     directory					= ./
-    base-name					= power-sampling/power
-    distance-from-bunch				= 78.0
+    base-name					= power-sampling/powerP
+    plane-position				= 78.0
     normalized-frequency			= 1.00
   }
 }

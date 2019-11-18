@@ -201,7 +201,7 @@ namespace Darius
 	      }
 	}
 
-      /* The bunch exapnds by the factor 1/zeta. However, the mesh size expands by the factor gamma. This
+      /* The bunch expands by the factor 1/zeta. However, the mesh size expands by the factor gamma. This
        * difference is caused by the change in bunch gamma factor after it enters the undulator. The
        * problem here is the inconsistencies that it introduces to the simulation. To solve such problems,
        * the trick is to shift the bunch positions so that the front of the bunch stays in the mesh and

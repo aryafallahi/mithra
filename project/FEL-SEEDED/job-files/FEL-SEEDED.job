@@ -44,7 +44,7 @@ BUNCH
     
   bunch-visualization
   {
-    sample					= true
+    sample					= false
     directory					= /cluster/scratch/afallahi/
     base-name					= bunch-visualization/bunch
     rhythm					= 500
@@ -56,7 +56,7 @@ FIELD
   field-initialization
   {
     type					= gaussian-beam
-    position					= ( 0.0, 0.0, 700080.65)
+    position					= ( 0.0, 0.0, 700000)
     direction					= ( 0.0, 0.0, 1.0)
     polarization				= ( 0.0, 1.0, 0.0)
     radius-parallel				= 183.74
@@ -89,7 +89,7 @@ FEL-OUTPUT
     sample					= true
     type					= at-point
     directory					= ./
-    base-name					= power-sampling/power
+    base-name					= power-sampling/powerP
     plane-position				= 78.0
     normalized-frequency			= 1.00
   }

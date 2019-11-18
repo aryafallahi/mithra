@@ -77,7 +77,7 @@ FEL-OUTPUT
     sample						= true
     type						= at-point
     directory						= ./
-    base-name						= power-sampling/power-NSFD
+    base-name						= power-sampling/power-NSFD1
     plane-position					= 110.0
     normalized-frequency				= 1.00
   }

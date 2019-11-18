@@ -75,6 +75,7 @@ namespace Darius
 	}
       for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
 	{
+	  iter->c0_ 	         = c0_;
 	  iter->signal_.t0_     /= c0_;
 	  iter->signal_.f0_ 	*= c0_;
 	  iter->signal_.s_ 	/= c0_;
@@ -177,7 +178,8 @@ namespace Darius
       /* The beginning of undulators are set automatically for static ones. Here, the array of undulators
        * are first sorted according to their begin point and then the position of the bunch and undulator
        * begin is set.											*/
-      Double zmax = -1.0e100;
+      Double 		zmax = -1.0e100;
+      unsigned int 	imax = 0;
       for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
 	{
 	  /* Correct the number of particles if it is not a multiple of four.				*/
@@ -190,7 +192,11 @@ namespace Darius
 	    }
 
 	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	    zmax = std::max(zmax, bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_);
+	    if ( zmax < bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_ )
+	      {
+		zmax = bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_;
+		imax = ia;
+	      }
 	}
 
       /* Check if the given offset of the bunch is correct according to the MITHRA conditions.		*/
@@ -214,12 +220,19 @@ namespace Darius
 	{
 	  /* This shift in time makes sure that the maximum z in the bunch at time zero is 2 undulator
 	   * periods away from the undulator begin.							*/
-	  dt_ 		= - 1.0 / ( beta_ * seed_.c0_ ) * ( zmax - 2.0 * undulator_[0].lu_ / gamma_ );
+	  dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmax + 2.0 * undulator_[0].lu_ / gamma_ );
+
+	  /* The same shift in time should also be done for the seed field.				*/
+	  seed_.dt_	= dt_;
 	}
       else if ( undulator_[0].type_ == OPTICAL )
 	{
-	  /* This shift in time causes the starting time in the lab frame to be zero.			*/
-	  seed_.dt_	= - beta_ / seed_.c0_ * zmax;
+	  /* This shift in time causes the starting time in the lab frame to be zero at the front point
+	   * of the bunch.										*/
+	  dt_		= - bunch_.bunchInit_[imax].initialBeta_ / undulator_[0].c0_ * zmax;
+
+	  /* The same shift in time should also be done for the seed field.				*/
+	  seed_.dt_	= dt_;
 	}
 
       printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );

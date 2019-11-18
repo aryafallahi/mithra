@@ -116,6 +116,7 @@ namespace Darius
       mesh_.meshCenter_[2] 	*= gamma_;
       mesh_.totalTime_          /= gamma_;
 
+      /* Set the mesh parameters according to the given simulation.					*/
       if ( mesh_.solver_ == NSFD )
 	{
 	  /* Adjust the transverse mesh resolution to match the stability criterion.			*/
@@ -150,23 +151,24 @@ namespace Darius
       printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the bunch update is set to " + stringify(bunch_.timeStep_ * gamma_) ) );
 
       /* Boost the bunch parameters into the electron rest frame.					*/
+      std::vector<Double> zeta ( bunch_.bunchInit_.size(), 0.0 );
       for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
 	{
 
 	  /* Boosting the position is done considering that the start of simulation is at t = 0.	*/
-	  Double zeta 					 = gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
+	  zeta[i] 					 = gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
 	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	    bunch_.bunchInit_[i].position_[ia][2]	/= zeta;
-	  bunch_.bunchInit_[i].sigmaPosition_[2] 	/= zeta;
-	  bunch_.bunchInit_[i].longTrun_ 		/= zeta;
+	    bunch_.bunchInit_[i].position_[ia][2]	/= zeta[i];
+	  bunch_.bunchInit_[i].sigmaPosition_[2] 	/= zeta[i];
+	  bunch_.bunchInit_[i].longTrun_ 		/= zeta[i];
 
-	  bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= zeta;
+	  bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= zeta[i];
 
-	  bunch_.bunchInit_[i].lambda_  		 = undulator_[0].lu_ / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].initialBeta_ * zeta );
+	  bunch_.bunchInit_[i].lambda_  		 = undulator_[0].lu_ / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].initialBeta_ * zeta[i] );
 
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
 
-	  bunch_.bunchInit_[i].initialGamma_ 		*= zeta;
+	  bunch_.bunchInit_[i].initialGamma_ 		*= zeta[i];
 	  bunch_.bunchInit_[i].initialBeta_ 	 	 = sqrt( 1.0 - 1.0 / ( bunch_.bunchInit_[i].initialGamma_ * bunch_.bunchInit_[i].initialGamma_ ) );
 	}
       bunch_.rhythm_			/= gamma_;
@@ -198,6 +200,19 @@ namespace Darius
 		imax = ia;
 	      }
 	}
+
+      /* The bunch exapnds by the factor 1/zeta. However, the mesh size expands by the factor gamma. This
+       * difference is caused by the change in bunch gamma factor after it enters the undulator. The
+       * problem here is the inconsistencies that it introduces to the simulation. To solve such problems,
+       * the trick is to shift the bunch positions so that the front of the bunch stays in the mesh and
+       * before the undulator. After the bunch enters the undulator, the length will be automatically
+       * corrected and the inconsistencies are removed.							*/
+      for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
+      	{
+      	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
+      	    bunch_.bunchInit_[i].position_[ia][2] -= zmax * ( 1.0 - zeta[imax] * gamma_ );
+      	}
+      zmax -= zmax * ( 1.0 - zeta[imax] * gamma_ );
 
       /* Check if the given offset of the bunch is correct according to the MITHRA conditions.		*/
       for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)

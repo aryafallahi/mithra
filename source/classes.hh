@@ -245,9 +245,9 @@ namespace Darius
 	  t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * sin( 2.0 * PI * halton(5, i + Np0) );
 
 	  /* Determine the longitudinal momentum.							*/
-	  if ( bunchInit.distribution_ == "uniform" )
-	    t[2] = ( 2.0 * halton(6, i + Np0) - 1.0 ) * bunchInit.sigmaGammaBeta_[2];
-	  else if ( bunchInit.distribution_ == "gaussian" )
+//	  if ( bunchInit.distribution_ == "uniform" )
+//	    t[2] = ( 2.0 * halton(6, i + Np0) - 1.0 ) * bunchInit.sigmaGammaBeta_[2];
+//	  else if ( bunchInit.distribution_ == "gaussian" )
 	    t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
 
 	  if ( fabs(r[0]) < bunchInit.tranTrun_ && fabs(r[1]) < bunchInit.tranTrun_ && fabs(r[2]) < bunchInit.longTrun_)
@@ -281,9 +281,9 @@ namespace Darius
 	    t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * sin( 2.0 * PI * halton(5, i + Np0) );
 
 	    /* Determine the longitudinal momentum.							*/
-	    if ( bunchInit.distribution_ == "uniform" )
-	      t[2] = ( 2.0 * halton(6, i + Np0) - 1.0 ) * bunchInit.sigmaGammaBeta_[2];
-	    else if ( bunchInit.distribution_ == "gaussian" )
+//	    if ( bunchInit.distribution_ == "uniform" )
+//	      t[2] = ( 2.0 * halton(6, i + Np0) - 1.0 ) * bunchInit.sigmaGammaBeta_[2];
+//	    else if ( bunchInit.distribution_ == "gaussian" )
 	      t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
 
 	    if ( fabs(r[0]) < bunchInit.tranTrun_ && fabs(r[1]) < bunchInit.tranTrun_ && fabs(r[2]) < bunchInit.longTrun_)

@@ -41,9 +41,6 @@ namespace Darius
       nTime_ 	   =  0;
       nTimeBunch_  =  0;
 
-      /* Set the bunch initialization signal to false.							*/
-      bunchInitialized_ = false;
-
       /* Initialize the value of MPI variables.								*/
       MPI_Comm_rank(MPI_COMM_WORLD,&rank_);
       MPI_Comm_size(MPI_COMM_WORLD,&size_);
@@ -157,7 +154,6 @@ namespace Darius
 
       /* Set the bunch update time step if it is given, otherwise set it according to the MITHRA rules.	*/
       bunch_.timeStep_		/= gamma_;
-      bunch_.timeStart_		/= gamma_;
 
       /* Adjust the given bunch time step according to the given field time step.			*/
       bunch_.timeStep_ = mesh_.timeStep_ / ceil(mesh_.timeStep_ / bunch_.timeStep_);
@@ -889,8 +885,6 @@ namespace Darius
 	  /* Add the bunch distribution to the global charge vector.					*/
 	  chargeVectorn_.splice(chargeVectorn_.end(),qv);
 	}
-
-      bunchInitialized_ = true;
 
       /* Print the total number of macro-particles for the user.					*/
       unsigned int NqL = chargeVectorn_.size(), NqG = 0;

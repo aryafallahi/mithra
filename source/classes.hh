@@ -79,7 +79,6 @@ namespace Darius
     Bunch()
     {
       /* Initialize the parameters for the bunch to some first values.                      		*/
-      timeStart_			= 0.0;
       timeStep_				= 0.0;
 
       /** Initialize the parameters for the bunch to some first values.                           	*/
@@ -110,13 +109,11 @@ namespace Darius
     {
       /* Declare the required parameters for the initialization of charge vectors.                      */
       Charge        charge;
-      Double		gb;
 
       /* Determine the properties of each charge point and add them to the charge vector.               */
       charge.q  	= bunchInit.cloudCharge_;
       charge.rnp    	= bunchInit.position_[ia];
-      gb            	= bunchInit.initialBeta_ / sqrt( 1.0 - bunchInit.initialBeta_ * bunchInit.initialBeta_ );
-      (charge.gbnp).mv(gb,bunchInit.initialDirection_);
+      charge.gbnp.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
 
       /* Insert this charge to the charge list if and only if it resides in the processor's portion.    */
       if ( ( charge.rnp[2] < zp[1] || rank == size - 1 ) && ( charge.rnp[2] >= zp[0] || rank == 0 ) )
@@ -324,8 +321,9 @@ namespace Darius
 	}
 
       /* Declare the required parameters for the initialization of charge vectors.                      */
-      Charge            charge;
-      Double gb       = bunchInit.initialBeta_ / sqrt( 1.0 - bunchInit.initialBeta_ * bunchInit.initialBeta_);
+      Charge            	charge;
+      FieldVector<Double> 	gb (0.0);
+      gb.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
       unsigned int np = bunchInit.numberOfParticles_ / (bunchInit.numbers_[0] * bunchInit.numbers_[1] * bunchInit.numbers_[2]);
 
       /* Clear the charge vector for adding the charges.						*/
@@ -349,7 +347,7 @@ namespace Darius
 		      charge.rnp[1] += 0.5 * bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(2,i) ) ) * sin( 2.0 * PI * halton(3,i) );
 		      charge.rnp[2] += 0.5 * bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(4,i) ) ) * sin( 2.0 * PI * halton(5,i) );
 
-		      (charge.gbnp).mv(gb, bunchInit.initialDirection_);
+		      charge.gbnp     = gb;
 		      charge.gbnp[0] += bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(6,i) ) ) * sin( 2.0 * PI * halton(7,i) );
 		      charge.gbnp[1] += bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(8,i) ) ) * sin( 2.0 * PI * halton(9,i) );
 		      charge.gbnp[2] += bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(10,i)) ) * sin( 2.0 * PI * halton(11,i));
@@ -377,7 +375,8 @@ namespace Darius
       Charge                    charge;
       FieldVector<Double>	gb (0.0);
       FieldVector<Double>	r  (0.0);
-      Double 			gbm = bunchInit.initialBeta_ / sqrt( 1.0 - bunchInit.initialBeta_ * bunchInit.initialBeta_);
+      FieldVector<Double> 	gbm (0.0);
+      gbm.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
 
       /* Clear the charge vector for adding the charges.						*/
       chargeVector.clear();
@@ -400,7 +399,7 @@ namespace Darius
 	  charge.rnp   = bunchInit.position_[ia];
 	  charge.rnp  += r;
 
-	  (charge.gbnp).mv(gbm, bunchInit.initialDirection_);
+	  charge.gbnp  = gbm;
 	  charge.gbnp += gb;
 
 	  /* Insert this charge to the charge list if and only if it resides in the processor's portion.*/
@@ -497,7 +496,6 @@ namespace Darius
 	      printmessage(std::string(__FILE__), __LINE__, std::string(" File name of the bunch = ") + bunchInit_[i].fileName_ );
 	    }
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" Initial bunching factor in the bunch = ") + stringify(bunchInit_[i].bF_) );
-	  printmessage(std::string(__FILE__), __LINE__, std::string(" Initialization time of the bunch = ") + stringify(timeStart_) );
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" Time step for the bunch calculation = ") + stringify(timeStep_) );
 	}
       if ( sampling_ )

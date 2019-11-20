@@ -99,7 +99,6 @@ namespace Darius
 	    }
 	  else if (parameterName(*iter) == "total-time")        	mesh_.totalTime_ 	= doubleValue(*iter);
 	  else if (parameterName(*iter) == "bunch-time-step")   	bunch_.timeStep_ 	= doubleValue(*iter);
-	  else if (parameterName(*iter) == "bunch-time-start")        	bunch_.timeStart_	= doubleValue(*iter);
 	  else if (parameterName(*iter) == "mesh-truncation-order")
 	    {
 	      mesh_.truncationOrder_ 	= intValue(*iter);

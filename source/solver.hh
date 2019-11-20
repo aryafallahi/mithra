@@ -61,6 +61,8 @@ namespace Darius
     {
       printmessage(std::string(__FILE__), __LINE__, std::string("::: Boosting the given parameters into the electron rest frame ") );
 
+      /**************************************************************************************************/
+
       /* Initialize the corresponding length and time scales in other parts of the solver.		*/
       seed_.c0_ 		 = c0_;
       seed_.signal_.t0_ 	/= c0_;
@@ -81,6 +83,8 @@ namespace Darius
 	  iter->signal_.s_ 	/= c0_;
 	}
 
+      /**************************************************************************************************/
+
       /* According to the set parameters for length and time scales correct the amplitudes of the seed
        * and undulator.											*/
       seed_.amplitude_ 	        *= EM * c0_ / EC;
@@ -88,6 +92,8 @@ namespace Darius
 	iter->amplitude_ 	*= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
       for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
 	iter->amplitude_        *= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
+
+      /**************************************************************************************************/
 
       /* Calculate the average gamma of the input bunches.						*/
       Double gamma = 0.0;
@@ -97,6 +103,8 @@ namespace Darius
 	gamma_  = gamma / sqrt( 1.0 + undulator_[0].k_ * undulator_[0].k_ / 2.0 );
       else
 	gamma_  = gamma / sqrt( 1.0 + pow( undulator_[0].amplitude_ * EC / ( EM * c0_ * 2.0 * PI * undulator_[0].signal_.f0_ ) , 2 ) / 2.0 );
+
+      /**************************************************************************************************/
 
       /* Boost and initialize the undulator related parameters.						*/
       beta_ = sqrt( 1.0 - 1.0 / ( gamma_ * gamma_ ) );
@@ -110,11 +118,15 @@ namespace Darius
       for (std::vector<Undulator>::reverse_iterator iter = undulator_.rbegin(); iter != undulator_.rend(); iter++)
 	iter->rb_ -= undulator_[0].rb_;
 
+      /**************************************************************************************************/
+
       /* Boost the mesh data into the electron rest frame.						*/
       mesh_.meshLength_[2] 	*= gamma_;
       mesh_.meshResolution_[2] 	*= gamma_;
       mesh_.meshCenter_[2] 	*= gamma_;
       mesh_.totalTime_          /= gamma_;
+
+      /**************************************************************************************************/
 
       /* Set the mesh parameters according to the given simulation.					*/
       if ( mesh_.solver_ == NSFD )
@@ -141,6 +153,8 @@ namespace Darius
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the field update is set to " + stringify(mesh_.timeStep_ * gamma_) ) );
 	}
 
+      /**************************************************************************************************/
+
       /* Set the bunch update time step if it is given, otherwise set it according to the MITHRA rules.	*/
       bunch_.timeStep_		/= gamma_;
       bunch_.timeStart_		/= gamma_;
@@ -150,13 +164,17 @@ namespace Darius
       nUpdateBunch_    = mesh_.timeStep_ / bunch_.timeStep_;
       printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the bunch update is set to " + stringify(bunch_.timeStep_ * gamma_) ) );
 
+      /**************************************************************************************************/
+
       /* Boost the bunch parameters into the electron rest frame.					*/
       std::vector<Double> zeta ( bunch_.bunchInit_.size(), 0.0 );
       for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
 	{
+	  /* First determine the beta vector of the bunch.						*/
+	  bunch_.bunchInit_[i].betaVector_.mv( bunch_.bunchInit_[i].initialBeta_, bunch_.bunchInit_[i].initialDirection_);
 
 	  /* Boosting the position is done considering that the start of simulation is at t = 0.	*/
-	  zeta[i] 					 = gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
+	  zeta[i] 					 = gamma_ * ( 1.0 - bunch_.bunchInit_[i].betaVector_[2] * beta_ );
 	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
 	    bunch_.bunchInit_[i].position_[ia][2]	/= zeta[i];
 	  bunch_.bunchInit_[i].sigmaPosition_[2] 	/= zeta[i];
@@ -164,18 +182,22 @@ namespace Darius
 
 	  bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= zeta[i];
 
-	  bunch_.bunchInit_[i].lambda_  		 = undulator_[0].lu_ / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].initialBeta_ * zeta[i] );
+	  bunch_.bunchInit_[i].lambda_  		 = undulator_[0].lu_ / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].betaVector_[2] * zeta[i] );
 
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
 
 	  bunch_.bunchInit_[i].initialGamma_ 		*= zeta[i];
-	  bunch_.bunchInit_[i].initialBeta_ 	 	 = sqrt( 1.0 - 1.0 / ( bunch_.bunchInit_[i].initialGamma_ * bunch_.bunchInit_[i].initialGamma_ ) );
+	  bunch_.bunchInit_[i].betaVector_[0] 	 	/= zeta[i];
+	  bunch_.bunchInit_[i].betaVector_[1] 	 	/= zeta[i];
+	  bunch_.bunchInit_[i].betaVector_[2] 	 	 = ( bunch_.bunchInit_[i].betaVector_[2] - beta_ ) / ( 1.0 - bunch_.bunchInit_[i].betaVector_[2] * beta_ );
 	}
       bunch_.rhythm_			/= gamma_;
       bunch_.bunchVTKRhythm_		/= gamma_;
       for (unsigned int i = 0; i < bunch_.bunchProfileTime_.size(); i++)
 	bunch_.bunchProfileTime_[i] 	/= gamma_;
       bunch_.bunchProfileRhythm_	/= gamma_;
+
+      /**************************************************************************************************/
 
       /* The beginning of undulators are set automatically for static ones. Here, the array of undulators
        * are first sorted according to their begin point and then the position of the bunch and undulator
@@ -214,6 +236,8 @@ namespace Darius
       	}
       zmax -= zmax * ( 1.0 - zeta[imax] * gamma_ );
 
+      /**************************************************************************************************/
+
       /* Check if the given offset of the bunch is correct according to the MITHRA conditions.		*/
       for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
 	{
@@ -224,31 +248,28 @@ namespace Darius
 	    printmessage(std::string(__FILE__), __LINE__, std::string("The beginning of the undulator is set automatically in the static mode.") );
 	}
 
+      /**************************************************************************************************/
+
       /* The Lorentz boost parameters should also be transfered to the seed class in order to correctly
        * compute the fields within the computational domain.						*/
       seed_.beta_    	= beta_;
       seed_.gamma_   	= gamma_;
 
       /* Here, we define the shift in time such that the bunch end is at the begin of fringing field
-       * section.											*/
-      if ( undulator_[0].type_ == STATIC )
-	{
-	  /* This shift in time makes sure that the maximum z in the bunch at time zero is 2 undulator
-	   * periods away from the undulator begin.							*/
-	  dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmax + 2.0 * undulator_[0].lu_ / gamma_ );
+       * section. For optical undulator such a separation should be considered in the input parameters
+       * where offset is given.										*/
 
-	  /* The same shift in time should also be done for the seed field.				*/
-	  seed_.dt_	= dt_;
-	}
-      else if ( undulator_[0].type_ == OPTICAL )
-	{
-	  /* This shift in time causes the starting time in the lab frame to be zero at the front point
-	   * of the bunch.										*/
-	  dt_		= - bunch_.bunchInit_[imax].initialBeta_ / undulator_[0].c0_ * zmax;
+      /* This shift in time makes sure that the maximum z in the bunch at time zero is 2 undulator
+       * periods away from the undulator begin.								*/
+      dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmax + 2.0 * undulator_[0].lu_ / gamma_ );
 
-	  /* The same shift in time should also be done for the seed field.				*/
-	  seed_.dt_	= dt_;
-	}
+      /* The same shift in time should also be done for the seed field.					*/
+      seed_.dt_		= dt_;
+
+      /* With the above definition in the time begin the entrance of the undulator, i.e. z = 0 in the lab
+       * frame, corresponds to the z = zmax + 2.0 * undulator_[0].lu_ / gamma_ in the bunch rest frame at
+       * the initialization instant, i.e. timeBunch = 0.0.						*/
+      zu_ = zmax + 2.0 * undulator_[0].lu_ / gamma_;
 
       printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );
     }
@@ -273,6 +294,11 @@ namespace Darius
 
       /* If profiling is enabled initialize the required data for profiling the field and saving it.	*/
       if (seed_.profile_)				initializeSeedProfile();
+
+      /* We initialize the bunch at the beginning of the simulation. The previous feature for initializing
+       * in the middle of the simulation is removed.							*/
+      initializeBunch();
+      timeBunch_ = time_;
 
       /* Initialize the data needed for updating the bunches.						*/
       initializeBunchUpdate();
@@ -846,6 +872,18 @@ namespace Darius
 	    {
 	      for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
 		bunch_.initializeFile(		bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
+	    }
+
+	  /* Before add the bunch to the global charge vector, a correction on the position of the bunch
+	   * should be made. This correction assures that the bunch properties are valid at the entrance
+	   * of the undulator.										*/
+	  Double g;
+	  for ( auto it = qv.begin(); it != qv.end(); it++ )
+	    {
+	      g		  = sqrt( 1.0 + it->gbnp.norm() );
+	      it->rnp[0] -= ( it->gbnp[0] / g - bunch_.bunchInit_[i].betaVector_[0] ) * ( zu_ - it->rnp[2] ) / ( bunch_.bunchInit_[i].betaVector_[2] + beta_ );
+	      it->rnp[1] -= ( it->gbnp[1] / g - bunch_.bunchInit_[i].betaVector_[1] ) * ( zu_ - it->rnp[2] ) / ( bunch_.bunchInit_[i].betaVector_[2] + beta_ );
+	      it->rnp[2] -= ( it->gbnp[2] / g - bunch_.bunchInit_[i].betaVector_[2] ) * ( zu_ - it->rnp[2] ) / ( bunch_.bunchInit_[i].betaVector_[2] + beta_ );
 	    }
 
 	  /* Add the bunch distribution to the global charge vector.					*/
@@ -2338,9 +2376,6 @@ namespace Darius
     Double								timem1_;
     unsigned int 							nTime_;
 
-    /* Boolean signal telling if the bunch is initialized or not.					*/
-    bool								bunchInitialized_;
-
     /* vector of charge structures containing the position and momentum of the charge points.		*/
     std::list<Charge>							chargeVectorn_;
 
@@ -2355,7 +2390,9 @@ namespace Darius
     Double								gamma_;
     Double								beta_;
     Double								dt_;
-    Double								dz_;
+
+    /* Position of the undulator begin at the instance of bunch initialization.				*/
+    Double								zu_;
 
     /* Define a structure containing the parameters needed to update the values. These parameters are
      * defined once in the class to avoid declaring them every time a field is updated.			*/

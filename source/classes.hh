@@ -138,13 +138,22 @@ namespace Darius
 
       /* Declare the required parameters for the initialization of charge vectors.                      */
       Charge            charge; charge.q  = bunchInit.cloudCharge_ / Np;
-      Double gb 	= bunchInit.initialBeta_ / sqrt( 1.0 - bunchInit.initialBeta_ * bunchInit.initialBeta_);
-      FieldVector<Double> r (0.0);
-      FieldVector<Double> t (0.0);
-      Double            t0, t1, t2 = -1.0;
+      FieldVector<Double> gb (0.0); gb.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
+      FieldVector<Double> r  (0.0);
+      FieldVector<Double> t  (0.0);
+      Double            t0, t1, t2 = -1.0, g;
       Double		zmin = 1e100;
       Double		Ne, bF, bFi;
       unsigned int	bmi;
+
+      /* Check the bunching factor.                                                                     */
+      if ( bunchInit.bF_ > 2.0 || bunchInit.bF_ < 0.0 )
+	{
+	  printmessage(std::string(__FILE__), __LINE__, std::string("The bunching factor can not be larger than one or a negative value !!!") );
+	  exit(1);
+	}
+
+      /**************************************************************************************************/
 
       /* Declare the function for injecting the shot noise.						*/
       auto insertCharge = [&] (Charge q) {
@@ -178,12 +187,7 @@ namespace Darius
 	  }
       };
 
-      /* Check the bunching factor.                                                                     */
-      if ( bunchInit.bF_ > 2.0 || bunchInit.bF_ < 0.0 )
-	{
-	  printmessage(std::string(__FILE__), __LINE__, std::string("The bunching factor can not be larger than one or a negative value !!!") );
-	  exit(1);
-	}
+      /**************************************************************************************************/
 
       /* If the shot noise is on, we need the minimum value of the bunch z coordinate to be able to
        * calculate the FEL bucket number.								*/
@@ -222,6 +226,8 @@ namespace Darius
 	  printmessage(std::string(__FILE__), __LINE__, std::string("The standard deviation of the bunching factor for the shot noise implementation is set to ") + stringify(bF) );
 	}
 
+      /**************************************************************************************************/
+
       /* Determine the properties of each charge point and add them to the charge vector.               */
       for (i = 0; i < Np / 4; i++)
 	{
@@ -243,12 +249,7 @@ namespace Darius
 	  /* Determine the transverse momentum.								*/
 	  t[0] = bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * cos( 2.0 * PI * halton(5, i + Np0) );
 	  t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * sin( 2.0 * PI * halton(5, i + Np0) );
-
-	  /* Determine the longitudinal momentum.							*/
-//	  if ( bunchInit.distribution_ == "uniform" )
-//	    t[2] = ( 2.0 * halton(6, i + Np0) - 1.0 ) * bunchInit.sigmaGammaBeta_[2];
-//	  else if ( bunchInit.distribution_ == "gaussian" )
-	    t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
+	  t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
 
 	  if ( fabs(r[0]) < bunchInit.tranTrun_ && fabs(r[1]) < bunchInit.tranTrun_ && fabs(r[2]) < bunchInit.longTrun_)
 	    {
@@ -256,7 +257,7 @@ namespace Darius
 	      charge.rnp    = bunchInit.position_[ia];
 	      charge.rnp   += r;
 
-	      (charge.gbnp).mv(gb, bunchInit.initialDirection_);
+	      charge.gbnp   = gb;
 	      charge.gbnp  += t;
 
 	      /* Insert this charge and the mirrored ones into the charge vector.			*/
@@ -279,12 +280,7 @@ namespace Darius
 	    /* Determine the transverse momentum.							*/
 	    t[0] = bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * cos( 2.0 * PI * halton(5, i + Np0) );
 	    t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * sin( 2.0 * PI * halton(5, i + Np0) );
-
-	    /* Determine the longitudinal momentum.							*/
-//	    if ( bunchInit.distribution_ == "uniform" )
-//	      t[2] = ( 2.0 * halton(6, i + Np0) - 1.0 ) * bunchInit.sigmaGammaBeta_[2];
-//	    else if ( bunchInit.distribution_ == "gaussian" )
-	      t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
+	    t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
 
 	    if ( fabs(r[0]) < bunchInit.tranTrun_ && fabs(r[1]) < bunchInit.tranTrun_ && fabs(r[2]) < bunchInit.longTrun_)
 	      {
@@ -292,13 +288,15 @@ namespace Darius
 		charge.rnp   = bunchInit.position_[ia];
 		charge.rnp  += r;
 
-		(charge.gbnp).mv(gb, bunchInit.initialDirection_);
+		charge.gbnp  = gb;
 		charge.gbnp += t;
 
 		/* Insert this charge and the mirrored ones into the charge vector.			*/
 		insertCharge(charge);
 	      }
 	  }
+
+      /**************************************************************************************************/
 
       /* Reset the value for the number of particle variable according to the installed number of
        * macro-particles and perform the corresponding changes.                                         */
@@ -445,9 +443,6 @@ namespace Darius
 
     /* Rhythm of writing the bunch macroscopic values in the output file.                              	*/
     Double         			rhythm_;
-
-    /* Time points at which the bunch is produced.                                                      */
-    Double                    		timeStart_;
 
     /* Boolean parameter that determines if the vtk visualization should be done.                      	*/
     bool				bunchVTK_;

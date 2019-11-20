@@ -96,63 +96,51 @@ namespace Darius
 		fieldProfile();
 	    }
 
-	  /* If the initialization time of the bunch is achieved, initialize the bunch in the computational
-	   * domain.											*/
-	  if ( !(bunchInitialized_) && ( fabs( time_ - bunch_.timeStart_ ) < mesh_.timeStep_ ) )
-	    {
-	      initializeBunch();
-	      timeBunch_ = time_;
-	    }
-
 	  gettimeofday(&t0, NULL);
 
-	  /* If the bunch is initialized, do the bunch calculations.					*/
-	  if (bunchInitialized_)
+	  /* Reset the charge and current values to zero.						*/
+	  currentReset();
+
+	  /* Update the bunch till the time of the bunch properties reaches the time instant of the
+	   * field.											*/
+	  for (t = 0.0; t < nUpdateBunch_; t += 1.0)
 	    {
-	      /* Reset the charge and current values to zero.						*/
-	      currentReset();
 
-	      /* Update the bunch till the time of the bunch properties reaches the time instant of the
-	       * field.											*/
-	      for (t = 0.0; t < nUpdateBunch_; t += 1.0)
+	      /* Update the position and velocity parameters.					*/
+	      for (iter = iterQB_; iter != iterQE_; iter++)
 		{
-
-		  /* Update the position and velocity parameters.					*/
-		  for (iter = iterQB_; iter != iterQE_; iter++)
-		    {
-		      iter->rnm  = iter->rnp;
-		      iter->gbnm = iter->gbnp;
-		    }
-
-		  bunchUpdate(t);
-		  timeBunch_ += bunch_.timeStep_;
-		  ++nTimeBunch_;
-
-		  /* Update the values of the current.							*/
-		  currentUpdate();
+		  iter->rnm  = iter->rnp;
+		  iter->gbnm = iter->gbnp;
 		}
 
-	      /* Communicate the current among processors.						*/
-	      currentCommunicate();
+	      bunchUpdate(t);
+	      timeBunch_ += bunch_.timeStep_;
+	      ++nTimeBunch_;
 
-	      /* If sampling of the bunch is enabled and the rhythm for sampling is achieved. Sample the
-	       * bunch and save them into the file.							*/
-	      if ( bunch_.sampling_ && fmod(time_, bunch_.rhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchSample();
+	      /* Update the values of the current.							*/
+	      currentUpdate();
+	    }
 
-	      /* If visualization of the bunch is enabled and the rhythm for visualization is achieved,
-	       * visualize the bunch and save the vtk data in the given file name.			*/
-	      if ( bunch_.bunchVTK_ && fmod(time_, bunch_.bunchVTKRhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchVisualize();
+	  /* Communicate the current among processors.						*/
+	  currentCommunicate();
 
-	      /* If profiling of the bunch is enabled and the time for profiling is achieved, write the
-	       * bunch profile and save the data in the given file name.				*/
-	      if (bunch_.bunchProfile_ > 0)
-		{
-		  for (unsigned int i = 0; i < (bunch_.bunchProfileTime_).size(); i++)
-		    if ( time_ - bunch_.bunchProfileTime_[i] < mesh_.timeStep_ && time_ > bunch_.bunchProfileTime_[i] )
-		      bunchProfile();
-		  if ( fmod(time_, bunch_.bunchProfileRhythm_) < mesh_.timeStep_ && time_ > 0.0 && bunch_.bunchProfileRhythm_ != 0.0 )
-		    bunchProfile();
-		}
+	  /* If sampling of the bunch is enabled and the rhythm for sampling is achieved. Sample the
+	   * bunch and save them into the file.							*/
+	  if ( bunch_.sampling_ && fmod(time_, bunch_.rhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchSample();
+
+	  /* If visualization of the bunch is enabled and the rhythm for visualization is achieved,
+	   * visualize the bunch and save the vtk data in the given file name.			*/
+	  if ( bunch_.bunchVTK_ && fmod(time_, bunch_.bunchVTKRhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchVisualize();
+
+	  /* If profiling of the bunch is enabled and the time for profiling is achieved, write the
+	   * bunch profile and save the data in the given file name.				*/
+	  if (bunch_.bunchProfile_ > 0)
+	    {
+	      for (unsigned int i = 0; i < (bunch_.bunchProfileTime_).size(); i++)
+		if ( time_ - bunch_.bunchProfileTime_[i] < mesh_.timeStep_ && time_ > bunch_.bunchProfileTime_[i] )
+		  bunchProfile();
+	      if ( fmod(time_, bunch_.bunchProfileRhythm_) < mesh_.timeStep_ && time_ > 0.0 && bunch_.bunchProfileRhythm_ != 0.0 )
+		bunchProfile();
 	    }
 
 	  gettimeofday(&t1, NULL);
@@ -189,14 +177,14 @@ namespace Darius
 	  t5  = ( tf.tv_usec - ti.tv_usec ) / 1.0e6;
 	  t5 += ( tf.tv_sec  - ti.tv_sec );
 
-//	  if ( rank_ == 0 )
-//	    {
-//	      std::cout << "time number = " << nTime_ << "\t"
-//		  << "total calculation = " << t5 << " s" << "\t"
-//		  << "field calculation = " << t2 << " s" << "\t"
-//		  << "bunch calculation = " << t3 << " s" << "\t"
-//		  << "radiation calculation = " << t4 << " s" << std::endl;
-//	    }
+	  if ( rank_ == 0 )
+	    {
+	      std::cout << "time number = " << nTime_ << "\t"
+		  << "total calculation = " << t5 << " s" << "\t"
+		  << "field calculation = " << t2 << " s" << "\t"
+		  << "bunch calculation = " << t3 << " s" << "\t"
+		  << "radiation calculation = " << t4 << " s" << std::endl;
+	    }
 
 	  gettimeofday(&simulationEnd, NULL);
 	  deltaTime  = ( simulationEnd.tv_usec - simulationStart.tv_usec ) / 1.0e6;

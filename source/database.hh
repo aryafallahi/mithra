@@ -75,6 +75,9 @@ namespace Darius
     /* Boolean flag determining the activation of shot-noise.						*/
     bool				shotNoise_;
 
+    /* Initial beta vector of the bunch, which is obtained as the product of beta and direction.	*/
+    FieldVector<Double>			betaVector_;
+
     /* Initialize the parameters for the bunch initialization to some first values.                     */
     BunchInitialize()
     {

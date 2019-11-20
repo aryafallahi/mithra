@@ -265,7 +265,8 @@ namespace Darius
       /* With the above definition in the time begin the entrance of the undulator, i.e. z = 0 in the lab
        * frame, corresponds to the z = zmax + 2.0 * undulator_[0].lu_ / gamma_ in the bunch rest frame at
        * the initialization instant, i.e. timeBunch = 0.0.						*/
-      zu_ = zmax + 2.0 * undulator_[0].lu_ / gamma_;
+      bunch_.zu_ 	= zmax + 2.0 * undulator_[0].lu_ / gamma_;
+      bunch_.beta_ 	= beta_;
 
       printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );
     }
@@ -870,18 +871,6 @@ namespace Darius
 		bunch_.initializeFile(		bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
 	    }
 
-	  /* Before add the bunch to the global charge vector, a correction on the position of the bunch
-	   * should be made. This correction assures that the bunch properties are valid at the entrance
-	   * of the undulator.										*/
-	  Double g;
-	  for ( auto it = qv.begin(); it != qv.end(); it++ )
-	    {
-	      g		  = sqrt( 1.0 + it->gbnp.norm() );
-	      it->rnp[0] -= ( it->gbnp[0] / g - bunch_.bunchInit_[i].betaVector_[0] ) * ( zu_ - it->rnp[2] ) / ( bunch_.bunchInit_[i].betaVector_[2] + beta_ );
-	      it->rnp[1] -= ( it->gbnp[1] / g - bunch_.bunchInit_[i].betaVector_[1] ) * ( zu_ - it->rnp[2] ) / ( bunch_.bunchInit_[i].betaVector_[2] + beta_ );
-	      it->rnp[2] -= ( it->gbnp[2] / g - bunch_.bunchInit_[i].betaVector_[2] ) * ( zu_ - it->rnp[2] ) / ( bunch_.bunchInit_[i].betaVector_[2] + beta_ );
-	    }
-
 	  /* Add the bunch distribution to the global charge vector.					*/
 	  chargeVectorn_.splice(chargeVectorn_.end(),qv);
 	}
@@ -924,8 +913,8 @@ namespace Darius
 
 	  /* Get the boolean flag determining if the particle resides in the computational domain.      */
 	  ubp.b1 = ( iter->rnp[0] < xmax_ - ub_.dx && iter->rnp[0] > xmin_ + ub_.dx &&
-	      iter->rnp[1] < ymax_ - ub_.dy && iter->rnp[1] > ymin_ + ub_.dy &&
-	      iter->rnp[2] < zp_[1]         && iter->rnp[2] >= zp_[0] );
+		     iter->rnp[1] < ymax_ - ub_.dy && iter->rnp[1] > ymin_ + ub_.dy &&
+		     iter->rnp[2] < zp_[1]         && iter->rnp[2] >= zp_[0] );
 
 	  /* Calculate the undulator field at the particle position.				        */
 	  undulatorField(ubp, iter->rnp);
@@ -2384,9 +2373,6 @@ namespace Darius
     Double								gamma_;
     Double								beta_;
     Double								dt_;
-
-    /* Position of the undulator begin at the instance of bunch initialization.				*/
-    Double								zu_;
 
     /* Define a structure containing the parameters needed to update the values. These parameters are
      * defined once in the class to avoid declaring them every time a field is updated.			*/

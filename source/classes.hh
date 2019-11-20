@@ -177,6 +177,14 @@ namespace Darius
 		q.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bunchInit.bF_ * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * q.rnp[2] + bunchInit.bFP_ * PI / 180.0 );
 	      }
 
+	    /* Before add the bunch to the global charge vector, a correction on the position of the bunch
+	     * should be made. This correction assures that the bunch properties are valid at the entrance
+	     * of the undulator.										*/
+	    g		= sqrt( 1.0 + q.gbnp.norm() );
+	    q.rnp[0] -= ( q.gbnp[0] / g - bunchInit.betaVector_[0] ) * ( zu_ - q.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
+	    q.rnp[1] -= ( q.gbnp[1] / g - bunchInit.betaVector_[1] ) * ( zu_ - q.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
+	    q.rnp[2] -= ( q.gbnp[2] / g - bunchInit.betaVector_[2] ) * ( zu_ - q.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
+
 	    /* Insert this charge to the charge list if and only if it resides in the processor's
 	     * portion.                                                                               	*/
 	    if ( ( q.rnp[2] < zp[1] || rank == size - 1 ) && ( q.rnp[2] >= zp[0] || rank == 0 ) )
@@ -469,6 +477,12 @@ namespace Darius
 
     /* Rhythm of saving the bunch profile. It should be a double value bigger than the time step.	*/
     Double				bunchProfileRhythm_;
+
+    /* Position of the undulator begin at the instance of bunch initialization.				*/
+    Double				zu_;
+
+    /* Beta of the moving frame in the stationary lab frame.						*/
+    Double				beta_;
 
     /* Show the stored values for the bunch.                                                          	*/
     void show()

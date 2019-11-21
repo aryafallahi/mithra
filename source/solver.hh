@@ -1944,11 +1944,11 @@ namespace Darius
 			rp_[jf].ap[k * rp_[jf].Nl + l] += da;
 
 			/* Add the contribution to the power series except for the last grid point.	*/
-			if ( i > 2 && i < N0_ - 3 && j > 2 && j < N1_ - 3 )
+			if ( i > 6 && i < N0_ - 7 && j > 6 && j < N1_ - 7 )
 			  rp_[jf].an[k * rp_[jf].Nl + l] += da;
 
 			/* Add the contribution to the power series except for the last two grid lines.	*/
-			if ( i > 3 && i < N0_ - 4 && j > 3 && j < N1_ - 4 )
+			if ( i > 11 && i < N0_ - 12 && j > 11 && j < N1_ - 12 )
 			  rp_[jf].am[k * rp_[jf].Nl + l] += da;
 
 		      }

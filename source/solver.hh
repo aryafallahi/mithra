@@ -1731,11 +1731,6 @@ namespace Darius
 	  rp_[jf].pL.resize(rp_[jf].Nl * rp_[jf].N, 0.0);
 	  rp_[jf].pG.resize(rp_[jf].Nl * rp_[jf].N, 0.0);
 
-	  /* Resize the values for shank transformation that predicts the total radiated field.		*/
-	  rp_[jf].an.resize(rp_[jf].Nl * rp_[jf].N, 0.0);
-	  rp_[jf].am.resize(rp_[jf].Nl * rp_[jf].N, 0.0);
-	  rp_[jf].ap.resize(rp_[jf].Nl * rp_[jf].N, 0.0);
-
 	  rp_[jf].Nf = 0;
 
 	  /* Initialize the file streams to save the data.						*/
@@ -1866,7 +1861,7 @@ namespace Darius
 	  /* First reset all the previously calculated powers.                                          */
 	  for (k = 0; k < rp_[jf].N; ++k)
 	    for (l = 0; l < rp_[jf].Nl; ++l)
-	      rp_[jf].an[k * rp_[jf].Nl + l] = rp_[jf].am[k * rp_[jf].Nl + l] = rp_[jf].ap[k * rp_[jf].Nl + l] = 0.0;
+	      rp_[jf].pL[k * rp_[jf].Nl + l] = 0.0;
 
 	  /* Set the index of the sampling point to zero.                                               */
 	  kz = 0;

@@ -1731,6 +1731,11 @@ namespace Darius
 	  rp_[jf].pL.resize(rp_[jf].Nl * rp_[jf].N, 0.0);
 	  rp_[jf].pG.resize(rp_[jf].Nl * rp_[jf].N, 0.0);
 
+	  /* Resize the values for shank transformation that predicts the total radiated field.		*/
+	  rp_[jf].an.resize(rp_[jf].Nl * rp_[jf].N, 0.0);
+	  rp_[jf].am.resize(rp_[jf].Nl * rp_[jf].N, 0.0);
+	  rp_[jf].ap.resize(rp_[jf].Nl * rp_[jf].N, 0.0);
+
 	  rp_[jf].Nf = 0;
 
 	  /* Initialize the file streams to save the data.						*/
@@ -1849,7 +1854,7 @@ namespace Darius
       long int                  mi, ni;
       FieldVector<Double>       et, bt;
       Complex                   ew1, bw1, ew2, bw2, ex;
-      Double                    pt;
+      Double                    am, an, ap;
       bool                      dt = false;
 
       /* Loop over the different FEL output parameters and calculate the radiation energy if the energy
@@ -1862,13 +1867,15 @@ namespace Darius
 	  /* First reset all the previously calculated powers.                                          */
 	  for (k = 0; k < rp_[jf].N; ++k)
 	    for (l = 0; l < rp_[jf].Nl; ++l)
-	      rp_[jf].pL[k * rp_[jf].Nl + l] = 0.0;
+	      rp_[jf].an[k * rp_[jf].Nl + l] = rp_[jf].am[k * rp_[jf].Nl + l] = rp_[jf].ap[k * rp_[jf].Nl + l] = 0.0;
 
 	  /* Set the index of the sampling point to zero.                                               */
 	  kz = 0;
 
 	  /* Loop over the sampling positions, transverse dicretizations, and frequency to calculate the
 	   * radiated power at the specific point and frequency.                                        */
+
+	  /* k index loops over the sampling positions.							*/
 	  for (k = 0; k < rp_[jf].N; ++k)
 	    {
 	      /* Do not continue if this index is not supported by the processor.                       */
@@ -1908,6 +1915,8 @@ namespace Darius
 		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
 
 		    /* Add the contribution of this field to the radiation power.                       */
+
+		    /* l index loops over the given wavelength of the power sampling.			*/
 		    for ( l = 0; l < rp_[jf].Nl; l++)
 		      {
 			ew1 = Complex (0.0, 0.0);
@@ -1928,13 +1937,34 @@ namespace Darius
 			    bw2 += rp_[jf].fdt[m][ni][2] / ex;
 			  }
 
-			rp_[jf].pL[k * rp_[jf].Nl + l] += rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );
+			/* Add the contribution to the power series.					*/
+			rp_[jf].ap[k * rp_[jf].Nl + l] += rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );
+
+			/* Add the contribution to the power series except for the last grid point.	*/
+			if ( i > 2 && i < N0_ - 3 && j > 2 && j < N1_ - 3 )
+			  rp_[jf].an[k * rp_[jf].Nl + l] += rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );
+
+			/* Add the contribution to the power series except for the last two grid lines.	*/
+			if ( i > 3 && i < N0_ - 4 && j > 3 && j < N1_ - 4 )
+			  rp_[jf].am[k * rp_[jf].Nl + l] += rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );
+
 		      }
 		  }
 
-	      /* Add the interator for the sampling point by one.                                       */
+	      /* Add the iterator for the sampling point by one.                                       	*/
 	      kz += 1;
 	    }
+
+	  /* Calculate an estimation of the total radiated power using the shank transformation.	*/
+	  for (k = 0; k < rp_[jf].N; ++k)
+	    for (l = 0; l < rp_[jf].Nl; ++l)
+	      {
+		am = rp_[jf].am[k * rp_[jf].Nl + l];
+		an = rp_[jf].an[k * rp_[jf].Nl + l];
+		ap = rp_[jf].ap[k * rp_[jf].Nl + l];
+
+		rp_[jf].pL[k * rp_[jf].Nl + l] = ap - ( ap - an ) * ( ap - an ) / ( ( ap - an ) - ( an - am ) ) ;
+	      }
 
 	  /* Add the data from each processor together at the root processor.                           */
 	  MPI_Allreduce(&rp_[jf].pL[0],&rp_[jf].pG[0],rp_[jf].N*rp_[jf].Nl,MPI_TYPE,MPI_SUM,MPI_COMM_WORLD);

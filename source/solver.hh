@@ -1854,7 +1854,6 @@ namespace Darius
       long int                  mi, ni;
       FieldVector<Double>       et, bt;
       Complex                   ew1, bw1, ew2, bw2, ex;
-      Double                    am, an, ap, da;
       bool                      dt = false;
 
       /* Loop over the different FEL output parameters and calculate the radiation energy if the energy
@@ -1937,40 +1936,14 @@ namespace Darius
 			    bw2 += rp_[jf].fdt[m][ni][2] / ex;
 			  }
 
-			/* Calculate the contribution to the power.					*/
-			da = rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );
-
 			/* Add the contribution to the power series.					*/
-			rp_[jf].ap[k * rp_[jf].Nl + l] += da;
-
-			/* Add the contribution to the power series except for the last grid point.	*/
-			if ( i > 6 && i < N0_ - 7 && j > 6 && j < N1_ - 7 )
-			  rp_[jf].an[k * rp_[jf].Nl + l] += da;
-
-			/* Add the contribution to the power series except for the last two grid lines.	*/
-			if ( i > 11 && i < N0_ - 12 && j > 11 && j < N1_ - 12 )
-			  rp_[jf].am[k * rp_[jf].Nl + l] += da;
-
+			rp_[jf].pL[k * rp_[jf].Nl + l] += rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );
 		      }
 		  }
 
 	      /* Add the iterator for the sampling point by one.                                       	*/
 	      kz += 1;
 	    }
-
-	  /* Calculate an estimation of the total radiated power using the shank transformation.	*/
-	  for (k = 0; k < rp_[jf].N; ++k)
-	    for (l = 0; l < rp_[jf].Nl; ++l)
-	      {
-		am = rp_[jf].am[k * rp_[jf].Nl + l];
-		an = rp_[jf].an[k * rp_[jf].Nl + l];
-		ap = rp_[jf].ap[k * rp_[jf].Nl + l];
-
-		if ( ap + am - 2.0 * an == 0.0)
-		  rp_[jf].pL[k * rp_[jf].Nl + l] = ap;
-		else
-		  rp_[jf].pL[k * rp_[jf].Nl + l] = ap - ( ap - an ) * ( ap - an ) / ( ( ap - an ) - ( an - am ) ) ;
-	      }
 
 	  /* Add the data from each processor together at the root processor.                           */
 	  MPI_Allreduce(&rp_[jf].pL[0],&rp_[jf].pG[0],rp_[jf].N*rp_[jf].Nl,MPI_TYPE,MPI_SUM,MPI_COMM_WORLD);

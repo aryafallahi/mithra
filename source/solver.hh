@@ -1848,7 +1848,8 @@ namespace Darius
       unsigned int              k, l, m, i, j, kz;
       long int                  mi, ni;
       FieldVector<Double>       et, bt;
-      Complex                   ew1, bw1, ew2, bw2, ex;
+      Complex                   ew1, bw1, ew2, bw2;
+      Double			ec, es, ea;
       bool                      dt = false;
 
       /* Loop over the different FEL output parameters and calculate the radiation energy if the energy
@@ -1914,21 +1915,19 @@ namespace Darius
 		    for ( l = 0; l < rp_[jf].Nl; l++)
 		      {
 			ew1 = Complex (0.0, 0.0);
-			bw1 = Complex (0.0, 0.0);
-			for ( m = 0; m < rp_[jf].Nf; m++)
-			  {
-			    ex   = exp( I * ( rp_[jf].w[l] * m * mesh_.timeStep_ ) );
-			    ew1 += rp_[jf].fdt[m][ni][0] * ex;
-			    bw1 += rp_[jf].fdt[m][ni][3] / ex;
-			  }
+			bw1 = ew1;
+			ew2 = ew1;
+			bw2 = ew1;
 
-			ew2 = Complex (0.0, 0.0);
-			bw2 = Complex (0.0, 0.0);
 			for ( m = 0; m < rp_[jf].Nf; m++)
 			  {
-			    ex   = exp( I * ( rp_[jf].w[l] * m * mesh_.timeStep_ ) );
-			    ew2 += rp_[jf].fdt[m][ni][1] * ex;
-			    bw2 += rp_[jf].fdt[m][ni][2] / ex;
+			    ea	 = rp_[jf].w[l] * m * mesh_.timeStep_;
+			    ec   = cos(ea);
+			    es   = sin(ea);
+			    ew1 += rp_[jf].fdt[m][ni][0] * ( ec + I * es );
+			    bw1 += rp_[jf].fdt[m][ni][3] * ( ec - I * es );
+			    ew2 += rp_[jf].fdt[m][ni][1] * ( ec + I * es );
+			    bw2 += rp_[jf].fdt[m][ni][2] * ( ec - I * es );
 			  }
 
 			/* Add the contribution to the power series.					*/
@@ -2000,21 +1999,19 @@ namespace Darius
 
 		    /* Add the contribution of this field to the radiation power.                       */
 		    ew1 = Complex (0.0, 0.0);
-		    bw1 = Complex (0.0, 0.0);
-		    for ( m = 0; m < rp_[jf].Nf; m++)
-		      {
-			ex  = exp( I * ( rp_[jf].w[0] * m * mesh_.timeStep_ ) );
-			ew1 += rp_[jf].fdt[m][ni][0] * ex;
-			bw1 += rp_[jf].fdt[m][ni][3] / ex;
-		      }
+		    bw1 = ew1;
+		    ew2 = ew1;
+		    bw2 = ew1;
 
-		    ew2 = Complex (0.0, 0.0);
-		    bw2 = Complex (0.0, 0.0);
 		    for ( m = 0; m < rp_[jf].Nf; m++)
 		      {
-			ex  = exp( I * ( rp_[jf].w[0] * m * mesh_.timeStep_ ) );
-			ew2 += rp_[jf].fdt[m][ni][1] * ex;
-			bw2 += rp_[jf].fdt[m][ni][2] / ex;
+			ea   = rp_[jf].w[0] * m * mesh_.timeStep_;
+			ec   = cos(ea);
+			es   = sin(ea);
+			ew1 += rp_[jf].fdt[m][ni][0] * ( ec + I * es );
+			bw1 += rp_[jf].fdt[m][ni][3] * ( ec - I * es );
+			ew2 += rp_[jf].fdt[m][ni][1] * ( ec + I * es );
+			bw2 += rp_[jf].fdt[m][ni][2] * ( ec - I * es );
 		      }
 
 		    rp_[jf].pL[ni] = rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );

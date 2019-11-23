@@ -43,14 +43,17 @@
 #include "solver.hh"
 #include "fdtd.hh"
 #include "fdtdSC.hh"
+#include "radiation.hh"
 
-int main (int argc, char* argv[]) {
+int main (int argc, char* argv[])
+{
 
   /* initialize MPI, finalize is done automatically on exit                                             */
   MPI_Init(&argc,&argv);
 
   /* Activate namespaces                                                                                */
   using namespace Darius;
+  using namespace std;
 
   /* Retrieve time when we start the simulation.                                                        */
   timeval simulationStart, simulationEnd;

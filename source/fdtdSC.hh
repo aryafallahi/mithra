@@ -136,7 +136,8 @@ namespace Darius
 
 	  /* If radiation power of the FEL output is enabled and the rhythm for sampling is achieved.
 	   * Sample the radiation power at the given position and save them into the file.		*/
-	  if (time_ > 0.0 )	        radiationPower();
+	  radiationPowerSample();
+	  radiationPowerVisualize();
 
 	  /* If radiation energy of the FEL output is enabled and the rhythm for sampling is achieved.
 	   * Sample the radiation energy at the given position and save them into the file.		*/

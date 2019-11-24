@@ -12,9 +12,9 @@ namespace Darius
    * Initialize the data required for sampling and saving the radiation power at the given position.
    ******************************************************************************************************/
 
-  void Solver::initializeRadiationPower()
+  void Solver::initializePowerSample()
   {
-    printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the FEL radiation power data.") );
+    printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the data for FEL radiation power sampling.") );
     rp_.clear(); rp_.resize(FEL_.size());
 
     /* Loop over the different FEL output parameters and initialize the power calculation if it is
@@ -84,7 +84,7 @@ namespace Darius
 
 	    /* Determine the number of time points needed to calculate the amplitude of each radiation
 	     * harmonic. Here, we use the power inside three radiation cycles to calculate the
-	     * Instantaneous power at the selected harmonic.						*/
+	     * instantaneous power at the selected harmonic.						*/
 	    Double dt = 3.0 * undulator_[0].lu_ / FEL_[jf].radiationPower_.lambda_[i] / ( gamma_ * c0_ );
 	    rp_[jf].Nf = ( int( dt / mesh_.timeStep_ ) > rp_[jf].Nf ) ? int( dt / mesh_.timeStep_ ) : rp_[jf].Nf;
 
@@ -101,7 +101,30 @@ namespace Darius
 	rp_[jf].dz  = mesh_.meshResolution_[2];
 
 	rp_[jf].pc  = 2.0 * rp_[jf].dx * rp_[jf].dy / ( m0_ * rp_[jf].Nf * rp_[jf].Nf ) * pow(mesh_.lengthScale_,2) / pow(mesh_.timeScale_,3);
+
+	/* From the obtained vector of wavelengths set the size of Fourier coefficients and initialize
+	 * the data.											*/
+	rp_[jf].ep.resize(rp_[jf].Nl, std::vector<Complex> (rp_[jf].Nf, Complex (0.0, 0.0) ) );
+	rp_[jf].em.resize(rp_[jf].Nl, std::vector<Complex> (rp_[jf].Nf, Complex (0.0, 0.0) ) );
+	for (unsigned int i = 0; i < rp_[jf].Nl; i++)
+	  for (unsigned int j = 0; j < rp_[jf].Nf; j++)
+	    {
+	      rp_[jf].ep[i][j] = cos( rp_[jf].w[i] * j * mesh_.timeStep_ ) + I * sin( rp_[jf].w[i] * j * mesh_.timeStep_ );
+	      rp_[jf].em[i][j] = cos( rp_[jf].w[i] * j * mesh_.timeStep_ ) - I * sin( rp_[jf].w[i] * j * mesh_.timeStep_ );
+	    }
       }
+
+    printmessage(std::string(__FILE__), __LINE__, std::string(" The data for sampling FEL radiation power is initialized. :::") );
+  }
+
+  /******************************************************************************************************
+   * Initialize the data required for visualizing the radiation power at the given position.
+   ******************************************************************************************************/
+
+  void Solver::initializePowerVisualize()
+  {
+    printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the data for FEL radiation power visualization.") );
+    rp_.clear(); rp_.resize(FEL_.size());
 
     /* Loop over the different FEL output parameters and initialize the power calculation if it is
      * activated.											*/
@@ -150,15 +173,16 @@ namespace Darius
 	rp_[jf].w.resize(rp_[jf].Nz);
 
 	/* Determine the number of time points needed to calculate the amplitude of each radiation
-	 * harmonic.											*/
-	Double dt = undulator_[0].lu_ / FEL_[jf].vtk_.lambda_ / ( gamma_ * c0_ );
+	 * harmonic. Here, we use the power inside three radiation cycles to calculate the instantaneous
+	 * power at the selected harmonic.								*/
+	Double dt = 3.0 * undulator_[0].lu_ / FEL_[jf].vtk_.lambda_ / ( gamma_ * c0_ );
 	rp_[jf].Nf = int( dt / mesh_.timeStep_ );
 
 	/* Calculate the angular frequency for each wavelength.						*/
 	rp_[jf].w[0] = 2 * PI / dt;
 
 	/* Based on the obtained Nf, resize the vectors for saving the time domain data.		*/
-	rp_[jf].fdt.resize(rp_[jf].Nf, std::vector<std::vector<Double> > (N1_ * N0_, std::vector<Double> (4,0.0) ) );
+	rp_[jf].fdt.resize(rp_[jf].Nf, std::vector<std::vector<Double> > (N1_ * N0_, std::vector<Double> (4, 0.0) ) );
 
 	rp_[jf].dt  = mesh_.timeStep_;
 	rp_[jf].dx  = mesh_.meshResolution_[0];
@@ -166,16 +190,27 @@ namespace Darius
 	rp_[jf].dz  = mesh_.meshResolution_[2];
 
 	rp_[jf].pc  = 2.0 * rp_[jf].dx * rp_[jf].dy / ( m0_ * rp_[jf].Nf * rp_[jf].Nf ) * pow(mesh_.lengthScale_,2) / pow(mesh_.timeScale_,3);
+
+	/* From the obtained vector of wavelengths set the size of Fourier coefficients and initialize
+	 * the data.											*/
+	rp_[jf].ep.resize(rp_[jf].Nl, std::vector<Complex> (rp_[jf].Nf, Complex (0.0, 0.0) ) );
+	rp_[jf].em.resize(rp_[jf].Nl, std::vector<Complex> (rp_[jf].Nf, Complex (0.0, 0.0) ) );
+	for (unsigned int i = 0; i < rp_[jf].Nl; i++)
+	  for (unsigned int j = 0; j < rp_[jf].Nf; j++)
+	    {
+	      rp_[jf].ep[i][j] = cos( rp_[jf].w[i] * j * mesh_.timeStep_ ) + I * sin( rp_[jf].w[i] * j * mesh_.timeStep_ );
+	      rp_[jf].em[i][j] = cos( rp_[jf].w[i] * j * mesh_.timeStep_ ) - I * sin( rp_[jf].w[i] * j * mesh_.timeStep_ );
+	    }
       }
 
-    printmessage(std::string(__FILE__), __LINE__, std::string(" The FEL radiation power data is initialized. :::") );
+    printmessage(std::string(__FILE__), __LINE__, std::string(" The data for FEL radiation power visualization is initialized. :::") );
   }
 
   /******************************************************************************************************
    * Sample the radiation power at the given position and save it to the file.
    ******************************************************************************************************/
 
-  void Solver::radiationPowerSample()
+  void Solver::powerSample()
   {
     /* Declare the temporary parameters needed for calculating the radiated power.                    	*/
     unsigned int              	k, l, m, i, j, kz;
@@ -212,6 +247,9 @@ namespace Darius
 	    rp_[jf].dzr = modf( ( FEL_[jf].radiationPower_.z_[k] - zmin_ ) / mesh_.meshResolution_[2] , &rp_[jf].c);
 	    rp_[jf].k   = (int) rp_[jf].c;
 
+	    /* Get the index in the time series for power calculation.					*/
+	    rp_[jf].m	= nTime_ % rp_[jf].Nf;
+
 	    /* Loop over the transverse indices.                                                      	*/
 	    for (i = 2; i < N0_ - 2; i += 1)
 	      for (j = 2; j < N1_ - 2; j += 1)
@@ -233,31 +271,25 @@ namespace Darius
 		  bt[1] = ( 1.0 - rp_[jf].dzr ) * bn_[mi][1] + rp_[jf].dzr * bn_[mi+N1N0_][1];
 
 		  /* Transform the fields to the lab frame.                                           	*/
-		  rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][0] = gamma_ * ( et[0] + c0_ * beta_ * bt[1] );
-		  rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][1] = gamma_ * ( et[1] - c0_ * beta_ * bt[0] );
+		  rp_[jf].fdt[rp_[jf].m][ni][0] = gamma_ * ( et[0] + c0_ * beta_ * bt[1] );
+		  rp_[jf].fdt[rp_[jf].m][ni][1] = gamma_ * ( et[1] - c0_ * beta_ * bt[0] );
 
-		  rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][2] = gamma_ * ( bt[0] - beta_ / c0_ * et[1] );
-		  rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
+		  rp_[jf].fdt[rp_[jf].m][ni][2] = gamma_ * ( bt[0] - beta_ / c0_ * et[1] );
+		  rp_[jf].fdt[rp_[jf].m][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
 
 		  /* Add the contribution of this field to the radiation power.                       	*/
 
 		  /* l index loops over the given wavelength of the power sampling.			*/
 		  for ( l = 0; l < rp_[jf].Nl; l++)
 		    {
-		      ew1 = Complex (0.0, 0.0);
-		      bw1 = ew1;
-		      ew2 = ew1;
-		      bw2 = ew1;
+		      ew1 = Complex (0.0, 0.0); bw1 = ew1; ew2 = ew1; bw2 = ew1;
 
 		      for ( m = 0; m < rp_[jf].Nf; m++)
 			{
-			  ea	 = rp_[jf].w[l] * m * mesh_.timeStep_;
-			  ec   = cos(ea);
-			  es   = sin(ea);
-			  ew1 += rp_[jf].fdt[m][ni][0] * ( ec + I * es );
-			  bw1 += rp_[jf].fdt[m][ni][3] * ( ec - I * es );
-			  ew2 += rp_[jf].fdt[m][ni][1] * ( ec + I * es );
-			  bw2 += rp_[jf].fdt[m][ni][2] * ( ec - I * es );
+			  ew1 += rp_[jf].fdt[m][ni][0] * rp_[jf].ep[l][m];
+			  bw1 += rp_[jf].fdt[m][ni][3] * rp_[jf].em[l][m];
+			  ew2 += rp_[jf].fdt[m][ni][1] * rp_[jf].ep[l][m];
+			  bw2 += rp_[jf].fdt[m][ni][2] * rp_[jf].em[l][m];
 			}
 
 		      /* Add the contribution to the power series.					*/
@@ -290,7 +322,7 @@ namespace Darius
    * Visualize the radiation power at the given position and save it to the file.
    ******************************************************************************************************/
 
-  void Solver::radiationPowerVisualize()
+  void Solver::powerVisualize()
   {
 
     /* Declare the temporary parameters needed for calculating the radiated power.                    	*/
@@ -340,21 +372,14 @@ namespace Darius
 		  rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][2] = gamma_ * ( bt[0] - beta_ / c0_ * et[1] );
 		  rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
 
-		  /* Add the contribution of this field to the radiation power.                       	*/
-		  ew1 = Complex (0.0, 0.0);
-		  bw1 = ew1;
-		  ew2 = ew1;
-		  bw2 = ew1;
+		  ew1 = Complex (0.0, 0.0); bw1 = ew1; ew2 = ew1; bw2 = ew1;
 
 		  for ( m = 0; m < rp_[jf].Nf; m++)
 		    {
-		      ea   = rp_[jf].w[0] * m * mesh_.timeStep_;
-		      ec   = cos(ea);
-		      es   = sin(ea);
-		      ew1 += rp_[jf].fdt[m][ni][0] * ( ec + I * es );
-		      bw1 += rp_[jf].fdt[m][ni][3] * ( ec - I * es );
-		      ew2 += rp_[jf].fdt[m][ni][1] * ( ec + I * es );
-		      bw2 += rp_[jf].fdt[m][ni][2] * ( ec - I * es );
+		      ew1 += rp_[jf].fdt[m][ni][0] * rp_[jf].ep[l][m];
+		      bw1 += rp_[jf].fdt[m][ni][3] * rp_[jf].em[l][m];
+		      ew2 += rp_[jf].fdt[m][ni][1] * rp_[jf].ep[l][m];
+		      bw2 += rp_[jf].fdt[m][ni][2] * rp_[jf].em[l][m];
 		    }
 
 		  rp_[jf].pL[ni] = rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );

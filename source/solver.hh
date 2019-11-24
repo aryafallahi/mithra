@@ -309,7 +309,7 @@ namespace Darius
 
       /* If sampling or visualizing the radiation power is enabled initialize the required data for
        * calculating the radiation power and saving it.							*/
-      initializeRadiationPower();
+      initializePowerSample(); initializePowerVisualize();
 
       /* If sampling the radiation energy is enabled initialize the required data for calculating the
        * radiation energy and saving it.								*/
@@ -1687,19 +1687,25 @@ namespace Darius
      * Initialize the data required for sampling and saving the radiation power at the given position.
      ****************************************************************************************************/
 
-    void initializeRadiationPower();
+    void initializePowerSample();
+
+    /****************************************************************************************************
+     * Initialize the data required for visualizing the radiation power at the given position.
+     ****************************************************************************************************/
+
+    void initializePowerVisualize();
 
     /****************************************************************************************************
      * Sample the radiation power at the given position and save it to the file.
      ****************************************************************************************************/
 
-    void radiationPowerSample();
+    void powerSample();
 
-    /******************************************************************************************************
+    /****************************************************************************************************
      * Visualize the radiation power at the given position and save it to the file.
-     ******************************************************************************************************/
+     ****************************************************************************************************/
 
-    void radiationPowerVisualize();
+    void powerVisualize();
 
 
     /****************************************************************************************************

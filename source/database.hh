@@ -523,6 +523,8 @@ namespace Darius
     Double						pc;
     unsigned int					N, Nl, Nf, Nz;
     std::vector<std::vector<std::vector<Double> > >	fdt;
+    unsigned int					m;
+    std::vector<std::vector<Complex> >			ep, em;
   };
 
   /* Structure of data required for sampling the field.							*/

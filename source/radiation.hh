@@ -85,8 +85,8 @@ namespace Darius
 	    /* Determine the number of time points needed to calculate the amplitude of each radiation
 	     * harmonic. Here, we use the power inside three radiation cycles to calculate the
 	     * instantaneous power at the selected harmonic.						*/
-	    Double dt = 3.0 * undulator_[0].lu_ / FEL_[jf].radiationPower_.lambda_[i] / ( gamma_ * c0_ );
-	    rp_[jf].Nf = ( int( dt / mesh_.timeStep_ ) > rp_[jf].Nf ) ? int( dt / mesh_.timeStep_ ) : rp_[jf].Nf;
+	    Double dt = undulator_[0].lu_ / FEL_[jf].radiationPower_.lambda_[i] / ( gamma_ * c0_ );
+	    rp_[jf].Nf = ( int( 3.0 * dt / mesh_.timeStep_ ) > rp_[jf].Nf ) ? int( 3.0 * dt / mesh_.timeStep_ ) : rp_[jf].Nf;
 
 	    /* Calculate the angular frequency for each wavelength.					*/
 	    rp_[jf].w[i] = 2 * PI / dt;
@@ -165,8 +165,6 @@ namespace Darius
 	rp_[jf].pL.resize(N1_*N0_, 0.0);
 	rp_[jf].pG.clear();
 
-	rp_[jf].Nf = 0;
-
 	/* Initialize the file streams to save the data.						*/
 	rp_[jf].file.resize(rp_[jf].Nz);
 	rp_[jf].w.resize(rp_[jf].Nz);
@@ -174,8 +172,8 @@ namespace Darius
 	/* Determine the number of time points needed to calculate the amplitude of each radiation
 	 * harmonic. Here, we use the power inside three radiation cycles to calculate the instantaneous
 	 * power at the selected harmonic.								*/
-	Double dt = 3.0 * undulator_[0].lu_ / FEL_[jf].vtk_.lambda_ / ( gamma_ * c0_ );
-	rp_[jf].Nf = int( dt / mesh_.timeStep_ );
+	Double dt = undulator_[0].lu_ / FEL_[jf].vtk_.lambda_ / ( gamma_ * c0_ );
+	rp_[jf].Nf = int( 3.0 * dt / mesh_.timeStep_ );
 
 	/* Calculate the angular frequency for each wavelength.						*/
 	rp_[jf].w[0] = 2 * PI / dt;
@@ -216,7 +214,6 @@ namespace Darius
     long int                  	mi, ni;
     FieldVector<Double>       	et, bt;
     Complex                   	ew1, bw1, ew2, bw2;
-    Double			ec, es, ea;
 
     /* Loop over the different FEL output parameters and calculate the radiation energy if the energy
      * calculation is activated.                                                                      	*/

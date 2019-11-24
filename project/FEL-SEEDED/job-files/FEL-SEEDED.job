@@ -13,9 +13,9 @@ MESH
 {
   length-scale					= MICROMETER
   time-scale					= PICOSECOND
-  mesh-lengths					= ( 1200.0, 1200.0, 165.0) 
-  mesh-resolution				= ( 20.0,   20.0,   0.01 )
-  mesh-center					= ( 0.0,    0.0,    0.0  )
+  mesh-lengths					= ( 1600.0, 1600.0, 165.0  ) 
+  mesh-resolution				= (   30.0,   30.0,   0.02 )
+  mesh-center					= (    0.0,    0.0,   0.0  )
   total-time					= 50000
   bunch-time-step				= 1.6
   mesh-truncation-order				= 2
@@ -88,7 +88,7 @@ FEL-OUTPUT
     sample					= true
     type					= at-point
     directory					= ./
-    base-name					= power-sampling/powerQ
+    base-name					= power-sampling/power-1600x1600x165-30x30x0p02-1p6-1048576
     plane-position				= 78.0
     normalized-frequency			= 1.00
   }

@@ -124,7 +124,6 @@ namespace Darius
   void Solver::initializePowerVisualize()
   {
     printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the data for FEL radiation power visualization.") );
-    rp_.clear(); rp_.resize(FEL_.size());
 
     /* Loop over the different FEL output parameters and initialize the power calculation if it is
      * activated.											*/

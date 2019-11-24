@@ -41,9 +41,9 @@
 #include "datainput.hh"
 #include "readdata.hh"
 #include "solver.hh"
+#include "radiation.hh"
 #include "fdtd.hh"
 #include "fdtdSC.hh"
-#include "radiation.hh"
 
 int main (int argc, char* argv[])
 {

@@ -345,6 +345,9 @@ namespace Darius
 	    rp_[jf].dzr 	= modf( ( FEL_[jf].vtk_.z_ - zmin_ ) / mesh_.meshResolution_[2] , &rp_[jf].c);
 	    rp_[jf].k   	= (int) rp_[jf].c - k0_;
 
+	    /* Get the index in the time series for power calculation.					*/
+	    rp_[jf].m	= nTime_ % rp_[jf].Nf;
+
 	    /* Loop over the transverse indices.                                                      	*/
 	    for (i = 1; i < N0_ - 1; i++)
 	      for (j = 1; j < N1_ - 1; j++)
@@ -366,11 +369,11 @@ namespace Darius
 		  bt[1] = ( 1.0 - rp_[jf].dzr ) * bn_[mi][1] + rp_[jf].dzr * bn_[mi+N1N0_][1];
 
 		  /* Transform the fields to the lab frame.                                           	*/
-		  rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][0] = gamma_ * ( et[0] + c0_ * beta_ * bt[1] );
-		  rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][1] = gamma_ * ( et[1] - c0_ * beta_ * bt[0] );
+		  rp_[jf].fdt[rp_[jf].m][ni][0] = gamma_ * ( et[0] + c0_ * beta_ * bt[1] );
+		  rp_[jf].fdt[rp_[jf].m][ni][1] = gamma_ * ( et[1] - c0_ * beta_ * bt[0] );
 
-		  rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][2] = gamma_ * ( bt[0] - beta_ / c0_ * et[1] );
-		  rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
+		  rp_[jf].fdt[rp_[jf].m][ni][2] = gamma_ * ( bt[0] - beta_ / c0_ * et[1] );
+		  rp_[jf].fdt[rp_[jf].m][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
 
 		  ew1 = Complex (0.0, 0.0); bw1 = ew1; ew2 = ew1; bw2 = ew1;
 

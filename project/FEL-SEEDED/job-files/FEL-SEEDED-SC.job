@@ -2,25 +2,24 @@
 #
 #  physics - model a seeded ultraviolet free electron laser based on a magnetic undulator
 #
-#  manual: example 2, Fig. 5.6a and Fig. 5.6b (simulation results without space-charge)
+#  manual: example 2, Fig. 5.6a and Fig. 5.6b (simulation results with space-charge)
 #
-#  mpirun -np 4 ../darius ./job-files/FEL-SEEDED.job
+#  mpirun -np 4 ../darius ./job-files/FEL-SEEDED-SC.job
 #
 #  in the LSF system:
-#  bsub -n 48 -W 20:00 -J "FEL-SEEDED" -o mithra.out 'mpirun ../darius ./job-files/FEL-SEEDED.job'
+#  bsub -n 48 -W 2:00 -J "FEL-SEEDED-SC" -o mithra.out 'mpirun ../darius ./job-files/FEL-SEEDED-SC.job'
 
 MESH
 {
   length-scale					= MICROMETER
   time-scale					= PICOSECOND
-  mesh-lengths					= ( 2500.0, 2500.0, 165.0  ) 
-  mesh-resolution				= (   30.0,   30.0,   0.02 )
-  mesh-center					= (    0.0,    0.0,   0.0  )
+  mesh-lengths					= ( 2500.0, 2500.0, 165.0) 
+  mesh-resolution				= ( 30.0,   30.0,   0.02 )
+  mesh-center					= ( 0.0,    0.0,    0.0  )
   total-time					= 50000
-  bunch-time-step				= 1.6
+  bunch-time-step				= 0.8
   mesh-truncation-order				= 2
-  space-charge					= false
-  solver					= NSFD
+  space-charge					= true
 }
  
 BUNCH
@@ -45,7 +44,7 @@ BUNCH
   {
     sample					= true
     directory					= /cluster/scratch/afallahi/
-    base-name					= bunch-visualization-seeded/bunch
+    base-name					= bunch-visualization-seeded/bunch-SC
     rhythm					= 500
   }
 }
@@ -55,7 +54,7 @@ FIELD
   field-initialization
   {
     type					= gaussian-beam
-    position					= ( 0.0, 0.0, 700000)
+    position					= ( 0.0, 0.0, 700080.65)
     direction					= ( 0.0, 0.0, 1.0)
     polarization				= ( 0.0, 1.0, 0.0)
     radius-parallel				= 183.74
@@ -88,7 +87,7 @@ FEL-OUTPUT
     sample					= true
     type					= at-point
     directory					= ./
-    base-name					= power-sampling/power
+    base-name					= power-sampling/power-SC
     plane-position				= 78.0
     normalized-frequency			= 1.00
   }

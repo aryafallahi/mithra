@@ -1,0 +1,116 @@
+#  Mithra input file
+#
+#  physics - model a free electron mechanism based on optical undulator
+#
+#  manual: example 3, Fig. 5.8a-d
+#
+#  mpirun -np 4 ../darius ./job-files/FEL-ICS.job
+#
+#  in the LSF system:
+#  bsub -n 48 -W 20:00 -J "FEL-ICS" -o mithra.out 'mpirun ../darius ./job-files/FEL-ICS.job'
+
+MESH
+{
+  length-scale					= NANOMETER
+  time-scale					= ATTOSECOND
+  mesh-lengths					= (  2000.0,  2000.0,  165.0) 
+  mesh-resolution				= (    5.0,    5.0,   0.05)
+  mesh-center					= (    0.0,    0.0,   0.0 )
+  total-time					= 2000000
+  bunch-time-step				= 20.0
+  mesh-truncation-order				= 2
+  space-charge					= true
+}
+ 
+BUNCH
+{
+  bunch-initialization
+  {
+    type    					= ellipsoid
+    distribution				= uniform
+    charge					= 2800
+    number-of-particles				= 2800
+    gamma					= 30.0
+    direction     	    			= (  0.0,   0.0,    1.0)
+    position					= (  0.0,   0.0,    0.0)
+    sigma-position				= ( 60.0,  60.0,   72.0)
+    sigma-momentum				= ( 0.03,  0.03,   0.03)
+    transverse-truncation			= 240.0
+    longitudinal-truncation                     = 77.0
+    bunching-factor				= 0.001
+  }
+    
+  bunch-profile
+  {
+    sample					= true
+    directory					= ./
+    base-name					= /data/fhgfs/afallahi/bunch-profile/bunch
+    rhythm					= 2000
+  }
+}
+
+FIELD
+{
+  field-initialization
+  {
+    type      					= gaussian-beam
+    position  					= ( 0.0, 0.0, -2500.0)
+    direction					= ( 0.0, 0.0, 1.0)
+    polarization 				= ( 0.0, 1.0, 0.0)
+    rayleigh-radius-parallel			= 0.5
+    rayleigh-radius-perpendicular		= 0.5
+    strength-parameter				= 0.0
+    signal-type    				= gaussian
+    offset    					= 0.00e-9
+    variance  					= 1.00
+    wavelength					= 0.0
+    CEP  					= 0.0
+  }
+  
+  field-sampling
+  {
+    sample					= true
+    type					= at-point
+    field					= Ex
+    field                                       = Ey
+    field                                       = Ez
+    directory					= ./
+    base-name					= /data/fhgfs/afallahi/field-sampling/field
+    rhythm					= 160
+    position					= (0.0, 0.0, 82.0)
+  }
+}
+
+UNDULATOR
+{
+  optical-undulator
+  {
+    beam-type					= plane-wave
+    position					= ( 0.0, 0.0, 0.0 )
+    direction					= ( 0.0, 0.0,-1.0 )
+    polarization				= ( 0.0, 1.0, 0.0 )
+    strength-parameter				= 1.0
+    signal-type					= flat-top
+    wavelength					= 1.0e3
+    variance					= 2400.0e3
+    offset					= 1200082.0
+    CEP						= 0.0
+  }
+}
+
+FEL-OUTPUT
+{
+  radiation-power
+  {
+    sample					= true
+    type					= at-point
+    directory					= ./
+    base-name					= /data/fhgfs/afallahi/power-sampling/power
+    distance-from-bunch				= 82
+    normalized-frequency                        = 1.0
+    normalized-frequency                        = 2.0
+    normalized-frequency                        = 3.0
+    normalized-frequency                        = 4.0
+    normalized-frequency                        = 5.0
+  }
+}

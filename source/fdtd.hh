@@ -92,39 +92,43 @@ namespace Darius
 	  /* Reset the charge and current values to zero.						*/
 	  currentReset();
 
+	  /* For the sake of having correct charge conservation in the implementation of PIC model, we
+	   * need to first update the charge motion with having the initial position saved in the memory.
+	   * Then, the current and charge update should all happen using the very first and the very last
+	   * charge positions.										*/
+
+	  /* Update the position and velocity parameters.						*/
+	  for (iter = iterQB_; iter != iterQE_; iter++)
+	    {
+	      iter->rnm  = iter->rnp;
+	      iter->gbnm = iter->gbnp;
+	    }
+
 	  /* Update the bunch till the time of the bunch properties reaches the time instant of the
 	   * field.											*/
 	  for (t = 0.0; t < nUpdateBunch_; t += 1.0)
 	    {
-
-	      /* Update the position and velocity parameters.					*/
-	      for (iter = iterQB_; iter != iterQE_; iter++)
-		{
-		  iter->rnm  = iter->rnp;
-		  iter->gbnm = iter->gbnp;
-		}
-
-	      bunchUpdate(t);
+	      bunchUpdate();
 	      timeBunch_ += bunch_.timeStep_;
 	      ++nTimeBunch_;
-
-	      /* Update the values of the current.							*/
-	      currentUpdate();
 	    }
 
-	  /* Communicate the current among processors.						*/
+	  /* Update the values of the current.								*/
+	  currentUpdate();
+
+	  /* Communicate the current among processors.							*/
 	  currentCommunicate();
 
 	  /* If sampling of the bunch is enabled and the rhythm for sampling is achieved. Sample the
-	   * bunch and save them into the file.							*/
+	   * bunch and save them into the file.								*/
 	  if ( bunch_.sampling_ && fmod(time_, bunch_.rhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchSample();
 
 	  /* If visualization of the bunch is enabled and the rhythm for visualization is achieved,
-	   * visualize the bunch and save the vtk data in the given file name.			*/
+	   * visualize the bunch and save the vtk data in the given file name.				*/
 	  if ( bunch_.bunchVTK_ && fmod(time_, bunch_.bunchVTKRhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchVisualize();
 
-	  /* If profiling of the bunch is enabled and the time for profiling is achieved, write the
-	   * bunch profile and save the data in the given file name.				*/
+	  /* If profiling of the bunch is enabled and the time for profiling is achieved, write the bunch
+	   * profile and save the data in the given file name.						*/
 	  if (bunch_.bunchProfile_ > 0)
 	    {
 	      for (unsigned int i = 0; i < (bunch_.bunchProfileTime_).size(); i++)
@@ -202,12 +206,12 @@ namespace Darius
 	  uc_.rm  = it->rnm;
 
 	  /* Save the flag detecting that the particle is in the domain of the processor.               */
-	  bp = ( uc_.rp[0] < xmax_ - uc_.dx && uc_.rp[0] > xmin_ + uc_.dx &&
-	      uc_.rp[1] < ymax_ - uc_.dy && uc_.rp[1] > ymin_ + uc_.dy &&
-	      uc_.rp[2] < zp_[1]         && uc_.rp[2] >= zp_[0] );
-	  bm = ( uc_.rm[0] < xmax_ - uc_.dx && uc_.rm[0] > xmin_ + uc_.dx &&
-	      uc_.rm[1] < ymax_ - uc_.dy && uc_.rm[1] > ymin_ + uc_.dy &&
-	      uc_.rm[2] < zp_[1]         && uc_.rm[2] >= zp_[0] );
+	  bp = ( 	uc_.rp[0] < xmax_ - uc_.dx && uc_.rp[0] > xmin_ + uc_.dx &&
+			uc_.rp[1] < ymax_ - uc_.dy && uc_.rp[1] > ymin_ + uc_.dy &&
+			uc_.rp[2] < zp_[1]         && uc_.rp[2] >= zp_[0] );
+	  bm = ( 	uc_.rm[0] < xmax_ - uc_.dx && uc_.rm[0] > xmin_ + uc_.dx &&
+			uc_.rm[1] < ymax_ - uc_.dy && uc_.rm[1] > ymin_ + uc_.dy &&
+			uc_.rm[2] < zp_[1]         && uc_.rm[2] >= zp_[0] );
 
 	  /* Continue the loop if none of the above conditions are met.                                 */
 	  if ( ! (bp || bm) ) continue;
@@ -876,16 +880,16 @@ namespace Darius
 
       /* Communicate the calculated fields throughout the processors.					*/
       if (rank_ != size_ - 1)
-	MPI_Send(uf_.anp1+3*(np_-2)*N1N0_, 				3*N1N0_,MPI_TYPE,rank_+1,msgtag1,MPI_COMM_WORLD);
+	MPI_Send(uf_.anp1+3*(np_-2)*N1N0_, 	3*N1N0_,MPI_TYPE,rank_+1,msgtag1,MPI_COMM_WORLD);
 
       if (rank_ != 0)
-	MPI_Recv(uf_.anp1,						3*N1N0_,MPI_TYPE,rank_-1,msgtag1,MPI_COMM_WORLD,&status);
+	MPI_Recv(uf_.anp1,			3*N1N0_,MPI_TYPE,rank_-1,msgtag1,MPI_COMM_WORLD,&status);
 
       if (rank_ != 0)
-	MPI_Send(uf_.anp1+3*N1N0_,	 				3*N1N0_,MPI_TYPE,rank_-1,msgtag3,MPI_COMM_WORLD);
+	MPI_Send(uf_.anp1+3*N1N0_,	 	3*N1N0_,MPI_TYPE,rank_-1,msgtag3,MPI_COMM_WORLD);
 
       if (rank_ != size_ - 1)
-	MPI_Recv(uf_.anp1+3*(np_-1)*N1N0_,				3*N1N0_,MPI_TYPE,rank_+1,msgtag3,MPI_COMM_WORLD,&status);
+	MPI_Recv(uf_.anp1+3*(np_-1)*N1N0_,	3*N1N0_,MPI_TYPE,rank_+1,msgtag3,MPI_COMM_WORLD,&status);
 
       /* Now that A and phi quantities are updated, calculate E and B at boundary grid points for later
        * acceleration and power measurement.								*/
@@ -1347,7 +1351,7 @@ namespace Darius
 	  {
 	    m = k * N1_ * N0_ + i * N1_ + j;
 	    *vf_[ivtk].file << r_[m][0] * ( 1.0 - dxr ) + r_[m + N1_][0] * dxr << " "
-		<< r_[m][1] << " " << r_[m][2] 			<< std::endl;
+		<< r_[m][1] << " " << r_[m][2] 								<< std::endl;
 	  }
       *vf_[ivtk].file << "</DataArray>"                                                       		<< std::endl;
       *vf_[ivtk].file << "</Points>"                                                         		<< std::endl;
@@ -1685,14 +1689,13 @@ namespace Darius
       /* Insert the point data based on the computed electric field.					*/
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    		<< std::endl;
       *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size()
-	      << "\" format=\"ascii\">"									<< std::endl;
+		  << "\" format=\"ascii\">"									<< std::endl;
       for (j = 0; j < N1_; j++)
 	for (i = 0; i < N0_; i++)
 	  {
 	    n = i * N1_ + j;
 	    *vf_[ivtk].file << vf_[ivtk].v[n][0];
-	    for (l = 1; l < seed_.vtk_[ivtk].field_.size(); l++)
-	      *vf_[ivtk].file << " " << vf_[ivtk].v[n][l];
+	    for (l = 1; l < seed_.vtk_[ivtk].field_.size(); l++) *vf_[ivtk].file << " " << vf_[ivtk].v[n][l];
 	    *vf_[ivtk].file 										<< std::endl;
 	  }
       *vf_[ivtk].file << "</DataArray>"                                                   		<< std::endl;

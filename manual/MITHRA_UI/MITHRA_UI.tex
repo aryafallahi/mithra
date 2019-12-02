@@ -77,8 +77,6 @@ The mesh and update parameters of the solver are defined through the following t
 	%
 	\item {\tt \em \small bunch-time-step} is the time step for updating the macro-particles' coordinates in the PIC solver.
 	%
-	\item {\tt \em \small bunch-time-start} is the time point when the bunch of macro-particles emerges in the computational domain.
-	%
 	\item {\tt \em \small mesh-truncation-order} is the truncation order of the absorbing boundary condition in the computational domain. This parameter can be either 1 or 2, representing the first order and second order absorbing boundary condition.
 	%
 	\item {\tt \em \small space-charge} is a boolean flag determining if the space-charge effect should be considered or not. If this flag is false, the scalar potential $\phi$ is zero throughout the calculation. Otherwise, the scalar potential is calculated using the corresponding Helmholtz equation.
@@ -100,7 +98,6 @@ MESH
 	mesh-center				 	= < ( real, real, real ) >
 	total-time					= < real >
 	bunch-time-step		 		= < real >
-	bunch-time-start  			= < real >
 	mesh-truncation-order 		= < 1 | 2 >
 	space-charge  				= < true | false >
 	solver						= < NSFD | FD >
@@ -120,7 +117,6 @@ MESH
 	mesh-center					 = ( 0.0,      0.0,      0.0)
 	total-time 					 = 30000
 	bunch-time-step				 = 1.6
-	bunch-time-start			 = 0.0
 	mesh-truncation-order		 = 2
 	space-charge				 = false
 	solver						 = NSFD

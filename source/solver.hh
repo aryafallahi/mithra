@@ -901,7 +901,7 @@ namespace Darius
      * Update the fields for one time-step
      ****************************************************************************************************/
 
-    void bunchUpdate(Double nStep)
+    void bunchUpdate()
     {
       /* First define a parameter for the processor number.						*/
       std::list<Charge>::iterator	iter;

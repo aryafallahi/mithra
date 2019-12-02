@@ -27,7 +27,9 @@ Among them, I acknwledge the discussions with Prof. Alireza Yahaghi and support 
 %
 The collaboration with Dr. PD. Andreas Adelmann and his group was also very fruitful in further enhancement of the tool.
 %
-Particularly, the work of Arnau Alb\'{a} in debugging the code, checking all the implemented algorithms and reviewing the software manual is highly acknowledged. 
+Particularly, the work of Arnau Alb\'{a} in debugging the code, checking all the implemented algorithms and reviewing the software manual is highly acknowledged.
+%
+Eventually, my sincere gratitude to Prof. Niels Kuster for his support by providing a wonderful working environment at IT'IS foundation that was a critical factor in the latest development of MITHRA.
 
 After the software MITHRA was fully developed, I thought it might be of limited usage for the community.
 %
@@ -57,6 +59,8 @@ A list of new features and applied changes in version 2.0 released with this man
 	\setlength{\parskip}{0pt}
 	\setlength{\itemsep}{0pt plus 1pt}
 	\item In the new version, user can specify the field update algorithm to be based on non-standard finite-difference or a simple finite-difference by setting the new parameter {\tt \small \em solver} in the {\tt \small \em MESH} group.
+	%
+	\item In the several years of using this code, I never saw a case where bunches should be initialized in the middle of a simulation. Therefore, this option is removed from the code. This means that the parameter {\tt \small \em bunch-time-start} is no more accepted in the job-file.
 	%
 	\item A new group in the job file is added which is named as external-field. Through this group, fields of other devices than the undulator will be added to the simulation. Currently, addition of external electromagnetic waves to the interaction is implemented.
 	%

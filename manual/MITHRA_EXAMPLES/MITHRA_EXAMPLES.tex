@@ -10,6 +10,8 @@ For example, the computation time, numerical stability and numerical convergence
 The software developers aim to update this chapter with the most recent examples where MITHRA is used for the FEL simulation.
 %
 The job files needed by the MITHRA code for the examples provided in this chapter are all available in the github repository under the link \href{https://github.com/aryafallahi/mithra}{https://github.com/aryafallahi/mithra}.
+%
+Additionally, in the appendix \ref{job_files} of this manual, some of the main files are also presented for an interested reader. 
 
 \section{Example 1: Infrared FEL}
 
@@ -50,9 +52,9 @@ For the same purpose, the transverse energy spread is considered to be zero and 
 %
 In this first example, saturation of the FEL gain is obtained after a small number of microbunches compared to a typical x-ray FEL, which leads to a short simulation time.
 %
-As a results, we use this problem to assess the simulation results, verify the convergence and reliability of the algorithm, and finally compare the output with well-established softwares in the community.
+As a result, we use this problem to assess the simulation results, verify the convergence and reliability of the algorithm, and finally compare the output with well-established softwares in the community.
 
-To simulate the considered FEL configuration, the following job file is written and given to the software to analyze the interaction and produce the results shown in Fig.\,\ref{power-example1} \footnote{It should be emphasized here that Genesis and MITHRA start the simulation of FEL at different instances. The former considers bunch within the undulator at the start of the simulation, whereas the latter starts the simulation when the bunch is outside the undulator. In the plots presented in this manual, the curves are shifted to have similar gain regimes thereby achieving a valid comparison between the results.}.
+To simulate the considered FEL configuration, a job file is written and given to the software to analyze the interaction and produce the results shown in Fig.\,\ref{power-example1} \footnote{It should be emphasized here that Genesis and MITHRA start the simulation of FEL at different instances. The former considers bunch within the undulator at the start of the simulation, whereas the latter starts the simulation when the bunch is outside the undulator. In the plots presented in this manual, the curves are shifted to have similar gain regimes thereby achieving a valid comparison between the results.}.
 %
 As observed in the mesh definition, the transverse size of the computational domain is almost 10 times larger than the bunch transverse size.
 %
@@ -62,86 +64,11 @@ This needs to be considered due to the failure of absorbing boundary conditions 
 %
 During the simulation, the code adds tapering sections to both bunch and undulator to avoid abrupt transitions which produce coherent scattering emission (CSE).
 %
-To consider such the additional tepreing sections, the undulator begin is initialized at least ten radiation wavelengths apart from the bunch head to reduce the CSE.
+To consider the additional tapering sections, the undulator begin is initialized at least ten radiation wavelengths apart from the bunch head to reduce the CSE.
 %
 This also introduces corresponding limitations on the mesh size, meaning that the minimum distance from the bunch tail and the mesh boundary should be at least ten radiation wavelengths.
 %
 In the illustrated job file, some of the output formats are turned off which can always be activated to obtain the required data.
-%
-\begin{snugshade}
-\begin{Verbatim}[fontsize=\small, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
-MESH
-\{
-	length-scale					= MICROMETER
-	time-scale						= PICOSECOND
-	mesh-lengths					= ( 3200,  3200.0,    280.0)
-	mesh-resolution					= ( 50.0,    50.0,      0.1)
-	mesh-center						= ( 0.0,      0.0,      0.0)
-	total-time						= 30000
-	bunch-time-step					= 1.6
-	bunch-time-start				= 0.0
-	mesh-truncation-order			= 2
-	space-charge					= false
-	solver							= NSFD
-\}
-
-BUNCH
-\{
-	bunch-initialization
-	\{
-		type						= ellipsoid
-		distribution				= uniform
-		charge						= 1.846e8
-		number-of-particles			= 131072
-		gamma						= 100.41
-		direction					= (    0.0,     0.0,       1.0)
-		position					= (    0.0,     0.0,       0.0)
-		sigma-position				= (  260.0,   260.0,     50.25)
-		sigma-momentum				= ( 1.0e-8,  1.0e-8, 100.41e-4)
-		transverse-truncation		= 1040.0
-		longitudinal-truncation		= 90.0
-		bunching-factor				= 0.01
-	\}
-\}
-
-FIELD
-\{
-	field-sampling
-	\{
-		sample						= true
-		type						= at-point
-		field						= Ex
-		field						= Ey
-		field						= Ez
-		directory					= ./
-		base-name					= field-sampling/field
-		rhythm						= 3.2
-		position					= (0.0, 0.0, 110.0)
-	\}
-\}
-
-UNDULATOR
-\{
-	undulator-parameter				= 1.417
-	period							= 3.0e4
-	length							= 300
-	polarization-angle				= 0.0
-\}
-
-FEL-OUTPUT
-\{
-	radiation-power
-	\{
-		sample						= true
-		type						= at-point
-		directory					= ./
-		base-name					= power-sampling/power
-		plane-position				= 110.0
-		normalized-frequency		= 1.00
-	\}
-\}
-\end{Verbatim}
-\end{snugshade}
 
 \subsection{Simulation Results}
 
@@ -187,19 +114,13 @@ The origin of such a discrepancy is described as follows:
 %
 As explained in chapter \ref{chapter_introduction}, Genesis 1.3 and all the existing softwares for FEL simulation neglect the backward radiation of the electrons.
 %
-Such an approximation is motivated by the inherent interest in forward radiation in the FEL process.
+Such an approximation is motivated by the inherent interest in forward radiation throughout the FEL process.
 %
-However, the backward radiation although is seldom used due to its long wavelength, it influences the motion of electrons, the charge distribution and in turn the FEL output.
+The backward radiation although is seldom used due to its long wavelength, it influences the motion of electrons, the charge distribution and in turn the FEL output.
 %
 The influence of low-frequency backward radiation on the performance of free electron lasers has been already studied in a 1D regime \cite{maroli2000effects}.
 %
 The effect becomes stronger in the saturation regime, where the electron bunch is modulated and the FEL radiation is a strong function of the particles distribution.
-%
-To demonstrate this effect, we used a mathematical trick in MITHRA through the domain decomposition algorithm to suppress the propagation of backward radiation.
-%
-The results of such an analysis is also shown in Fig.\,\ref{power-example1}b, which shows a relatively better agreement with time domain simulation results returned by Genesis 1.3.
-%
-The still existing discrepancy is attributed to the different formulations of FDTD and TDA algorithms as well as the introduced tapers in bunch current and undulator fields.
 %
 \begin{figure}
 \centering
@@ -207,21 +128,13 @@ $\begin{array}{cc}
 \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig1/Fig1a.pdf} & \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig1/Fig1b.pdf} \\
 (a) & (b)
 \end{array}$
-\caption{(a) The transverse field $E_y$ at 110\,$\mu$m distance from the bunch center and (b) the total radiated power calculated at 110\,$\mu$m distance from the bunch center in terms of the traveled undulator length.}
+\caption{(a) The transverse field $E_y$ at 110\,{\textmu}m distance from the bunch center and (b) the total radiated power calculated at 110\,{\textmu}m distance from the bunch center in terms of the traveled undulator length.}
 \label{power-example1}
 \end{figure}
 
-There exists a discrepancy between MITHRA and Genesis 1.3 results at the beginning of the undulator.
-%
-The reason for this discrepancy in the initial radiation is that MITHRA initializes the bunch outside the undulator.
-%
-After passing through the fringing fields of the undulator, CSE happens which causes MITHRA to show the beginning of radiation from a value different from zero, whereas in Genesis 1.3 and in many of the typical FEL codes radiation starts from zero.
-%
-We preferred such an operation basis in MITHRA to consider for the CSE effect in real FEL simulations.
-%
 Furthermore, in Fig.\,\ref{power-example1}b, we compare the results obtained using the NSFD implemented in MITHRA and standard FD scheme.
 %
-As observed, formulation based on FD predicts higher radiation power compared to NSFD.
+As observed, formulation based on FD predicts slightly higher radiation power compared to NSFD.
 %
 This effect happens due to the smaller phase velocity of light when wave propagation follows dispersion equation (\ref{numericalDispersionCD}).
 %
@@ -238,7 +151,7 @@ The emergence of lasing radiation at the end of the undulator motion is clearly 
 \begin{figure}
 \centering
 \includegraphics[width=7.0in]{./MITHRA_EXAMPLES/Fig2/Fig2.pdf}
-\caption{(a) Snapshots of the radiated field profile taken at $x=0$ , (b) snapshots of the beam power at $z=60\,\mu m$ plane, and (c) the bunch profile viewed from the $x$ axis.}
+\caption{(a) Snapshots of the radiated field profile taken at $x=0$ , (b) snapshots of the beam power at $z=60$\,{\textmu}m plane, and (c) the bunch profile viewed from the $x$ axis.}
 \label{profile-example1}
 \end{figure}
 %
@@ -319,7 +232,7 @@ $\begin{array}{cc}
 \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig4/Fig4a.pdf} & \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig4/Fig4b.pdf} \\
 (a) & (b)
 \end{array}$
-\caption{The total radiated power calculated at 110\,$\mu$m distance from the bunch center in terms of the traveled undulator length (a) with and without space-charge consideration and (b) various lengths of the bunch with space-charge assumption.}
+\caption{The total radiated power calculated at 110\,{\textmu}m distance from the bunch center in terms of the traveled undulator length (a) with and without space-charge consideration and (b) various lengths of the bunch with space-charge assumption.}
 \label{spaceChargeEffect}
 \end{figure}
 
@@ -382,7 +295,7 @@ Seed power & 10\,kW \\ \hline
 \end{tabular}
 \end{table}
 %
-As the second example, we consider a seeded FEL in the UV regime to verify the implemented features for simulating a seeded FEL.
+As the second example, we consider a seeded FEL in the UV regime to verify the implemented features for simulating a seeded mechanism.
 %
 The parameters of the considered case are taken from \cite{andriyash2015spectral}, which are tabulated in table \ref{example2}.
 %
@@ -390,100 +303,15 @@ The bunch distribution is again assumed to be uniform with a long current profil
 %
 For the same reason, the seed pulse length is considered to be infinitely long, i.e. a continuous wave pulse.
 %
-The transverse energy spread is calculated for a bunch with normalized transverse emittance equal to 1\,mm\,mrad.
+The transverse energy spread is calculated for a bunch with normalized transverse emittance equal to 1\,mm-mrad.
 %
-Because of the very long bunch compared to the previous example, the number of required micro-particles to obtain convergent results is 8 times larger.
+Because of the very long bunch compared to the previous example, the number of required micro-particles to obtain convergent results is around 40 times larger.
 %
 Furthermore, the stronger undulator parameter dictates a smaller time step for the simulation of bunch dynamics.
 %
 Note that MITHRA, takes the bunch step value as an initial guess, it automatically adjusts the value based on the calculated time step for mesh update.
 %
-To simulate the considered FEL configuration, the following job file is written and given to the software to analyze the interaction.
-%
-\begin{snugshade}
-\begin{Verbatim}[fontsize=\small, tabsize = 4]
-MESH
-{
-  length-scale                     = MICROMETER
-  time-scale                       = PICOSECOND
-  mesh-lengths                     = ( 1600.0, 1600.0, 165.0)
-  mesh-resolution                  = ( 10.0,   10.0,   0.01 )
-  mesh-center                      = ( 0.0,    0.0,    0.0  )
-  total-time                       = 50000
-  bunch-time-step                  = 0.8
-  bunch-time-start                 = 0.0
-  mesh-truncation-order            = 2
-  space-charge                     = true
-}
-
-BUNCH
-{
-  bunch-initialization
-  {
-    type                           = ellipsoid
-    distribution                   = uniform
-    charge                         = 3.4332e8
-    number-of-particles            = 1048576
-    gamma                          = 391.36
-    direction                      = ( 0.0,  0.0,  1.0 )
-    position                       = ( 0.0,  0.0,  0.0 )
-    sigma-position                 = ( 95.3, 95.3, 75.0)
-    sigma-momentum                 = ( 0.0105, 0.0105, 391.36e-4)
-    transverse-truncation          = 400.0
-    longitudinal-truncation        = 78.0
-    bunching-factor                = 0.0
-  }
-
-  bunch-profile
-  {
-    sample                         = true
-    directory                      = ./
-    base-name                      = bunch-profile/bunch
-    time                           = 40000
-  }
-}
-
-FIELD
-{
-  field-initialization
-  {
-    type                           = gaussian-beam
-    position                       = ( 0.0, 0.0, 700080)
-    direction                      = ( 0.0, 0.0, 1.0)
-    polarization                   = ( 0.0, 1.0, 0.0)
-    rayleigh-radius-parallel       = 183.74
-    rayleigh-radius-perpendicular  = 183.74
-    strength-parameter             = 9.857e-7
-    signal-type                    = gaussian
-    offset                         = 700005.0
-    variance                       = 1e12
-    wavelength                     = 0.265187
-    CEP                            = 0.0
-  }
-}
-
-UNDULATOR
-{
-  undulator-parameter              = 1.95
-  period                           = 2.8e4
-  length                           = 535
-  polarization-angle               = 0.0
-}
-
-FEL-OUTPUT
-{
-  radiation-power
-  {
-    sample                         = true
-    type                           = at-point
-    directory                      = ./
-    base-name                      = power-sampling/power
-    distance-from-bunch            = 80.0
-    normalized-frequency           = 1.00
-  }
-}
-\end{Verbatim}
-\end{snugshade}
+To simulate the considered FEL configuration, the job file presented in \ref{job_file_2} is written and given to the software to analyze the interaction.
 
 \subsection{Simulation Results}
 

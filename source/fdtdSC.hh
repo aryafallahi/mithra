@@ -200,7 +200,7 @@ namespace Darius
      * Update the currents at cell points for the filed update.
      ****************************************************************************************************/
 
-    void currentUpdate(Double nStep)
+    void currentUpdate()
     {
       FieldVector<Double>*	        jn   = &jn_[0];
       Double*			        rn   = &rn_[0];

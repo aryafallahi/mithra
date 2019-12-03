@@ -95,7 +95,7 @@ namespace Darius
 	  /* For the sake of having correct charge conservation in the implementation of PIC model, we
 	   * need to first update the charge motion with having the initial position saved in the memory.
 	   * Then, the current and charge update should all happen using the very first and the very last
-	   * charge positions.										*/
+	   * charge positions. THIS IS VERY IMPORTANT AND SHOULD NOT BE CHANGED IN THE FUTURE.		*/
 
 	  /* Update the position and velocity parameters.						*/
 	  for (iter = iterQB_; iter != iterQE_; iter++)

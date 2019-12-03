@@ -1,0 +1,174 @@
+\begin{appendices}
+\chapter{Job files}
+\label{job_files}
+
+\section{Example 1: Infrared FEL}
+\label{job_file_1}
+
+\begin{snugshade}
+\begin{Verbatim}[fontsize=\footnotesize, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
+MESH
+\{
+	length-scale					= MICROMETER
+	time-scale						= PICOSECOND
+	mesh-lengths					= ( 3200,  3200.0,    280.0)
+	mesh-resolution					= ( 50.0,    50.0,      0.1)
+	mesh-center						= ( 0.0,      0.0,      0.0)
+	total-time						= 30000
+	bunch-time-step					= 1.6
+	mesh-truncation-order			= 2
+	space-charge					= false
+	solver							= NSFD
+\}
+	
+BUNCH
+\{
+	bunch-initialization
+	\{
+		type						= ellipsoid
+		distribution				= uniform
+		charge						= 1.846e8
+		number-of-particles			= 131072
+		gamma						= 100.41
+		direction					= (    0.0,     0.0,       1.0)
+		position					= (    0.0,     0.0,       0.0)
+		sigma-position				= (  260.0,   260.0,     50.25)
+		sigma-momentum				= ( 1.0e-8,  1.0e-8, 100.41e-4)
+		transverse-truncation		= 1040.0
+		longitudinal-truncation		= 90.0
+		bunching-factor				= 0.01
+	\}
+\}
+	
+FIELD
+\{
+	field-sampling
+	\{
+		sample						= true
+		type						= at-point
+		field						= Ex
+		field						= Ey
+		field						= Ez
+		directory					= ./
+		base-name					= field-sampling/field
+		rhythm						= 3.2
+		position					= (0.0, 0.0, 110.0)
+	\}
+\}
+	
+UNDULATOR
+\{
+	undulator-parameter				= 1.417
+	period							= 3.0e4
+	length							= 300
+	polarization-angle				= 0.0
+\}
+	
+FEL-OUTPUT
+\{
+	radiation-power
+	\{
+		sample						= true
+		type						= at-point
+		directory					= ./
+		base-name					= power-sampling/power
+		plane-position				= 110.0
+		normalized-frequency		= 1.00
+	\}
+\}
+\end{Verbatim}
+\end{snugshade}
+
+\section{Example 2: Seeded UV FEL}
+\label{job_file_2}
+
+\begin{snugshade}
+\begin{Verbatim}[fontsize=\footnotesize, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
+MESH
+\{
+	length-scale					= MICROMETER
+	time-scale						= PICOSECOND
+	mesh-lengths 					= ( 2500.0, 2500.0, 165.0  )
+	mesh-resolution 				= (   30.0,   30.0,   0.02 )
+	mesh-center 					= (    0.0,    0.0,   0.0  )
+	total-time 						= 50000
+	bunch-time-step 				= 1.6
+	mesh-truncation-order 			= 2
+ 	space-charge 					= false
+	solver							= NSFD
+\}
+
+BUNCH
+\{
+	bunch-initialization
+	\{
+		type						= ellipsoid
+		distribution				= uniform
+		charge						= 3.4332e8
+		number-of-particles			= 4194304
+		gamma						= 391.36
+		direction					= ( 0.0,  0.0,  1.0 )
+		position					= ( 0.0,  0.0,  0.0 )
+		sigma-position				= ( 95.3, 95.3, 75.0)
+		sigma-momentum				= ( 0.0105, 0.0105, 391.36e-4)
+		transverse-truncation		= 400.0
+		longitudinal-truncation		= 78.0
+		bunching-factor				= 0.0
+	\}
+
+	bunch-visualization
+	\{
+		sample						= true
+		directory					= /cluster/scratch/afallahi/
+		base-name					= bunch-visualization-seeded/bunch
+		rhythm						= 500
+	\}
+\}
+
+FIELD
+\{
+	field-initialization
+	\{
+		type						= gaussian-beam
+		position					= ( 0.0, 0.0, 700000)
+		direction					= ( 0.0, 0.0, 1.0)
+		polarization				= ( 0.0, 1.0, 0.0)
+		radius-parallel				= 183.74
+		radius-perpendicular		= 183.74
+		strength-parameter			= 9.857e-7
+		signal-type					= gaussian
+		offset						= 700000.0 #not really needed
+		variance					= 1.0e12
+		wavelength					= 0.265187
+		CEP							= 0.0
+	\}
+\}
+
+UNDULATOR
+\{
+	static-undulator
+	\{
+		undulator-parameter			= 1.95
+		period						= 2.8e4
+		length						= 535
+		polarization-angle			= 0.0
+		offset						= 0.0
+	\}
+\}
+
+FEL-OUTPUT
+\{
+	radiation-power
+	\{
+		sample						= true
+		type						= at-point
+		directory					= ./
+		base-name					= power-sampling/power
+		plane-position				= 78.0
+		normalized-frequency		= 1.00
+	\}
+\}
+\end{Verbatim}
+\end{snugshade}
+
+\end{appendices}

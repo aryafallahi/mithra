@@ -37,9 +37,6 @@ namespace Darius
       std::vector<Double>*			ft;
       std::list<Charge>::iterator 		iter;
 
-      timeval                                   t0, t1, ti, tf;
-      Double                                    t2 = 0.0, t3 = 0.0, t4 = 0.0, t5 = 0.0;
-
       /* Transfer the whole quantities to the electron rest frame.					*/
       lorentzBoost();
 
@@ -59,25 +56,19 @@ namespace Darius
       printmessage(std::string(__FILE__), __LINE__, std::string("-> Run the time domain simulation ...") );
       while (time_ < mesh_.totalTime_)
 	{
-	  gettimeofday(&t0, NULL);
-	  gettimeofday(&ti, NULL);
 
 	  /* Update the fields for one time step using the FDTD algorithm				*/
 	  fieldUpdate();
 
-	  gettimeofday(&t1, NULL);
-	  t2  = ( t1.tv_usec - t0.tv_usec ) / 1.0e6;
-	  t2 += ( t1.tv_sec  - t0.tv_sec );
-
 	  /* If sampling of the field is enabled and the rhythm for sampling is achieved. Sample the
 	   * field at the given position and save them into the file.					*/
-	  if (seed_.sampling_ && fmod(time_, seed_.samplingRhythm_) < mesh_.timeStep_ && time_ > 0.0 ) fieldSample();
+	  if ( seed_.sampling_ && fmod(time_, seed_.samplingRhythm_) < mesh_.timeStep_ && time_ > 0.0 ) fieldSample();
 
 	  /* If visualization of the field is enabled and the rhythm for visualization is achieved,
 	   * visualize the fields and save the vtk data in the given file name.				*/
 	  for (unsigned int i = 0; i < seed_.vtk_.size(); i++)
 	    {
-	      if (seed_.vtk_[i].sample_ && fmod(time_, seed_.vtk_[i].rhythm_) < mesh_.timeStep_ && time_ > 0.0 )
+	      if ( seed_.vtk_[i].sample_ && fmod(time_, seed_.vtk_[i].rhythm_) < mesh_.timeStep_ && time_ > 0.0 )
 		{
 		  if 		( seed_.vtk_[i].type_ == ALLDOMAIN ) fieldVisualizeAllDomain(i);
 		  else if 	( seed_.vtk_[i].type_ == INPLANE   ) fieldVisualizeInPlane(i);
@@ -103,8 +94,6 @@ namespace Darius
 	      initializeBunch();
 	      timeBunch_ = time_;
 	    }
-
-	  gettimeofday(&t0, NULL);
 
 	  /* If the bunch is initialized, do the bunch calculations.					*/
 	  if (bunchInitialized_)
@@ -155,13 +144,6 @@ namespace Darius
 		}
 	    }
 
-	  gettimeofday(&t1, NULL);
-	  t3  = ( t1.tv_usec - t0.tv_usec ) / 1.0e6;
-	  t3 += ( t1.tv_sec  - t0.tv_sec );
-
-	  /* Extract the FEL parameters according to the given data.					*/
-	  gettimeofday(&t0, NULL);
-
 	  /* If radiation power of the FEL output is enabled and the rhythm for sampling is achieved.
 	   * Sample the radiation power at the given position and save them into the file.		*/
 	  if (time_ > 0.0 )	        radiationPower();
@@ -169,10 +151,6 @@ namespace Darius
 	  /* If radiation energy of the FEL output is enabled and the rhythm for sampling is achieved.
 	   * Sample the radiation energy at the given position and save them into the file.		*/
 	  if (time_ > 0.0 )		radiationEnergySample();
-
-	  gettimeofday(&t1, NULL);
-	  t4  = ( t1.tv_usec - t0.tv_usec ) / 1.0e6;
-	  t4 += ( t1.tv_sec  - t0.tv_sec );
 
 	  /* Shift the computed fields and the time points for the fields.				*/
 	  at    = anm1_;
@@ -189,19 +167,6 @@ namespace Darius
 	  time_   += mesh_.timeStep_;
 	  timep1_ += mesh_.timeStep_;
 	  ++nTime_;
-
-	  gettimeofday(&tf, NULL);
-	  t5  = ( tf.tv_usec - ti.tv_usec ) / 1.0e6;
-	  t5 += ( tf.tv_sec  - ti.tv_sec );
-
-	  if ( rank_ == 0 )
-	    {
-	      std::cout << "time number = " << nTime_ << "\t"
-		  << "total calculation = " << t5 << " s" << "\t"
-		  << "field calculation = " << t2 << " s" << "\t"
-		  << "bunch calculation = " << t3 << " s" << "\t"
-		  << "radiation calculation = " << t4 << " s" << std::endl;
-	    }
 
 	  gettimeofday(&simulationEnd, NULL);
 	  deltaTime  = ( simulationEnd.tv_usec - simulationStart.tv_usec ) / 1.0e6;
@@ -257,11 +222,11 @@ namespace Darius
 
 	  /* Save the flag detecting that the particle is in the domain of the processor.               */
 	  bp = ( uc_.rp[0] < xmax_ - uc_.dx && uc_.rp[0] > xmin_ + uc_.dx &&
-	      uc_.rp[1] < ymax_ - uc_.dy && uc_.rp[1] > ymin_ + uc_.dy &&
-	      uc_.rp[2] < zp_[1]         && uc_.rp[2] >= zp_[0] );
+	         uc_.rp[1] < ymax_ - uc_.dy && uc_.rp[1] > ymin_ + uc_.dy &&
+	         uc_.rp[2] < zp_[1]         && uc_.rp[2] >= zp_[0] );
 	  bm = ( uc_.rm[0] < xmax_ - uc_.dx && uc_.rm[0] > xmin_ + uc_.dx &&
-	      uc_.rm[1] < ymax_ - uc_.dy && uc_.rm[1] > ymin_ + uc_.dy &&
-	      uc_.rm[2] < zp_[1]         && uc_.rm[2] >= zp_[0] );
+	         uc_.rm[1] < ymax_ - uc_.dy && uc_.rm[1] > ymin_ + uc_.dy &&
+	         uc_.rm[2] < zp_[1]         && uc_.rm[2] >= zp_[0] );
 
 	  /* Continue the loop if none of the above conditions are met.                                 */
 	  if ( ! (bp || bm) ) continue;

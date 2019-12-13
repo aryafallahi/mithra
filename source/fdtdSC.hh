@@ -56,7 +56,10 @@ namespace Darius
       printmessage(std::string(__FILE__), __LINE__, std::string("-> Run the time domain simulation ...") );
       while (time_ < mesh_.totalTime_)
 	{
+<<<<<<< HEAD
 
+=======
+>>>>>>> dc0eea3d83f08a604825a11a9ae6ae3fb2721833
 	  /* Update the fields for one time step using the FDTD algorithm				*/
 	  fieldUpdate();
 
@@ -87,66 +90,63 @@ namespace Darius
 		fieldProfile();
 	    }
 
-	  /* If the initialization time of the bunch is achieved, initialize the bunch in the computational
-	   * domain.											*/
-	  if ( !(bunchInitialized_) && ( fabs( time_ - bunch_.timeStart_ ) < mesh_.timeStep_ ) )
-	    {
-	      initializeBunch();
-	      timeBunch_ = time_;
-	    }
+	  /* Reset the charge and current values to zero.						*/
+	  currentReset();
 
+<<<<<<< HEAD
 	  /* If the bunch is initialized, do the bunch calculations.					*/
 	  if (bunchInitialized_)
+=======
+	  /* For the sake of having correct charge conservation in the implementation of PIC model, we
+	   * need to first update the charge motion with having the initial position saved in the memory.
+	   * Then, the current and charge update should all happen using the very first and the very last
+	   * charge positions. THIS IS VERY IMPORTANT AND SHOULD NOT BE CHANGED IN THE FUTURE.		*/
+
+	  /* Update the position and velocity parameters.						*/
+	  for (iter = iterQB_; iter != iterQE_; iter++)
+>>>>>>> dc0eea3d83f08a604825a11a9ae6ae3fb2721833
 	    {
-	      /* Reset the charge and current values to zero.						*/
-	      currentReset();
+	      iter->rnm  = iter->rnp;
+	      iter->gbnm = iter->gbnp;
+	    }
 
-	      /* Update the bunch till the time of the bunch properties reaches the time instant of the
-	       * field.											*/
-	      for (t = 0.0; t < nUpdateBunch_; t += 1.0)
-		{
+	  /* Update the bunch till the time of the bunch properties reaches the time instant of the
+	   * field.											*/
+	  for (t = 0.0; t < nUpdateBunch_; t += 1.0)
+	    {
+	      bunchUpdate();
+	      timeBunch_ += bunch_.timeStep_;
+	      ++nTimeBunch_;
+	    }
 
-		  /* Update the position and velocity parameters.					*/
-		  for (iter = iterQB_; iter != iterQE_; iter++)
-		    {
-		      iter->rnm  = iter->rnp;
-		      iter->gbnm = iter->gbnp;
-		    }
+	  /* Update the values of the current.								*/
+	  currentUpdate();
 
-		  bunchUpdate(t);
-		  timeBunch_ += bunch_.timeStep_;
-		  ++nTimeBunch_;
+	  /* Communicate the current among processors.							*/
+	  currentCommunicate();
 
-		  /* Update the values of the current.							*/
-		  currentUpdate();
-		}
+	  /* If sampling of the bunch is enabled and the rhythm for sampling is achieved. Sample the
+	   * bunch and save them into the file.								*/
+	  if ( bunch_.sampling_ && fmod(time_, bunch_.rhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchSample();
 
-	      /* Communicate the current among processors.						*/
-	      currentCommunicate();
+	  /* If visualization of the bunch is enabled and the rhythm for visualization is achieved,
+	   * visualize the bunch and save the vtk data in the given file name.				*/
+	  if ( bunch_.bunchVTK_ && fmod(time_, bunch_.bunchVTKRhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchVisualize();
 
-	      /* If sampling of the bunch is enabled and the rhythm for sampling is achieved. Sample the
-	       * bunch and save them into the file.							*/
-	      if ( bunch_.sampling_ && fmod(time_, bunch_.rhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchSample();
-
-	      /* If visualization of the bunch is enabled and the rhythm for visualization is achieved,
-	       * visualize the bunch and save the vtk data in the given file name.			*/
-	      if ( bunch_.bunchVTK_ && fmod(time_, bunch_.bunchVTKRhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchVisualize();
-
-	      /* If profiling of the bunch is enabled and the time for profiling is achieved, write the
-	       * bunch profile and save the data in the given file name.				*/
-	      if (bunch_.bunchProfile_ > 0)
-		{
-		  for (unsigned int i = 0; i < (bunch_.bunchProfileTime_).size(); i++)
-		    if ( time_ - bunch_.bunchProfileTime_[i] < mesh_.timeStep_ && time_ > bunch_.bunchProfileTime_[i] )
-		      bunchProfile();
-		  if ( fmod(time_, bunch_.bunchProfileRhythm_) < mesh_.timeStep_ && time_ > 0.0 && bunch_.bunchProfileRhythm_ != 0.0 )
-		    bunchProfile();
-		}
+	  /* If profiling of the bunch is enabled and the time for profiling is achieved, write the bunch
+	   * profile and save the data in the given file name.						*/
+	  if (bunch_.bunchProfile_ > 0)
+	    {
+	      for (unsigned int i = 0; i < (bunch_.bunchProfileTime_).size(); i++)
+		if ( time_ - bunch_.bunchProfileTime_[i] < mesh_.timeStep_ && time_ > bunch_.bunchProfileTime_[i] )
+		  bunchProfile();
+	      if ( fmod(time_, bunch_.bunchProfileRhythm_) < mesh_.timeStep_ && time_ > 0.0 && bunch_.bunchProfileRhythm_ != 0.0 )
+		bunchProfile();
 	    }
 
 	  /* If radiation power of the FEL output is enabled and the rhythm for sampling is achieved.
 	   * Sample the radiation power at the given position and save them into the file.		*/
-	  if (time_ > 0.0 )	        radiationPower();
+	  powerSample(); powerVisualize();
 
 	  /* If radiation energy of the FEL output is enabled and the rhythm for sampling is achieved.
 	   * Sample the radiation energy at the given position and save them into the file.		*/
@@ -1167,39 +1167,39 @@ namespace Darius
       /* Communicate the calculated fields throughout the processors.					*/
       if (rank_ != size_ - 1)
 	{
-	  MPI_Send(uf_.anp1+3*(np_-2)*N1N0_, 				3*N1N0_,MPI_TYPE,rank_+1,msgtag1,MPI_COMM_WORLD);
+	  MPI_Send(uf_.anp1+3*(np_-2)*N1N0_, 	3*N1N0_,MPI_TYPE,rank_+1,msgtag1,MPI_COMM_WORLD);
 	  MPI_Send(uf_.fnp1+(np_-2)*N1N0_,	  N1N0_,MPI_TYPE,rank_+1,msgtag2,MPI_COMM_WORLD);
 	}
 
       if (rank_ != 0)
 	{
-	  MPI_Recv(uf_.anp1,						3*N1N0_,MPI_TYPE,rank_-1,msgtag1,MPI_COMM_WORLD,&status);
+	  MPI_Recv(uf_.anp1,			3*N1N0_,MPI_TYPE,rank_-1,msgtag1,MPI_COMM_WORLD,&status);
 	  MPI_Recv(uf_.fnp1,		  	  N1N0_,MPI_TYPE,rank_-1,msgtag2,MPI_COMM_WORLD,&status);
 	}
 
       if (rank_ != 0)
 	{
-	  MPI_Send(uf_.anp1+3*N1N0_,	 				3*N1N0_,MPI_TYPE,rank_-1,msgtag3,MPI_COMM_WORLD);
+	  MPI_Send(uf_.anp1+3*N1N0_,	 	3*N1N0_,MPI_TYPE,rank_-1,msgtag3,MPI_COMM_WORLD);
 	  MPI_Send(uf_.fnp1+N1N0_,		  N1N0_,MPI_TYPE,rank_-1,msgtag4,MPI_COMM_WORLD);
 	}
 
       if (rank_ != size_ - 1)
 	{
-	  MPI_Recv(uf_.anp1+3*(np_-1)*N1N0_,				3*N1N0_,MPI_TYPE,rank_+1,msgtag3,MPI_COMM_WORLD,&status);
+	  MPI_Recv(uf_.anp1+3*(np_-1)*N1N0_,	3*N1N0_,MPI_TYPE,rank_+1,msgtag3,MPI_COMM_WORLD,&status);
 	  MPI_Recv(uf_.fnp1+(np_-1)*N1N0_,	  N1N0_,MPI_TYPE,rank_+1,msgtag4,MPI_COMM_WORLD,&status);
 	}
 
-      /* Now that A and phi quantities are updated, calculate E and B at each grid point for later
+      /* Now that A and phi quantities are updated, calculate E and B at boundary grid points for later
        * acceleration and power measurement.								*/
       for (i = 1; i < uf_.N0m1; i++)
 	for (j = 1; j < uf_.N1m1; j++)
 	  {
 	    m = N1N0_ + N1_ * i + j;
 
-	    /* Evaluate the field at this pixel.                                                    	*/
+	    /* Evaluate the field at this pixel.                                                        */
 	    fieldEvaluate(m);
 
-	    /* Set the boolean flag for this pixel and the one before it to true.                   	*/
+	    /* Set the boolean flag for this pixel and the one before it to true.                       */
 	    pic_[m-N1N0_] = true;
 
 	    /* For the left boundary (z=zmin) just set the fields equal to the next z-plane.		*/
@@ -1211,10 +1211,10 @@ namespace Darius
 
 	    m = N1N0_ * ( np_ - 2 ) + N1_ * i + j;
 
-	    /* Evaluate the field at this pixel.                                                     	*/
+	    /* Evaluate the field at this pixel.                                                        */
 	    fieldEvaluate(m);
 
-	    /* Set the boolean flag for this pixel and the one in front of it to true.              	*/
+	    /* Set the boolean flag for this pixel and the one in front of it to true.                  */
 	    pic_[m+N1N0_] = true;
 
 	    /* For the right boundary (z=zmax) just set the fields equal to the previous z-plane.	*/
@@ -1260,22 +1260,26 @@ namespace Darius
       /* Calculate the electric field.                                                                  */
       en_[m].dv ( - uf_.dt, (*anp1_)[m] );
       en_[m].mdv( - uf_.dt, (*an_)  [m] );
+
       en_[m][0] -= ( *(uf_.fn+m+N1_  ) - *(uf_.fn+m-N1_  ) ) / uf_.dx2;
       en_[m][1] -= ( *(uf_.fn+m+1    ) - *(uf_.fn+m-1    ) ) / uf_.dy2;
       en_[m][2] -= ( *(uf_.fn+m+N1N0_) - *(uf_.fn+m-N1N0_) ) / uf_.dz2;
 
       /* Calculate the magnetic field.                                                                  */
-      bn_[m][0] = 0.5 * ( ( *(uf_.an  +3*(m+1    )+2 ) - *(uf_.an  +3*(m-1    )+2  ) ) / uf_.dy2 -
+      bn_[m][0] = 0.5 * (
+	  ( *(uf_.an  +3*(m+1    )+2 ) - *(uf_.an  +3*(m-1    )+2  ) ) / uf_.dy2 -
 	  ( *(uf_.an  +3*(m+N1N0_)+1 ) - *(uf_.an  +3*(m-N1N0_)+1  ) ) / uf_.dz2 +
 	  ( *(uf_.anp1+3*(m+1    )+2 ) - *(uf_.anp1+3*(m-1    )+2  ) ) / uf_.dy2 -
 	  ( *(uf_.anp1+3*(m+N1N0_)+1 ) - *(uf_.anp1+3*(m-N1N0_)+1  ) ) / uf_.dz2 );
 
-      bn_[m][1] = 0.5 * ( ( *(uf_.an  +3*(m+N1N0_)   ) - *(uf_.an  +3*(m-N1N0_)    ) ) / uf_.dz2 -
+      bn_[m][1] = 0.5 * (
+	  ( *(uf_.an  +3*(m+N1N0_)   ) - *(uf_.an  +3*(m-N1N0_)    ) ) / uf_.dz2 -
 	  ( *(uf_.an  +3*(m+N1_  )+2 ) - *(uf_.an  +3*(m-N1_  )+2  ) ) / uf_.dx2 +
 	  ( *(uf_.anp1+3*(m+N1N0_)   ) - *(uf_.anp1+3*(m-N1N0_)    ) ) / uf_.dz2 -
 	  ( *(uf_.anp1+3*(m+N1_  )+2 ) - *(uf_.anp1+3*(m-N1_  )+2  ) ) / uf_.dx2 );
 
-      bn_[m][2] = 0.5 * ( ( *(uf_.an  +3*(m+N1_  )+1 ) - *(uf_.an  +3*(m-N1_  )+1  ) ) / uf_.dx2 -
+      bn_[m][2] = 0.5 * (
+	  ( *(uf_.an  +3*(m+N1_  )+1 ) - *(uf_.an  +3*(m-N1_  )+1  ) ) / uf_.dx2 -
 	  ( *(uf_.an  +3*(m+1    )   ) - *(uf_.an  +3*(m-1    )    ) ) / uf_.dy2 +
 	  ( *(uf_.anp1+3*(m+N1_  )+1 ) - *(uf_.anp1+3*(m-N1_  )+1  ) ) / uf_.dx2 -
 	  ( *(uf_.anp1+3*(m+1    )   ) - *(uf_.anp1+3*(m-1    )    ) ) / uf_.dy2 );
@@ -1301,8 +1305,7 @@ namespace Darius
       if ( sf_.N > 0 )
 	{
 	  ( *(sf_.file) ).setf(std::ios::scientific);
-	  ( *(sf_.file) ).precision(15);
-	  ( *(sf_.file) ).width(40);
+	  ( *(sf_.file) ).precision(4);
 
 	  /* Write time into the first column.                                                       	*/
 	  *(sf_.file) << time_ * gamma_ << "\t";
@@ -1313,15 +1316,25 @@ namespace Darius
 	      sf_.position 	= seed_.samplingPosition_[n];
 
 	      /* Get the indices of the sampling point.							*/
-	      sf_.dxr = modf( ( sf_.position[0] - ( mesh_.meshCenter_[0] - mesh_.meshLength_[0] / 2.0 ) ) / mesh_.meshResolution_[0] , &sf_.c1);
+	      sf_.dxr = modf( ( sf_.position[0] - xmin_ ) / mesh_.meshResolution_[0] , &sf_.c1);
 	      sf_.i   = (int) sf_.c1;
-	      sf_.dyr = modf( ( sf_.position[1] - ( mesh_.meshCenter_[1] - mesh_.meshLength_[1] / 2.0 ) ) / mesh_.meshResolution_[1] , &sf_.c1);
+	      sf_.dyr = modf( ( sf_.position[1] - ymin_ ) / mesh_.meshResolution_[1] , &sf_.c1);
 	      sf_.j   = (int) sf_.c1;
-	      sf_.dzr = modf( ( sf_.position[2] - ( mesh_.meshCenter_[2] - mesh_.meshLength_[2] / 2.0 ) ) / mesh_.meshResolution_[2] , &sf_.c1);
+	      sf_.dzr = modf( ( sf_.position[2] - zmin_ ) / mesh_.meshResolution_[2] , &sf_.c1);
 	      sf_.k   = (int) sf_.c1;
 	      sf_.m   = ( sf_.k - k0_ ) * N1N0_ + sf_.i * N1_ + sf_.j;
 
-	      /* Calculate and interpolate the electric field to find the value at the bunch point.	*/
+	      /* Calculate the fields to find the values at the sampling point.				*/
+	      if (!pic_[sf_.m            ])     fieldEvaluate(sf_.m            );
+	      if (!pic_[sf_.m+N1_        ])     fieldEvaluate(sf_.m+N1_        );
+	      if (!pic_[sf_.m+1          ])     fieldEvaluate(sf_.m+1          );
+	      if (!pic_[sf_.m+N1_+1      ])     fieldEvaluate(sf_.m+N1_+1      );
+	      if (!pic_[sf_.m+N1N0_      ])     fieldEvaluate(sf_.m+N1N0_      );
+	      if (!pic_[sf_.m+N1N0_+N1_  ])     fieldEvaluate(sf_.m+N1N0_+N1_  );
+	      if (!pic_[sf_.m+N1N0_+1    ])     fieldEvaluate(sf_.m+N1N0_+1    );
+	      if (!pic_[sf_.m+N1N0_+N1_+1])     fieldEvaluate(sf_.m+N1N0_+N1_+1);
+
+	      /* Calculate and interpolate the electric field to find the value at the sampling point.	*/
 	      sf_.et.mv ((1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr), en_[sf_.m]);
 	      sf_.et.pmv(sf_.dxr         * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr), en_[sf_.m+N1_]);
 	      sf_.et.pmv((1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr), en_[sf_.m+1]);
@@ -1331,7 +1344,7 @@ namespace Darius
 	      sf_.et.pmv((1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr,         en_[sf_.m+N1N0_+1]);
 	      sf_.et.pmv(sf_.dxr         * sf_.dyr           * sf_.dzr,         en_[sf_.m+N1N0_+N1_+1]);
 
-	      /* Calculate and interpolate the magnetic field to find its value at the bunch point.	*/
+	      /* Calculate and interpolate the magnetic field to find its value at the sampling point.	*/
 	      sf_.bt.mv ((1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr), bn_[sf_.m]);
 	      sf_.bt.pmv(sf_.dxr         * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr), bn_[sf_.m+N1_]);
 	      sf_.bt.pmv((1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr), bn_[sf_.m+1]);
@@ -1359,25 +1372,23 @@ namespace Darius
 	      sf_.jt.pmv((1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr,         jn_[sf_.m+N1N0_+1]);
 	      sf_.jt.pmv(sf_.dxr         * sf_.dyr           * sf_.dzr,         jn_[sf_.m+N1N0_+N1_+1]);
 
-	      sf_.f =
-		  (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * (*fn_)[sf_.m] +
-		  sf_.dxr         * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * (*fn_)[sf_.m+N1_] +
-		  (1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr) * (*fn_)[sf_.m+1] +
-		  sf_.dxr         * sf_.dyr           * (1.0 - sf_.dzr) * (*fn_)[sf_.m+N1_+1] +
-		  (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * sf_.dzr         * (*fn_)[sf_.m+N1N0_] +
-		  sf_.dxr         * (1.0 - sf_.dyr)   * sf_.dzr         * (*fn_)[sf_.m+N1N0_+N1_] +
-		  (1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr         * (*fn_)[sf_.m+N1N0_+1] +
-		  sf_.dxr         * sf_.dyr           * sf_.dzr         * (*fn_)[sf_.m+N1N0_+N1_+1];
+	      sf_.f  =   (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * (*fn_)[sf_.m];
+	      sf_.f +=	  sf_.dxr        * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * (*fn_)[sf_.m+N1_];
+	      sf_.f +=	 (1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr) * (*fn_)[sf_.m+1];
+	      sf_.f +=	  sf_.dxr        * sf_.dyr           * (1.0 - sf_.dzr) * (*fn_)[sf_.m+N1_+1];
+	      sf_.f +=   (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * sf_.dzr         * (*fn_)[sf_.m+N1N0_];
+	      sf_.f +=	  sf_.dxr        * (1.0 - sf_.dyr)   * sf_.dzr         * (*fn_)[sf_.m+N1N0_+N1_];
+	      sf_.f +=	 (1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr         * (*fn_)[sf_.m+N1N0_+1];
+	      sf_.f +=	  sf_.dxr        * sf_.dyr           * sf_.dzr         * (*fn_)[sf_.m+N1N0_+N1_+1];
 
-	      sf_.q =
-		  (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * rn_[sf_.m] +
-		  sf_.dxr         * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * rn_[sf_.m+N1_] +
-		  (1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr) * rn_[sf_.m+1] +
-		  sf_.dxr         * sf_.dyr           * (1.0 - sf_.dzr) * rn_[sf_.m+N1_+1] +
-		  (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * sf_.dzr         * rn_[sf_.m+N1N0_] +
-		  sf_.dxr         * (1.0 - sf_.dyr)   * sf_.dzr         * rn_[sf_.m+N1N0_+N1_] +
-		  (1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr         * rn_[sf_.m+N1N0_+1] +
-		  sf_.dxr         * sf_.dyr           * sf_.dzr         * rn_[sf_.m+N1N0_+N1_+1];
+	      sf_.q  = 	 (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * rn_[sf_.m];
+	      sf_.q +=	  sf_.dxr        * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * rn_[sf_.m+N1_];
+	      sf_.q +=   (1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr) * rn_[sf_.m+1];
+	      sf_.q +=	  sf_.dxr        * sf_.dyr           * (1.0 - sf_.dzr) * rn_[sf_.m+N1_+1];
+	      sf_.q +=   (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * sf_.dzr         * rn_[sf_.m+N1N0_];
+	      sf_.q +=    sf_.dxr        * (1.0 - sf_.dyr)   * sf_.dzr         * rn_[sf_.m+N1N0_+N1_];
+	      sf_.q +=   (1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr         * rn_[sf_.m+N1N0_+1];
+	      sf_.q +=    sf_.dxr        * sf_.dyr           * sf_.dzr         * rn_[sf_.m+N1N0_+N1_+1];
 
 	      /* Write the coordinates in the next column.						*/
 	      *(sf_.file) << sf_.position[0] << "\t";
@@ -1428,23 +1439,25 @@ namespace Darius
     }
 
     /****************************************************************************************************
-     * Visualize the field as vtk files and save them to the file with given name.
+     * Visualize the field as vtk files on the whole domain and save them to the file with given name.
      ****************************************************************************************************/
 
     void fieldVisualizeAllDomain(unsigned int ivtk)
     {
-      int 			msgtag1 = 1, msgtag2 = 2, msgtag3 = 3, msgtag4 = 4;
-      MPI_Status 		status;
-      unsigned int		i, j, k, l, m;
+      unsigned int		i, j, k, l;
+      long int			m;
 
       /* The old files if existing should be deleted.                                          		*/
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
       (vf_[ivtk].file) = new std::ofstream(vf_[ivtk].fileName.c_str(),std::ios::trunc);
 
+      vf_[ivtk].file->setf(std::ios::scientific);
+      vf_[ivtk].file->precision(4);
+
       /* Calculate the field to be visualized in the vtk files.						*/
-      for ( k = ( ( rank_ == 0 ) ? 0 : 1 )  ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
-	for (j = 0; j < N1_; j++)
-	  for (i = 0; i < N0_; i++)
+      for ( k = 0; k < np_; k++ )
+	for (j = 1; j < N1_-1; j++)
+	  for (i = 1; i < N0_-1; i++)
 	    {
 	      m = k * N1_ * N0_ + i * N1_ + j;
 
@@ -1476,13 +1489,13 @@ namespace Darius
       *vf_[ivtk].file << "<StructuredGrid WholeExtent=\"0 " << N0_ - 1 << " 0 " << N1_ - 1 << " " <<
 	  k0_ << " " << k0_ + np_ - 2 + ( (rank_ == size_ - 1) ? 1 : 0 )
 	  << "\">"											<< std::endl;
-      *vf_[ivtk].file << "<Piece Extent=\"0 " << N0_-1 << " 0 " << N1_-1 << " " <<
+      *vf_[ivtk].file << "<Piece Extent=\"0 " << N0_ - 1 << " 0 " << N1_ - 1 << " " <<
 	  k0_ << " " << k0_ + np_ - 2 + ( (rank_ == size_ - 1) ? 1 : 0 )
 	  << "\">"											<< std::endl;
 
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
-      *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+      *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
       for (k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
 	for (j = 0; j < N1_; j++)
 	  for (i = 0; i < N0_; i++)
@@ -1499,7 +1512,7 @@ namespace Darius
 
       /* Insert the point data based on the computed electric field.					*/
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    		<< std::endl;
-      *vf_[ivtk].file << "<DataArray type=\"Float32\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
+      *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
 	  << std::endl;
       for ( k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
 	for (j = 0; j < N1_; j++)
@@ -1537,32 +1550,33 @@ namespace Darius
 
 	  /* Insert the coordinates of the grid for the charge cloud.                            	*/
 	  *vf_[ivtk].file << "<PPoints>"                                                          	<< std::endl;
-	  *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\" />"	<< std::endl;
+	  *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\" />"	<< std::endl;
 	  *vf_[ivtk].file << "</PPoints>"                                                             	<< std::endl;
 
 	  *vf_[ivtk].file << "<PPointData>"                                                           	<< std::endl;
-	  *vf_[ivtk].file << "<DataArray type=\"Float32\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" Name=\"field\" format=\"ascii\" />"
+	  *vf_[ivtk].file << "<DataArray type=\"Float64\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" Name=\"field\" format=\"ascii\" />"
 	      << std::endl;
 	  *vf_[ivtk].file << "</PPointData>"                                                          	<< std::endl;
 
 	  for (i = 0; i < size_; ++i)
 	    {
-	      if ( size_ > 0 )
+	      /* Evaluate the number of nodes in each processor.					*/
+	      if ( size_ > 1 )
 		{
 		  if ( i == 0 )
 		    {
-		      np = ( N2_ / ( size_ - 1 ) ) + 1;
+		      np = N2_ / size_ + 1;
 		      k0 = 0;
 		    }
 		  else if ( i == size_ - 1 )
 		    {
-		      np = N2_ - ( size_ - 1 ) * ( N2_ / ( size_ - 1 ) ) + 3;
-		      k0 = ( size_ - 1 ) * ( N2_ / ( size_ - 1 ) ) - 1;
+		      np = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 3;
+		      k0 = ( size_ - 1 ) * ( N2_ / size_ ) - 1;
 		    }
 		  else
 		    {
-		      np = ( N2_ / ( size_ - 1 ) ) + 2;
-		      k0 = i * ( N2_ / ( size_ - 1 ) ) - 1;
+		      np = N2_ / size_ + 2;
+		      k0 = i * ( N2_ / size_ ) - 1;
 		    }
 		}
 	      else
@@ -1614,13 +1628,16 @@ namespace Darius
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
       (vf_[ivtk].file) = new std::ofstream(vf_[ivtk].fileName.c_str(),std::ios::trunc);
 
+      vf_[ivtk].file->setf(std::ios::scientific);
+      vf_[ivtk].file->precision(4);
+
       /* Calculate the index of the cell at which the plane resides.					*/
       dxr = modf( ( seed_.vtk_[ivtk].position_[0] - xmin_ ) / mesh_.meshResolution_[0] , &c);
       i   = (int) c;
 
       /* Calculate the field to be visualized in the vtk files.						*/
       for ( k = 0; k < np_; k++ )
-	for (j = 0; j < N1_; j++)
+	for (j = 1; j < N1_-1; j++)
 	  {
 	    m = k * N1_ * N0_ + i * N1_ + j;
 	    n = k * N1_ + j;
@@ -1660,7 +1677,7 @@ namespace Darius
 
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
-      *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+      *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
       for (k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
 	for (j = 0; j < N1_; j++)
 	  {
@@ -1677,7 +1694,7 @@ namespace Darius
 
       /* Insert the point data based on the computed electric field.					*/
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    	<< std::endl;
-      *vf_[ivtk].file << "<DataArray type=\"Float32\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
+      *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
 	  << std::endl;
       for ( k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
 	for (j = 0; j < N1_; j++)
@@ -1714,25 +1731,25 @@ namespace Darius
 
 	  /* Insert the coordinates of the grid for the charge cloud.                            	*/
 	  *vf_[ivtk].file << "<PPoints>"                                                          	<< std::endl;
-	  *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\" />"	<< std::endl;
+	  *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\" />"	<< std::endl;
 	  *vf_[ivtk].file << "</PPoints>"                                                             	<< std::endl;
 
 	  *vf_[ivtk].file << "<PPointData>"                                                           	<< std::endl;
-	  *vf_[ivtk].file << "<DataArray type=\"Float32\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" Name=\"field\" format=\"ascii\" />"
+	  *vf_[ivtk].file << "<DataArray type=\"Float64\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" Name=\"field\" format=\"ascii\" />"
 	      << std::endl;
 	  *vf_[ivtk].file << "</PPointData>"                                                          	<< std::endl;
 
-	  for (j = 0; j < size_; ++j)
+	  for (i = 0; i < size_; ++i)
 	    {
 	      /* Evaluate the number of nodes in each processor.					*/
 	      if ( size_ > 1 )
 		{
-		  if ( j == 0 )
+		  if ( i == 0 )
 		    {
 		      np = N2_ / size_ + 1;
 		      k0 = 0;
 		    }
-		  else if ( j == size_ - 1 )
+		  else if ( i == size_ - 1 )
 		    {
 		      np = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 3;
 		      k0 = ( size_ - 1 ) * ( N2_ / size_ ) - 1;
@@ -1740,7 +1757,7 @@ namespace Darius
 		  else
 		    {
 		      np = N2_ / size_ + 2;
-		      k0 = j * ( N2_ / size_ ) - 1;
+		      k0 = i * ( N2_ / size_ ) - 1;
 		    }
 		}
 	      else
@@ -1749,9 +1766,9 @@ namespace Darius
 		  k0 = 0;
 		}
 
-	      vf_[ivtk].fileName = vf_[ivtk].name + "-p" + stringify(j) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
+	      vf_[ivtk].fileName = vf_[ivtk].name + "-p" + stringify(i) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
 	      *vf_[ivtk].file << "<Piece Extent=\"0 0 0 " << N1_-1 << " " <<
-		  k0 << " " << k0 + np - 2 + ( (j == size_ - 1) ? 1 : 0 ) << "\""
+		  k0 << " " << k0 + np - 2 + ( (i == size_ - 1) ? 1 : 0 ) << "\""
 		  << " Source=\"" << vf_[ivtk].fileName << "\" />"                       		<< std::endl;
 	    }
 	  *vf_[ivtk].file << "</PStructuredGrid>"                                                     	<< std::endl;
@@ -1763,7 +1780,7 @@ namespace Darius
     }
 
     /****************************************************************************************************
-     * Visualize the field as vtk files in a plane normal to x axis and save them to the file with the
+     * Visualize the field as vtk files in a plane normal to y axis and save them to the file with the
      * given name.
      ****************************************************************************************************/
 
@@ -1776,6 +1793,9 @@ namespace Darius
       /* The old files if existing should be deleted.                                          		*/
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
       (vf_[ivtk].file) = new std::ofstream(vf_[ivtk].fileName.c_str(),std::ios::trunc);
+
+      vf_[ivtk].file->setf(std::ios::scientific);
+      vf_[ivtk].file->precision(4);
 
       /* Calculate the index of the cell at which the plane resides.					*/
       dyr = modf( ( seed_.vtk_[ivtk].position_[1] - ymin_ ) / mesh_.meshResolution_[1] , &c);
@@ -1823,7 +1843,7 @@ namespace Darius
 
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
-      *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+      *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
       for (k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
 	for (i = 0; i < N0_; i++)
 	  {
@@ -1840,7 +1860,7 @@ namespace Darius
 
       /* Insert the point data based on the computed electric field.					*/
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    	<< std::endl;
-      *vf_[ivtk].file << "<DataArray type=\"Float32\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
+      *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
 	  << std::endl;
       for ( k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
 	for (i = 0; i < N0_; i++)
@@ -1877,11 +1897,11 @@ namespace Darius
 
 	  /* Insert the coordinates of the grid for the charge cloud.                            	*/
 	  *vf_[ivtk].file << "<PPoints>"                                                          	<< std::endl;
-	  *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\" />"	<< std::endl;
+	  *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\" />"	<< std::endl;
 	  *vf_[ivtk].file << "</PPoints>"                                                             	<< std::endl;
 
 	  *vf_[ivtk].file << "<PPointData>"                                                           	<< std::endl;
-	  *vf_[ivtk].file << "<DataArray type=\"Float32\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" Name=\"field\" format=\"ascii\" />"
+	  *vf_[ivtk].file << "<DataArray type=\"Float64\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" Name=\"field\" format=\"ascii\" />"
 	      << std::endl;
 	  *vf_[ivtk].file << "</PPointData>"                                                          	<< std::endl;
 
@@ -1940,6 +1960,9 @@ namespace Darius
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
       (vf_[ivtk].file) = new std::ofstream(vf_[ivtk].fileName.c_str(),std::ios::trunc);
 
+      vf_[ivtk].file->setf(std::ios::scientific);
+      vf_[ivtk].file->precision(4);
+
       /* Calculate the index of the cell at which the plane resides.					*/
       dzr = modf( ( seed_.vtk_[ivtk].position_[2] - zmin_ ) / mesh_.meshResolution_[2] , &c);
       k   = (int) c - k0_;
@@ -1984,7 +2007,7 @@ namespace Darius
 
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
-      *vf_[ivtk].file << "<DataArray type = \"Float32\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+      *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
       for (j = 0; j < N1_; j++)
 	for (i = 0; i < N0_; i++)
 	  {
@@ -2001,8 +2024,8 @@ namespace Darius
 
       /* Insert the point data based on the computed electric field.					*/
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    		<< std::endl;
-      *vf_[ivtk].file << "<DataArray type=\"Float32\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size()
-    	      << "\" format=\"ascii\">"									<< std::endl;
+      *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size()
+		      << "\" format=\"ascii\">"									<< std::endl;
       for (j = 0; j < N1_; j++)
 	for (i = 0; i < N0_; i++)
 	  {
@@ -2030,6 +2053,9 @@ namespace Darius
       /* Declare the iterators for the loop over the points.						*/
       pf_.fileName = seed_.profileBasename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + TXT_FILE_SUFFIX;
       pf_.file = new std::ofstream(pf_.fileName.c_str(),std::ios::trunc);
+
+      pf_.file->setf(std::ios::scientific);
+      pf_.file->precision(4);
 
       /* Perform a loop over the points of the mesh and save the field data into a text file.		*/
       for ( pf_.i = 0; pf_.i < N0_; pf_.i++ )

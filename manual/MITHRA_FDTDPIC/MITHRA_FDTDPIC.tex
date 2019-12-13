@@ -711,6 +711,27 @@ Using the relativistic velocity transformation \cite{JacksonClassical}, the tran
 %
 Equations (\ref{LorentzTransformB})-(\ref{LorentzTransformE}) provide a sufficient set of equations to perform the Lorentz boost to the bunch rest frame.
 
+After the macro-particles are initialized in the rest frame of the bunch, a small subtlety needs to be taken into account.
+%
+The initialized macro-particles will have the correct position, if and only if all of these particles move with the same momentum.
+%
+However, due to the existing energy spread, the positions of particles change with time.
+%
+The transition into bunch rest frame projects particles from different time points in the lab frame.
+%
+In MITHRA, we assume that the given bunch properties are valid at the entrance point of the undulator.
+%
+Therefore, the following shifts on the particles in moving frame should be introduced, such that the particle distribution at the undulator entrance matches with the given parameters:
+%
+\begin{align}
+\delta x &= - ( \beta_x - \bar{\beta_x} ) ( z_u - z ) / ( \bar{\beta_z} + \beta_0 ) \\
+\delta y &= - ( \beta_y - \bar{\beta_y} ) ( z_u - z ) / ( \bar{\beta_z} + \beta_0 ) \\
+\delta z &= - ( \beta_z - \bar{\beta_z} ) ( z_u - z ) / ( \bar{\beta_z} + \beta_0 ),
+\label{LorentzTransformDeltaR}
+\end{align}
+%
+where $z_u$ is the position of the undulator begin at the bunch initialization instance.
+
 \subsection{Field Initialization}
 \label{fieldInitialization}
 

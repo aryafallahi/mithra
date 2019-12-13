@@ -77,8 +77,6 @@ The mesh and update parameters of the solver are defined through the following t
 	%
 	\item {\tt \em \small bunch-time-step} is the time step for updating the macro-particles' coordinates in the PIC solver.
 	%
-	\item {\tt \em \small bunch-time-start} is the time point when the bunch of macro-particles emerges in the computational domain.
-	%
 	\item {\tt \em \small mesh-truncation-order} is the truncation order of the absorbing boundary condition in the computational domain. This parameter can be either 1 or 2, representing the first order and second order absorbing boundary condition.
 	%
 	\item {\tt \em \small space-charge} is a boolean flag determining if the space-charge effect should be considered or not. If this flag is false, the scalar potential $\phi$ is zero throughout the calculation. Otherwise, the scalar potential is calculated using the corresponding Helmholtz equation.
@@ -100,7 +98,6 @@ MESH
 	mesh-center				 	= < ( real, real, real ) >
 	total-time					= < real >
 	bunch-time-step		 		= < real >
-	bunch-time-start  			= < real >
 	mesh-truncation-order 		= < 1 | 2 >
 	space-charge  				= < true | false >
 	solver						= < NSFD | FD >
@@ -120,7 +117,6 @@ MESH
 	mesh-center					 = ( 0.0,      0.0,      0.0)
 	total-time 					 = 30000
 	bunch-time-step				 = 1.6
-	bunch-time-start			 = 0.0
 	mesh-truncation-order		 = 2
 	space-charge				 = false
 	solver						 = NSFD
@@ -361,7 +357,8 @@ In what follows, the parameters in each group are introduced:
 \begin{itemize}
 	\item {\tt \small \em type} is the type of the excitation. The accepted excitation types in MITHRA include plane wave, confined plane-wave, and Gaussian beam. A confined plane-wave is a plane-wave that introduces fields to the particle only over an ellipse determined by beam radii.
 	%
-	\item {\tt \small \em position} is the reference position of the excitation. It is the reference position of the plane wave propagation in the plane-wave excitation and the focusing point in the Gaussian beam excitation.
+	\item {\tt \small \em position} is the reference position of the excitation. It is the reference position of the plane wave propagation in the plane-wave excitation and the focusing point in the Gaussian beam excitation. The coordinate system for this position vector is the same as for bunch position vector. Typically, the focal point or the reference position of the seed is given with respect to the undulator begin. Therefore, special care should be exercised with this position vector;
+	If the reference position with respect to undulator begin is $z_0$, then the value for seed reference position should be given as $z_0 + l_z + 10\lambda_X$, where $l_z$ is the {\tt \small \em longitudinal truncation} value and $\lambda_X$ is the radiation wavelength.
 	%
 	\item {\tt \small \em direction} is the propagation direction of the excitation in the plane-wave and Gaussian beam types.
 	%

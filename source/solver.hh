@@ -14,11 +14,18 @@ namespace Darius
 
   public:
 
-    Solver( Mesh& mesh, Bunch& bunch, Seed& seed,
+    Solver( Mesh& 				mesh,
+	    Bunch& 				bunch,
+	    Seed& 				seed,
 	    std::vector<Undulator>&		undulator,
 	    std::vector<ExtField>& 		extField,
 	    std::vector<FreeElectronLaser>& 	FEL)
-  : mesh_ ( mesh ), bunch_ ( bunch ), seed_ ( seed ), undulator_ ( undulator ), extField_ (extField), FEL_ ( FEL )
+  : mesh_ 	( mesh ),
+    bunch_ 	( bunch ),
+    seed_ 	( seed ),
+    undulator_ 	( undulator ),
+    extField_ 	( extField ),
+    FEL_ 	( FEL )
   {
       /* Clear the vectors in the FdTd class.								*/
       anp1_ = new std::vector<FieldVector<Double> > ();
@@ -41,9 +48,6 @@ namespace Darius
       nTime_ 	   =  0;
       nTimeBunch_  =  0;
 
-      /* Set the bunch initialization signal to false.							*/
-      bunchInitialized_ = false;
-
       /* Initialize the value of MPI variables.								*/
       MPI_Comm_rank(MPI_COMM_WORLD,&rank_);
       MPI_Comm_size(MPI_COMM_WORLD,&size_);
@@ -61,6 +65,8 @@ namespace Darius
     {
       printmessage(std::string(__FILE__), __LINE__, std::string("::: Boosting the given parameters into the electron rest frame ") );
 
+      /**************************************************************************************************/
+
       /* Initialize the corresponding length and time scales in other parts of the solver.		*/
       seed_.c0_ 		 = c0_;
       seed_.signal_.t0_ 	/= c0_;
@@ -75,10 +81,13 @@ namespace Darius
 	}
       for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
 	{
+	  iter->c0_ 	         = c0_;
 	  iter->signal_.t0_     /= c0_;
 	  iter->signal_.f0_ 	*= c0_;
 	  iter->signal_.s_ 	/= c0_;
 	}
+
+      /**************************************************************************************************/
 
       /* According to the set parameters for length and time scales correct the amplitudes of the seed
        * and undulator.											*/
@@ -87,6 +96,8 @@ namespace Darius
 	iter->amplitude_ 	*= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
       for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
 	iter->amplitude_        *= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
+
+      /**************************************************************************************************/
 
       /* Calculate the average gamma of the input bunches.						*/
       Double gamma = 0.0;
@@ -97,29 +108,12 @@ namespace Darius
       else
 	gamma_  = gamma / sqrt( 1.0 + pow( undulator_[0].amplitude_ * EC / ( EM * c0_ * 2.0 * PI * undulator_[0].signal_.f0_ ) , 2 ) / 2.0 );
 
+      /**************************************************************************************************/
+
       /* Boost and initialize the undulator related parameters.						*/
       beta_ = sqrt( 1.0 - 1.0 / ( gamma_ * gamma_ ) );
       for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
 	if ( iter->type_ == OPTICAL ) iter->lu_ /= ( 1 + beta_ );
-
-      /* The beginning of undulators are set automatically for static ones. Here, the array of undulators
-       * are first sorted according to their begin point and then the position of the bunch and undulator
-       * begin is set.											*/
-      Double t = -1.0e100;
-      for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
-	{
-	  /* Correct the number of particles if it is not a multiple of four.				*/
-	  if ( bunch_.bunchInit_[i].numberOfParticles_ % 4 != 0 )
-	    {
-	      unsigned int n = bunch_.bunchInit_[i].numberOfParticles_ % 4;
-	      bunch_.bunchInit_[i].numberOfParticles_ += 4 - n;
-	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The number of particles in the bunch is not a multiple of four. ") +
-			   std::string("It is corrected to ") +  stringify(bunch_.bunchInit_[i].numberOfParticles_) );
-	    }
-
-	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	    t = std::max(t, bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_);
-	}
 
       /* Sort the undulators according to their beginning point.					*/
       std::sort(undulator_.begin(), undulator_.end(), undulatorCompare);
@@ -128,19 +122,7 @@ namespace Darius
       for (std::vector<Undulator>::reverse_iterator iter = undulator_.rbegin(); iter != undulator_.rend(); iter++)
 	iter->rb_ -= undulator_[0].rb_;
 
-      /* Add the required space for fringing field to the undulator begins.				*/
-      for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
-	iter->rb_ += t + iter->lu_ / ( 2.0 * gamma_ * gamma_ ) * 10;
-
-      /* Check if the given offset of the bunch is correct according to the MITHRA conditions.		*/
-      for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
-	{
-	  if ( iter->type_ == OPTICAL )
-	    if ( iter->rb_  > ( iter->position_[2] + iter->signal_.t0_ - iter->signal_.s_ / 2.0 ) * c0_ )
-	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The offset value of the signal is not given properly. Part of a bunch is initialized in the undulator.") );
-	  if ( iter->type_ == STATIC )
-	    printmessage(std::string(__FILE__), __LINE__, std::string("The beginning of the undulator is set at the point " + stringify(iter->rb_)) );
-	}
+      /**************************************************************************************************/
 
       /* Boost the mesh data into the electron rest frame.						*/
       mesh_.meshLength_[2] 	*= gamma_;
@@ -148,10 +130,13 @@ namespace Darius
       mesh_.meshCenter_[2] 	*= gamma_;
       mesh_.totalTime_          /= gamma_;
 
+      /**************************************************************************************************/
+
+      /* Set the mesh parameters according to the given simulation.					*/
       if ( mesh_.solver_ == NSFD )
 	{
 	  /* Adjust the transverse mesh resolution to match the stability criterion.			*/
-	  t = 1.0 / sqrt( pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[0], 2.0 ) + pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[1], 2.0 ) );
+	  Double t = 1.0 / sqrt( pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[0], 2.0 ) + pow( mesh_.meshResolution_[2] / mesh_.meshResolution_[1], 2.0 ) );
 	  if ( t < 1.02 )
 	    {
 	      mesh_.meshResolution_[0] *= 1.02 / t;
@@ -172,34 +157,42 @@ namespace Darius
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the field update is set to " + stringify(mesh_.timeStep_ * gamma_) ) );
 	}
 
+      /**************************************************************************************************/
+
       /* Set the bunch update time step if it is given, otherwise set it according to the MITHRA rules.	*/
       bunch_.timeStep_		/= gamma_;
-      bunch_.timeStart_		/= gamma_;
 
       /* Adjust the given bunch time step according to the given field time step.			*/
-      t 	       = mesh_.timeStep_;
       bunch_.timeStep_ = mesh_.timeStep_ / ceil(mesh_.timeStep_ / bunch_.timeStep_);
       nUpdateBunch_    = mesh_.timeStep_ / bunch_.timeStep_;
       printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the bunch update is set to " + stringify(bunch_.timeStep_ * gamma_) ) );
 
+      /**************************************************************************************************/
+
       /* Boost the bunch parameters into the electron rest frame.					*/
+      std::vector<Double> zeta ( bunch_.bunchInit_.size(), 0.0 );
       for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
 	{
+	  /* First determine the beta vector of the bunch.						*/
+	  bunch_.bunchInit_[i].betaVector_.mv( bunch_.bunchInit_[i].initialBeta_, bunch_.bunchInit_[i].initialDirection_);
+
+	  /* Boosting the position is done considering that the start of simulation is at t = 0.	*/
+	  zeta[i] 					 = gamma_ * ( 1.0 - bunch_.bunchInit_[i].betaVector_[2] * beta_ );
 	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	    bunch_.bunchInit_[i].position_[ia][2]	/= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
-	  bunch_.bunchInit_[i].initialGamma_ 		*= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
-	  bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
-	  bunch_.bunchInit_[i].sigmaPosition_[2] 	/= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
-	  bunch_.bunchInit_[i].longTrun_ 		/= gamma_ * ( 1.0 - bunch_.bunchInit_[i].initialBeta_ * beta_ );
-	  Double zeta 					 = gamma_ * ( 1.0 - beta_ * bunch_.bunchInit_[i].initialBeta_ ) *
-	      beta_ * gamma_ / bunch_.bunchInit_[i].initialBeta_;
-	  bunch_.bunchInit_[i].lambda_  		 = undulator_[0].lu_ / gamma_ / zeta;
+	    bunch_.bunchInit_[i].position_[ia][2]	/= zeta[i];
+	  bunch_.bunchInit_[i].sigmaPosition_[2] 	/= zeta[i];
+	  bunch_.bunchInit_[i].longTrun_ 		/= zeta[i];
+
+	  bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= zeta[i];
+
+	  bunch_.bunchInit_[i].lambda_  		 = undulator_[0].lu_ / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].betaVector_[2] * zeta[i] );
 
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
 
-	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	    bunch_.bunchInit_[i].position_[ia][2]	-= bunch_.bunchInit_[i].sigmaPosition_[2] * ( 1.0 - zeta );
-	  bunch_.bunchInit_[i].initialBeta_ 	 	 = sqrt( 1.0 - 1.0 / ( bunch_.bunchInit_[i].initialGamma_ * bunch_.bunchInit_[i].initialGamma_ ) );
+	  bunch_.bunchInit_[i].initialGamma_ 		*= zeta[i];
+	  bunch_.bunchInit_[i].betaVector_[0] 	 	/= zeta[i];
+	  bunch_.bunchInit_[i].betaVector_[1] 	 	/= zeta[i];
+	  bunch_.bunchInit_[i].betaVector_[2] 	 	 = ( bunch_.bunchInit_[i].betaVector_[2] - beta_ ) / ( 1.0 - bunch_.bunchInit_[i].betaVector_[2] * beta_ );
 	}
       bunch_.rhythm_			/= gamma_;
       bunch_.bunchVTKRhythm_		/= gamma_;
@@ -207,12 +200,80 @@ namespace Darius
 	bunch_.bunchProfileTime_[i] 	/= gamma_;
       bunch_.bunchProfileRhythm_	/= gamma_;
 
+      /**************************************************************************************************/
+
+      /* The beginning of undulators are set automatically for static ones. Here, the array of undulators
+       * are first sorted according to their begin point and then the position of the bunch and undulator
+       * begin is set.											*/
+      Double 		zmax = -1.0e100;
+      unsigned int 	imax = 0;
+      for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
+	{
+	  /* Correct the number of particles if it is not a multiple of four.				*/
+	  if ( bunch_.bunchInit_[i].numberOfParticles_ % 4 != 0 )
+	    {
+	      unsigned int n = bunch_.bunchInit_[i].numberOfParticles_ % 4;
+	      bunch_.bunchInit_[i].numberOfParticles_ += 4 - n;
+	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The number of particles in the bunch is not a multiple of four. ") +
+			   std::string("It is corrected to ") +  stringify(bunch_.bunchInit_[i].numberOfParticles_) );
+	    }
+
+	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
+	    if ( zmax < bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_ )
+	      {
+		zmax = bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_;
+		imax = ia;
+	      }
+	}
+
+      /* The bunch expands by the factor 1/zeta. However, the mesh size expands by the factor gamma. This
+       * difference is caused by the change in bunch gamma factor after it enters the undulator. The
+       * problem here is the inconsistencies that it introduces to the simulation. To solve such problems,
+       * the trick is to shift the bunch positions so that the front of the bunch stays in the mesh and
+       * before the undulator. After the bunch enters the undulator, the length will be automatically
+       * corrected and the inconsistencies are removed.							*/
+      for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
+	{
+	  for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
+	    bunch_.bunchInit_[i].position_[ia][2] -= zmax * ( 1.0 - zeta[imax] * gamma_ );
+	}
+      zmax -= zmax * ( 1.0 - zeta[imax] * gamma_ );
+
+      /**************************************************************************************************/
+
+      /* Check if the given offset of the bunch is correct according to the MITHRA conditions.		*/
+      for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
+	{
+	  if ( iter->type_ == OPTICAL )
+	    if ( zmax / gamma_  > ( iter->position_[2] + iter->signal_.t0_ - iter->signal_.s_ / 2.0 ) )
+	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The offset value of the signal is not given properly. Part of a bunch is initialized in the undulator.") );
+	  if ( iter->type_ == STATIC )
+	    printmessage(std::string(__FILE__), __LINE__, std::string("The beginning of the undulator is set automatically in the static mode.") );
+	}
+
+      /**************************************************************************************************/
+
       /* The Lorentz boost parameters should also be transfered to the seed class in order to correctly
        * compute the fields within the computational domain.						*/
       seed_.beta_    	= beta_;
       seed_.gamma_   	= gamma_;
-      seed_.dt_      	= - beta_ * gamma_ / seed_.c0_ * undulator_[0].rb_;
-      dt_ 		= - beta_ * gamma_ / seed_.c0_ * undulator_[0].rb_;
+
+      /* Here, we define the shift in time such that the bunch end is at the begin of fringing field
+       * section. For optical undulator such a separation should be considered in the input parameters
+       * where offset is given.										*/
+
+      /* This shift in time makes sure that the maximum z in the bunch at time zero is 2 undulator
+       * periods away from the undulator begin.								*/
+      dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmax + 2.0 * undulator_[0].lu_ / gamma_ );
+
+      /* The same shift in time should also be done for the seed field.					*/
+      seed_.dt_		= dt_;
+
+      /* With the above definition in the time begin the entrance of the undulator, i.e. z = 0 in the lab
+       * frame, corresponds to the z = zmax + 2.0 * undulator_[0].lu_ / gamma_ in the bunch rest frame at
+       * the initialization instant, i.e. timeBunch = 0.0.						*/
+      bunch_.zu_ 	= zmax + 2.0 * undulator_[0].lu_ / gamma_;
+      bunch_.beta_ 	= beta_;
 
       printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );
     }
@@ -238,12 +299,17 @@ namespace Darius
       /* If profiling is enabled initialize the required data for profiling the field and saving it.	*/
       if (seed_.profile_)				initializeSeedProfile();
 
+      /* We initialize the bunch at the beginning of the simulation. The previous feature for initializing
+       * in the middle of the simulation is removed.							*/
+      initializeBunch();
+      timeBunch_ = time_;
+
       /* Initialize the data needed for updating the bunches.						*/
       initializeBunchUpdate();
 
       /* If sampling or visualizing the radiation power is enabled initialize the required data for
        * calculating the radiation power and saving it.							*/
-      initializeRadiationPower();
+      initializePowerSample(); initializePowerVisualize();
 
       /* If sampling the radiation energy is enabled initialize the required data for calculating the
        * radiation energy and saving it.								*/
@@ -553,8 +619,8 @@ namespace Darius
 
 	  /* Check if the sampling point resides in the computational mesh.				*/
 	  if ( sf_.position[0] < xmax_ - ub_.dx && sf_.position[0] > xmin_ + ub_.dx &&
-	       sf_.position[1] < ymax_ - ub_.dy && sf_.position[1] > ymin_ + ub_.dy &&
-	       sf_.position[2] < zmax_ - ub_.dz && sf_.position[2] > zmin_ + ub_.dz )
+	      sf_.position[1] < ymax_ - ub_.dy && sf_.position[1] > ymin_ + ub_.dy &&
+	      sf_.position[2] < zmax_ - ub_.dz && sf_.position[2] > zmin_ + ub_.dz )
 	    {
 	      if ( sf_.position[2] < zp_[1] && sf_.position[2] >= zp_[0] )
 		samplingPosition.push_back(seed_.samplingPosition_[n]);
@@ -816,8 +882,6 @@ namespace Darius
 	  chargeVectorn_.splice(chargeVectorn_.end(),qv);
 	}
 
-      bunchInitialized_ = true;
-
       /* Print the total number of macro-particles for the user.					*/
       unsigned int NqL = chargeVectorn_.size(), NqG = 0;
       MPI_Reduce(&NqL,&NqG,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
@@ -837,7 +901,7 @@ namespace Darius
      * Update the fields for one time-step
      ****************************************************************************************************/
 
-    void bunchUpdate(Double nStep)
+    void bunchUpdate()
     {
       /* First define a parameter for the processor number.						*/
       std::list<Charge>::iterator	iter;
@@ -1167,7 +1231,7 @@ namespace Darius
 	      gamma = sqrt( 1.0 + iter->gbnp.norm() );
 	      beta  = iter->gbnp[2] / gamma;
 	      *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
-            			    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
+            				<< " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	    }
 	}
       *vb_.file << 0.0 << " " << 0.0 << " " << 0.0						<< std::endl;
@@ -1270,21 +1334,21 @@ namespace Darius
 	{
 
 	  /* Calculate the undulator magnetic field.							*/
-	  ub_.b0 	 = (iter->lu_ != 0.0 ) ? EM * c0_ * 2 * PI / iter->lu_ * iter->k_ / EC : 0.0;
+	  ub_.b0 	= (iter->lu_ != 0.0 ) ? EM * c0_ * 2 * PI / iter->lu_ * iter->k_ / EC : 0.0;
 
 	  /* Calculate the undulator wave number.							*/
-	  ub_.ku     = (iter->lu_ != 0.0 ) ? 2 * PI / iter->lu_ : 0.0;
+	  ub_.ku     	= (iter->lu_ != 0.0 ) ? 2 * PI / iter->lu_ : 0.0;
 
 	  /* Calculate the sine and cosine functions of the undulator angle.				*/
-	  ub_.ct	 = cos( iter->theta_ );
-	  ub_.st	 = sin( iter->theta_ );
+	  ub_.ct	= cos( iter->theta_ );
+	  ub_.st	= sin( iter->theta_ );
 
 	  if ( iter->type_ == STATIC )
 	    {
 	      /* First find the position with respect to the undulator begin point. The equation below
 	       * assumes that the bunch at time zero resides in a distance gamma*rb_ from the first
 	       * undulator.										*/
-	      ubp.lz = gamma_ * ( r[2] + beta_ * c0_ * timeBunch_ - gamma_ * undulator_[0].rb_ ) - ( iter->rb_ - undulator_[0].rb_ );
+	      ubp.lz = gamma_ * ( r[2] + beta_ * c0_ * ( timeBunch_ + dt_ ) ) - iter->rb_;
 	      ubp.ly = r[0] * ub_.ct + r[1] * ub_.st;
 
 	      /* Now, calculate the undulator field according to the obtained position.               	*/
@@ -1623,399 +1687,25 @@ namespace Darius
      * Initialize the data required for sampling and saving the radiation power at the given position.
      ****************************************************************************************************/
 
-    void initializeRadiationPower()
-    {
-      printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the FEL radiation power data.") );
-      rp_.clear(); rp_.resize(FEL_.size());
+    void initializePowerSample();
 
-      /* Loop over the different FEL output parameters and initialize the power calculation if it is
-       * activated.											*/
-      for ( unsigned int jf = 0; jf < FEL_.size(); jf++)
-	{
-	  /* Initialize if and only if the sampling of the power is enabled.				*/
-	  if (!FEL_[jf].radiationPower_.sampling_) continue;
+    /****************************************************************************************************
+     * Initialize the data required for visualizing the radiation power at the given position.
+     ****************************************************************************************************/
 
-	  /* Perform the lorentz boost for the sampling data.						*/
-	  for (unsigned int i = 0; i < FEL_[jf].radiationPower_.z_.size(); i++)
-	    FEL_[jf].radiationPower_.z_[i] 	*= gamma_;
-	  FEL_[jf].radiationPower_.lineBegin_ 	*= gamma_;
-	  FEL_[jf].radiationPower_.lineEnd_   	*= gamma_;
-
-	  Double dl = fabs(FEL_[jf].radiationPower_.lineEnd_ - FEL_[jf].radiationPower_.lineBegin_) / FEL_[jf].radiationPower_.res_;
-
-	  /* If sampling type is plot over line initialize the positions according to the line begin and
-	   * line end.                                                                              	*/
-	  if ( FEL_[jf].radiationPower_.samplingType_ == OVERLINE )
-	    {
-	      Double l = 0.0;
-	      FieldVector<Double> position;
-	      while ( fabs(l) < fabs(FEL_[jf].radiationPower_.lineEnd_ - FEL_[jf].radiationPower_.lineBegin_) )
-		{
-		  FEL_[jf].radiationPower_.z_.push_back( FEL_[jf].radiationPower_.lineBegin_ + l);
-		  l += dl;
-		}
-	    }
-
-	  /* Set the number of sampling points in each processor.                                       */
-	  rp_[jf].N  = FEL_[jf].radiationPower_.z_.size();
-	  rp_[jf].Nz = 0;
-	  for (unsigned int i = 0; i < rp_[jf].N; i++)
-	    if ( FEL_[jf].radiationPower_.z_[i] < zp_[1] && FEL_[jf].radiationPower_.z_[i] >= zp_[0] )
-	      ++rp_[jf].Nz;
-
-	  /* Add the normalized wavelength sweep to the vector of wavelengths.				*/
-	  dl = ( FEL_[jf].radiationPower_.lambdaMax_ - FEL_[jf].radiationPower_.lambdaMin_ ) / FEL_[jf].radiationPower_.lambdaRes_;
-	  for (Double rw = FEL_[jf].radiationPower_.lambdaMin_; rw < FEL_[jf].radiationPower_.lambdaMax_; rw += dl)
-	    FEL_[jf].radiationPower_.lambda_.push_back(rw);
-	  rp_[jf].Nl = FEL_[jf].radiationPower_.lambda_.size();
-
-	  /* Based on the number of points to calculate and the size of the threads, allocate memory for
-	   * saving the powers.										*/
-	  rp_[jf].pL.resize(rp_[jf].Nl * rp_[jf].N, 0.0);
-	  rp_[jf].pG.resize(rp_[jf].Nl * rp_[jf].N, 0.0);
-
-	  rp_[jf].Nf = 0;
-
-	  /* Initialize the file streams to save the data.						*/
-	  rp_[jf].file.resize(rp_[jf].Nl);
-	  rp_[jf].w.resize(rp_[jf].Nl);
-	  for (unsigned int i = 0; i < rp_[jf].Nl; i++)
-	    {
-	      std::string baseFilename = "";
-	      if (!(isabsolute(FEL_[jf].radiationPower_.basename_))) baseFilename = FEL_[jf].radiationPower_.directory_;
-	      baseFilename += FEL_[jf].radiationPower_.basename_ + "-" + stringify(i) + TXT_FILE_SUFFIX;
-
-	      /* If the directory of the baseFilename does not exist create this directory.			*/
-	      createDirectory(baseFilename, rank_);
-
-	      rp_[jf].file[i] = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
-	      ( *(rp_[jf].file[i]) ).setf(std::ios::scientific);
-	      ( *(rp_[jf].file[i]) ).precision(15);
-	      ( *(rp_[jf].file[i]) ).width(40);
-
-	      /* Determine the number of time points needed to calculate the amplitude of each
-	       * radiation harmonic.									*/
-	      Double dt = undulator_[0].lu_ / FEL_[jf].radiationPower_.lambda_[i] / ( gamma_ * c0_ );
-	      rp_[jf].Nf = ( int( dt / mesh_.timeStep_ ) > rp_[jf].Nf ) ? int( dt / mesh_.timeStep_ ) : rp_[jf].Nf;
-
-	      /* Calculate the angular frequency for each wavelength.					*/
-	      rp_[jf].w[i] = 2 * PI / dt;
-	    }
-
-	  /* Based on the obtained Nf, resize the vectors for saving the time domain data.		*/
-	  rp_[jf].fdt.resize(rp_[jf].Nf, std::vector<std::vector<Double> > (rp_[jf].Nz * N1_ * N0_, std::vector<Double> (4,0.0) ) );
-
-	  rp_[jf].dt  = mesh_.timeStep_;
-	  rp_[jf].dx  = mesh_.meshResolution_[0];
-	  rp_[jf].dy  = mesh_.meshResolution_[1];
-	  rp_[jf].dz  = mesh_.meshResolution_[2];
-
-	  rp_[jf].pc  = 2.0 * rp_[jf].dx * rp_[jf].dy / ( m0_ * rp_[jf].Nf * rp_[jf].Nf ) * pow(mesh_.lengthScale_,2) / pow(mesh_.timeScale_,3);
-	}
-
-      /* Loop over the different FEL output parameters and initialize the power calculation if it is
-       * activated.											*/
-      for ( unsigned int jf = 0; jf < FEL_.size(); jf++)
-	{
-	  /* Initialize if and only if the sampling of the power is enabled.				*/
-	  if (!FEL_[jf].vtk_.sampling_) continue;
-
-	  /* Return an error if the power visualization rhythm is still zero.				*/
-	  if ( FEL_[jf].vtk_.rhythm_ == 0 )
-	    {
-	      printmessage(std::string(__FILE__), __LINE__, std::string("The power visualization rhythm of the field is zero although power visualization is activated !!!") );
-	      exit(1);
-	    }
-
-	  /* Lorentz boost the power-visualization sampling rhythm to the electron rest frame.		*/
-	  FEL_[jf].vtk_.rhythm_		/= gamma_;
-
-	  /* Perform the Lorentz boost for the sampling data.						*/
-	  FEL_[jf].vtk_.z_ 		*= gamma_;
-
-	  /* Create the filename for saving the visualization data.					*/
-	  if (!(isabsolute(FEL_[jf].vtk_.basename_)))
-	    FEL_[jf].vtk_.basename_ = FEL_[jf].vtk_.directory_ + FEL_[jf].vtk_.basename_;
-
-	  /* If the directory of the baseFilename does not exist create this directory.			*/
-	  createDirectory(FEL_[jf].vtk_.basename_, rank_);
-
-	  /* Set the number of sampling points in each processor.                                       */
-	  rp_[jf].N  = 1;
-	  rp_[jf].Nz = ( FEL_[jf].vtk_.z_ < zp_[1] && FEL_[jf].vtk_.z_ >= zp_[0] ) ? 1 : 0;
-	  rp_[jf].Nl = 1;
-
-	  /* Do not continue the loop if Nz is not equal to one.					*/
-	  if ( rp_[jf].Nz == 0 ) continue;
-
-	  /* Based on the number of points to calculate and the size of the threads, allocate memory for
-	   * saving the powers.										*/
-	  rp_[jf].pL.resize(N1_*N0_, 0.0);
-	  rp_[jf].pG.clear();
-
-	  rp_[jf].Nf = 0;
-
-	  /* Initialize the file streams to save the data.						*/
-	  rp_[jf].file.resize(rp_[jf].Nz);
-	  rp_[jf].w.resize(rp_[jf].Nz);
-
-	  /* Determine the number of time points needed to calculate the amplitude of each
-	   * radiation harmonic.									*/
-	  Double dt = undulator_[0].lu_ / FEL_[jf].vtk_.lambda_ / ( gamma_ * c0_ );
-	  rp_[jf].Nf = int( dt / mesh_.timeStep_ );
-
-	  /* Calculate the angular frequency for each wavelength.					*/
-	  rp_[jf].w[0] = 2 * PI / dt;
-
-	  /* Based on the obtained Nf, resize the vectors for saving the time domain data.			*/
-	  rp_[jf].fdt.resize(rp_[jf].Nf, std::vector<std::vector<Double> > (N1_ * N0_, std::vector<Double> (4,0.0) ) );
-
-	  rp_[jf].dt  = mesh_.timeStep_;
-	  rp_[jf].dx  = mesh_.meshResolution_[0];
-	  rp_[jf].dy  = mesh_.meshResolution_[1];
-	  rp_[jf].dz  = mesh_.meshResolution_[2];
-
-	  rp_[jf].pc  = 2.0 * rp_[jf].dx * rp_[jf].dy / ( m0_ * rp_[jf].Nf * rp_[jf].Nf ) * pow(mesh_.lengthScale_,2) / pow(mesh_.timeScale_,3);
-	}
-
-      printmessage(std::string(__FILE__), __LINE__, std::string(" The FEL radiation power data is initialized. :::") );
-    }
+    void initializePowerVisualize();
 
     /****************************************************************************************************
      * Sample the radiation power at the given position and save it to the file.
      ****************************************************************************************************/
 
-    void radiationPower()
-    {
-      /* Declare the temporary parameters needed for calculating the radiated power.                    */
-      unsigned int              k, l, m, i, j, kz;
-      long int                  mi, ni;
-      FieldVector<Double>       et, bt;
-      Complex                   ew1, bw1, ew2, bw2, ex;
-      Double                    pt;
-      bool                      dt = false;
+    void powerSample();
 
-      /* Loop over the different FEL output parameters and calculate the radiation energy if the energy
-       * calculation is activated.                                                                      */
-      for ( unsigned int jf = 0; jf < FEL_.size(); jf++)
-	{
-	  /* Initialize if and only if the sampling of the power is enabled.                            */
-	  if (!FEL_[jf].radiationPower_.sampling_) continue;
+    /****************************************************************************************************
+     * Visualize the radiation power at the given position and save it to the file.
+     ****************************************************************************************************/
 
-	  /* First reset all the previously calculated powers.                                          */
-	  for (k = 0; k < rp_[jf].N; ++k)
-	    for (l = 0; l < rp_[jf].Nl; ++l)
-	      rp_[jf].pL[k * rp_[jf].Nl + l] = 0.0;
-
-	  /* Set the index of the sampling point to zero.                                               */
-	  kz = 0;
-
-	  /* Loop over the sampling positions, transverse dicretizations, and frequency to calculate the
-	   * radiated power at the specific point and frequency.                                        */
-	  for (k = 0; k < rp_[jf].N; ++k)
-	    {
-	      /* Do not continue if this index is not supported by the processor.                       */
-	      if ( !( FEL_[jf].radiationPower_.z_[k] < zp_[1] && FEL_[jf].radiationPower_.z_[k] >= zp_[0] ) ) continue;
-
-	      /* Obtain the z index of the cell containing the point.                                   */
-	      rp_[jf].dzr = modf( ( FEL_[jf].radiationPower_.z_[k] - zmin_ ) / mesh_.meshResolution_[2] , &rp_[jf].c);
-	      rp_[jf].k   = (int) rp_[jf].c;
-
-	      /* Loop over the transverse indices.                                                      */
-	      for (i = 2; i < N0_ - 2; i += 1)
-		for (j = 2; j < N1_ - 2; j += 1)
-		  {
-		    /* Get the index in the computation grid as well as the field storage grid.         */
-		    mi = ( rp_[jf].k - k0_) * N1_* N0_ + i * N1_ + j;
-		    ni = kz * N1_* N0_ + i * N1_ + j;
-
-		    /* Evaluate the fields of the corresponding pixels.                                 */
-		    if (!pic_[mi      ]) fieldEvaluate(mi      );
-		    if (!pic_[mi+N1N0_]) fieldEvaluate(mi+N1N0_);
-
-		    /* Calculate and interpolate the electric field to find the value at the bunch
-		     *  point.                                                                          */
-		    et[0] = ( 1.0 - rp_[jf].dzr ) * en_[mi][0] + rp_[jf].dzr * en_[mi+N1N0_][0];
-		    et[1] = ( 1.0 - rp_[jf].dzr ) * en_[mi][1] + rp_[jf].dzr * en_[mi+N1N0_][1];
-
-		    /* Calculate and interpolate the magnetic field to find its value at the bunch
-		     * point.                                                                           */
-		    bt[0] = ( 1.0 - rp_[jf].dzr ) * bn_[mi][0] + rp_[jf].dzr * bn_[mi+N1N0_][0];
-		    bt[1] = ( 1.0 - rp_[jf].dzr ) * bn_[mi][1] + rp_[jf].dzr * bn_[mi+N1N0_][1];
-
-		    /* Transform the fields to the lab frame.                                           */
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][0] = gamma_ * ( et[0] + c0_ * beta_ * bt[1] );
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][1] = gamma_ * ( et[1] - c0_ * beta_ * bt[0] );
-
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][2] = gamma_ * ( bt[0] - beta_ / c0_ * et[1] );
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
-
-		    /* Add the contribution of this field to the radiation power.                       */
-		    for ( l = 0; l < rp_[jf].Nl; l++)
-		      {
-			ew1 = Complex (0.0, 0.0);
-			bw1 = Complex (0.0, 0.0);
-			for ( m = 0; m < rp_[jf].Nf; m++)
-			  {
-			    ex   = exp( I * ( rp_[jf].w[l] * m * mesh_.timeStep_ ) );
-			    ew1 += rp_[jf].fdt[m][ni][0] * ex;
-			    bw1 += rp_[jf].fdt[m][ni][3] / ex;
-			  }
-
-			ew2 = Complex (0.0, 0.0);
-			bw2 = Complex (0.0, 0.0);
-			for ( m = 0; m < rp_[jf].Nf; m++)
-			  {
-			    ex   = exp( I * ( rp_[jf].w[l] * m * mesh_.timeStep_ ) );
-			    ew2 += rp_[jf].fdt[m][ni][1] * ex;
-			    bw2 += rp_[jf].fdt[m][ni][2] / ex;
-			  }
-
-			rp_[jf].pL[k * rp_[jf].Nl + l] += rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );
-		      }
-		  }
-
-	      /* Add the interator for the sampling point by one.                                       */
-	      kz += 1;
-	    }
-
-	  /* Add the data from each processor together at the root processor.                           */
-	  MPI_Allreduce(&rp_[jf].pL[0],&rp_[jf].pG[0],rp_[jf].N*rp_[jf].Nl,MPI_TYPE,MPI_SUM,MPI_COMM_WORLD);
-
-	  /* If the rank of the processor is equal to zero, i.e. root processor save the fields into the
-	   * given file.                                                                                */
-	  for ( l = 0; l < rp_[jf].Nl; l++)
-	    {
-	      if ( rank_ == ( l % size_ ) )
-		{
-		  for (k = 0; k < rp_[jf].N; ++k)
-		    *(rp_[jf].file[l]) << gamma_ * ( FEL_[jf].radiationPower_.z_[k] + beta_ * c0_ * timeBunch_ )
-		    - pow( gamma_ * beta_ , 2 ) * undulator_[0].rb_ << "\t" << rp_[jf].pG[k * rp_[jf].Nl + l] << "\t";
-		  *(rp_[jf].file[l]) << std::endl;
-		}
-	    }
-	}
-
-      /* Loop over the different FEL output parameters and visualize the radiation power if visualization
-       * is activated.                                                                      		*/
-      for ( unsigned int jf = 0; jf < FEL_.size(); jf++)
-	{
-
-	  /* Initialize if and only if the sampling of the power is enabled.                            */
-	  if ( FEL_[jf].vtk_.sampling_ && rp_[jf].Nz == 1 )
-	    {
-
-	      /* Calculate the index of the cell at which the plane resides.				*/
-	      rp_[jf].dzr 	= modf( ( FEL_[jf].vtk_.z_ - zmin_ ) / mesh_.meshResolution_[2] , &rp_[jf].c);
-	      rp_[jf].k   	= (int) rp_[jf].c - k0_;
-
-	      /* Loop over the transverse indices.                                                      */
-	      for (i = 1; i < N0_ - 1; i++)
-		for (j = 1; j < N1_ - 1; j++)
-		  {
-		    /* Get the index in the computation grid as well as the field storage grid.         */
-		    mi = rp_[jf].k * N1_* N0_ + i * N1_ + j;
-		    ni = i * N1_ + j;
-
-		    /* Evaluate the fields of the corresponding pixels.                                 */
-		    if (!pic_[mi      ]) fieldEvaluate(mi      );
-		    if (!pic_[mi+N1N0_]) fieldEvaluate(mi+N1N0_);
-
-		    /* Calculate and interpolate the electric field to find the value at the bunch
-		     * point.										*/
-		    et[0] = ( 1.0 - rp_[jf].dzr ) * en_[mi][0] + rp_[jf].dzr * en_[mi+N1N0_][0];
-		    et[1] = ( 1.0 - rp_[jf].dzr ) * en_[mi][1] + rp_[jf].dzr * en_[mi+N1N0_][1];
-
-		    /* Calculate and interpolate the magnetic field to find its value at the bunch
-		     * point.										*/
-		    bt[0] = ( 1.0 - rp_[jf].dzr ) * bn_[mi][0] + rp_[jf].dzr * bn_[mi+N1N0_][0];
-		    bt[1] = ( 1.0 - rp_[jf].dzr ) * bn_[mi][1] + rp_[jf].dzr * bn_[mi+N1N0_][1];
-
-		    /* Transform the fields to the lab frame.                                           */
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][0] = gamma_ * ( et[0] + c0_ * beta_ * bt[1] );
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][1] = gamma_ * ( et[1] - c0_ * beta_ * bt[0] );
-
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][2] = gamma_ * ( bt[0] - beta_ / c0_ * et[1] );
-		    rp_[jf].fdt[nTime_ % rp_[jf].Nf][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
-
-		    /* Add the contribution of this field to the radiation power.                       */
-		    ew1 = Complex (0.0, 0.0);
-		    bw1 = Complex (0.0, 0.0);
-		    for ( m = 0; m < rp_[jf].Nf; m++)
-		      {
-			ex  = exp( I * ( rp_[jf].w[0] * m * mesh_.timeStep_ ) );
-			ew1 += rp_[jf].fdt[m][ni][0] * ex;
-			bw1 += rp_[jf].fdt[m][ni][3] / ex;
-		      }
-
-		    ew2 = Complex (0.0, 0.0);
-		    bw2 = Complex (0.0, 0.0);
-		    for ( m = 0; m < rp_[jf].Nf; m++)
-		      {
-			ex  = exp( I * ( rp_[jf].w[0] * m * mesh_.timeStep_ ) );
-			ew2 += rp_[jf].fdt[m][ni][1] * ex;
-			bw2 += rp_[jf].fdt[m][ni][2] / ex;
-		      }
-
-		    rp_[jf].pL[ni] = rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );
-		  }
-
-	      if ( fmod(time_, FEL_[jf].vtk_.rhythm_) < mesh_.timeStep_ )
-		{
-
-		  /* The old files if existing should be deleted.					*/
-		  std::string baseFilename = FEL_[jf].vtk_.basename_ + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
-		  rp_[jf].file[0] = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
-
-		  rp_[jf].file[0]->setf(std::ios::scientific);
-		  rp_[jf].file[0]->precision(4);
-
-		  /* Write the initial data for the vtk file.						*/
-		  *rp_[jf].file[0] << "<?xml version=\"1.0\"?>"						<< std::endl;
-		  *rp_[jf].file[0] << "<VTKFile type=\"StructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" "
-		      "compressor=\"vtkZLibDataCompressor\">" 						<< std::endl;
-		  *rp_[jf].file[0] << "<StructuredGrid WholeExtent=\"0 " << N0_ - 1 << " 0 " << N1_ - 1 << " " <<
-		      0 << " " << 0 << "\">"								<< std::endl;
-		  *rp_[jf].file[0] << "<Piece Extent=\"0 " << N0_ - 1 << " 0 " << N1_ - 1 << " " <<
-		      0 << " " << 0 << "\">"								<< std::endl;
-
-		  /* Insert the coordinates of the grid for the charge points.				*/
-		  *rp_[jf].file[0] << "<Points>"                                                        << std::endl;
-		  *rp_[jf].file[0] << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"<< std::endl;
-		  for (j = 0; j < N1_; j++)
-		    for (i = 0; i < N0_; i++)
-		      {
-			m = rp_[jf].k * N1_ * N0_ + i * N1_ + j;
-			*rp_[jf].file[0] << r_[m][0] * ( 1.0 - rp_[jf].dzr ) + r_[m + N1N0_][0] * rp_[jf].dzr << " "
-			    << r_[m][1] << " " << r_[m][2] 						<< std::endl;
-		      }
-		  *rp_[jf].file[0] << "</DataArray>"                                                    << std::endl;
-		  *rp_[jf].file[0] << "</Points>"                                                       << std::endl;
-
-		  /* Insert each cell data into the vtk file.                                         	*/
-		  *rp_[jf].file[0] << "<CellData>"                                                       << std::endl;
-		  *rp_[jf].file[0] << "</CellData>"                                                      << std::endl;
-
-		  /* Insert the point data based on the computed electric field.			*/
-		  *rp_[jf].file[0] << "<PointData Vectors = \"power\">"                                 << std::endl;
-		  *rp_[jf].file[0] << "<DataArray type=\"Float64\" Name=\"power\" NumberOfComponents=\"" << 1 << "\" format=\"ascii\">"
-		      << std::endl;
-		  for (j = 0; j < N1_; j++)
-		    for (i = 0; i < N0_; i++)
-		      *rp_[jf].file[0] << rp_[jf].pL[i * N1_ + j] 					<< std::endl;
-
-		  *rp_[jf].file[0] << "</DataArray>"                                                   	<< std::endl;
-		  *rp_[jf].file[0] << "</PointData>"                                                    << std::endl;
-		  *rp_[jf].file[0] << "</Piece>"                                                        << std::endl;
-		  *rp_[jf].file[0] << "</StructuredGrid>"                                               << std::endl;
-		  *rp_[jf].file[0] << "</VTKFile>"                                                      << std::endl;
-
-		  /* Close the file.                                                                    */
-		  (*rp_[jf].file[0]).close();
-		}
-	    }
-	}
-    }
+    void powerVisualize();
 
 
     /****************************************************************************************************
@@ -2302,9 +1992,6 @@ namespace Darius
     Double								time_;
     Double								timem1_;
     unsigned int 							nTime_;
-
-    /* Boolean signal telling if the bunch is initialized or not.					*/
-    bool								bunchInitialized_;
 
     /* vector of charge structures containing the position and momentum of the charge points.		*/
     std::list<Charge>							chargeVectorn_;

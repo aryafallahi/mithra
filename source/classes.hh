@@ -79,7 +79,6 @@ namespace Darius
     Bunch()
     {
       /* Initialize the parameters for the bunch to some first values.                      		*/
-      timeStart_			= 0.0;
       timeStep_				= 0.0;
 
       /** Initialize the parameters for the bunch to some first values.                           	*/
@@ -110,13 +109,11 @@ namespace Darius
     {
       /* Declare the required parameters for the initialization of charge vectors.                      */
       Charge        charge;
-      Double		gb;
 
       /* Determine the properties of each charge point and add them to the charge vector.               */
       charge.q  	= bunchInit.cloudCharge_;
       charge.rnp    	= bunchInit.position_[ia];
-      gb            	= bunchInit.initialBeta_ / sqrt( 1.0 - bunchInit.initialBeta_ * bunchInit.initialBeta_ );
-      (charge.gbnp).mv(gb,bunchInit.initialDirection_);
+      charge.gbnp.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
 
       /* Insert this charge to the charge list if and only if it resides in the processor's portion.    */
       if ( ( charge.rnp[2] < zp[1] || rank == size - 1 ) && ( charge.rnp[2] >= zp[0] || rank == 0 ) )
@@ -138,13 +135,22 @@ namespace Darius
 
       /* Declare the required parameters for the initialization of charge vectors.                      */
       Charge            charge; charge.q  = bunchInit.cloudCharge_ / Np;
-      Double gb 	= bunchInit.initialBeta_ / sqrt( 1.0 - bunchInit.initialBeta_ * bunchInit.initialBeta_);
-      FieldVector<Double> r (0.0);
-      FieldVector<Double> t (0.0);
-      Double            t0, t1, t2 = -1.0;
+      FieldVector<Double> gb (0.0); gb.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
+      FieldVector<Double> r  (0.0);
+      FieldVector<Double> t  (0.0);
+      Double            t0, t1, t2 = -1.0, g;
       Double		zmin = 1e100;
       Double		Ne, bF, bFi;
       unsigned int	bmi;
+
+      /* Check the bunching factor.                                                                     */
+      if ( bunchInit.bF_ > 2.0 || bunchInit.bF_ < 0.0 )
+	{
+	  printmessage(std::string(__FILE__), __LINE__, std::string("The bunching factor can not be larger than one or a negative value !!!") );
+	  exit(1);
+	}
+
+      /**************************************************************************************************/
 
       /* Declare the function for injecting the shot noise.						*/
       auto insertCharge = [&] (Charge q) {
@@ -164,12 +170,20 @@ namespace Darius
 
 		q.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bFi * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * q.rnp[2] + 2.0 * PI * halton( 9 , bmi ) );
 	      }
-	    else if ( bunchInit.lambda_ * bunchInit.bF_ != 0.0)
+	    else if ( bunchInit.lambda_ != 0.0)
 	      {
 		q.rnp[2]  = charge.rnp[2] - ( bunchInit.lambda_ / 2.0 ) / 4 * ii;
 
 		q.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bunchInit.bF_ * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * q.rnp[2] + bunchInit.bFP_ * PI / 180.0 );
 	      }
+
+	    /* Before add the bunch to the global charge vector, a correction on the position of the bunch
+	     * should be made. This correction assures that the bunch properties are valid at the entrance
+	     * of the undulator.										*/
+	    g		= sqrt( 1.0 + charge.gbnp.norm() );
+	    q.rnp[0] -= ( charge.gbnp[0] / g - bunchInit.betaVector_[0] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
+	    q.rnp[1] -= ( charge.gbnp[1] / g - bunchInit.betaVector_[1] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
+	    q.rnp[2] -= ( charge.gbnp[2] / g - bunchInit.betaVector_[2] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
 
 	    /* Insert this charge to the charge list if and only if it resides in the processor's
 	     * portion.                                                                               	*/
@@ -178,12 +192,7 @@ namespace Darius
 	  }
       };
 
-      /* Check the bunching factor.                                                                     */
-      if ( bunchInit.bF_ > 2.0 || bunchInit.bF_ < 0.0 )
-	{
-	  printmessage(std::string(__FILE__), __LINE__, std::string("The bunching factor can not be larger than one or a negative value !!!") );
-	  exit(1);
-	}
+      /**************************************************************************************************/
 
       /* If the shot noise is on, we need the minimum value of the bunch z coordinate to be able to
        * calculate the FEL bucket number.								*/
@@ -217,10 +226,12 @@ namespace Darius
 	  Ne = bunchInit.cloudCharge_ * ( bunchInit.lambda_ / 2.0 ) / ( 2.0 * bunchInit.sigmaPosition_[2] );
 
 	  /* Set the bunching factor level for the shot noise depending on the given values.		*/
-	  bF = ( bunchInit.bF_ == 0.0 ) ? 1.0 / sqrt(Ne) : bunchInit.bF_; //bF /= sqrt(2.0);
+	  bF = ( bunchInit.bF_ == 0.0 ) ? 1.0 / sqrt(Ne) : bunchInit.bF_;
 
 	  printmessage(std::string(__FILE__), __LINE__, std::string("The standard deviation of the bunching factor for the shot noise implementation is set to ") + stringify(bF) );
 	}
+
+      /**************************************************************************************************/
 
       /* Determine the properties of each charge point and add them to the charge vector.               */
       for (i = 0; i < Np / 4; i++)
@@ -243,12 +254,7 @@ namespace Darius
 	  /* Determine the transverse momentum.								*/
 	  t[0] = bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * cos( 2.0 * PI * halton(5, i + Np0) );
 	  t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * sin( 2.0 * PI * halton(5, i + Np0) );
-
-	  /* Determine the longitudinal momentum.							*/
-	  if ( bunchInit.distribution_ == "uniform" )
-	    t[2] = ( 2.0 * halton(6, i + Np0) - 1.0 ) * bunchInit.sigmaGammaBeta_[2];
-	  else if ( bunchInit.distribution_ == "gaussian" )
-	    t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
+	  t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
 
 	  if ( fabs(r[0]) < bunchInit.tranTrun_ && fabs(r[1]) < bunchInit.tranTrun_ && fabs(r[2]) < bunchInit.longTrun_)
 	    {
@@ -256,7 +262,7 @@ namespace Darius
 	      charge.rnp    = bunchInit.position_[ia];
 	      charge.rnp   += r;
 
-	      (charge.gbnp).mv(gb, bunchInit.initialDirection_);
+	      charge.gbnp   = gb;
 	      charge.gbnp  += t;
 
 	      /* Insert this charge and the mirrored ones into the charge vector.			*/
@@ -279,12 +285,7 @@ namespace Darius
 	    /* Determine the transverse momentum.							*/
 	    t[0] = bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * cos( 2.0 * PI * halton(5, i + Np0) );
 	    t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * sin( 2.0 * PI * halton(5, i + Np0) );
-
-	    /* Determine the longitudinal momentum.							*/
-	    if ( bunchInit.distribution_ == "uniform" )
-	      t[2] = ( 2.0 * halton(6, i + Np0) - 1.0 ) * bunchInit.sigmaGammaBeta_[2];
-	    else if ( bunchInit.distribution_ == "gaussian" )
-	      t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
+	    t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
 
 	    if ( fabs(r[0]) < bunchInit.tranTrun_ && fabs(r[1]) < bunchInit.tranTrun_ && fabs(r[2]) < bunchInit.longTrun_)
 	      {
@@ -292,13 +293,15 @@ namespace Darius
 		charge.rnp   = bunchInit.position_[ia];
 		charge.rnp  += r;
 
-		(charge.gbnp).mv(gb, bunchInit.initialDirection_);
+		charge.gbnp  = gb;
 		charge.gbnp += t;
 
 		/* Insert this charge and the mirrored ones into the charge vector.			*/
 		insertCharge(charge);
 	      }
 	  }
+
+      /**************************************************************************************************/
 
       /* Reset the value for the number of particle variable according to the installed number of
        * macro-particles and perform the corresponding changes.                                         */
@@ -326,8 +329,9 @@ namespace Darius
 	}
 
       /* Declare the required parameters for the initialization of charge vectors.                      */
-      Charge            charge;
-      Double gb       = bunchInit.initialBeta_ / sqrt( 1.0 - bunchInit.initialBeta_ * bunchInit.initialBeta_);
+      Charge            	charge;
+      FieldVector<Double> 	gb (0.0);
+      gb.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
       unsigned int np = bunchInit.numberOfParticles_ / (bunchInit.numbers_[0] * bunchInit.numbers_[1] * bunchInit.numbers_[2]);
 
       /* Clear the charge vector for adding the charges.						*/
@@ -351,7 +355,7 @@ namespace Darius
 		      charge.rnp[1] += 0.5 * bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(2,i) ) ) * sin( 2.0 * PI * halton(3,i) );
 		      charge.rnp[2] += 0.5 * bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(4,i) ) ) * sin( 2.0 * PI * halton(5,i) );
 
-		      (charge.gbnp).mv(gb, bunchInit.initialDirection_);
+		      charge.gbnp     = gb;
 		      charge.gbnp[0] += bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(6,i) ) ) * sin( 2.0 * PI * halton(7,i) );
 		      charge.gbnp[1] += bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(8,i) ) ) * sin( 2.0 * PI * halton(9,i) );
 		      charge.gbnp[2] += bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(10,i)) ) * sin( 2.0 * PI * halton(11,i));
@@ -379,7 +383,8 @@ namespace Darius
       Charge                    charge;
       FieldVector<Double>	gb (0.0);
       FieldVector<Double>	r  (0.0);
-      Double 			gbm = bunchInit.initialBeta_ / sqrt( 1.0 - bunchInit.initialBeta_ * bunchInit.initialBeta_);
+      FieldVector<Double> 	gbm (0.0);
+      gbm.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
 
       /* Clear the charge vector for adding the charges.						*/
       chargeVector.clear();
@@ -402,7 +407,7 @@ namespace Darius
 	  charge.rnp   = bunchInit.position_[ia];
 	  charge.rnp  += r;
 
-	  (charge.gbnp).mv(gbm, bunchInit.initialDirection_);
+	  charge.gbnp  = gbm;
 	  charge.gbnp += gb;
 
 	  /* Insert this charge to the charge list if and only if it resides in the processor's portion.*/
@@ -446,9 +451,6 @@ namespace Darius
     /* Rhythm of writing the bunch macroscopic values in the output file.                              	*/
     Double         			rhythm_;
 
-    /* Time points at which the bunch is produced.                                                      */
-    Double                    		timeStart_;
-
     /* Boolean parameter that determines if the vtk visualization should be done.                      	*/
     bool				bunchVTK_;
 
@@ -476,6 +478,12 @@ namespace Darius
     /* Rhythm of saving the bunch profile. It should be a double value bigger than the time step.	*/
     Double				bunchProfileRhythm_;
 
+    /* Position of the undulator begin at the instance of bunch initialization.				*/
+    Double				zu_;
+
+    /* Beta of the moving frame in the stationary lab frame.						*/
+    Double				beta_;
+
     /* Show the stored values for the bunch.                                                          	*/
     void show()
     {
@@ -502,7 +510,6 @@ namespace Darius
 	      printmessage(std::string(__FILE__), __LINE__, std::string(" File name of the bunch = ") + bunchInit_[i].fileName_ );
 	    }
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" Initial bunching factor in the bunch = ") + stringify(bunchInit_[i].bF_) );
-	  printmessage(std::string(__FILE__), __LINE__, std::string(" Initialization time of the bunch = ") + stringify(timeStart_) );
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" Time step for the bunch calculation = ") + stringify(timeStep_) );
 	}
       if ( sampling_ )
@@ -1164,10 +1171,10 @@ namespace Darius
       /* Initialize the Rayleigh radius of the Gaussian beam.                                           */
       radius_ 		= radius;
 
-      /* Initialize the undulator period according to the fiven wavelength for the signal.		*/
+      /* Initialize the undulator period according to the given wavelength for the signal.		*/
       lu_		= wavelength;
 
-      /* check if length of polarization vector is zero and normalize the vector.                       */
+      /* check if the given radius of the gaussian beam makes sense.                       		*/
       if ( seedType_ == GAUSSIANBEAM && radius_[0] * radius_[1] == 0.0)
 	{
 	  printmessage(std::string(__FILE__), __LINE__, std::string("One of the radii of the Gaussian beam is set to zero."));

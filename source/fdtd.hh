@@ -56,10 +56,6 @@ namespace Darius
       printmessage(std::string(__FILE__), __LINE__, std::string("-> Run the time domain simulation ...") );
       while (time_ < mesh_.totalTime_)
 	{
-<<<<<<< HEAD
-
-=======
->>>>>>> dc0eea3d83f08a604825a11a9ae6ae3fb2721833
 	  /* Update the fields for one time step using the FDTD algorithm				*/
 	  fieldUpdate();
 
@@ -93,10 +89,6 @@ namespace Darius
 	  /* Reset the charge and current values to zero.						*/
 	  currentReset();
 
-<<<<<<< HEAD
-	  /* If the bunch is initialized, do the bunch calculations.					*/
-	  if (bunchInitialized_)
-=======
 	  /* For the sake of having correct charge conservation in the implementation of PIC model, we
 	   * need to first update the charge motion with having the initial position saved in the memory.
 	   * Then, the current and charge update should all happen using the very first and the very last
@@ -104,7 +96,6 @@ namespace Darius
 
 	  /* Update the position and velocity parameters.						*/
 	  for (iter = iterQB_; iter != iterQE_; iter++)
->>>>>>> dc0eea3d83f08a604825a11a9ae6ae3fb2721833
 	    {
 	      iter->rnm  = iter->rnp;
 	      iter->gbnm = iter->gbnp;

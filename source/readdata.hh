@@ -102,6 +102,10 @@ namespace Darius
     std::string boolStr = line.substr(posEqual+1,line.size()-1);
     if ( boolStr.compare("true") == 0 )         value = true;
     else if ( boolStr.compare("false") == 0 )   value = false;
+    else{
+      printmessage(std::string(__FILE__), __LINE__, std::string("boolValue(std::string line) got unexpected input. Input should be \"true\" or \"false\" ") );
+      exit(1);
+    }
     return value;
   };
 

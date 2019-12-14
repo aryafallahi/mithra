@@ -138,7 +138,7 @@ namespace Darius
       FieldVector<Double> gb (0.0); gb.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
       FieldVector<Double> r  (0.0);
       FieldVector<Double> t  (0.0);
-      Double            t0, t1, t2 = -1.0, g;
+      Double            t0, g;
       Double		zmin = 1e100;
       Double		Ne, bF, bFi;
       unsigned int	bmi;
@@ -212,7 +212,7 @@ namespace Darius
 	    }
 
 	  if ( bunchInit.distribution_ == "uniform" )
-	    for ( ; i < int( Np / 4 * ( 1.0 + bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
+	    for ( ; i < unsigned( Np / 4 * ( 1.0 + bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
 	      {
 		t0  = bunchInit.lambda_ * sqrt( - 2.0 * log( halton( 2, i + Np0 ) ) ) * sin( 2.0 * PI * halton( 3, i + Np0 ) );
 		t0 += ( t0 < 0.0 ) ? ( - bunchInit.sigmaPosition_[2] ) : ( bunchInit.sigmaPosition_[2] );
@@ -273,7 +273,7 @@ namespace Darius
       /* If the longitudinal type of the bunch is uniform a tapered part needs to be added to remove the
        * CSE from the tail of the bunch.								*/
       if ( bunchInit.distribution_ == "uniform" )
-	for ( ; i < int( Np / 4 * ( 1.0 + bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
+	for ( ; i < unsigned( Np / 4 * ( 1.0 + bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
 	  {
 	    r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * cos( 2.0 * PI * halton(1, i + Np0) );
 	    r[1] = bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * sin( 2.0 * PI * halton(1, i + Np0) );

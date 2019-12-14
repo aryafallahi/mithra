@@ -86,7 +86,7 @@ namespace Darius
 	     * harmonic. Here, we use the power inside three radiation cycles to calculate the
 	     * instantaneous power at the selected harmonic.						*/
 	    Double dt = undulator_[0].lu_ / FEL_[jf].radiationPower_.lambda_[i] / ( gamma_ * c0_ );
-	    rp_[jf].Nf = ( int( 3.0 * dt / mesh_.timeStep_ ) > rp_[jf].Nf ) ? int( 3.0 * dt / mesh_.timeStep_ ) : rp_[jf].Nf;
+	    rp_[jf].Nf = ( unsigned( 3.0 * dt / mesh_.timeStep_ ) > rp_[jf].Nf ) ? unsigned( 3.0 * dt / mesh_.timeStep_ ) : rp_[jf].Nf;
 
 	    /* Calculate the angular frequency for each wavelength.					*/
 	    rp_[jf].w[i] = 2 * PI / dt;
@@ -173,7 +173,7 @@ namespace Darius
 	 * harmonic. Here, we use the power inside three radiation cycles to calculate the instantaneous
 	 * power at the selected harmonic.								*/
 	Double dt = undulator_[0].lu_ / FEL_[jf].vtk_.lambda_ / ( gamma_ * c0_ );
-	rp_[jf].Nf = int( 3.0 * dt / mesh_.timeStep_ );
+	rp_[jf].Nf = unsigned( 3.0 * dt / mesh_.timeStep_ );
 
 	/* Calculate the angular frequency for each wavelength.						*/
 	rp_[jf].w[0] = 2 * PI / dt;
@@ -223,8 +223,8 @@ namespace Darius
 	if (!FEL_[jf].radiationPower_.sampling_) continue;
 
 	/* First reset all the previously calculated powers.                                          	*/
-	for (k = 0; k < rp_[jf].N; ++k)
-	  for (l = 0; l < rp_[jf].Nl; ++l)
+	for (unsigned k = 0; k < rp_[jf].N; ++k)
+	  for (unsigned l = 0; l < rp_[jf].Nl; ++l)
 	    rp_[jf].pL[k * rp_[jf].Nl + l] = 0.0;
 
 	/* Set the index of the sampling point to zero.                                               	*/
@@ -234,7 +234,7 @@ namespace Darius
 	 * radiated power at the specific point and frequency.                                        	*/
 
 	/* k index loops over the sampling positions.							*/
-	for (k = 0; k < rp_[jf].N; ++k)
+	for (unsigned k = 0; k < rp_[jf].N; ++k)
 	  {
 	    /* Do not continue if this index is not supported by the processor.                       	*/
 	    if ( !( FEL_[jf].radiationPower_.z_[k] < zp_[1] && FEL_[jf].radiationPower_.z_[k] >= zp_[0] ) ) continue;
@@ -247,8 +247,8 @@ namespace Darius
 	    rp_[jf].m	= nTime_ % rp_[jf].Nf;
 
 	    /* Loop over the transverse indices.                                                      	*/
-	    for (i = 2; i < N0_ - 2; i += 1)
-	      for (j = 2; j < N1_ - 2; j += 1)
+	    for (int i = 2; i < N0_ - 2; i += 1)
+	      for (int j = 2; j < N1_ - 2; j += 1)
 		{
 		  /* Get the index in the computation grid as well as the field storage grid.         	*/
 		  mi = ( rp_[jf].k - k0_) * N1_* N0_ + i * N1_ + j;
@@ -276,11 +276,11 @@ namespace Darius
 		  /* Add the contribution of this field to the radiation power.                       	*/
 
 		  /* l index loops over the given wavelength of the power sampling.			*/
-		  for ( l = 0; l < rp_[jf].Nl; l++)
+		  for ( unsigned l = 0; l < rp_[jf].Nl; l++)
 		    {
 		      ew1 = Complex (0.0, 0.0); bw1 = ew1; ew2 = ew1; bw2 = ew1;
 
-		      for ( m = 0; m < rp_[jf].Nf; m++)
+		      for ( unsigned m = 0; m < rp_[jf].Nf; m++)
 			{
 			  ew1 += rp_[jf].fdt[m][ni][0] * rp_[jf].ep[l][m];
 			  bw1 += rp_[jf].fdt[m][ni][3] * rp_[jf].em[l][m];
@@ -302,11 +302,11 @@ namespace Darius
 
 	/* If the rank of the processor is equal to zero, i.e. root processor save the fields into the
 	 * given file.                                                                                	*/
-	for ( l = 0; l < rp_[jf].Nl; l++)
+	for ( unsigned l = 0; l < rp_[jf].Nl; l++)
 	  {
-	    if ( rank_ == ( l % size_ ) )
+	    if ( rank_ == int( l % size_ ) )
 	      {
-		for (k = 0; k < rp_[jf].N; ++k)
+		for (unsigned k = 0; k < rp_[jf].N; ++k)
 		  *(rp_[jf].file[l]) << gamma_ * ( FEL_[jf].radiationPower_.z_[k] + beta_ * c0_ * ( timeBunch_ + dt_ ) ) << "\t" << rp_[jf].pG[k * rp_[jf].Nl + l] << "\t";
 		*(rp_[jf].file[l]) << std::endl;
 	      }
@@ -345,8 +345,8 @@ namespace Darius
 	    rp_[jf].m	= nTime_ % rp_[jf].Nf;
 
 	    /* Loop over the transverse indices.                                                      	*/
-	    for (i = 1; i < N0_ - 1; i++)
-	      for (j = 1; j < N1_ - 1; j++)
+	    for (int i = 1; i < N0_ - 1; i++)
+	      for (int j = 1; j < N1_ - 1; j++)
 		{
 		  /* Get the index in the computation grid as well as the field storage grid.         	*/
 		  mi = rp_[jf].k * N1_* N0_ + i * N1_ + j;
@@ -373,7 +373,7 @@ namespace Darius
 
 		  ew1 = Complex (0.0, 0.0); bw1 = ew1; ew2 = ew1; bw2 = ew1;
 
-		  for ( m = 0; m < rp_[jf].Nf; m++)
+		  for (unsigned m = 0; m < rp_[jf].Nf; m++)
 		    {
 		      ew1 += rp_[jf].fdt[m][ni][0] * rp_[jf].ep[l][m];
 		      bw1 += rp_[jf].fdt[m][ni][3] * rp_[jf].em[l][m];
@@ -406,8 +406,8 @@ namespace Darius
 		/* Insert the coordinates of the grid for the charge points.				*/
 		*rp_[jf].file[0] << "<Points>"                                                        << std::endl;
 		*rp_[jf].file[0] << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"<< std::endl;
-		for (j = 0; j < N1_; j++)
-		  for (i = 0; i < N0_; i++)
+		for (int j = 0; j < N1_; j++)
+		  for (int i = 0; i < N0_; i++)
 		    {
 		      m = rp_[jf].k * N1_ * N0_ + i * N1_ + j;
 		      *rp_[jf].file[0] << r_[m][0] * ( 1.0 - rp_[jf].dzr ) + r_[m + N1N0_][0] * rp_[jf].dzr << " "
@@ -424,8 +424,8 @@ namespace Darius
 		*rp_[jf].file[0] << "<PointData Vectors = \"power\">"                                 << std::endl;
 		*rp_[jf].file[0] << "<DataArray type=\"Float64\" Name=\"power\" NumberOfComponents=\"" << 1 << "\" format=\"ascii\">"
 		    << std::endl;
-		for (j = 0; j < N1_; j++)
-		  for (i = 0; i < N0_; i++)
+		for (int j = 0; j < N1_; j++)
+		  for (int i = 0; i < N0_; i++)
 		    *rp_[jf].file[0] << rp_[jf].pL[i * N1_ + j] 					<< std::endl;
 
 		*rp_[jf].file[0] << "</DataArray>"                                                   	<< std::endl;

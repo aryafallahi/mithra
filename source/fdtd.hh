@@ -37,9 +37,6 @@ namespace Darius
       std::vector<Double>*			ft;
       std::list<Charge>::iterator 		iter;
 
-      timeval                                   t0, t1, ti, tf;
-      Double                                    t2 = 0.0, t3 = 0.0, t4 = 0.0, t5 = 0.0;
-
       /* Transfer the whole quantities to the electron rest frame.					*/
       lorentzBoost();
 

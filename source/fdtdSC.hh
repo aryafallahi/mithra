@@ -37,9 +37,6 @@ namespace Darius
       std::vector<Double>*			ft;
       std::list<Charge>::iterator 		iter;
 
-      timeval                                   t0, t1, ti, tf;
-      Double                                    t2 = 0.0, t3 = 0.0, t4 = 0.0, t5 = 0.0;
-
       /* Transfer the whole quantities to the electron rest frame.					*/
       lorentzBoost();
 
@@ -220,11 +217,11 @@ namespace Darius
 
 	  /* Save the flag detecting that the particle is in the domain of the processor.               */
 	  bp = ( uc_.rp[0] < xmax_ - uc_.dx && uc_.rp[0] > xmin_ + uc_.dx &&
-	      uc_.rp[1] < ymax_ - uc_.dy && uc_.rp[1] > ymin_ + uc_.dy &&
-	      uc_.rp[2] < zp_[1]         && uc_.rp[2] >= zp_[0] );
+	         uc_.rp[1] < ymax_ - uc_.dy && uc_.rp[1] > ymin_ + uc_.dy &&
+	         uc_.rp[2] < zp_[1]         && uc_.rp[2] >= zp_[0] );
 	  bm = ( uc_.rm[0] < xmax_ - uc_.dx && uc_.rm[0] > xmin_ + uc_.dx &&
-	      uc_.rm[1] < ymax_ - uc_.dy && uc_.rm[1] > ymin_ + uc_.dy &&
-	      uc_.rm[2] < zp_[1]         && uc_.rm[2] >= zp_[0] );
+	         uc_.rm[1] < ymax_ - uc_.dy && uc_.rm[1] > ymin_ + uc_.dy &&
+	         uc_.rm[2] < zp_[1]         && uc_.rm[2] >= zp_[0] );
 
 	  /* Continue the loop if none of the above conditions are met.                                 */
 	  if ( ! (bp || bm) ) continue;

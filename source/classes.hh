@@ -547,7 +547,7 @@ namespace Darius
   {
       t0_ 		= 0.0;
       s_  		= 0.0;
-      f0_ 		= 0.0;
+      f0_ 		= 1.0;
       cep_		= 0.0;
       signalType_	= GAUSSIAN;
   };

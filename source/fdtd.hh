@@ -30,7 +30,7 @@ namespace Darius
     {
       /* Declare the required variables in the calculations to avoid redundant data decalaration.	*/
       timeval           			simulationStart, simulationEnd;
-      Double 					deltaTime, p;
+      Double 					deltaTime, p = 0.0;
       std::stringstream 			printedMessage;
       std::vector<FieldVector<Double> >*	at;
       std::list<Charge>::iterator 		iter;

@@ -322,7 +322,7 @@ namespace Darius
   {
 
     /* Declare the temporary parameters needed for calculating the radiated power.                    	*/
-    unsigned int              	l, m;
+    unsigned int              	m;
     long int                  	mi, ni;
     FieldVector<Double>       	et, bt;
     Complex                   	ew1, bw1, ew2, bw2;
@@ -370,17 +370,21 @@ namespace Darius
 		  rp_[jf].fdt[rp_[jf].m][ni][2] = gamma_ * ( bt[0] - beta_ / c0_ * et[1] );
 		  rp_[jf].fdt[rp_[jf].m][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
 
-		  ew1 = Complex (0.0, 0.0); bw1 = ew1; ew2 = ew1; bw2 = ew1;
-
-		  for (unsigned m = 0; m < rp_[jf].Nf; m++)
+		  /* l index loops over the given wavelength of the power sampling.			*/
+		  for ( unsigned l = 0; l < rp_[jf].Nl; l++)
 		    {
-		      ew1 += rp_[jf].fdt[m][ni][0] * rp_[jf].ep[l][m];
-		      bw1 += rp_[jf].fdt[m][ni][3] * rp_[jf].em[l][m];
-		      ew2 += rp_[jf].fdt[m][ni][1] * rp_[jf].ep[l][m];
-		      bw2 += rp_[jf].fdt[m][ni][2] * rp_[jf].em[l][m];
-		    }
+		      ew1 = Complex (0.0, 0.0); bw1 = ew1; ew2 = ew1; bw2 = ew1;
 
-		  rp_[jf].pL[ni] = rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );
+		      for (unsigned m = 0; m < rp_[jf].Nf; m++)
+			{
+			  ew1 += rp_[jf].fdt[m][ni][0] * rp_[jf].ep[l][m];
+			  bw1 += rp_[jf].fdt[m][ni][3] * rp_[jf].em[l][m];
+			  ew2 += rp_[jf].fdt[m][ni][1] * rp_[jf].ep[l][m];
+			  bw2 += rp_[jf].fdt[m][ni][2] * rp_[jf].em[l][m];
+			}
+
+		      rp_[jf].pL[ni] = rp_[jf].pc * ( std::real( ew1 * bw1 ) - std::real( ew2 * bw2 ) );
+		    }
 		}
 
 	    if ( fmod(time_, FEL_[jf].vtk_.rhythm_) < mesh_.timeStep_ )

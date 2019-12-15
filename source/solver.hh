@@ -325,8 +325,7 @@ namespace Darius
       printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the temporal and spatial mesh of the problem.") );
 
       /* Declare the required variables in the calculations to avoid redundant data declaration.	*/
-      unsigned int 	i = 0, j = 0, k = 0, m = 0;
-      Double		temp;
+      unsigned int 	m = 0;
 
       /* First the mesh-length needs to be adjusted to contain a multiple number of the mesh-resolution
        * in each direction.										*/
@@ -420,8 +419,7 @@ namespace Darius
       printmessage(std::string(__FILE__), __LINE__, std::string(" ::: Initializing the field update data") );
 
       /* Declare the required variables in the calculations to avoid redundant data declaration.	*/
-      unsigned int 	i = 0, j = 0, k = 0, m = 0;
-      Double		temp;
+      unsigned int      m = 0;
 
       /* Initialize the data for updating the currents.                                                 */
       uc_.dx = mesh_.meshResolution_[0];
@@ -1098,10 +1096,8 @@ namespace Darius
 
     void bunchSample()
     {
-      /* First define a parameter for the processor number.						*/
-      unsigned int                      i, l;
+      /* First define a iterator.                        						*/
       std::list<Charge>::iterator       iter;
-      int                               k;
 
       /* First, we need to evaluate the charge cloud properties and for that the corresponding data
        * should be initialized.                                                                     	*/
@@ -1168,8 +1164,7 @@ namespace Darius
 
     void bunchVisualize()
     {
-      /* First define a parameter for the processor number.						*/
-      int                               k;
+      /* First define a parameters.                         						*/
       std::list<Charge>::iterator       iter;
       Double                            gamma, beta;
 
@@ -1286,8 +1281,7 @@ namespace Darius
 
     void bunchProfile()
     {
-      /* First define a parameter for the processor number.						*/
-      unsigned int                      i, k;
+      /* First define a iterator.									*/
       std::list<Charge>::iterator       iter;
 
       /* The old files if existing should be deleted.                                           	*/
@@ -1297,8 +1291,6 @@ namespace Darius
       (*pb_.file).setf(std::ios::scientific);
       (*pb_.file).precision(15);
       (*pb_.file).width(40);
-
-      Double qr = 0, q = 0;
 
       for (iter = iterQB_; iter != iterQE_; iter++)
 	{
@@ -1804,11 +1796,9 @@ namespace Darius
     void radiationEnergySample()
     {
       /* Declare the temporary parameters needed for calculating the radiated power.                    */
-      unsigned int              k, l, m, i, j, mi, ni, thid;
+      unsigned int              mi, ni;
       FieldVector<Double>       et, bt;
       Complex                   ew1, bw1, ew2, bw2, ex;
-      Double                    pt;
-      bool                      dt = false;
 
       /* Loop over the different FEL output parameters and calculate the radiation energy if the energy
        * calculation is activated.                                                                      */

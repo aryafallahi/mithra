@@ -210,7 +210,7 @@ namespace Darius
   void Solver::powerSample()
   {
     /* Declare the temporary parameters needed for calculating the radiated power.                    	*/
-    unsigned int              	k, l, m, i, j, kz;
+    unsigned int              	kz;
     long int                  	mi, ni;
     FieldVector<Double>       	et, bt;
     Complex                   	ew1, bw1, ew2, bw2;
@@ -322,11 +322,10 @@ namespace Darius
   {
 
     /* Declare the temporary parameters needed for calculating the radiated power.                    	*/
-    unsigned int              	k, l, m, i, j, kz;
+    unsigned int              	l, m;
     long int                  	mi, ni;
     FieldVector<Double>       	et, bt;
     Complex                   	ew1, bw1, ew2, bw2;
-    Double			ec, es, ea;
 
     /* Loop over the different FEL output parameters and visualize the radiation power if visualization
      * is activated.                                                                      		*/

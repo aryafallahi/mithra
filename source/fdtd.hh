@@ -30,11 +30,9 @@ namespace Darius
     {
       /* Declare the required variables in the calculations to avoid redundant data decalaration.	*/
       timeval           			simulationStart, simulationEnd;
-      unsigned int				i = 0, j = 0, k = 0, thid;
-      Double 					deltaTime, p, t;
+      Double 					deltaTime, p;
       std::stringstream 			printedMessage;
       std::vector<FieldVector<Double> >*	at;
-      std::vector<Double>*			ft;
       std::list<Charge>::iterator 		iter;
 
       /* Transfer the whole quantities to the electron rest frame.					*/
@@ -193,7 +191,6 @@ namespace Darius
     void currentUpdate()
     {
       FieldVector<Double>*	        jn   = &jn_[0];
-      Double*			        rn   = &rn_[0];
       bool                              bp, bm;
       std::list<Charge>::iterator       it = chargeVectorn_.begin();
 
@@ -342,7 +339,7 @@ namespace Darius
 
     void currentCommunicate()
     {
-      int                               msgtag9 = 9, msgtag10 = 10;
+      int                               msgtag9 = 9;
       MPI_Status                        status;
       std::list<Charge>::iterator       it = chargeVectorn_.begin();
 
@@ -383,13 +380,12 @@ namespace Darius
     void fieldUpdate()
     {
       /* Define the values temporally needed for updating the fields.					*/
-      unsigned int 		i, j, k, thid;
+      unsigned int 		i, j, k;
       long int                  m, l;
       MPI_Status 		status;
-      int 			msgtag1 = 1, msgtag2 = 2, msgtag3 = 3, msgtag4 = 4;
+      int 			msgtag1 = 1, msgtag3 = 3;
       int                       msgtag5 = 5, msgtag6 = 6, msgtag7 = 7, msgtag8 = 8;
       FieldVector<Double>	atemp; atemp = 0.0;
-      Double			ftemp;
 
       uf_.anp1 = &(*anp1_)[0][0];
       uf_.an   = &(*an_)  [0][0];
@@ -991,9 +987,6 @@ namespace Darius
 
     void fieldSample()
     {
-      Double*	anp1 = &(*anp1_)[0][0];
-      Double*	an   = &(*an_)  [0][0];
-      Double*	anm1 = &(*anm1_)[0][0];
 
       /* Do the field sampling if and only if sampling points are residing within this processor range.	*/
       if ( sf_.N > 0 )
@@ -1115,7 +1108,6 @@ namespace Darius
 
     void fieldVisualizeAllDomain(unsigned int ivtk)
     {
-      unsigned int		i, j, k, l;
       long int			m;
 
       /* The old files if existing should be deleted.                                          		*/
@@ -1289,9 +1281,9 @@ namespace Darius
 
     void fieldVisualizeInPlaneXNormal(unsigned int ivtk)
     {
-      unsigned int		i, j, k, l, n;
+      unsigned int		i, n;
       long int			m;
-      Double			dxr, dyr, dzr, c;
+      Double			dxr, c;
 
       /* The old files if existing should be deleted.                                          		*/
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
@@ -1453,9 +1445,9 @@ namespace Darius
 
     void fieldVisualizeInPlaneYNormal(unsigned int ivtk)
     {
-      unsigned int		i, j, k, l, n;
+      unsigned int		j, n;
       long int			m;
-      Double			dxr, dyr, dzr, c;
+      Double			dyr, c;
 
       /* The old files if existing should be deleted.                                          		*/
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
@@ -1617,9 +1609,9 @@ namespace Darius
 
     void fieldVisualizeInPlaneZNormal(unsigned int ivtk)
     {
-      unsigned int		i, j, k, l, n;
+      unsigned int	        k, n;
       long int			m;
-      Double			dxr, dyr, dzr, c;
+      Double		        dzr, c;
 
       /* The old files if existing should be deleted.                                          		*/
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;

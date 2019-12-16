@@ -1428,7 +1428,8 @@ namespace Darius
 	lambdaMax_	= 0.0;
 	lambdaRes_	= 0.0;
       }
-    } 						radiationPower_;
+    };
+    RadiationPower radiationPower_;
 
     /* Structure containing the parsed parameters for the power-visualization.				*/
     struct vtk
@@ -1460,7 +1461,8 @@ namespace Darius
 	basename_	= "";
 	rhythm_		= 0.0;
       }
-    } 						vtk_;
+    };
+    vtk vtk_;
 
     /* Structure contianing the parsed parameters for the radiation energy.				*/
     struct RadiationEnergy
@@ -1520,7 +1522,8 @@ namespace Darius
 	lambdaMax_	= 0.0;
 	lambdaRes_	= 0.0;
       }
-    } 						radiationEnergy_;
+    };
+    RadiationEnergy radiationEnergy_;
 
 
   };

@@ -51,13 +51,13 @@ namespace Darius
   const std::string VTU_FILE_SUFFIX = ".vtu";
 
   /* Unit imaginary number.										*/
-  const Complex I (0.0,1.0);
+  const Complex I = Complex (0.0,1.0);
 
   /* Check if a path is an absolute path (beginning with an '/').                                       */
   inline bool isabsolute(std::string filename)
   {
     return (filename.compare(0,1,"/") == 0);
-  };
+  }
 
   /* Check if a directory to save the data exists.							*/
   bool pathExist(const std::string &s)
@@ -91,7 +91,7 @@ namespace Darius
   template <typename T> inline int signof(T x)
   {
     return ( (x > 0) ? 1 : ( (x < 0) ? -1 : 0 ) );
-  };
+  }
 
   /* Print a message on the terminal window.                                                            */
   inline void printmessage(std::string filename, unsigned int linenumber, std::string message)
@@ -118,7 +118,7 @@ namespace Darius
 	/* Print on the terminal if there is something written in the stream.                        	*/
 	if (printedMessage.str().length() > 0 )     std::cout << printedMessage.str() << std::endl;
       }
-  };
+  }
 
   /* Convert any number to a string.                                                                    */
   template<typename numbertype>
@@ -137,7 +137,7 @@ namespace Darius
     }
 
     return oStream.str();
-  };
+  }
 
   /* Define the structure for each charge point.							*/
   struct Charge

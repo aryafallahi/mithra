@@ -32,7 +32,7 @@ namespace Darius
       a[0] = x;
       a[1] = x;
       a[2] = x;
-    };
+    }
 
     ElementType& operator [] (unsigned int n)
     {
@@ -105,7 +105,7 @@ namespace Darius
       a[0] = y[0];
       a[1] = y[1];
       a[2] = y[2];
-    };
+    }
 
     template <class T>
     void operator= (std::vector<T>& y)
@@ -130,7 +130,7 @@ namespace Darius
     x[0] += y;
     x[1] += y;
     x[2] += y;
-  };
+  }
 
   template <class T1, class T2>
   void operator-= (FieldVector<T1>& x, T2& y)
@@ -138,7 +138,7 @@ namespace Darius
     x[0] -= y;
     x[1] -= y;
     x[2] -= y;
-  };
+  }
 
   template <class T1, class T2>
   void operator*= (FieldVector<T1>& x, T2& y)
@@ -146,7 +146,7 @@ namespace Darius
     x[0] *= y;
     x[1] *= y;
     x[2] *= y;
-  };
+  }
 
   template <class T1, class T2>
   void operator/= (FieldVector<T1>& x, T2& y)
@@ -154,7 +154,7 @@ namespace Darius
     x[0] /= y;
     x[1] /= y;
     x[2] /= y;
-  };
+  }
 
   template <class T1, class T2>
   void operator+= (FieldVector<T1>& x, FieldVector<T2>& y)
@@ -162,7 +162,7 @@ namespace Darius
     x[0] += y[0];
     x[1] += y[1];
     x[2] += y[2];
-  };
+  }
 
   template <class T1, class T2>
   void operator-= (FieldVector<T1>& x, FieldVector<T2>& y)
@@ -170,13 +170,13 @@ namespace Darius
     x[0] -= y[0];
     x[1] -= y[1];
     x[2] -= y[2];
-  };
+  }
 
   template <class T1, class T2>
   T1 operator* (FieldVector<T1>& x, FieldVector<T2>& y)
   {
     return ( x[0]*y[0] + x[1]*y[1] + x[2]*y[2] );
-  };
+  }
 
   template <class T1, class T2>
   FieldVector<T1> cross (FieldVector<T1>& x, FieldVector<T2>& y)
@@ -186,7 +186,7 @@ namespace Darius
     z[1] = x[2] * y[0] - x[0] * y[2];
     z[2] = x[0] * y[1] - x[1] * y[0];
     return (z);
-  };
+  }
 
   template <class T>
   inline void operator<< (std::ostringstream &in, FieldVector<T>& y)

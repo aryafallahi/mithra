@@ -1,32 +1,19 @@
-/********************************************************************************************************
- *  fdtd.hh : Implementation of the real fdtd time marching solution class for the darius code
- ********************************************************************************************************/
+// fdtd.cpp
+//
 
-#ifndef FDTD_HH_
-#define FDTD_HH_
+#include <sys/time.h>
+
+#include "fdtd.h"
 
 namespace Darius
 {
-
-  /* Class of functions used for the solution of the fields in time domain using FDTD.			*/
-  class FdTd : public Solver
-  {
-
-  public:
-
-    FdTd( Mesh& mesh, Bunch& bunch, Seed& seed,
-	  std::vector<Undulator>&		undulator,
-	  std::vector<ExtField>& 		extField,
-	  std::vector<FreeElectronLaser>& 	FEL )
-  : Solver ( mesh, bunch, seed, undulator, extField, FEL )
-  {
-  };
-
-    /****************************************************************************************************
-     * The function which is called for solving the fields in time domain.
-     ****************************************************************************************************/
-
-    void solve()
+  FdTd::FdTd (Mesh & mesh, Bunch & bunch, Seed & seed, std::vector <Undulator> & undulator, std::vector <ExtField> & extField, std::vector <FreeElectronLaser> & FEL)
+    : Solver (mesh, bunch, seed, undulator, extField, FEL)
+  {}
+}
+namespace Darius
+{
+  void FdTd::solve ()
     {
       /* Declare the required variables in the calculations to avoid redundant data decalaration.	*/
       timeval           			simulationStart, simulationEnd;
@@ -171,11 +158,10 @@ namespace Darius
       /* Finalize the calculations and the data saving.							*/
       finalize();
     }
-
-    /****************************************************************************************************
-     * Reset the currents to zero.
-     ****************************************************************************************************/
-    void currentReset()
+}
+namespace Darius
+{
+  void FdTd::currentReset ()
     {
       Double*  jn = &jn_[0][0];
       Double*  je = &jn_[(long)N1N0_*np_-1][2];
@@ -183,12 +169,10 @@ namespace Darius
 	*(jn++) = 0.0;
       *je = 0.0;
     }
-
-    /****************************************************************************************************
-     * Update the currents at cell points for the filed update.
-     ****************************************************************************************************/
-
-    void currentUpdate()
+}
+namespace Darius
+{
+  void FdTd::currentUpdate ()
     {
       FieldVector<Double>*	        jn   = &jn_[0];
       bool                              bp, bm;
@@ -332,12 +316,10 @@ namespace Darius
 	    }
 	}
     }
-
-    /****************************************************************************************************
-     * Communicate the currents among different processors.
-     ****************************************************************************************************/
-
-    void currentCommunicate()
+}
+namespace Darius
+{
+  void FdTd::currentCommunicate ()
     {
       int                               msgtag9 = 9;
       MPI_Status                        status;
@@ -372,12 +354,10 @@ namespace Darius
       iterQB_ = chargeVectorn_.begin();
       iterQE_ = chargeVectorn_.end();
     }
-
-    /****************************************************************************************************
-     * Update the fields for one time-step
-     ****************************************************************************************************/
-
-    void fieldUpdate()
+}
+namespace Darius
+{
+  void FdTd::fieldUpdate ()
     {
       /* Define the values temporally needed for updating the fields.					*/
       unsigned int 		i, j, k;
@@ -947,12 +927,10 @@ namespace Darius
 	  MPI_Recv(uf_.bn+3*(np_-1)*N1N0_,	3*N1N0_,MPI_TYPE,rank_+1,msgtag8,MPI_COMM_WORLD,&status);
 	}
     }
-
-    /****************************************************************************************************
-     * Evaluate the field of the m'th pixel from the potentials.
-     ****************************************************************************************************/
-
-    void fieldEvaluate(long int m)
+}
+namespace Darius
+{
+  void FdTd::fieldEvaluate (long int m)
     {
       /* Calculate the electric field.                                                                  */
       en_[m].dv ( - uf_.dt, (*anp1_)[m] );
@@ -980,12 +958,10 @@ namespace Darius
       /* Set the boolean flag of this pixel to true.                                                    */
       pic_[m] = true;
     }
-
-    /****************************************************************************************************
-     * Sample the field and save it to the given file.
-     ****************************************************************************************************/
-
-    void fieldSample()
+}
+namespace Darius
+{
+  void FdTd::fieldSample ()
     {
 
       /* Do the field sampling if and only if sampling points are residing within this processor range.	*/
@@ -1101,12 +1077,10 @@ namespace Darius
 	  *(sf_.file) << std::endl;
 	}
     }
-
-    /****************************************************************************************************
-     * Visualize the field as vtk files on the whole domain and save them to the file with given name.
-     ****************************************************************************************************/
-
-    void fieldVisualizeAllDomain(unsigned int ivtk)
+}
+namespace Darius
+{
+  void FdTd::fieldVisualizeAllDomain (unsigned int ivtk)
     {
       long int			m;
 
@@ -1258,12 +1232,10 @@ namespace Darius
 	  (*vf_[ivtk].file).close();
 	}
     }
-
-    /****************************************************************************************************
-     * Visualize the field as vtk files in plane and save them to the file with the given name.
-     ****************************************************************************************************/
-
-    void fieldVisualizeInPlane(unsigned int ivtk)
+}
+namespace Darius
+{
+  void FdTd::fieldVisualizeInPlane (unsigned int ivtk)
     {
       if	( seed_.vtk_[ivtk].plane_ == XNORMAL )  fieldVisualizeInPlaneXNormal(ivtk);
       else if   ( seed_.vtk_[ivtk].plane_ == YNORMAL )  fieldVisualizeInPlaneYNormal(ivtk);
@@ -1273,13 +1245,10 @@ namespace Darius
 	    fieldVisualizeInPlaneZNormal(ivtk);
 	}
     }
-
-    /****************************************************************************************************
-     * Visualize the field as vtk files in a plane normal to x axis and save them to the file with the
-     * given name.
-     ****************************************************************************************************/
-
-    void fieldVisualizeInPlaneXNormal(unsigned int ivtk)
+}
+namespace Darius
+{
+  void FdTd::fieldVisualizeInPlaneXNormal (unsigned int ivtk)
     {
       unsigned int		i, n;
       long int			m;
@@ -1437,13 +1406,10 @@ namespace Darius
 	  (*vf_[ivtk].file).close();
 	}
     }
-
-    /****************************************************************************************************
-     * Visualize the field as vtk files in a plane normal to y axis and save them to the file with the
-     * given name.
-     ****************************************************************************************************/
-
-    void fieldVisualizeInPlaneYNormal(unsigned int ivtk)
+}
+namespace Darius
+{
+  void FdTd::fieldVisualizeInPlaneYNormal (unsigned int ivtk)
     {
       unsigned int		j, n;
       long int			m;
@@ -1601,13 +1567,10 @@ namespace Darius
 	  (*vf_[ivtk].file).close();
 	}
     }
-
-    /****************************************************************************************************
-     * Visualize the field as vtk files in a plane normal to z axis and save them to the file with the
-     * given name.
-     ****************************************************************************************************/
-
-    void fieldVisualizeInPlaneZNormal(unsigned int ivtk)
+}
+namespace Darius
+{
+  void FdTd::fieldVisualizeInPlaneZNormal (unsigned int ivtk)
     {
       unsigned int	        k, n;
       long int			m;
@@ -1698,12 +1661,10 @@ namespace Darius
       /* Close the file.                                                                      		*/
       (*vf_[ivtk].file).close();
     }
-
-    /****************************************************************************************************
-     * Write the total profile of the field into the given file name.
-     ****************************************************************************************************/
-
-    void fieldProfile()
+}
+namespace Darius
+{
+  void FdTd::fieldProfile ()
     {
       /* Declare the iterators for the loop over the points.						*/
       pf_.fileName = seed_.profileBasename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + TXT_FILE_SUFFIX;
@@ -1759,9 +1720,4 @@ namespace Darius
       /* Close the file.										*/
       (*pf_.file).close();
     }
-
-  };
-
 }
-
-#endif /* FDTD_HH_ */

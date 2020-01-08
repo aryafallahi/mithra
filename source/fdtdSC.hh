@@ -30,8 +30,7 @@ namespace Darius
     {
       /* Declare the required variables in the calculations to avoid redundant data decalaration.	*/
       timeval           			simulationStart, simulationEnd;
-      unsigned int				i = 0, j = 0, k = 0, thid;
-      Double 					deltaTime, p, t;
+      Double 					deltaTime, p = 0.0;
       std::stringstream 			printedMessage;
       std::vector<FieldVector<Double> >*	at;
       std::vector<Double>*			ft;
@@ -103,7 +102,7 @@ namespace Darius
 
 	  /* Update the bunch till the time of the bunch properties reaches the time instant of the
 	   * field.											*/
-	  for (t = 0.0; t < nUpdateBunch_; t += 1.0)
+	  for (Double t = 0.0; t < nUpdateBunch_; t += 1.0)
 	    {
 	      bunchUpdate();
 	      timeBunch_ += bunch_.timeStep_;
@@ -186,11 +185,15 @@ namespace Darius
     {
       Double*  jn = &jn_[0][0];
       Double*  je = &jn_[(long)N1N0_*np_-1][2];
-      while ( jn != je ) *(jn++) = 0.0; *je = 0.0;
+      while ( jn != je )
+	*(jn++) = 0.0;
+      *je = 0.0;
 
       Double*  rn = &rn_[0];
       Double*  re = &rn_[(long)N1N0_*np_-1];
-      while ( rn != re ) *(rn++) = 0.0; *re = 0.0;
+      while ( rn != re )
+	*(rn++) = 0.0;
+      *re = 0.0;
     }
 
     /****************************************************************************************************
@@ -383,7 +386,7 @@ namespace Darius
 	  MPI_Recv(&uc_.jt[0][0],       3*N1N0_,MPI_TYPE,rank_+1,msgtag9, MPI_COMM_WORLD,&status);
 	  MPI_Recv(&uc_.rt[0],            N1N0_,MPI_TYPE,rank_+1,msgtag10,MPI_COMM_WORLD,&status);
 
-	  for (unsigned int i = 0; i < N1N0_; i++)
+	  for (int i = 0; i < N1N0_; i++)
 	    {
 	      jn_[(np_-2)*N1N0_+i] += uc_.jt[i];
 	      rn_[(np_-2)*N1N0_+i] += uc_.rt[i];
@@ -415,13 +418,12 @@ namespace Darius
     void fieldUpdate()
     {
       /* Define the values temporally needed for updating the fields.					*/
-      unsigned int 		i, j, k, thid;
+      unsigned int 		i, j, k;
       long int                  m, l;
       MPI_Status 		status;
       int 			msgtag1 = 1, msgtag2 = 2, msgtag3 = 3, msgtag4 = 4;
       int                       msgtag5 = 5, msgtag6 = 6, msgtag7 = 7, msgtag8 = 8;
       FieldVector<Double>	atemp; atemp = 0.0;
-      Double			ftemp;
 
       uf_.anp1 = &(*anp1_)[0][0];
       uf_.an   = &(*an_)  [0][0];
@@ -472,9 +474,9 @@ namespace Darius
        * boundary will be updated accordingly.								*/
       if ( mesh_.solver_ == NSFD )
 	{
-	  for (i = 1; i < uf_.N0m1; i++)
-	    for (j = 1; j < uf_.N1m1; j++)
-	      for (k = 1; k < uf_.npm1; k++)
+	  for (unsigned i = 1; i < uf_.N0m1; i++)
+	    for (unsigned j = 1; j < uf_.N1m1; j++)
+	      for (unsigned k = 1; k < uf_.npm1; k++)
 		{
 		  m = N1N0_ * k + N1_ * i + j;
 		  l = 3 * m;
@@ -498,9 +500,9 @@ namespace Darius
 	}
       else if ( mesh_.solver_ == FD )
 	{
-	  for (i = 1; i < uf_.N0m1; i++)
-	    for (j = 1; j < uf_.N1m1; j++)
-	      for (k = 1; k < uf_.npm1; k++)
+	  for (unsigned i = 1; i < uf_.N0m1; i++)
+	    for (unsigned j = 1; j < uf_.N1m1; j++)
+	      for (unsigned k = 1; k < uf_.npm1; k++)
 		{
 		  m = N1N0_ * k + N1_ * i + j;
 		  l = 3 * m;
@@ -530,8 +532,8 @@ namespace Darius
 	  unsigned int KI = ( rank_ == 0         ) ? 2       : 1;
 	  unsigned int KF = ( rank_ == size_ - 1 ) ? np_ - 2 : np_ - 1;
 
-	  for ( j = 2; j < N1_-2; j++)
-	    for ( k = KI; k < KF; k++)
+	  for (int j = 2; j < N1_-2; j++)
+	    for (unsigned k = KI; k < KF; k++)
 	      {
 		i = 1;
 		m = N1N0_ * k + N1_ * i + j;
@@ -547,8 +549,8 @@ namespace Darius
 		seed_.fields(r_[m+N1_],	time_, atemp); (*anp1_)[m].pmv(uf_.a[1], atemp);
 	      }
 
-	  for ( i = 2; i < N0_-2; i++)
-	    for ( k = KI; k < KF; k++)
+	  for (int i = 2; i < N0_-2; i++)
+	    for (unsigned k = KI; k < KF; k++)
 	      {
 		j = 1;
 		m = N1N0_ * k + N1_ * i + j;
@@ -566,8 +568,8 @@ namespace Darius
 
 	  if ( rank_ == 0 )
 	    {
-	      for ( i = 2; i < N0_-2; i++)
-		for ( j = 2; j < N1_-2; j++)
+	      for (int i = 2; i < N0_-2; i++)
+		for (int j = 2; j < N1_-2; j++)
 		  {
 		    k = 1;
 		    m = N1N0_ * k + N1_ * i + j;
@@ -580,8 +582,8 @@ namespace Darius
 
 	  if ( rank_ == size_-1 )
 	    {
-	      for ( i = 2; i < N0_-2; i++)
-		for ( j = 2; j < N1_-2; j++)
+	      for (int i = 2; i < N0_-2; i++)
+		for (int j = 2; j < N1_-2; j++)
 		  {
 		    k = np_-2;
 		    m = N1N0_ * k + N1_ * i + j;
@@ -596,8 +598,8 @@ namespace Darius
       /* Loop over the points in the mesh on the x = xmin boundary and update the fields using the first
        * order absorbing boundary condition.								*/
       uf_.af.ufB_ = &uf_.bB[0];
-      for (j = 1; j < uf_.N1m1; j++)
-	for (k = 1; k < uf_.npm1; k++)
+      for (unsigned j = 1; j < uf_.N1m1; j++)
+	for (unsigned k = 1; k < uf_.npm1; k++)
 	  {
 	    m = N1N0_ * k + j;
 	    l = 3 * m;
@@ -618,8 +620,8 @@ namespace Darius
 
       /* Loop over the points in the mesh on the x = xmax boundary and update the fields using the first
        * order absorbing boundary condition.								*/
-      for (j = 1; j < uf_.N1m1; j++)
-	for (k = 1; k < uf_.npm1; k++)
+      for (unsigned j = 1; j < uf_.N1m1; j++)
+	for (unsigned k = 1; k < uf_.npm1; k++)
 	  {
 	    m = N1N0_ * k + N1N0_ - N1_ + j;
 	    l = 3 * m;
@@ -641,8 +643,8 @@ namespace Darius
       /* Loop over the points in the mesh on the y = ymin boundary and update the fields using the first
        * order absorbing boundary condition.								*/
       uf_.af.ufB_ = &uf_.cB[0];
-      for (i = 1; i < uf_.N0m1; i++)
-	for (k = 1; k < uf_.npm1; k++)
+      for (unsigned i = 1; i < uf_.N0m1; i++)
+	for (unsigned k = 1; k < uf_.npm1; k++)
 	  {
 	    m = N1N0_ * k + N1_* i;
 	    l = 3 * m;
@@ -663,8 +665,8 @@ namespace Darius
 
       /* Loop over the points in the mesh on the y = ymax boundary and update the fields using the first
        * order absorbing boundary condition.								*/
-      for (i = 1; i < uf_.N0m1; i++)
-	for (k = 1; k < uf_.npm1; k++)
+      for (unsigned i = 1; i < uf_.N0m1; i++)
+	for (unsigned k = 1; k < uf_.npm1; k++)
 	  {
 	    m = N1N0_ * k + N1_* i + N1_ - 1;
 	    l = 3 * m;
@@ -688,8 +690,8 @@ namespace Darius
       uf_.af.ufB_ = &uf_.dB[0];
       if ( rank_ == 0 )
 	{
-	  for (i = 1; i < uf_.N0m1; i++)
-	    for (j = 1; j < uf_.N1m1; j++)
+	  for (unsigned i = 1; i < uf_.N0m1; i++)
+	    for (unsigned j = 1; j < uf_.N1m1; j++)
 	      {
 		m = N1_ * i + j;
 		l = 3 * m;
@@ -713,8 +715,8 @@ namespace Darius
        * order absorbing boundary condition.								*/
       if (rank_ == size_ - 1)
 	{
-	  for (i = 1; i < uf_.N0m1; i++)
-	    for (j = 1; j < uf_.N1m1; j++)
+	  for (unsigned i = 1; i < uf_.N0m1; i++)
+	    for (unsigned j = 1; j < uf_.N1m1; j++)
 	      {
 		m = N1N0_ * uf_.npm1 + N1_ * i + j;
 		l = 3 * m;
@@ -741,7 +743,7 @@ namespace Darius
 	   * and update the fields using the first order absorbing boundary condition. To understand
 	   * the following lines of codes, it is better to list the values of Li at the side.		*/
 	  uf_.af.ufB_ = &uf_.eE[0];
-	  for (k = 1; k < uf_.npm1; k++)
+	  for (unsigned k = 1; k < uf_.npm1; k++)
 	    {
 	      m = N1N0_ * k;
 	      l = 3 * m;
@@ -820,7 +822,7 @@ namespace Darius
 	   * and update the fields using the first order absorbing boundary condition. To understand
 	   * the following lines of codes, it is better to list the values of Li at the side.		*/
 	  uf_.af.ufB_ = &uf_.fE[0];
-	  for (i = 1; i < uf_.N0m1; i++)
+	  for (unsigned i = 1; i < uf_.N0m1; i++)
 	    {
 	      if ( rank_ == 0 )
 		{
@@ -905,7 +907,7 @@ namespace Darius
 	   * and update the fields using the first order absorbing boundary condition. To understand
 	   * the following lines of codes, it is better to list the values of Li at the side.		*/
 	  uf_.af.ufB_ = &uf_.gE[0];
-	  for (j = 1; j < uf_.N1m1; j++)
+	  for (unsigned j = 1; j < uf_.N1m1; j++)
 	    {
 	      if ( rank_ == 0 )
 		{
@@ -1182,8 +1184,8 @@ namespace Darius
 
       /* Now that A and phi quantities are updated, calculate E and B at boundary grid points for later
        * acceleration and power measurement.								*/
-      for (i = 1; i < uf_.N0m1; i++)
-	for (j = 1; j < uf_.N1m1; j++)
+      for (unsigned i = 1; i < uf_.N0m1; i++)
+	for (unsigned j = 1; j < uf_.N1m1; j++)
 	  {
 	    m = N1N0_ + N1_ * i + j;
 
@@ -1285,13 +1287,6 @@ namespace Darius
 
     void fieldSample()
     {
-      Double*	anp1 = &(*anp1_)[0][0];
-      Double*	an   = &(*an_)  [0][0];
-      Double*	anm1 = &(*anm1_)[0][0];
-      Double*	fnp1 = &(*fnp1_)[0];
-      Double*	fn   = &(*fn_)  [0];
-      Double*	fnm1 = &(*fnm1_)[0];
-
       /* Do the field sampling if and only if sampling points are residing within this processor range.	*/
       if ( sf_.N > 0 )
 	{
@@ -1435,7 +1430,6 @@ namespace Darius
 
     void fieldVisualizeAllDomain(unsigned int ivtk)
     {
-      unsigned int		i, j, k, l;
       long int			m;
 
       /* The old files if existing should be deleted.                                          		*/
@@ -1446,15 +1440,15 @@ namespace Darius
       vf_[ivtk].file->precision(4);
 
       /* Calculate the field to be visualized in the vtk files.						*/
-      for ( k = 0; k < np_; k++ )
-	for (j = 1; j < N1_-1; j++)
-	  for (i = 1; i < N0_-1; i++)
+      for (int k = 0; k < np_; k++ )
+	for (int j = 1; j < N1_-1; j++)
+	  for (int i = 1; i < N0_-1; i++)
 	    {
 	      m = k * N1_ * N0_ + i * N1_ + j;
 
 	      if (!pic_[m]) fieldEvaluate(m);
 
-	      for ( l = 0; l < seed_.vtk_[ivtk].field_.size(); l++ )
+	      for (unsigned l = 0; l < seed_.vtk_[ivtk].field_.size(); l++ )
 		{
 		  if 		( seed_.vtk_[ivtk].field_[l] == Ex )	vf_[ivtk].v[m][l] = en_[m][0];
 		  else if 	( seed_.vtk_[ivtk].field_[l] == Ey )	vf_[ivtk].v[m][l] = en_[m][1];
@@ -1487,9 +1481,9 @@ namespace Darius
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
       *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
-      for (k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
-	for (j = 0; j < N1_; j++)
-	  for (i = 0; i < N0_; i++)
+      for (int k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
+	for (int j = 0; j < N1_; j++)
+	  for (int i = 0; i < N0_; i++)
 	    {
 	      m = k * N1_ * N0_ + i * N1_ + j;
 	      *vf_[ivtk].file << r_[m][0] << " " << r_[m][1] << " " << r_[m][2] 			<< std::endl;
@@ -1505,13 +1499,13 @@ namespace Darius
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    		<< std::endl;
       *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
 	  << std::endl;
-      for ( k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
-	for (j = 0; j < N1_; j++)
-	  for (i = 0; i < N0_; i++)
+      for (int k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
+	for (int j = 0; j < N1_; j++)
+	  for (int i = 0; i < N0_; i++)
 	    {
 	      m = k * N1_ * N0_ + i * N1_ + j;
 	      *vf_[ivtk].file << vf_[ivtk].v[m][0];
-	      for (l = 1; l < seed_.vtk_[ivtk].field_.size(); l++) *vf_[ivtk].file << " " << vf_[ivtk].v[m][l];
+	      for (unsigned l = 1; l < seed_.vtk_[ivtk].field_.size(); l++) *vf_[ivtk].file << " " << vf_[ivtk].v[m][l];
 	      *vf_[ivtk].file << std::endl;
 	    }
       *vf_[ivtk].file << "</DataArray>"                                                   		<< std::endl;
@@ -1549,7 +1543,7 @@ namespace Darius
 	      << std::endl;
 	  *vf_[ivtk].file << "</PPointData>"                                                          	<< std::endl;
 
-	  for (i = 0; i < size_; ++i)
+	  for (int i = 0; i < size_; ++i)
 	    {
 	      /* Evaluate the number of nodes in each processor.					*/
 	      if ( size_ > 1 )
@@ -1611,9 +1605,9 @@ namespace Darius
 
     void fieldVisualizeInPlaneXNormal(unsigned int ivtk)
     {
-      unsigned int		i, j, k, l, n;
+      unsigned int		i, n;
       long int			m;
-      Double			dxr, dyr, dzr, c;
+      Double			dxr, c;
 
       /* The old files if existing should be deleted.                                          		*/
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
@@ -1627,8 +1621,8 @@ namespace Darius
       i   = (int) c;
 
       /* Calculate the field to be visualized in the vtk files.						*/
-      for ( k = 0; k < np_; k++ )
-	for (j = 1; j < N1_-1; j++)
+      for (int k = 0; k < np_; k++ )
+	for (int j = 1; j < N1_-1; j++)
 	  {
 	    m = k * N1_ * N0_ + i * N1_ + j;
 	    n = k * N1_ + j;
@@ -1636,7 +1630,7 @@ namespace Darius
 	    if (!pic_[m]) 		fieldEvaluate(m);
 	    if (!pic_[m + N1_]) 	fieldEvaluate(m + N1_);
 
-	    for ( l = 0; l < seed_.vtk_[ivtk].field_.size(); l++ )
+	    for (unsigned l = 0; l < seed_.vtk_[ivtk].field_.size(); l++ )
 	      {
 		if 		( seed_.vtk_[ivtk].field_[l] == Ex )	vf_[ivtk].v[n][l] = en_[m][0] * ( 1.0 - dxr ) + en_[m + N1_][0] * dxr;
 		else if 	( seed_.vtk_[ivtk].field_[l] == Ey )	vf_[ivtk].v[n][l] = en_[m][1] * ( 1.0 - dxr ) + en_[m + N1_][1] * dxr;
@@ -1669,8 +1663,8 @@ namespace Darius
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
       *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
-      for (k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
-	for (j = 0; j < N1_; j++)
+      for (int k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
+	for (int j = 0; j < N1_; j++)
 	  {
 	    m = k * N1_ * N0_ + i * N1_ + j;
 	    *vf_[ivtk].file << r_[m][0] * ( 1.0 - dxr ) + r_[m + N1_][0] * dxr << " "
@@ -1687,12 +1681,12 @@ namespace Darius
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    	<< std::endl;
       *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
 	  << std::endl;
-      for ( k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
-	for (j = 0; j < N1_; j++)
+      for (int k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
+	for (int j = 0; j < N1_; j++)
 	  {
 	    n = k * N1_ + j;
 	    *vf_[ivtk].file << vf_[ivtk].v[n][0];
-	    for (l = 1; l < seed_.vtk_[ivtk].field_.size(); l++) *vf_[ivtk].file << " " << vf_[ivtk].v[n][l];
+	    for (unsigned l = 1; l < seed_.vtk_[ivtk].field_.size(); l++) *vf_[ivtk].file << " " << vf_[ivtk].v[n][l];
 	    *vf_[ivtk].file << std::endl;
 	  }
       *vf_[ivtk].file << "</DataArray>"                                                   		<< std::endl;
@@ -1730,7 +1724,7 @@ namespace Darius
 	      << std::endl;
 	  *vf_[ivtk].file << "</PPointData>"                                                          	<< std::endl;
 
-	  for (i = 0; i < size_; ++i)
+	  for (int i = 0; i < size_; ++i)
 	    {
 	      /* Evaluate the number of nodes in each processor.					*/
 	      if ( size_ > 1 )
@@ -1777,9 +1771,9 @@ namespace Darius
 
     void fieldVisualizeInPlaneYNormal(unsigned int ivtk)
     {
-      unsigned int		i, j, k, l, n;
+      unsigned int		j, n;
       long int			m;
-      Double			dxr, dyr, dzr, c;
+      Double			dyr, c;
 
       /* The old files if existing should be deleted.                                          		*/
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
@@ -1793,8 +1787,8 @@ namespace Darius
       j   = (int) c;
 
       /* Calculate the field to be visualized in the vtk files.						*/
-      for ( k = 0; k < np_; k++ )
-	for (i = 1; i < N0_-1; i++)
+      for (int k = 0; k < np_; k++ )
+	for (int i = 1; i < N0_-1; i++)
 	  {
 	    m = k * N1_ * N0_ + i * N1_ + j;
 	    n = k * N0_ + i;
@@ -1802,7 +1796,7 @@ namespace Darius
 	    if (!pic_[m]) 	fieldEvaluate(m);
 	    if (!pic_[m + 1]) 	fieldEvaluate(m + 1);
 
-	    for ( l = 0; l < seed_.vtk_[ivtk].field_.size(); l++ )
+	    for (unsigned l = 0; l < seed_.vtk_[ivtk].field_.size(); l++ )
 	      {
 		if 		( seed_.vtk_[ivtk].field_[l] == Ex )	vf_[ivtk].v[n][l] = en_[m][0] * ( 1.0 - dyr ) + en_[m + 1][0] * dyr;
 		else if 	( seed_.vtk_[ivtk].field_[l] == Ey )	vf_[ivtk].v[n][l] = en_[m][1] * ( 1.0 - dyr ) + en_[m + 1][1] * dyr;
@@ -1835,8 +1829,8 @@ namespace Darius
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
       *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
-      for (k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
-	for (i = 0; i < N0_; i++)
+      for (int k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
+	for (int i = 0; i < N0_; i++)
 	  {
 	    m = k * N1_ * N0_ + i * N1_ + j;
 	    *vf_[ivtk].file << r_[m][0] * ( 1.0 - dyr ) + r_[m + 1][0] * dyr << " "
@@ -1853,12 +1847,12 @@ namespace Darius
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    	<< std::endl;
       *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size() << "\" format=\"ascii\">"
 	  << std::endl;
-      for ( k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
-	for (i = 0; i < N0_; i++)
+      for (int k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ) ; k++ )
+	for (int i = 0; i < N0_; i++)
 	  {
 	    n = k * N0_ + i;
 	    *vf_[ivtk].file << vf_[ivtk].v[n][0];
-	    for (l = 1; l < seed_.vtk_[ivtk].field_.size(); l++) *vf_[ivtk].file << " " << vf_[ivtk].v[n][l];
+	    for (unsigned l = 1; l < seed_.vtk_[ivtk].field_.size(); l++) *vf_[ivtk].file << " " << vf_[ivtk].v[n][l];
 	    *vf_[ivtk].file << std::endl;
 	  }
       *vf_[ivtk].file << "</DataArray>"                                                   		<< std::endl;
@@ -1896,7 +1890,7 @@ namespace Darius
 	      << std::endl;
 	  *vf_[ivtk].file << "</PPointData>"                                                          	<< std::endl;
 
-	  for (i = 0; i < size_; ++i)
+	  for (int i = 0; i < size_; ++i)
 	    {
 	      /* Evaluate the number of nodes in each processor.					*/
 	      if ( size_ > 1 )
@@ -1943,9 +1937,9 @@ namespace Darius
 
     void fieldVisualizeInPlaneZNormal(unsigned int ivtk)
     {
-      unsigned int		i, j, k, l, n;
+      unsigned int		k, n;
       long int			m;
-      Double			dxr, dyr, dzr, c;
+      Double			dzr, c;
 
       /* The old files if existing should be deleted.                                          		*/
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
@@ -1959,8 +1953,8 @@ namespace Darius
       k   = (int) c - k0_;
 
       /* Calculate the field to be visualized in the vtk files.						*/
-      for (j = 1; j < N1_-1; j++)
-	for (i = 1; i < N0_-1; i++)
+      for (int j = 1; j < N1_-1; j++)
+	for (int i = 1; i < N0_-1; i++)
 	  {
 	    m = k * N1_ * N0_ + i * N1_ + j;
 	    n = i * N1_ + j;
@@ -1968,7 +1962,7 @@ namespace Darius
 	    if (!pic_[m]) 		fieldEvaluate(m);
 	    if (!pic_[m + N1N0_]) 	fieldEvaluate(m + N1N0_);
 
-	    for ( l = 0; l < seed_.vtk_[ivtk].field_.size(); l++ )
+	    for (unsigned l = 0; l < seed_.vtk_[ivtk].field_.size(); l++ )
 	      {
 		if 		( seed_.vtk_[ivtk].field_[l] == Ex )	vf_[ivtk].v[n][l] = en_[m][0] * ( 1.0 - dzr ) + en_[m + N1N0_][0] * dzr;
 		else if 	( seed_.vtk_[ivtk].field_[l] == Ey )	vf_[ivtk].v[n][l] = en_[m][1] * ( 1.0 - dzr ) + en_[m + N1N0_][1] * dzr;
@@ -1999,8 +1993,8 @@ namespace Darius
       /* Insert the coordinates of the grid for the charge points.                                      */
       *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
       *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
-      for (j = 0; j < N1_; j++)
-	for (i = 0; i < N0_; i++)
+      for (int j = 0; j < N1_; j++)
+	for (int i = 0; i < N0_; i++)
 	  {
 	    m = k * N1_ * N0_ + i * N1_ + j;
 	    *vf_[ivtk].file << r_[m][0] * ( 1.0 - dzr ) + r_[m + N1N0_][0] * dzr << " "
@@ -2017,12 +2011,12 @@ namespace Darius
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    		<< std::endl;
       *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size()
 		      << "\" format=\"ascii\">"									<< std::endl;
-      for (j = 0; j < N1_; j++)
-	for (i = 0; i < N0_; i++)
+      for (int j = 0; j < N1_; j++)
+	for (int i = 0; i < N0_; i++)
 	  {
 	    n = i * N1_ + j;
 	    *vf_[ivtk].file << vf_[ivtk].v[n][0];
-	    for (l = 1; l < seed_.vtk_[ivtk].field_.size(); l++) *vf_[ivtk].file << " " << vf_[ivtk].v[n][l];
+	    for (unsigned l = 1; l < seed_.vtk_[ivtk].field_.size(); l++) *vf_[ivtk].file << " " << vf_[ivtk].v[n][l];
 	    *vf_[ivtk].file 										<< std::endl;
 	  }
       *vf_[ivtk].file << "</DataArray>"                                                   		<< std::endl;
@@ -2049,48 +2043,48 @@ namespace Darius
       pf_.file->precision(4);
 
       /* Perform a loop over the points of the mesh and save the field data into a text file.		*/
-      for ( pf_.i = 0; pf_.i < N0_; pf_.i++ )
-	for ( pf_.j = 0; pf_.j < N1_; pf_.j++ )
-	  for ( pf_.k = ( (rank_ == 0) ? 0 : 1 ); pf_.k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); pf_.k++ )
+      for (int i = 0; i < N0_; i++ )
+	for (int j = 0; j < N1_; j++ )
+	  for (int k = ( (rank_ == 0) ? 0 : 1 ); k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++ )
 	    {
-	      pf_.m = pf_.k * N1_ * N0_ + pf_.i * N1_ + pf_.j;
+	      pf_.m = k * N1_ * N0_ + i * N1_ + j;
 	      *pf_.file << r_[pf_.m][0] << "\t" ;
 	      *pf_.file << r_[pf_.m][1] << "\t" ;
 	      *pf_.file << r_[pf_.m][2] << "\t" ;
 
-	      for (pf_.l = 0; pf_.l < seed_.profileField_.size(); pf_.l++)
+	      for (unsigned l = 0; l < seed_.profileField_.size(); l++)
 		{
-		  if 		( seed_.profileField_[pf_.l] == Ex )
+		  if 		( seed_.profileField_[l] == Ex )
 		    *pf_.file << en_[pf_.m][0] << "\t";
-		  else if	( seed_.profileField_[pf_.l] == Ey )
+		  else if	( seed_.profileField_[l] == Ey )
 		    *pf_.file << en_[pf_.m][1] << "\t";
-		  else if	( seed_.profileField_[pf_.l] == Ez )
+		  else if	( seed_.profileField_[l] == Ez )
 		    *pf_.file << en_[pf_.m][2] << "\t";
 
-		  else if	( seed_.profileField_[pf_.l] == Bx )
+		  else if	( seed_.profileField_[l] == Bx )
 		    *pf_.file << bn_[pf_.m][0] << "\t";
-		  else if	( seed_.profileField_[pf_.l] == By )
+		  else if	( seed_.profileField_[l] == By )
 		    *pf_.file << bn_[pf_.m][1] << "\t";
-		  else if	( seed_.profileField_[pf_.l] == Bz )
+		  else if	( seed_.profileField_[l] == Bz )
 		    *pf_.file << bn_[pf_.m][2] << "\t";
 
-		  else if 	( seed_.profileField_[pf_.l] == Ax )
+		  else if 	( seed_.profileField_[l] == Ax )
 		    *pf_.file << (*an_)[pf_.m][0] << "\t";
-		  else if 	( seed_.profileField_[pf_.l] == Ay )
+		  else if 	( seed_.profileField_[l] == Ay )
 		    *pf_.file << (*an_)[pf_.m][1] << "\t";
-		  else if 	( seed_.profileField_[pf_.l] == Az )
+		  else if 	( seed_.profileField_[l] == Az )
 		    *pf_.file << (*an_)[pf_.m][2] << "\t";
 
-		  else if 	( seed_.profileField_[pf_.l] == Jx )
+		  else if 	( seed_.profileField_[l] == Jx )
 		    *pf_.file << jn_[pf_.m][0] << "\t";
-		  else if 	( seed_.profileField_[pf_.l] == Jy )
+		  else if 	( seed_.profileField_[l] == Jy )
 		    *pf_.file << jn_[pf_.m][1] << "\t";
-		  else if 	( seed_.profileField_[pf_.l] == Jz )
+		  else if 	( seed_.profileField_[l] == Jz )
 		    *pf_.file << jn_[pf_.m][2] << "\t";
 
-		  else if 	( seed_.profileField_[pf_.l] == F  )
+		  else if 	( seed_.profileField_[l] == F  )
 		    *pf_.file << (*fn_)[pf_.m] << "\t";
-		  else if 	( seed_.profileField_[pf_.l] == Q  )
+		  else if 	( seed_.profileField_[l] == Q  )
 		    *pf_.file << rn_[pf_.m] << "\t";
 		}
 

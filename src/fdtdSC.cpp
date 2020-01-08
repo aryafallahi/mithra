@@ -1,38 +1,26 @@
-/********************************************************************************************************
- *  fdtd.hh : Implementation of the real fdtd time marching solution class for the darius code
- ********************************************************************************************************/
+// fdtdSC.cpp
+//
 
-#ifndef FDTD_HH_
-#define FDTD_HH_
+#include <sys/time.h>
+
+#include "fdtdSC.h"
 
 namespace Darius
 {
-
-  /* Class of functions used for the solution of the fields in time domain using FDTD.			*/
-  class FdTd : public Solver
-  {
-
-  public:
-
-    FdTd( Mesh& mesh, Bunch& bunch, Seed& seed,
-	  std::vector<Undulator>&		undulator,
-	  std::vector<ExtField>& 		extField,
-	  std::vector<FreeElectronLaser>& 	FEL )
-  : Solver ( mesh, bunch, seed, undulator, extField, FEL )
-  {
-  };
-
-    /****************************************************************************************************
-     * The function which is called for solving the fields in time domain.
-     ****************************************************************************************************/
-
-    void solve()
+  FdTdSC::FdTdSC (Mesh & mesh, Bunch & bunch, Seed & seed, std::vector <Undulator> & undulator, std::vector <ExtField> & extField, std::vector <FreeElectronLaser> & FEL)
+    : Solver (mesh, bunch, seed, undulator, extField, FEL)
+  {}
+}
+namespace Darius
+{
+  void FdTdSC::solve ()
     {
       /* Declare the required variables in the calculations to avoid redundant data decalaration.	*/
       timeval           			simulationStart, simulationEnd;
       Double 					deltaTime, p = 0.0;
       std::stringstream 			printedMessage;
       std::vector<FieldVector<Double> >*	at;
+      std::vector<Double>*			ft;
       std::list<Charge>::iterator 		iter;
 
       /* Transfer the whole quantities to the electron rest frame.					*/
@@ -147,6 +135,11 @@ namespace Darius
 	  an_   = anp1_;
 	  anp1_ = at;
 
+	  ft    = fnm1_;
+	  fnm1_ = fn_;
+	  fn_   = fnp1_;
+	  fnp1_ = ft;
+
 	  timem1_ += mesh_.timeStep_;
 	  time_   += mesh_.timeStep_;
 	  timep1_ += mesh_.timeStep_;
@@ -171,26 +164,30 @@ namespace Darius
       /* Finalize the calculations and the data saving.							*/
       finalize();
     }
-
-    /****************************************************************************************************
-     * Reset the currents to zero.
-     ****************************************************************************************************/
-    void currentReset()
+}
+namespace Darius
+{
+  void FdTdSC::currentReset ()
     {
       Double*  jn = &jn_[0][0];
       Double*  je = &jn_[(long)N1N0_*np_-1][2];
       while ( jn != je )
 	*(jn++) = 0.0;
       *je = 0.0;
+
+      Double*  rn = &rn_[0];
+      Double*  re = &rn_[(long)N1N0_*np_-1];
+      while ( rn != re )
+	*(rn++) = 0.0;
+      *re = 0.0;
     }
-
-    /****************************************************************************************************
-     * Update the currents at cell points for the filed update.
-     ****************************************************************************************************/
-
-    void currentUpdate()
+}
+namespace Darius
+{
+  void FdTdSC::currentUpdate ()
     {
       FieldVector<Double>*	        jn   = &jn_[0];
+      Double*			        rn   = &rn_[0];
       bool                              bp, bm;
       std::list<Charge>::iterator       it = chargeVectorn_.begin();
 
@@ -202,12 +199,12 @@ namespace Darius
 	  uc_.rm  = it->rnm;
 
 	  /* Save the flag detecting that the particle is in the domain of the processor.               */
-	  bp = ( 	uc_.rp[0] < xmax_ - uc_.dx && uc_.rp[0] > xmin_ + uc_.dx &&
-			uc_.rp[1] < ymax_ - uc_.dy && uc_.rp[1] > ymin_ + uc_.dy &&
-			uc_.rp[2] < zp_[1]         && uc_.rp[2] >= zp_[0] );
-	  bm = ( 	uc_.rm[0] < xmax_ - uc_.dx && uc_.rm[0] > xmin_ + uc_.dx &&
-			uc_.rm[1] < ymax_ - uc_.dy && uc_.rm[1] > ymin_ + uc_.dy &&
-			uc_.rm[2] < zp_[1]         && uc_.rm[2] >= zp_[0] );
+	  bp = ( uc_.rp[0] < xmax_ - uc_.dx && uc_.rp[0] > xmin_ + uc_.dx &&
+	         uc_.rp[1] < ymax_ - uc_.dy && uc_.rp[1] > ymin_ + uc_.dy &&
+	         uc_.rp[2] < zp_[1]         && uc_.rp[2] >= zp_[0] );
+	  bm = ( uc_.rm[0] < xmax_ - uc_.dx && uc_.rm[0] > xmin_ + uc_.dx &&
+	         uc_.rm[1] < ymax_ - uc_.dy && uc_.rm[1] > ymin_ + uc_.dy &&
+	         uc_.rm[2] < zp_[1]         && uc_.rm[2] >= zp_[0] );
 
 	  /* Continue the loop if none of the above conditions are met.                                 */
 	  if ( ! (bp || bm) ) continue;
@@ -283,6 +280,15 @@ namespace Darius
 	      (*(jn+uc_.m+N1N0_+N1_)  )[2] += uc_.q * 0.5 * uc_.x2 * uc_.y1 * uc_.jcp[2];
 	      (*(jn+uc_.m+N1N0_+1)    )[2] += uc_.q * 0.5 * uc_.x1 * uc_.y2 * uc_.jcp[2];
 	      (*(jn+uc_.m+N1N0_+N1_+1))[2] += uc_.q * 0.5 * uc_.x2 * uc_.y2 * uc_.jcp[2];
+
+	      *(rn+uc_.m)                  += uc_.q * uc_.x1 * uc_.y1 * uc_.z1;
+	      *(rn+uc_.m+N1_)        	   += uc_.q * uc_.x2 * uc_.y1 * uc_.z1;
+	      *(rn+uc_.m+1  )              += uc_.q * uc_.x1 * uc_.y2 * uc_.z1;
+	      *(rn+uc_.m+N1_+1)      	   += uc_.q * uc_.x2 * uc_.y2 * uc_.z1;
+	      *(rn+uc_.m+N1N0_)            += uc_.q * uc_.x1 * uc_.y1 * uc_.z2;
+	      *(rn+uc_.m+N1N0_+N1_)        += uc_.q * uc_.x2 * uc_.y1 * uc_.z2;
+	      *(rn+uc_.m+N1N0_+1)          += uc_.q * uc_.x1 * uc_.y2 * uc_.z2;
+	      *(rn+uc_.m+N1N0_+N1_+1)      += uc_.q * uc_.x2 * uc_.y2 * uc_.z2;
 	    }
 
 	  /* If the charge is outside the computational domain stop the simulation.                     */
@@ -329,30 +335,44 @@ namespace Darius
 	      (*(jn+uc_.m+N1N0_+N1_)  )[2] += uc_.q * 0.5 * uc_.x2 * uc_.y1 * uc_.jcm[2];
 	      (*(jn+uc_.m+N1N0_+1)    )[2] += uc_.q * 0.5 * uc_.x1 * uc_.y2 * uc_.jcm[2];
 	      (*(jn+uc_.m+N1N0_+N1_+1))[2] += uc_.q * 0.5 * uc_.x2 * uc_.y2 * uc_.jcm[2];
+
+	      *(rn+uc_.m)                  += uc_.q * uc_.x1 * uc_.y1 * uc_.z1;
+	      *(rn+uc_.m+N1_)              += uc_.q * uc_.x2 * uc_.y1 * uc_.z1;
+	      *(rn+uc_.m+1  )              += uc_.q * uc_.x1 * uc_.y2 * uc_.z1;
+	      *(rn+uc_.m+N1_+1)            += uc_.q * uc_.x2 * uc_.y2 * uc_.z1;
+	      *(rn+uc_.m+N1N0_)            += uc_.q * uc_.x1 * uc_.y1 * uc_.z2;
+	      *(rn+uc_.m+N1N0_+N1_)        += uc_.q * uc_.x2 * uc_.y1 * uc_.z2;
+	      *(rn+uc_.m+N1N0_+1)          += uc_.q * uc_.x1 * uc_.y2 * uc_.z2;
+	      *(rn+uc_.m+N1N0_+N1_+1)      += uc_.q * uc_.x2 * uc_.y2 * uc_.z2;
 	    }
 	}
     }
-
-    /****************************************************************************************************
-     * Communicate the currents among different processors.
-     ****************************************************************************************************/
-
-    void currentCommunicate()
+}
+namespace Darius
+{
+  void FdTdSC::currentCommunicate ()
     {
-      int                               msgtag9 = 9;
+      int                               msgtag9 = 9, msgtag10 = 10;
       MPI_Status                        status;
       std::list<Charge>::iterator       it = chargeVectorn_.begin();
 
       /* Add the contribution of each processor to the charge and current density at the boundaries.    */
       if (rank_ != 0)
-	MPI_Send(&jn_[0][0],                                    3*N1N0_,MPI_TYPE,rank_-1,msgtag9, MPI_COMM_WORLD);
+	{
+	  MPI_Send(&jn_[0][0],          3*N1N0_,MPI_TYPE,rank_-1,msgtag9, MPI_COMM_WORLD);
+	  MPI_Send(&rn_[0],               N1N0_,MPI_TYPE,rank_-1,msgtag10,MPI_COMM_WORLD);
+	}
 
       if (rank_ != size_ - 1)
 	{
-	  MPI_Recv(&uc_.jt[0][0],                               3*N1N0_,MPI_TYPE,rank_+1,msgtag9, MPI_COMM_WORLD,&status);
+	  MPI_Recv(&uc_.jt[0][0],       3*N1N0_,MPI_TYPE,rank_+1,msgtag9, MPI_COMM_WORLD,&status);
+	  MPI_Recv(&uc_.rt[0],            N1N0_,MPI_TYPE,rank_+1,msgtag10,MPI_COMM_WORLD,&status);
 
 	  for (int i = 0; i < N1N0_; i++)
-	    jn_[(np_-2)*N1N0_+i] += uc_.jt[i];
+	    {
+	      jn_[(np_-2)*N1N0_+i] += uc_.jt[i];
+	      rn_[(np_-2)*N1N0_+i] += uc_.rt[i];
+	    }
 	}
 
       /* Now that the charge and current densities are deposited, remove the out of domain charges from
@@ -372,18 +392,16 @@ namespace Darius
       iterQB_ = chargeVectorn_.begin();
       iterQE_ = chargeVectorn_.end();
     }
-
-    /****************************************************************************************************
-     * Update the fields for one time-step
-     ****************************************************************************************************/
-
-    void fieldUpdate()
+}
+namespace Darius
+{
+  void FdTdSC::fieldUpdate ()
     {
       /* Define the values temporally needed for updating the fields.					*/
       unsigned int 		i, j, k;
       long int                  m, l;
       MPI_Status 		status;
-      int 			msgtag1 = 1, msgtag3 = 3;
+      int 			msgtag1 = 1, msgtag2 = 2, msgtag3 = 3, msgtag4 = 4;
       int                       msgtag5 = 5, msgtag6 = 6, msgtag7 = 7, msgtag8 = 8;
       FieldVector<Double>	atemp; atemp = 0.0;
 
@@ -393,6 +411,24 @@ namespace Darius
       uf_.jn   = &jn_[0][0];
       uf_.en   = &en_[0][0];
       uf_.bn   = &bn_[0][0];
+
+      uf_.fnp1 = &(*fnp1_)[0];
+      uf_.fn   = &(*fn_)  [0];
+      uf_.fnm1 = &(*fnm1_)[0];
+      uf_.rn   = &rn_[0];
+
+      const long int M0  = N1_;
+      const long int M1  = N1N0_;
+      const long int M2  = N1_+N1N0_;
+      const long int M3  = N1_-N1N0_;
+      const long int M4  = 1+N1N0_;
+      const long int M5  = 1-N1N0_;
+      const long int M6  = 1+N1_;
+      const long int M7  = 1-N1_;
+      const long int M8  = 1+N1_+N1N0_;
+      const long int M9  = 1+N1_-N1N0_;
+      const long int M10 = 1-N1_+N1N0_;
+      const long int M11 = 1-N1_-N1N0_;
 
       const long int L0  = 3*N1_;
       const long int L1  = 3*N1N0_;
@@ -422,7 +458,8 @@ namespace Darius
 	    for (unsigned j = 1; j < uf_.N1m1; j++)
 	      for (unsigned k = 1; k < uf_.npm1; k++)
 		{
-		  l = 3 * ( N1N0_ * k + N1_ * i + j );
+		  m = N1N0_ * k + N1_ * i + j;
+		  l = 3 * m;
 
 		  uf_.af.advanceMagneticPotentialNSFD(
 		      uf_.anp1+l,    uf_.anm1+l,    uf_.an+l,
@@ -431,6 +468,14 @@ namespace Darius
 		      uf_.an  +l+3 , uf_.an  +l+L4, uf_.an+l+L5,
 		      uf_.an  +l-3 , uf_.an  +l-L5, uf_.an+l-L4,
 		      uf_.an  +l+L1, uf_.an  +l-L1, uf_.jn+l);
+
+		  uf_.af.advanceScalarPotentialNSFD(
+		      uf_.fnp1+m,    uf_.fnm1+m,    uf_.fn+m,
+		      uf_.fn  +m+M0, uf_.fn  +m+M2, uf_.fn+m+M3,
+		      uf_.fn  +m-M0, uf_.fn  +m-M3, uf_.fn+m-M2,
+		      uf_.fn  +m+1 , uf_.fn  +m+M4, uf_.fn+m+M5,
+		      uf_.fn  +m-1 , uf_.fn  +m-M5, uf_.fn+m-M4,
+		      uf_.fn  +m+M1, uf_.fn  +m-M1, uf_.rn+m);
 		}
 	}
       else if ( mesh_.solver_ == FD )
@@ -439,7 +484,8 @@ namespace Darius
 	    for (unsigned j = 1; j < uf_.N1m1; j++)
 	      for (unsigned k = 1; k < uf_.npm1; k++)
 		{
-		  l = 3 * ( N1N0_ * k + N1_ * i + j );
+		  m = N1N0_ * k + N1_ * i + j;
+		  l = 3 * m;
 
 		  uf_.af.advanceMagneticPotentialFD(
 		      uf_.anp1+l,    uf_.anm1+l,    uf_.an+l,
@@ -448,6 +494,14 @@ namespace Darius
 		      uf_.an  +l+3 , uf_.an  +l+L4, uf_.an+l+L5,
 		      uf_.an  +l-3 , uf_.an  +l-L5, uf_.an+l-L4,
 		      uf_.an  +l+L1, uf_.an  +l-L1, uf_.jn+l);
+
+		  uf_.af.advanceScalarPotentialFD(
+		      uf_.fnp1+m,    uf_.fnm1+m,    uf_.fn+m,
+		      uf_.fn  +m+M0, uf_.fn  +m+M2, uf_.fn+m+M3,
+		      uf_.fn  +m-M0, uf_.fn  +m-M3, uf_.fn+m-M2,
+		      uf_.fn  +m+1 , uf_.fn  +m+M4, uf_.fn+m+M5,
+		      uf_.fn  +m-1 , uf_.fn  +m-M5, uf_.fn+m-M4,
+		      uf_.fn  +m+M1, uf_.fn  +m-M1, uf_.rn+m);
 		}
 	}
 
@@ -458,8 +512,8 @@ namespace Darius
 	  unsigned int KI = ( rank_ == 0         ) ? 2       : 1;
 	  unsigned int KF = ( rank_ == size_ - 1 ) ? np_ - 2 : np_ - 1;
 
-	  for ( int j = 2; j < N1_-2; j++)
-	    for ( unsigned k = KI; k < KF; k++)
+	  for (int j = 2; j < N1_-2; j++)
+	    for (unsigned k = KI; k < KF; k++)
 	      {
 		i = 1;
 		m = N1N0_ * k + N1_ * i + j;
@@ -475,8 +529,8 @@ namespace Darius
 		seed_.fields(r_[m+N1_],	time_, atemp); (*anp1_)[m].pmv(uf_.a[1], atemp);
 	      }
 
-	  for ( int i = 2; i < N0_-2; i++)
-	    for ( unsigned k = KI; k < KF; k++)
+	  for (int i = 2; i < N0_-2; i++)
+	    for (unsigned k = KI; k < KF; k++)
 	      {
 		j = 1;
 		m = N1N0_ * k + N1_ * i + j;
@@ -527,7 +581,8 @@ namespace Darius
       for (unsigned j = 1; j < uf_.N1m1; j++)
 	for (unsigned k = 1; k < uf_.npm1; k++)
 	  {
-	    l = 3 * ( N1N0_ * k + j );
+	    m = N1N0_ * k + j;
+	    l = 3 * m;
 
 	    uf_.af.advanceBoundaryF(
 		uf_.anp1+l,	uf_.anm1+l,	uf_.an  +l,
@@ -535,6 +590,12 @@ namespace Darius
 		uf_.an  +l+L6,  uf_.an  +l-L7,	uf_.an  +l+L2,
 		uf_.an  +l+L3, 	uf_.an  +l+3,   uf_.an  +l-3,
 		uf_.an  +l+L1,  uf_.an  +l-L1);
+	    uf_.af.advanceBoundaryS(
+		uf_.fnp1+m,	uf_.fnm1+m,	uf_.fn  +m,
+		uf_.fnm1+m+M0,	uf_.fn  +m+M0, 	uf_.fnp1+m+M0,
+		uf_.fn  +m+M6,  uf_.fn  +m-M7,	uf_.fn  +m+M2,
+		uf_.fn  +m+M3, 	uf_.fn  +m+1,   uf_.fn  +m-1,
+		uf_.fn  +m+M1,  uf_.fn  +m-M1);
 	  }
 
       /* Loop over the points in the mesh on the x = xmax boundary and update the fields using the first
@@ -542,7 +603,8 @@ namespace Darius
       for (unsigned j = 1; j < uf_.N1m1; j++)
 	for (unsigned k = 1; k < uf_.npm1; k++)
 	  {
-	    l = 3 * ( N1N0_ * k + N1N0_ - N1_ + j );
+	    m = N1N0_ * k + N1N0_ - N1_ + j;
+	    l = 3 * m;
 
 	    uf_.af.advanceBoundaryF(
 		uf_.anp1+l,	uf_.anm1+l,	uf_.an  +l,
@@ -550,6 +612,12 @@ namespace Darius
 		uf_.an  +l+L7,	uf_.an  +l-L6,	uf_.an  +l-L3,
 		uf_.an  +l-L2, 	uf_.an  +l+3,	uf_.an  +l-3,
 		uf_.an  +l+L1,  uf_.an  +l-L1 );
+	    uf_.af.advanceBoundaryS(
+		uf_.fnp1+m,	uf_.fnm1+m,	uf_.fn  +m,
+		uf_.fnm1+m-M0,	uf_.fn  +m-M0,	uf_.fnp1+m-M0,
+		uf_.fn  +m+M7,	uf_.fn  +m-M6,	uf_.fn  +m-M3,
+		uf_.fn  +m-M2, 	uf_.fn  +m+1,	uf_.fn  +m-1,
+		uf_.fn  +m+M1,  uf_.fn  +m-M1 );
 	  }
 
       /* Loop over the points in the mesh on the y = ymin boundary and update the fields using the first
@@ -558,7 +626,8 @@ namespace Darius
       for (unsigned i = 1; i < uf_.N0m1; i++)
 	for (unsigned k = 1; k < uf_.npm1; k++)
 	  {
-	    l = 3 * ( N1N0_ * k + N1_* i );
+	    m = N1N0_ * k + N1_* i;
+	    l = 3 * m;
 
 	    uf_.af.advanceBoundaryF(
 		uf_.anp1+l,	uf_.anm1+l,	uf_.an  +l,
@@ -566,6 +635,12 @@ namespace Darius
 		uf_.an  +l+L6,  uf_.an  +l+L7, 	uf_.an  +l+L4,
 		uf_.an  +l+L5, 	uf_.an  +l+L0,  uf_.an  +l-L0,
 		uf_.an  +l+L1,  uf_.an  +l-L1);
+	    uf_.af.advanceBoundaryS(
+		uf_.fnp1+m,	uf_.fnm1+m,	uf_.fn  +m,
+		uf_.fnm1+m+1,   uf_.fn  +m+1,   uf_.fnp1+m+1,
+		uf_.fn  +m+M6,  uf_.fn  +m+M7, 	uf_.fn  +m+M4,
+		uf_.fn  +m+M5, 	uf_.fn  +m+M0,  uf_.fn  +m-M0,
+		uf_.fn  +m+M1,  uf_.fn  +m-M1);
 	  }
 
       /* Loop over the points in the mesh on the y = ymax boundary and update the fields using the first
@@ -573,7 +648,8 @@ namespace Darius
       for (unsigned i = 1; i < uf_.N0m1; i++)
 	for (unsigned k = 1; k < uf_.npm1; k++)
 	  {
-	    l = 3 * ( N1N0_ * k + N1_* i + N1_ - 1 );
+	    m = N1N0_ * k + N1_* i + N1_ - 1;
+	    l = 3 * m;
 
 	    uf_.af.advanceBoundaryF(
 		uf_.anp1+l,	uf_.anm1+l,	uf_.an  +l,
@@ -581,6 +657,12 @@ namespace Darius
 		uf_.an  +l-L7,  uf_.an  +l-L6, 	uf_.an  +l-L5,
 		uf_.an  +l-L4,	uf_.an  +l+L0,  uf_.an  +l-L0,
 		uf_.an  +l+L1,  uf_.an  +l-L1);
+	    uf_.af.advanceBoundaryS(
+		uf_.fnp1+m,	uf_.fnm1+m,	uf_.fn  +m,
+		uf_.fnm1+m-1, 	uf_.fn  +m-1,  	uf_.fnp1+m-1,
+		uf_.fn  +m-M7,  uf_.fn  +m-M6, 	uf_.fn  +m-M5,
+		uf_.fn  +m-M4,	uf_.fn  +m+M0,  uf_.fn  +m-M0,
+		uf_.fn  +m+M1,  uf_.fn  +m-M1);
 	  }
 
       /* Loop over the points in the mesh on the z = zmin boundary and update the fields using the first
@@ -591,7 +673,8 @@ namespace Darius
 	  for (unsigned i = 1; i < uf_.N0m1; i++)
 	    for (unsigned j = 1; j < uf_.N1m1; j++)
 	      {
-		l = 3 * ( N1_ * i + j );
+		m = N1_ * i + j;
+		l = 3 * m;
 
 		uf_.af.advanceBoundaryF(
 		    uf_.anp1+l,		uf_.anm1+l,		uf_.an  +l,
@@ -599,6 +682,12 @@ namespace Darius
 		    uf_.an  +l+L2,   	uf_.an  +l-L3, 		uf_.an  +l+L4,
 		    uf_.an  +l-L5, 	uf_.an  +l+L0,     	uf_.an  +l-L0,
 		    uf_.an  +l+3,     	uf_.an  +l-3);
+		uf_.af.advanceBoundaryS(
+		    uf_.fnp1+m,		uf_.fnm1+m,		uf_.fn  +m,
+		    uf_.fnm1+m+M1,     	uf_.fn  +m+M1,   	uf_.fnp1+m+M1,
+		    uf_.fn  +m+M2,   	uf_.fn  +m-M3, 		uf_.fn  +m+M4,
+		    uf_.fn  +m-M5, 	uf_.fn  +m+M0,     	uf_.fn  +m-M0,
+		    uf_.fn  +m+1,     	uf_.fn  +m-1);
 	      }
 	}
 
@@ -609,14 +698,21 @@ namespace Darius
 	  for (unsigned i = 1; i < uf_.N0m1; i++)
 	    for (unsigned j = 1; j < uf_.N1m1; j++)
 	      {
-		l = 3 * ( N1N0_ * uf_.npm1 + N1_ * i + j );
+		m = N1N0_ * uf_.npm1 + N1_ * i + j;
+		l = 3 * m;
 
 		uf_.af.advanceBoundaryF(
-		    uf_.anp1+l,		uf_.anm1+l,		uf_.an  +l,
-		    uf_.anm1+l-L1,     	uf_.an  +l-L1,   	uf_.anp1+l-L1,
+		    uf_.anp1+l,	uf_.anm1+l,		uf_.an  +l,
+		    uf_.anm1+l-L1,     uf_.an  +l-L1,   	uf_.anp1+l-L1,
 		    uf_.an  +l+L3,   	uf_.an  +l-L2, 		uf_.an  +l+L5,
 		    uf_.an  +l-L4, 	uf_.an  +l+L0,     	uf_.an  +l-L0,
 		    uf_.an  +l+3,    	uf_.an  +l-3);
+		uf_.af.advanceBoundaryS(
+		    uf_.fnp1+m,	uf_.fnm1+m,		uf_.fn  +m,
+		    uf_.fnm1+m-M1,     uf_.fn  +m-M1,   	uf_.fnp1+m-M1,
+		    uf_.fn  +m+M3,   	uf_.fn  +m-M2, 		uf_.fn  +m+M5,
+		    uf_.fn  +m-M4, 	uf_.fn  +m+M0,     	uf_.fn  +m-M0,
+		    uf_.fn  +m+1,    	uf_.fn  +m-1);
 	      }
 	}
 
@@ -629,7 +725,8 @@ namespace Darius
 	  uf_.af.ufB_ = &uf_.eE[0];
 	  for (unsigned k = 1; k < uf_.npm1; k++)
 	    {
-	      l = 3 * ( N1N0_ * k );
+	      m = N1N0_ * k;
+	      l = 3 * m;
 
 	      uf_.af.advanceEdgeF(
 		  uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
@@ -638,8 +735,16 @@ namespace Darius
 		  uf_.anp1+l+L6,	uf_.an+l+L6,	uf_.anm1+l+L6,
 		  uf_.an  +l-L1,	uf_.an+l+L3,	uf_.an  +l+L5,	uf_.an+l+L9,
 		  uf_.an  +l+L1,	uf_.an+l+L2,	uf_.an  +l+L4,	uf_.an+l+L8);
+	      uf_.af.advanceEdgeS(
+		  uf_.fnp1+m,		uf_.fn+m,	uf_.fnm1+m,
+		  uf_.fnp1+m+M0,	uf_.fn+m+M0,	uf_.fnm1+m+M0,
+		  uf_.fnp1+m+1,		uf_.fn+m+1,	uf_.fnm1+m+1,
+		  uf_.fnp1+m+M6,	uf_.fn+m+M6,	uf_.fnm1+m+M6,
+		  uf_.fn  +m-M1,	uf_.fn+m+M3,	uf_.fn  +m+M5,	uf_.fn+m+M9,
+		  uf_.fn  +m+M1,	uf_.fn+m+M2,	uf_.fn  +m+M4,	uf_.fn+m+M8);
 
-	      l = 3 * ( N1N0_ * k + N1_ * uf_.N0m1 );
+	      m = N1N0_ * k + N1_ * uf_.N0m1;
+	      l = 3 * m;
 
 	      uf_.af.advanceEdgeF(
 		  uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
@@ -648,8 +753,16 @@ namespace Darius
 		  uf_.anp1+l+L7,	uf_.an+l+L7,	uf_.anm1+l+L7,
 		  uf_.an  +l-L1,	uf_.an+l-L2,	uf_.an  +l+L5,	uf_.an+l+L11,
 		  uf_.an  +l+L1,	uf_.an+l-L3,	uf_.an  +l+L4,	uf_.an+l+L10);
+	      uf_.af.advanceEdgeS(
+		  uf_.fnp1+m,		uf_.fn+m,	uf_.fnm1+m,
+		  uf_.fnp1+m-M0,	uf_.fn+m-M0,	uf_.fnm1+m-M0,
+		  uf_.fnp1+m+1,		uf_.fn+m+1,	uf_.fnm1+m+1,
+		  uf_.fnp1+m+M7,	uf_.fn+m+M7,	uf_.fnm1+m+M7,
+		  uf_.fn  +m-M1,	uf_.fn+m-M2,	uf_.fn  +m+M5,	uf_.fn+m+M11,
+		  uf_.fn  +m+M1,	uf_.fn+m-M3,	uf_.fn  +m+M4,	uf_.fn+m+M10);
 
-	      l = 3 * ( N1N0_ * k + uf_.N1m1 );
+	      m = N1N0_ * k + uf_.N1m1;
+	      l = 3 * m;
 
 	      uf_.af.advanceEdgeF(
 		  uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
@@ -658,8 +771,16 @@ namespace Darius
 		  uf_.anp1+l-L7,	uf_.an+l-L7,	uf_.anm1+l-L7,
 		  uf_.an  +l-L1,	uf_.an+l+L3,	uf_.an  +l-L4,	uf_.an+l-L10,
 		  uf_.an  +l+L1,	uf_.an+l+L2,	uf_.an  +l-L5,	uf_.an+l-L11);
+	      uf_.af.advanceEdgeS(
+		  uf_.fnp1+m,		uf_.fn+m,	uf_.fnm1+m,
+		  uf_.fnp1+m+M0,	uf_.fn+m+M0,	uf_.fnm1+m+M0,
+		  uf_.fnp1+m-1,		uf_.fn+m-1,	uf_.fnm1+m-1,
+		  uf_.fnp1+m-M7,	uf_.fn+m-M7,	uf_.fnm1+m-M7,
+		  uf_.fn  +m-M1,	uf_.fn+m+M3,	uf_.fn  +m-M4,	uf_.fn+m-M10,
+		  uf_.fn  +m+M1,	uf_.fn+m+M2,	uf_.fn  +m-M5,	uf_.fn+m-M11);
 
-	      l = 3 * ( N1N0_ * k + N1_ * uf_.N0m1 + uf_.N1m1 );
+	      m = N1N0_ * k + N1_ * uf_.N0m1 + uf_.N1m1;
+	      l = 3 * m;
 
 	      uf_.af.advanceEdgeF(
 		  uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
@@ -668,6 +789,13 @@ namespace Darius
 		  uf_.anp1+l-L6,	uf_.an+l-L6,	uf_.anm1+l-L6,
 		  uf_.an  +l-L1,	uf_.an+l-L2,	uf_.an  +l-L4,	uf_.an+l-L8,
 		  uf_.an  +l+L1,	uf_.an+l-L3,	uf_.an  +l-L5,	uf_.an+l-L9);
+	      uf_.af.advanceEdgeS(
+		  uf_.fnp1+m,		uf_.fn+m,	uf_.fnm1+m,
+		  uf_.fnp1+m-M0,	uf_.fn+m-M0,	uf_.fnm1+m-M0,
+		  uf_.fnp1+m-1,		uf_.fn+m-1,	uf_.fnm1+m-1,
+		  uf_.fnp1+m-M6,	uf_.fn+m-M6,	uf_.fnm1+m-M6,
+		  uf_.fn  +m-M1,	uf_.fn+m-M2,	uf_.fn  +m-M4,	uf_.fn+m-M8,
+		  uf_.fn  +m+M1,	uf_.fn+m-M3,	uf_.fn  +m-M5,	uf_.fn+m-M9);
 	    }
 
 	  /* Loop over the edge points in the mesh on the z = (zmin,zmax) and y = (ymin,ymax) boundary
@@ -678,7 +806,8 @@ namespace Darius
 	    {
 	      if ( rank_ == 0 )
 		{
-		  l = 3 * ( N1_ * i );
+		  m = N1_ * i;
+		  l = 3 * m;
 
 		  uf_.af.advanceEdgeF(
 		      uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
@@ -687,8 +816,16 @@ namespace Darius
 		      uf_.anp1+l+L4,	uf_.an+l+L4,	uf_.anm1+l+L4,
 		      uf_.an  +l-L0,	uf_.an+l+L7,	uf_.an  +l-L3,	uf_.an+l+L10,
 		      uf_.an  +l+L0,	uf_.an+l+L6,	uf_.an  +l+L2,	uf_.an+l+L8);
+		  uf_.af.advanceEdgeS(
+		      uf_.fnp1+m,	uf_.fn+m,	uf_.fnm1+m,
+		      uf_.fnp1+m+1,	uf_.fn+m+1,	uf_.fnm1+m+1,
+		      uf_.fnp1+m+M1,	uf_.fn+m+M1,	uf_.fnm1+m+M1,
+		      uf_.fnp1+m+M4,	uf_.fn+m+M4,	uf_.fnm1+m+M4,
+		      uf_.fn  +m-M0,	uf_.fn+m+M7,	uf_.fn  +m-M3,	uf_.fn+m+M10,
+		      uf_.fn  +m+M0,	uf_.fn+m+M6,	uf_.fn  +m+M2,	uf_.fn+m+M8);
 
-		  l = 3 * ( N1_ * i + uf_.N1m1 );
+		  m = N1_ * i + uf_.N1m1;
+		  l = 3 * m;
 
 		  uf_.af.advanceEdgeF(
 		      uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
@@ -697,11 +834,19 @@ namespace Darius
 		      uf_.anp1+l-L5,	uf_.an+l-L5,	uf_.anm1+l-L5,
 		      uf_.an  +l-L0,	uf_.an+l-L6,	uf_.an  +l-L3,	uf_.an+l-L9,
 		      uf_.an  +l+L0,	uf_.an+l-L7,	uf_.an  +l+L2,	uf_.an+l-L11);
+		  uf_.af.advanceEdgeS(
+		      uf_.fnp1+m,	uf_.fn+m,	uf_.fnm1+m,
+		      uf_.fnp1+m-1,	uf_.fn+m-1,	uf_.fnm1+m-1,
+		      uf_.fnp1+m+M1,	uf_.fn+m+M1,	uf_.fnm1+m+M1,
+		      uf_.fnp1+m-M5,	uf_.fn+m-M5,	uf_.fnm1+m-M5,
+		      uf_.fn  +m-M0,	uf_.fn+m-M6,	uf_.fn  +m-M3,	uf_.fn+m-M9,
+		      uf_.fn  +m+M0,	uf_.fn+m-M7,	uf_.fn  +m+M2,	uf_.fn+m-M11);
 		}
 
 	      if ( rank_ == size_ - 1 )
 		{
-		  l = 3 * ( N1_ * i + N1N0_ * uf_.npm1 );
+		  m = N1_ * i + N1N0_ * uf_.npm1;
+		  l = 3 * m;
 
 		  uf_.af.advanceEdgeF(
 		      uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
@@ -710,8 +855,16 @@ namespace Darius
 		      uf_.anp1+l+L5,	uf_.an+l+L5,	uf_.anm1+l+L5,
 		      uf_.an  +l-L0,	uf_.an+l+L7,	uf_.an  +l-L2,	uf_.an+l+L11,
 		      uf_.an  +l+L0,	uf_.an+l+L6,	uf_.an  +l+L3,	uf_.an+l+L9);
+		  uf_.af.advanceEdgeS(
+		      uf_.fnp1+m,	uf_.fn+m,	uf_.fnm1+m,
+		      uf_.fnp1+m+1,	uf_.fn+m+1,	uf_.fnm1+m+1,
+		      uf_.fnp1+m-M1,	uf_.fn+m-M1,	uf_.fnm1+m-M1,
+		      uf_.fnp1+m+M5,	uf_.fn+m+M5,	uf_.fnm1+m+M5,
+		      uf_.fn  +m-M0,	uf_.fn+m+M7,	uf_.fn  +m-M2,	uf_.fn+m+M11,
+		      uf_.fn  +m+M0,	uf_.fn+m+M6,	uf_.fn  +m+M3,	uf_.fn+m+M9);
 
-		  l = 3 * ( N1_ * i + N1N0_ * uf_.npm1 + uf_.N1m1 );
+		  m = N1_ * i + N1N0_ * uf_.npm1 + uf_.N1m1;
+		  l = 3 * m;
 
 		  uf_.af.advanceEdgeF(
 		      uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
@@ -720,6 +873,13 @@ namespace Darius
 		      uf_.anp1+l-L4,	uf_.an+l-L4,	uf_.anm1+l-L4,
 		      uf_.an  +l-L0,	uf_.an+l-L6,	uf_.an  +l-L2,	uf_.an+l-L8,
 		      uf_.an  +l+L0,	uf_.an+l-L7,	uf_.an  +l+L3,	uf_.an+l-L10);
+		  uf_.af.advanceEdgeS(
+		      uf_.fnp1+m,	uf_.fn+m,	uf_.fnm1+m,
+		      uf_.fnp1+m-1,	uf_.fn+m-1,	uf_.fnm1+m-1,
+		      uf_.fnp1+m-M1,	uf_.fn+m-M1,	uf_.fnm1+m-M1,
+		      uf_.fnp1+m-M4,	uf_.fn+m-M4,	uf_.fnm1+m-M4,
+		      uf_.fn  +m-M0,	uf_.fn+m-M6,	uf_.fn  +m-M2,	uf_.fn+m-M8,
+		      uf_.fn  +m+M0,	uf_.fn+m-M7,	uf_.fn  +m+M3,	uf_.fn+m-M10);
 		}
 	    }
 
@@ -731,48 +891,80 @@ namespace Darius
 	    {
 	      if ( rank_ == 0 )
 		{
-		  l = 3 * j;
+		  m = j;
+		  l = 3 * m;
 
 		  uf_.af.advanceEdgeF(
 		      uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
 		      uf_.anp1+l+L1,	uf_.an+l+L1,	uf_.anm1+l+L1,
 		      uf_.anp1+l+L0,	uf_.an+l+L0,	uf_.anm1+l+L0,
 		      uf_.anp1+l+L2,	uf_.an+l+L2,	uf_.anm1+l+L2,
-		      uf_.an+l-3,	uf_.an+l-L5,	uf_.an+l-L7,	uf_.an+l-L11,
-		      uf_.an+l+3,	uf_.an+l+L4,	uf_.an+l+L6,	uf_.an+l+L8);
+		      uf_.an  +l-3,	uf_.an+l-L5,	uf_.an  +l-L7,	uf_.an+l-L11,
+		      uf_.an  +l+3,	uf_.an+l+L4,	uf_.an  +l+L6,	uf_.an+l+L8);
+		  uf_.af.advanceEdgeS(
+		      uf_.fnp1+m,	uf_.fn+m,	uf_.fnm1+m,
+		      uf_.fnp1+m+M1,	uf_.fn+m+M1,	uf_.fnm1+m+M1,
+		      uf_.fnp1+m+M0,	uf_.fn+m+M0,	uf_.fnm1+m+M0,
+		      uf_.fnp1+m+M2,	uf_.fn+m+M2,	uf_.fnm1+m+M2,
+		      uf_.fn  +m-1,	uf_.fn+m-M5,	uf_.fn  +m-M7,	uf_.fn+m-M11,
+		      uf_.fn  +m+1,	uf_.fn+m+M4,	uf_.fn  +m+M6,	uf_.fn+m+M8);
 
-		  l = 3 * ( N1N0_ - N1_ + j );
+		  m = N1N0_ - N1_ + j;
+		  l = 3 * m;
 
 		  uf_.af.advanceEdgeF(
 		      uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
 		      uf_.anp1+l+L1,	uf_.an+l+L1,	uf_.anm1+l+L1,
 		      uf_.anp1+l-L0,	uf_.an+l-L0,	uf_.anm1+l-L0,
 		      uf_.anp1+l-L3,	uf_.an+l-L3,	uf_.anm1+l-L3,
-		      uf_.an+l-3,	uf_.an+l-L5,	uf_.an+l-L6,	uf_.an+l-L9,
-		      uf_.an+l+3,	uf_.an+l+L4,	uf_.an+l+L7,	uf_.an+l+L10);
+		      uf_.an  +l-3,	uf_.an+l-L5,	uf_.an  +l-L6,	uf_.an+l-L9,
+		      uf_.an  +l+3,	uf_.an+l+L4,	uf_.an  +l+L7,	uf_.an+l+L10);
+		  uf_.af.advanceEdgeS(
+		      uf_.fnp1+m,	uf_.fn+m,	uf_.fnm1+m,
+		      uf_.fnp1+m+M1,	uf_.fn+m+M1,	uf_.fnm1+m+M1,
+		      uf_.fnp1+m-M0,	uf_.fn+m-M0,	uf_.fnm1+m-M0,
+		      uf_.fnp1+m-M3,	uf_.fn+m-M3,	uf_.fnm1+m-M3,
+		      uf_.fn  +m-1,	uf_.fn+m-M5,	uf_.fn  +m-M6,	uf_.fn+m-M9,
+		      uf_.fn  +m+1,	uf_.fn+m+M4,	uf_.fn  +m+M7,	uf_.fn+m+M10);
 		}
 
 	      if ( rank_ == size_ - 1 )
 		{
-		  l = 3 * ( N1N0_ * uf_.npm1 + j );
+		  m = N1N0_ * uf_.npm1 + j;
+		  l = 3 * m;
 
 		  uf_.af.advanceEdgeF(
 		      uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
 		      uf_.anp1+l-L1,	uf_.an+l-L1,	uf_.anm1+l-L1,
 		      uf_.anp1+l+L0,	uf_.an+l+L0,	uf_.anm1+l+L0,
 		      uf_.anp1+l+L3,	uf_.an+l+L3,	uf_.anm1+l+L3,
-		      uf_.an+l-3,	uf_.an+l-L4,	uf_.an+l-L7,	uf_.an+l-L10,
-		      uf_.an+l+3,	uf_.an+l+L5,	uf_.an+l+L6,	uf_.an+l+L9);
+		      uf_.an  +l-3,	uf_.an+l-L4,	uf_.an  +l-L7,	uf_.an+l-L10,
+		      uf_.an  +l+3,	uf_.an+l+L5,	uf_.an  +l+L6,	uf_.an+l+L9);
+		  uf_.af.advanceEdgeS(
+		      uf_.fnp1+m,	uf_.fn+m,	uf_.fnm1+m,
+		      uf_.fnp1+m-M1,	uf_.fn+m-M1,	uf_.fnm1+m-M1,
+		      uf_.fnp1+m+M0,	uf_.fn+m+M0,	uf_.fnm1+m+M0,
+		      uf_.fnp1+m+M3,	uf_.fn+m+M3,	uf_.fnm1+m+M3,
+		      uf_.fn  +m-1,	uf_.fn+m-M4,	uf_.fn  +m-M7,	uf_.fn+m-M10,
+		      uf_.fn  +m+1,	uf_.fn+m+M5,	uf_.fn  +m+M6,	uf_.fn+m+M9);
 
-		  l = 3 * ( N1N0_ * uf_.npm1 + N1_ * uf_.N0m1 + j );
+		  m = N1N0_ * uf_.npm1 + N1_ * uf_.N0m1 + j;
+		  l = 3 * m;
 
 		  uf_.af.advanceEdgeF(
 		      uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
 		      uf_.anp1+l-L1,	uf_.an+l-L1,	uf_.anm1+l-L1,
 		      uf_.anp1+l-L0,	uf_.an+l-L0,	uf_.anm1+l-L0,
 		      uf_.anp1+l-L2,	uf_.an+l-L2,	uf_.anm1+l-L2,
-		      uf_.an+l-3,	uf_.an+l-L4,	uf_.an+l-L6,	uf_.an+l-L8,
-		      uf_.an+l+3,	uf_.an+l+L5,	uf_.an+l+L7,	uf_.an+l+L11);
+		      uf_.an  +l-3,	uf_.an+l-L4,	uf_.an  +l-L6,	uf_.an+l-L8,
+		      uf_.an  +l+3,	uf_.an+l+L5,	uf_.an  +l+L7,	uf_.an+l+L11);
+		  uf_.af.advanceEdgeS(
+		      uf_.fnp1+m,	uf_.fn+m,	uf_.fnm1+m,
+		      uf_.fnp1+m-M1,	uf_.fn+m-M1,	uf_.fnm1+m-M1,
+		      uf_.fnp1+m-M0,	uf_.fn+m-M0,	uf_.fnm1+m-M0,
+		      uf_.fnp1+m-M2,	uf_.fn+m-M2,	uf_.fnm1+m-M2,
+		      uf_.fn  +m-1,	uf_.fn+m-M4,	uf_.fn  +m-M6,	uf_.fn+m-M8,
+		      uf_.fn  +m+1,	uf_.fn+m+M5,	uf_.fn  +m+M7,	uf_.fn+m+M11);
 		}
 	    }
 
@@ -790,6 +982,15 @@ namespace Darius
 		  uf_.anp1+3*(m+N1N0_+N1_),	uf_.an+3*(m+N1N0_+N1_),		uf_.anm1+3*(m+N1N0_+N1_),
 		  uf_.anp1+3*(m+N1N0_+1),	uf_.an+3*(m+N1N0_+1),		uf_.anm1+3*(m+N1N0_+1),
 		  uf_.anp1+3*(m+N1N0_+N1_+1),	uf_.an+3*(m+N1N0_+N1_+1),	uf_.anm1+3*(m+N1N0_+N1_+1));
+	      uf_.af.advanceCornerS(
+		  uf_.fnp1+m,			uf_.fn+m,			uf_.fnm1+m,
+		  uf_.fnp1+(m+N1_),		uf_.fn+(m+N1_),			uf_.fnm1+(m+N1_),
+		  uf_.fnp1+(m+1),		uf_.fn+(m+1),			uf_.fnm1+(m+1),
+		  uf_.fnp1+(m+N1N0_),		uf_.fn+(m+N1N0_),		uf_.fnm1+(m+N1N0_),
+		  uf_.fnp1+(m+N1_+1),		uf_.fn+(m+N1_+1),		uf_.fnm1+(m+N1_+1),
+		  uf_.fnp1+(m+N1N0_+N1_),	uf_.fn+(m+N1N0_+N1_),		uf_.fnm1+(m+N1N0_+N1_),
+		  uf_.fnp1+(m+N1N0_+1),	uf_.fn+(m+N1N0_+1),		uf_.fnm1+(m+N1N0_+1),
+		  uf_.fnp1+(m+N1N0_+N1_+1),	uf_.fn+(m+N1N0_+N1_+1),		uf_.fnm1+(m+N1N0_+N1_+1));
 
 	      m = N1N0_ - N1_;
 	      uf_.af.advanceCornerF(
@@ -801,6 +1002,15 @@ namespace Darius
 		  uf_.anp1+3*(m+N1N0_-N1_),	uf_.an+3*(m+N1N0_-N1_),		uf_.anm1+3*(m+N1N0_-N1_),
 		  uf_.anp1+3*(m+N1N0_+1),	uf_.an+3*(m+N1N0_+1),		uf_.anm1+3*(m+N1N0_+1),
 		  uf_.anp1+3*(m+N1N0_-N1_+1),	uf_.an+3*(m+N1N0_-N1_+1),	uf_.anm1+3*(m+N1N0_-N1_+1));
+	      uf_.af.advanceCornerS(
+		  uf_.fnp1+m,			uf_.fn+m,			uf_.fnm1+m,
+		  uf_.fnp1+(m-N1_),		uf_.fn+(m-N1_),			uf_.fnm1+(m-N1_),
+		  uf_.fnp1+(m+1),		uf_.fn+(m+1),			uf_.fnm1+(m+1),
+		  uf_.fnp1+(m+N1N0_),		uf_.fn+(m+N1N0_),		uf_.fnm1+(m+N1N0_),
+		  uf_.fnp1+(m-N1_+1),		uf_.fn+(m-N1_+1),		uf_.fnm1+(m-N1_+1),
+		  uf_.fnp1+(m+N1N0_-N1_),	uf_.fn+(m+N1N0_-N1_),		uf_.fnm1+(m+N1N0_-N1_),
+		  uf_.fnp1+(m+N1N0_+1),	uf_.fn+(m+N1N0_+1),		uf_.fnm1+(m+N1N0_+1),
+		  uf_.fnp1+(m+N1N0_-N1_+1),	uf_.fn+(m+N1N0_-N1_+1),		uf_.fnm1+(m+N1N0_-N1_+1));
 
 	      m = uf_.N1m1;
 	      uf_.af.advanceCornerF(
@@ -812,6 +1022,15 @@ namespace Darius
 		  uf_.anp1+3*(m+N1N0_+N1_),	uf_.an+3*(m+N1N0_+N1_),		uf_.anm1+3*(m+N1N0_+N1_),
 		  uf_.anp1+3*(m+N1N0_-1),	uf_.an+3*(m+N1N0_-1),		uf_.anm1+3*(m+N1N0_-1),
 		  uf_.anp1+3*(m+N1N0_+N1_-1),	uf_.an+3*(m+N1N0_+N1_-1),	uf_.anm1+3*(m+N1N0_+N1_-1));
+	      uf_.af.advanceCornerS(
+		  uf_.fnp1+m,			uf_.fn+m,			uf_.fnm1+m,
+		  uf_.fnp1+(m+N1_),		uf_.fn+(m+N1_),			uf_.fnm1+(m+N1_),
+		  uf_.fnp1+(m-1),		uf_.fn+(m-1),			uf_.fnm1+(m-1),
+		  uf_.fnp1+(m+N1N0_),		uf_.fn+(m+N1N0_),		uf_.fnm1+(m+N1N0_),
+		  uf_.fnp1+(m+N1_-1),		uf_.fn+(m+N1_-1),		uf_.fnm1+(m+N1_-1),
+		  uf_.fnp1+(m+N1N0_+N1_),	uf_.fn+(m+N1N0_+N1_),		uf_.fnm1+(m+N1N0_+N1_),
+		  uf_.fnp1+(m+N1N0_-1),	uf_.fn+(m+N1N0_-1),		uf_.fnm1+(m+N1N0_-1),
+		  uf_.fnp1+(m+N1N0_+N1_-1),	uf_.fn+(m+N1N0_+N1_-1),		uf_.fnm1+(m+N1N0_+N1_-1));
 
 	      m = N1N0_ - N1_ + uf_.N1m1;
 	      uf_.af.advanceCornerF(
@@ -823,6 +1042,15 @@ namespace Darius
 		  uf_.anp1+3*(m+N1N0_-N1_),	uf_.an+3*(m+N1N0_-N1_),		uf_.anm1+3*(m+N1N0_-N1_),
 		  uf_.anp1+3*(m+N1N0_-1),	uf_.an+3*(m+N1N0_-1),		uf_.anm1+3*(m+N1N0_-1),
 		  uf_.anp1+3*(m+N1N0_-N1_-1),	uf_.an+3*(m+N1N0_-N1_-1),	uf_.anm1+3*(m+N1N0_-N1_-1));
+	      uf_.af.advanceCornerS(
+		  uf_.fnp1+m,			uf_.fn+m,			uf_.fnm1+m,
+		  uf_.fnp1+(m-N1_),		uf_.fn+(m-N1_),			uf_.fnm1+(m-N1_),
+		  uf_.fnp1+(m-1),		uf_.fn+(m-1),			uf_.fnm1+(m-1),
+		  uf_.fnp1+(m+N1N0_),		uf_.fn+(m+N1N0_),		uf_.fnm1+(m+N1N0_),
+		  uf_.fnp1+(m-N1_-1),		uf_.fn+(m-N1_-1),		uf_.fnm1+(m-N1_-1),
+		  uf_.fnp1+(m+N1N0_-N1_),	uf_.fn+(m+N1N0_-N1_),		uf_.fnm1+(m+N1N0_-N1_),
+		  uf_.fnp1+(m+N1N0_-1),	uf_.fn+(m+N1N0_-1),		uf_.fnm1+(m+N1N0_-1),
+		  uf_.fnp1+(m+N1N0_-N1_-1),	uf_.fn+(m+N1N0_-N1_-1),		uf_.fnm1+(m+N1N0_-N1_-1));
 	    }
 
 	  if ( rank_ == size_ - 1 )
@@ -837,6 +1065,15 @@ namespace Darius
 		  uf_.anp1+3*(m-N1N0_+N1_),	uf_.an+3*(m-N1N0_+N1_),		uf_.anm1+3*(m-N1N0_+N1_),
 		  uf_.anp1+3*(m-N1N0_+1),	uf_.an+3*(m-N1N0_+1),		uf_.anm1+3*(m-N1N0_+1),
 		  uf_.anp1+3*(m-N1N0_+N1_+1),	uf_.an+3*(m-N1N0_+N1_+1),	uf_.anm1+3*(m-N1N0_+N1_+1));
+	      uf_.af.advanceCornerS(
+		  uf_.fnp1+m,			uf_.fn+m,			uf_.fnm1+m,
+		  uf_.fnp1+(m+N1_),		uf_.fn+(m+N1_),			uf_.fnm1+(m+N1_),
+		  uf_.fnp1+(m+1),		uf_.fn+(m+1),			uf_.fnm1+(m+1),
+		  uf_.fnp1+(m-N1N0_),		uf_.fn+(m-N1N0_),		uf_.fnm1+(m-N1N0_),
+		  uf_.fnp1+(m+N1_+1),		uf_.fn+(m+N1_+1),		uf_.fnm1+(m+N1_+1),
+		  uf_.fnp1+(m-N1N0_+N1_),	uf_.fn+(m-N1N0_+N1_),		uf_.fnm1+(m-N1N0_+N1_),
+		  uf_.fnp1+(m-N1N0_+1),	uf_.fn+(m-N1N0_+1),		uf_.fnm1+(m-N1N0_+1),
+		  uf_.fnp1+(m-N1N0_+N1_+1),	uf_.fn+(m-N1N0_+N1_+1),		uf_.fnm1+(m-N1N0_+N1_+1));
 
 	      m = N1N0_ * uf_.npm1 + N1N0_ - N1_;
 	      uf_.af.advanceCornerF(
@@ -848,6 +1085,15 @@ namespace Darius
 		  uf_.anp1+3*(m-N1N0_-N1_),	uf_.an+3*(m-N1N0_-N1_),		uf_.anm1+3*(m-N1N0_-N1_),
 		  uf_.anp1+3*(m-N1N0_+1),	uf_.an+3*(m-N1N0_+1),		uf_.anm1+3*(m-N1N0_+1),
 		  uf_.anp1+3*(m-N1N0_-N1_+1),	uf_.an+3*(m-N1N0_-N1_+1),	uf_.anm1+3*(m-N1N0_-N1_+1));
+	      uf_.af.advanceCornerS(
+		  uf_.fnp1+m,			uf_.fn+m,			uf_.fnm1+m,
+		  uf_.fnp1+(m-N1_),		uf_.fn+(m-N1_),			uf_.fnm1+(m-N1_),
+		  uf_.fnp1+(m+1),		uf_.fn+(m+1),			uf_.fnm1+(m+1),
+		  uf_.fnp1+(m-N1N0_),		uf_.fn+(m-N1N0_),		uf_.fnm1+(m-N1N0_),
+		  uf_.fnp1+(m-N1_+1),		uf_.fn+(m-N1_+1),		uf_.fnm1+(m-N1_+1),
+		  uf_.fnp1+(m-N1N0_-N1_),	uf_.fn+(m-N1N0_-N1_),		uf_.fnm1+(m-N1N0_-N1_),
+		  uf_.fnp1+(m-N1N0_+1),	uf_.fn+(m-N1N0_+1),		uf_.fnm1+(m-N1N0_+1),
+		  uf_.fnp1+(m-N1N0_-N1_+1),	uf_.fn+(m-N1N0_-N1_+1),		uf_.fnm1+(m-N1N0_-N1_+1));
 
 	      m = N1N0_ * uf_.npm1 + uf_.N1m1;
 	      uf_.af.advanceCornerF(
@@ -859,6 +1105,15 @@ namespace Darius
 		  uf_.anp1+3*(m-N1N0_+N1_),	uf_.an+3*(m-N1N0_+N1_),		uf_.anm1+3*(m-N1N0_+N1_),
 		  uf_.anp1+3*(m-N1N0_-1),	uf_.an+3*(m-N1N0_-1),		uf_.anm1+3*(m-N1N0_-1),
 		  uf_.anp1+3*(m-N1N0_+N1_-1),	uf_.an+3*(m-N1N0_+N1_-1),	uf_.anm1+3*(m-N1N0_+N1_-1));
+	      uf_.af.advanceCornerS(
+		  uf_.fnp1+m,			uf_.fn+m,			uf_.fnm1+m,
+		  uf_.fnp1+(m+N1_),		uf_.fn+(m+N1_),			uf_.fnm1+(m+N1_),
+		  uf_.fnp1+(m-1),		uf_.fn+(m-1),			uf_.fnm1+(m-1),
+		  uf_.fnp1+(m-N1N0_),		uf_.fn+(m-N1N0_),		uf_.fnm1+(m-N1N0_),
+		  uf_.fnp1+(m+N1_-1),		uf_.fn+(m+N1_-1),		uf_.fnm1+(m+N1_-1),
+		  uf_.fnp1+(m-N1N0_+N1_),	uf_.fn+(m-N1N0_+N1_),		uf_.fnm1+(m-N1N0_+N1_),
+		  uf_.fnp1+(m-N1N0_-1),	uf_.fn+(m-N1N0_-1),		uf_.fnm1+(m-N1N0_-1),
+		  uf_.fnp1+(m-N1N0_+N1_-1),	uf_.fn+(m-N1N0_+N1_-1),		uf_.fnm1+(m-N1N0_+N1_-1));
 
 	      m = N1N0_ * uf_.npm1 + N1N0_ - N1_ + uf_.N1m1;
 	      uf_.af.advanceCornerF(
@@ -870,21 +1125,42 @@ namespace Darius
 		  uf_.anp1+3*(m-N1N0_-N1_),	uf_.an+3*(m-N1N0_-N1_),		uf_.anm1+3*(m-N1N0_-N1_),
 		  uf_.anp1+3*(m-N1N0_-1),	uf_.an+3*(m-N1N0_-1),		uf_.anm1+3*(m-N1N0_-1),
 		  uf_.anp1+3*(m-N1N0_-N1_-1),	uf_.an+3*(m-N1N0_-N1_-1),	uf_.anm1+3*(m-N1N0_-N1_-1));
+	      uf_.af.advanceCornerS(
+		  uf_.fnp1+m,			uf_.fn+m,			uf_.fnm1+m,
+		  uf_.fnp1+(m-N1_),		uf_.fn+(m-N1_),			uf_.fnm1+(m-N1_),
+		  uf_.fnp1+(m-1),		uf_.fn+(m-1),			uf_.fnm1+(m-1),
+		  uf_.fnp1+(m-N1N0_),		uf_.fn+(m-N1N0_),		uf_.fnm1+(m-N1N0_),
+		  uf_.fnp1+(m-N1_-1),		uf_.fn+(m-N1_-1),		uf_.fnm1+(m-N1_-1),
+		  uf_.fnp1+(m-N1N0_-N1_),	uf_.fn+(m-N1N0_-N1_),		uf_.fnm1+(m-N1N0_-N1_),
+		  uf_.fnp1+(m-N1N0_-1),	uf_.fn+(m-N1N0_-1),		uf_.fnm1+(m-N1N0_-1),
+		  uf_.fnp1+(m-N1N0_-N1_-1),	uf_.fn+(m-N1N0_-N1_-1),		uf_.fnm1+(m-N1N0_-N1_-1));
 	    }
 	}
 
       /* Communicate the calculated fields throughout the processors.					*/
       if (rank_ != size_ - 1)
-	MPI_Send(uf_.anp1+3*(np_-2)*N1N0_, 	3*N1N0_,MPI_TYPE,rank_+1,msgtag1,MPI_COMM_WORLD);
+	{
+	  MPI_Send(uf_.anp1+3*(np_-2)*N1N0_, 	3*N1N0_,MPI_TYPE,rank_+1,msgtag1,MPI_COMM_WORLD);
+	  MPI_Send(uf_.fnp1+(np_-2)*N1N0_,	  N1N0_,MPI_TYPE,rank_+1,msgtag2,MPI_COMM_WORLD);
+	}
 
       if (rank_ != 0)
-	MPI_Recv(uf_.anp1,			3*N1N0_,MPI_TYPE,rank_-1,msgtag1,MPI_COMM_WORLD,&status);
+	{
+	  MPI_Recv(uf_.anp1,			3*N1N0_,MPI_TYPE,rank_-1,msgtag1,MPI_COMM_WORLD,&status);
+	  MPI_Recv(uf_.fnp1,		  	  N1N0_,MPI_TYPE,rank_-1,msgtag2,MPI_COMM_WORLD,&status);
+	}
 
       if (rank_ != 0)
-	MPI_Send(uf_.anp1+3*N1N0_,	 	3*N1N0_,MPI_TYPE,rank_-1,msgtag3,MPI_COMM_WORLD);
+	{
+	  MPI_Send(uf_.anp1+3*N1N0_,	 	3*N1N0_,MPI_TYPE,rank_-1,msgtag3,MPI_COMM_WORLD);
+	  MPI_Send(uf_.fnp1+N1N0_,		  N1N0_,MPI_TYPE,rank_-1,msgtag4,MPI_COMM_WORLD);
+	}
 
       if (rank_ != size_ - 1)
-	MPI_Recv(uf_.anp1+3*(np_-1)*N1N0_,	3*N1N0_,MPI_TYPE,rank_+1,msgtag3,MPI_COMM_WORLD,&status);
+	{
+	  MPI_Recv(uf_.anp1+3*(np_-1)*N1N0_,	3*N1N0_,MPI_TYPE,rank_+1,msgtag3,MPI_COMM_WORLD,&status);
+	  MPI_Recv(uf_.fnp1+(np_-1)*N1N0_,	  N1N0_,MPI_TYPE,rank_+1,msgtag4,MPI_COMM_WORLD,&status);
+	}
 
       /* Now that A and phi quantities are updated, calculate E and B at boundary grid points for later
        * acceleration and power measurement.								*/
@@ -947,16 +1223,18 @@ namespace Darius
 	  MPI_Recv(uf_.bn+3*(np_-1)*N1N0_,	3*N1N0_,MPI_TYPE,rank_+1,msgtag8,MPI_COMM_WORLD,&status);
 	}
     }
-
-    /****************************************************************************************************
-     * Evaluate the field of the m'th pixel from the potentials.
-     ****************************************************************************************************/
-
-    void fieldEvaluate(long int m)
+}
+namespace Darius
+{
+  void FdTdSC::fieldEvaluate (long int m)
     {
       /* Calculate the electric field.                                                                  */
       en_[m].dv ( - uf_.dt, (*anp1_)[m] );
       en_[m].mdv( - uf_.dt, (*an_)  [m] );
+
+      en_[m][0] -= ( *(uf_.fn+m+N1_  ) - *(uf_.fn+m-N1_  ) ) / uf_.dx2;
+      en_[m][1] -= ( *(uf_.fn+m+1    ) - *(uf_.fn+m-1    ) ) / uf_.dy2;
+      en_[m][2] -= ( *(uf_.fn+m+N1N0_) - *(uf_.fn+m-N1N0_) ) / uf_.dz2;
 
       /* Calculate the magnetic field.                                                                  */
       bn_[m][0] = 0.5 * (
@@ -980,14 +1258,11 @@ namespace Darius
       /* Set the boolean flag of this pixel to true.                                                    */
       pic_[m] = true;
     }
-
-    /****************************************************************************************************
-     * Sample the field and save it to the given file.
-     ****************************************************************************************************/
-
-    void fieldSample()
+}
+namespace Darius
+{
+  void FdTdSC::fieldSample ()
     {
-
       /* Do the field sampling if and only if sampling points are residing within this processor range.	*/
       if ( sf_.N > 0 )
 	{
@@ -1059,6 +1334,24 @@ namespace Darius
 	      sf_.jt.pmv((1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr,         jn_[sf_.m+N1N0_+1]);
 	      sf_.jt.pmv(sf_.dxr         * sf_.dyr           * sf_.dzr,         jn_[sf_.m+N1N0_+N1_+1]);
 
+	      sf_.f  =   (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * (*fn_)[sf_.m];
+	      sf_.f +=	  sf_.dxr        * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * (*fn_)[sf_.m+N1_];
+	      sf_.f +=	 (1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr) * (*fn_)[sf_.m+1];
+	      sf_.f +=	  sf_.dxr        * sf_.dyr           * (1.0 - sf_.dzr) * (*fn_)[sf_.m+N1_+1];
+	      sf_.f +=   (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * sf_.dzr         * (*fn_)[sf_.m+N1N0_];
+	      sf_.f +=	  sf_.dxr        * (1.0 - sf_.dyr)   * sf_.dzr         * (*fn_)[sf_.m+N1N0_+N1_];
+	      sf_.f +=	 (1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr         * (*fn_)[sf_.m+N1N0_+1];
+	      sf_.f +=	  sf_.dxr        * sf_.dyr           * sf_.dzr         * (*fn_)[sf_.m+N1N0_+N1_+1];
+
+	      sf_.q  = 	 (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * rn_[sf_.m];
+	      sf_.q +=	  sf_.dxr        * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * rn_[sf_.m+N1_];
+	      sf_.q +=   (1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr) * rn_[sf_.m+1];
+	      sf_.q +=	  sf_.dxr        * sf_.dyr           * (1.0 - sf_.dzr) * rn_[sf_.m+N1_+1];
+	      sf_.q +=   (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * sf_.dzr         * rn_[sf_.m+N1N0_];
+	      sf_.q +=    sf_.dxr        * (1.0 - sf_.dyr)   * sf_.dzr         * rn_[sf_.m+N1N0_+N1_];
+	      sf_.q +=   (1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr         * rn_[sf_.m+N1N0_+1];
+	      sf_.q +=    sf_.dxr        * sf_.dyr           * sf_.dzr         * rn_[sf_.m+N1N0_+N1_+1];
+
 	      /* Write the coordinates in the next column.						*/
 	      *(sf_.file) << sf_.position[0] << "\t";
 	      *(sf_.file) << sf_.position[1] << "\t";
@@ -1094,6 +1387,11 @@ namespace Darius
 		    *(sf_.file) << sf_.jt[1] << "\t";
 		  else if	( seed_.samplingField_[i] == Jz )
 		    *(sf_.file) << sf_.jt[2] << "\t";
+
+		  else if	( seed_.samplingField_[i] == F  )
+		    *(sf_.file) << sf_.f << "\t";
+		  else if	( seed_.samplingField_[i] == Q  )
+		    *(sf_.file) << sf_.q << "\t";
 		}
 	    }
 
@@ -1101,12 +1399,10 @@ namespace Darius
 	  *(sf_.file) << std::endl;
 	}
     }
-
-    /****************************************************************************************************
-     * Visualize the field as vtk files on the whole domain and save them to the file with given name.
-     ****************************************************************************************************/
-
-    void fieldVisualizeAllDomain(unsigned int ivtk)
+}
+namespace Darius
+{
+  void FdTdSC::fieldVisualizeAllDomain (unsigned int ivtk)
     {
       long int			m;
 
@@ -1140,6 +1436,8 @@ namespace Darius
 		  else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[m][l] = jn_[m][0];
 		  else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[m][l] = jn_[m][1];
 		  else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[m][l] = jn_[m][2];
+		  else if 	( seed_.vtk_[ivtk].field_[l] == Q  ) 	vf_[ivtk].v[m][l] = rn_[m];
+		  else if 	( seed_.vtk_[ivtk].field_[l] == F  ) 	vf_[ivtk].v[m][l] = (*fn_)[m];
 		}
 	    }
 
@@ -1258,12 +1556,10 @@ namespace Darius
 	  (*vf_[ivtk].file).close();
 	}
     }
-
-    /****************************************************************************************************
-     * Visualize the field as vtk files in plane and save them to the file with the given name.
-     ****************************************************************************************************/
-
-    void fieldVisualizeInPlane(unsigned int ivtk)
+}
+namespace Darius
+{
+  void FdTdSC::fieldVisualizeInPlane (unsigned int ivtk)
     {
       if	( seed_.vtk_[ivtk].plane_ == XNORMAL )  fieldVisualizeInPlaneXNormal(ivtk);
       else if   ( seed_.vtk_[ivtk].plane_ == YNORMAL )  fieldVisualizeInPlaneYNormal(ivtk);
@@ -1273,13 +1569,10 @@ namespace Darius
 	    fieldVisualizeInPlaneZNormal(ivtk);
 	}
     }
-
-    /****************************************************************************************************
-     * Visualize the field as vtk files in a plane normal to x axis and save them to the file with the
-     * given name.
-     ****************************************************************************************************/
-
-    void fieldVisualizeInPlaneXNormal(unsigned int ivtk)
+}
+namespace Darius
+{
+  void FdTdSC::fieldVisualizeInPlaneXNormal (unsigned int ivtk)
     {
       unsigned int		i, n;
       long int			m;
@@ -1320,6 +1613,8 @@ namespace Darius
 		else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[n][l] = jn_[m][0] * ( 1.0 - dxr ) + jn_[m + N1_][0] * dxr;
 		else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[n][l] = jn_[m][1] * ( 1.0 - dxr ) + jn_[m + N1_][1] * dxr;
 		else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[n][l] = jn_[m][2] * ( 1.0 - dxr ) + jn_[m + N1_][2] * dxr;
+		else if 	( seed_.vtk_[ivtk].field_[l] == Q  )	vf_[ivtk].v[n][l] = rn_[m]    * ( 1.0 - dxr ) + rn_[m + N1_]    * dxr;
+		else if 	( seed_.vtk_[ivtk].field_[l] == F  )	vf_[ivtk].v[n][l] = (*fn_)[m] * ( 1.0 - dxr ) + (*fn_)[m + N1_] * dxr;
 	      }
 	  }
 
@@ -1437,13 +1732,10 @@ namespace Darius
 	  (*vf_[ivtk].file).close();
 	}
     }
-
-    /****************************************************************************************************
-     * Visualize the field as vtk files in a plane normal to y axis and save them to the file with the
-     * given name.
-     ****************************************************************************************************/
-
-    void fieldVisualizeInPlaneYNormal(unsigned int ivtk)
+}
+namespace Darius
+{
+  void FdTdSC::fieldVisualizeInPlaneYNormal (unsigned int ivtk)
     {
       unsigned int		j, n;
       long int			m;
@@ -1484,6 +1776,8 @@ namespace Darius
 		else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[n][l] = jn_[m][0] * ( 1.0 - dyr ) + jn_[m + 1][0] * dyr;
 		else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[n][l] = jn_[m][1] * ( 1.0 - dyr ) + jn_[m + 1][1] * dyr;
 		else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[n][l] = jn_[m][2] * ( 1.0 - dyr ) + jn_[m + 1][2] * dyr;
+		else if 	( seed_.vtk_[ivtk].field_[l] == Q  )	vf_[ivtk].v[n][l] = rn_[m]    * ( 1.0 - dyr ) + rn_[m + 1]    * dyr;
+		else if 	( seed_.vtk_[ivtk].field_[l] == F  )	vf_[ivtk].v[n][l] = (*fn_)[m] * ( 1.0 - dyr ) + (*fn_)[m + 1] * dyr;
 	      }
 	  }
 
@@ -1601,17 +1895,14 @@ namespace Darius
 	  (*vf_[ivtk].file).close();
 	}
     }
-
-    /****************************************************************************************************
-     * Visualize the field as vtk files in a plane normal to z axis and save them to the file with the
-     * given name.
-     ****************************************************************************************************/
-
-    void fieldVisualizeInPlaneZNormal(unsigned int ivtk)
+}
+namespace Darius
+{
+  void FdTdSC::fieldVisualizeInPlaneZNormal (unsigned int ivtk)
     {
-      unsigned int	        k, n;
+      unsigned int		k, n;
       long int			m;
-      Double		        dzr, c;
+      Double			dzr, c;
 
       /* The old files if existing should be deleted.                                          		*/
       vf_[ivtk].fileName = seed_.vtk_[ivtk].basename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
@@ -1648,6 +1939,8 @@ namespace Darius
 		else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[n][l] = jn_[m][0] * ( 1.0 - dzr ) + jn_[m + N1N0_][0] * dzr;
 		else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[n][l] = jn_[m][1] * ( 1.0 - dzr ) + jn_[m + N1N0_][1] * dzr;
 		else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[n][l] = jn_[m][2] * ( 1.0 - dzr ) + jn_[m + N1N0_][2] * dzr;
+		else if 	( seed_.vtk_[ivtk].field_[l] == Q  )	vf_[ivtk].v[n][l] = rn_[m]    * ( 1.0 - dzr ) + rn_[m + N1N0_]    * dzr;
+		else if 	( seed_.vtk_[ivtk].field_[l] == F  )	vf_[ivtk].v[n][l] = (*fn_)[m] * ( 1.0 - dzr ) + (*fn_)[m + N1N0_] * dzr;
 	      }
 	  }
 
@@ -1680,7 +1973,7 @@ namespace Darius
       /* Insert the point data based on the computed electric field.					*/
       *vf_[ivtk].file << "<PointData Vectors = \"field\">"                                    		<< std::endl;
       *vf_[ivtk].file << "<DataArray type=\"Float64\" Name=\"field\" NumberOfComponents=\"" << seed_.vtk_[ivtk].field_.size()
-		  << "\" format=\"ascii\">"									<< std::endl;
+		      << "\" format=\"ascii\">"									<< std::endl;
       for (int j = 0; j < N1_; j++)
 	for (int i = 0; i < N0_; i++)
 	  {
@@ -1698,12 +1991,10 @@ namespace Darius
       /* Close the file.                                                                      		*/
       (*vf_[ivtk].file).close();
     }
-
-    /****************************************************************************************************
-     * Write the total profile of the field into the given file name.
-     ****************************************************************************************************/
-
-    void fieldProfile()
+}
+namespace Darius
+{
+  void FdTdSC::fieldProfile ()
     {
       /* Declare the iterators for the loop over the points.						*/
       pf_.fileName = seed_.profileBasename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + TXT_FILE_SUFFIX;
@@ -1751,6 +2042,11 @@ namespace Darius
 		    *pf_.file << jn_[pf_.m][1] << "\t";
 		  else if 	( seed_.profileField_[l] == Jz )
 		    *pf_.file << jn_[pf_.m][2] << "\t";
+
+		  else if 	( seed_.profileField_[l] == F  )
+		    *pf_.file << (*fn_)[pf_.m] << "\t";
+		  else if 	( seed_.profileField_[l] == Q  )
+		    *pf_.file << rn_[pf_.m] << "\t";
 		}
 
 	      *pf_.file << std::endl;
@@ -1759,9 +2055,4 @@ namespace Darius
       /* Close the file.										*/
       (*pf_.file).close();
     }
-
-  };
-
 }
-
-#endif /* FDTD_HH_ */

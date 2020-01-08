@@ -1,15 +1,11 @@
-/********************************************************************************************************
- *  readdata.hh : Implementation of the functions reading the lines of the job file.
- ********************************************************************************************************/
+// readdata.cpp
+//
 
-#ifndef READDATA_HH_
-#define READDATA_HH_
+#include "readdata.h"
 
 namespace Darius
 {
-
-  /* Read the data from the input file and store them into a string list.                               */
-  std::list<std::string> read_file (const char *filename)
+  std::list <std::string> read_file (char const * filename)
   {
     std::string                 line;
     std::ifstream               myfile (filename);
@@ -34,9 +30,10 @@ namespace Darius
 
     return jobFile;
   }
-
-  /* Clean the stored string vector and make it organized.                                              */
-  void cleanJobFile (std::list<std::string>& jobFile)
+}
+namespace Darius
+{
+  void cleanJobFile (std::list <std::string> & jobFile)
   {
     std::list<std::string> cleanedJobFile;
     for (std::list<std::string>::iterator iter = jobFile.begin(); iter != jobFile.end(); ++iter)
@@ -53,17 +50,19 @@ namespace Darius
       }
     jobFile.swap(cleanedJobFile);
   }
-
-  /* Read the ParamaterName at the line.                                                                */
-  std::string parameterName ( std::string line )
+}
+namespace Darius
+{
+  std::string parameterName (std::string line)
   {
     size_t posEqual = line.find("=");
     std::string name = line.substr(0,posEqual);
     return name;
   }
-
-  /* Read value of a string parameter.                                                                  */
-  std::string stringValue ( std::string line )
+}
+namespace Darius
+{
+  std::string stringValue (std::string line)
   {
     size_t posEqual = line.find("=");
     std::string value = line.substr(posEqual+1,line.size()-1);
@@ -74,18 +73,20 @@ namespace Darius
       }
     return value;
   }
-
-  /* Read value of a double parameter.                                                                  */
-  Double doubleValue ( std::string line )
+}
+namespace Darius
+{
+  Double doubleValue (std::string line)
   {
     size_t posEqual = line.find("=");
     std::string doubleStr = line.substr(posEqual+1,line.size()-1);
     Double value = std::atof(doubleStr.c_str());
     return value;
   }
-
-  /* Read value of an integer parameter.                                                                */
-  int intValue ( std::string line )
+}
+namespace Darius
+{
+  int intValue (std::string line)
   {
     size_t posEqual = line.find("=");
     std::string doubleStr = line.substr(posEqual+1,line.size()-1);
@@ -93,9 +94,10 @@ namespace Darius
     int intvalue = int ( value );
     return intvalue;
   }
-
-  /* Read value of a boolean parameter.                                                                 */
-  bool boolValue ( std::string line )
+}
+namespace Darius
+{
+  bool boolValue (std::string line)
   {
     bool value;
     size_t posEqual = line.find("=");
@@ -108,9 +110,10 @@ namespace Darius
     }
     return value;
   }
-
-  /* Read value of a vector parameter.                                                                  */
-  std::vector<Double> vectorDoubleValue ( std::string line )
+}
+namespace Darius
+{
+  std::vector <Double> vectorDoubleValue (std::string line)
   {
     size_t posEqual = line.find("=");
     line = line.substr(posEqual+1,line.size()-1);
@@ -126,9 +129,10 @@ namespace Darius
       }
     return doubleVector;
   }
-
-  /* Read value of a vector parameter.                                                                  */
-  std::vector<unsigned int> vectorIntValue ( std::string line )
+}
+namespace Darius
+{
+  std::vector <unsigned int> vectorIntValue (std::string line)
   {
     size_t posEqual = line.find("=");
     line = line.substr(posEqual+1,line.size()-1);
@@ -144,9 +148,10 @@ namespace Darius
       }
     return intVector;
   }
-
-  /* Read value of a map parameter.                                                                     */
-  void mapValue ( std::string line, unsigned int& tag, std::string& model )
+}
+namespace Darius
+{
+  void mapValue (std::string line, unsigned int & tag, std::string & model)
   {
     size_t posEqual = line.find("=");
     line = line.substr(posEqual+1,line.size()-1);
@@ -157,8 +162,4 @@ namespace Darius
     tag = std::atof(tagStr.c_str());
     model = line.substr(posComma+2,line.size()-posComma-3);
   }
-
 }
-
-/* End of namespace Darius.                                                                             */
-#endif

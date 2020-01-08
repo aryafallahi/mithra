@@ -1,18 +1,16 @@
-/********************************************************************************************************
- *  power.hh : Implementation of the functions for calculation of radiated power
- ********************************************************************************************************/
+// radiation.cpp
+//
 
-#ifndef POWER_HH_
-#define POWER_HH_
+#include <string>
+
+#include "fieldvector.h"
+#include "radiation.h"
+#include "solver.h"
+#include "stdinclude.h"
 
 namespace Darius
 {
-
-  /******************************************************************************************************
-   * Initialize the data required for sampling and saving the radiation power at the given position.
-   ******************************************************************************************************/
-
-  void Solver::initializePowerSample()
+  void Solver::initializePowerSample ()
   {
     printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the data for FEL radiation power sampling.") );
     rp_.clear(); rp_.resize(FEL_.size());
@@ -116,12 +114,10 @@ namespace Darius
 
     printmessage(std::string(__FILE__), __LINE__, std::string(" The data for sampling FEL radiation power is initialized. :::") );
   }
-
-  /******************************************************************************************************
-   * Initialize the data required for visualizing the radiation power at the given position.
-   ******************************************************************************************************/
-
-  void Solver::initializePowerVisualize()
+}
+namespace Darius
+{
+  void Solver::initializePowerVisualize ()
   {
     printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the data for FEL radiation power visualization.") );
 
@@ -202,12 +198,10 @@ namespace Darius
 
     printmessage(std::string(__FILE__), __LINE__, std::string(" The data for FEL radiation power visualization is initialized. :::") );
   }
-
-  /******************************************************************************************************
-   * Sample the radiation power at the given position and save it to the file.
-   ******************************************************************************************************/
-
-  void Solver::powerSample()
+}
+namespace Darius
+{
+  void Solver::powerSample ()
   {
     /* Declare the temporary parameters needed for calculating the radiated power.                    	*/
     unsigned int              	kz;
@@ -313,12 +307,10 @@ namespace Darius
 	  }
       }
   }
-
-  /******************************************************************************************************
-   * Visualize the radiation power at the given position and save it to the file.
-   ******************************************************************************************************/
-
-  void Solver::powerVisualize()
+}
+namespace Darius
+{
+  void Solver::powerVisualize ()
   {
 
     /* Declare the temporary parameters needed for calculating the radiated power.                    	*/
@@ -443,6 +435,4 @@ namespace Darius
 	  }
       }
   }
-
-}       /* End of namespace Darius.                                                                    */
-#endif
+}

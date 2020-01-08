@@ -1,45 +1,13 @@
-/********************************************************************************************************
- *  classes.hh : Implementation of the classes used in the darius code
- ********************************************************************************************************/
+// classes.cpp
+//
 
-#ifndef CLASSES_HH_
-#define CLASSES_HH_
+#include <fstream>
+
+#include "classes.h"
 
 namespace Darius
 {
-
-  /* Structure containing all the parsed parameters for mesh.                                           */
-  struct Mesh
-  {
-
-    /* The parsed data related to the mesh (ls).                                                       	*/
-    Double		        lengthScale_;
-
-    /* Coordinate of the center for the computational domain (x0, y0, z0).				*/
-    FieldVector<Double>		meshCenter_;
-
-    /* Length of the mesh box in the three dimensions (lx, ly, lz).					*/
-    FieldVector<Double>		meshLength_;
-
-    /* Mesh resolution in the three dimensions (dx, dy, dz).						*/
-    FieldVector<Double>		meshResolution_;
-
-    /* The parsed data related to the time marching scheme.                                             */
-    Double    		        timeScale_;
-    Double		        timeStep_;
-    Double		        totalTime_;
-
-    /* Truncation order for the finite difference mesh. It can be either one or two.			*/
-    unsigned int	        truncationOrder_;
-
-    /* Boolean flag returning the status of space charge assumption.					*/
-    bool			spaceCharge_;
-
-    /* Solver type that will be used to update the field values.					*/
-    SolverType			solver_;
-
-    /* Show the stored values for the mesh.                                                      	*/
-    void show()
+  void Mesh::show ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string(" Length scale = ") + stringify(lengthScale_));
       printmessage(std::string(__FILE__), __LINE__, std::string(" Total mesh length vector = ") + stringify(meshLength_));
@@ -57,26 +25,18 @@ namespace Darius
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Solver = finite-difference "));
 
     }
-
-    /* Initialize the parameters in the mesh initializer.						*/
-    void initialize()
+}
+namespace Darius
+{
+  void Mesh::initialize ()
     {
       spaceCharge_ 	= false;
       solver_		= NSFD;
     }
-  };
-
-  /* Bunch class includes the data for the bunch properties and the functions for initializing the
-   * bunches and also evaluating the bunch properties.                                              	*/
-  class Bunch
-  {
-
-  public:
-
-    typedef std::list<Charge> ChargeVector;
-
-    /** The constructor clears the internal data structure.                                             */
-    Bunch()
+}
+namespace Darius
+{
+  Bunch::Bunch ()
     {
       /* Initialize the parameters for the bunch to some first values.                      		*/
       timeStep_				= 0.0;
@@ -99,13 +59,11 @@ namespace Darius
       bunchProfileBasename_     	= "";
       bunchProfileTime_.clear();
       bunchProfileRhythm_		= 0.0;
-    };
-
-    /****************************************************************************************************/
-
-    /* Initialize a bunch with a manual type. This bunch produces one charge equal to the cloudCharge_. */
-
-    void initializeManual (BunchInitialize bunchInit, ChargeVector& chargeVector, Double zp [2], int rank, int size, int ia)
+    }
+}
+namespace Darius
+{
+  void Bunch::initializeManual (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
     {
       /* Declare the required parameters for the initialization of charge vectors.                      */
       Charge        charge;
@@ -119,16 +77,10 @@ namespace Darius
       if ( ( charge.rnp[2] < zp[1] || rank == size - 1 ) && ( charge.rnp[2] >= zp[0] || rank == 0 ) )
 	chargeVector.push_back(charge);
     }
-
-    /****************************************************************************************************/
-
-    /* Initialize a bunch with an ellipsoid type. This bunch produces a number of charges equal to the
-     * numberOfParticles_ with the total charge equal to the cloudCharge_ which are distributed in an
-     * ellipsoid with dimensions given by sigmaPosition_ and center given by the position vector. The
-     * particles have uniform energy distribution centered at initialEnergy_ with variances determined by
-     * sigmaGammaBeta_.                                                         			*/
-
-    void initializeEllipsoid (BunchInitialize bunchInit, ChargeVector& chargeVector, Double zp [2], int rank, int size, int ia)
+}
+namespace Darius
+{
+  void Bunch::initializeEllipsoid (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
     {
       /* Save the initially given number of particles.							*/
       unsigned int	Np = bunchInit.numberOfParticles_, i, Np0 = chargeVector.size();
@@ -307,18 +259,10 @@ namespace Darius
        * macro-particles and perform the corresponding changes.                                         */
       bunchInit.numberOfParticles_ = chargeVector.size();
     }
-
-    /****************************************************************************************************/
-
-    /* Initialize a bunch with a 3D-crystal type. This bunch produces a number of charges equal
-     * to the numberOfParticles_ with the total charge equal to the cloudCharge_ which are arranged in a
-     * 3D crystal. The number of particles in each direction is given by numbers_. Therefore,
-     * numberOfParticles_ should be a multiple of the product of all these three numbers. The ratio gives
-     * the number of particles in each crystal point. Position of each particle is determined by the
-     * lattice constants and the crystal is centered at the position_ vector. At each point, the charges
-     * have a small Gaussian distribution around the crsytal.                                           */
-
-    void initialize3DCrystal (BunchInitialize bunchInit, ChargeVector& chargeVector, Double zp [2], int rank, int size, int ia)
+}
+namespace Darius
+{
+  void Bunch::initialize3DCrystal (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
     {
       /* Check if the numberOfParticles_ is a multiple of the product of values in numbers_.            */
       if ( bunchInit.numberOfParticles_ % (bunchInit.numbers_[0] * bunchInit.numbers_[1] * bunchInit.numbers_[2]) != 0 )
@@ -368,15 +312,10 @@ namespace Darius
 	    }
 	}
     }
-
-    /****************************************************************************************************/
-
-    /* Initialize a bunch with a file type. This bunch produces a number of charges read from a given file.
-     * The number of initialized charge is equal to the vertical length of the table in the text file. The
-     * file format should contain the charge value, 3 position coordinates and 3 momentum coordinates of
-     * of the charge distribution.							                */
-
-    void initializeFile (BunchInitialize bunchInit, ChargeVector& chargeVector, Double zp [2], int rank, int size, int ia)
+}
+namespace Darius
+{
+  void Bunch::initializeFile (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
     {
 
       /* Declare the required parameters for the initialization of charge vectors.                	*/
@@ -430,62 +369,10 @@ namespace Darius
 	  exit(1);
 	}
     }
-
-    /****************************************************************************************************/
-
-    /* The data containing the bunch initialization parameters.						*/
-    std::vector<BunchInitialize>	bunchInit_;
-
-    /* The directory parsed for the whole project.                                                      */
-    std::string				directory_;
-
-    /* Base name for writing the outputs of the electron acceleration analysis.                         */
-    std::string				basename_;
-
-    /* Boolean variable that determines if the bunch sampling should be done or not.			*/
-    bool				sampling_;
-
-    /* Store the time step for updating the electron motion.						*/
-    Double				timeStep_;
-
-    /* Rhythm of writing the bunch macroscopic values in the output file.                              	*/
-    Double         			rhythm_;
-
-    /* Boolean parameter that determines if the vtk visualization should be done.                      	*/
-    bool				bunchVTK_;
-
-    /* The directory in which the bunch vtk files should be saved.                                   	*/
-    std::string				bunchVTKDirectory_;
-
-    /* Name of the files in which the vtk visualization should be saved.                               	*/
-    std::string				bunchVTKBasename_;
-
-    /* Rhythm of producing the vtk files. It should be double value bigger than the time step.         	*/
-    Double				bunchVTKRhythm_;
-
-    /* Boolean parameter that determines if the bunch profile should be saved.                         	*/
-    bool				bunchProfile_;
-
-    /* The directory in which the bunch profile should be saved.                                   	*/
-    std::string				bunchProfileDirectory_;
-
-    /* Name of the files in which the bunch profile should be saved.                                   	*/
-    std::string				bunchProfileBasename_;
-
-    /* Vector of time points at which the bunch profile should be saved.                               	*/
-    std::vector<Double>      		bunchProfileTime_;
-
-    /* Rhythm of saving the bunch profile. It should be a double value bigger than the time step.	*/
-    Double				bunchProfileRhythm_;
-
-    /* Position of the undulator begin at the instance of bunch initialization.				*/
-    Double				zu_;
-
-    /* Beta of the moving frame in the stationary lab frame.						*/
-    Double				beta_;
-
-    /* Show the stored values for the bunch.                                                          	*/
-    void show()
+}
+namespace Darius
+{
+  void Bunch::show ()
     {
       for (unsigned int i = 0; i < bunchInit_.size(); i++)
 	{
@@ -536,24 +423,21 @@ namespace Darius
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" Rhythm the bunch profiling = ") + stringify(bunchProfileRhythm_) );
 	}
     }
-
-  };
-
-  /* Define the main signal class.                                                                      */
-  class Signal
-  {
-  public:
-    Signal()
+}
+namespace Darius
+{
+  Signal::Signal ()
   {
       t0_ 		= 0.0;
       s_  		= 0.0;
       f0_ 		= 1.0;
       cep_		= 0.0;
       signalType_	= GAUSSIAN;
-  };
-
-    /* Initializer with signal type, time offset, variance, frequency and carrier-envelope-phase.       */
-    void initialize (std::string type, Double l0, Double s, Double l, Double cep)
+  }
+}
+namespace Darius
+{
+  void Signal::initialize (std::string type, Double l0, Double s, Double l, Double cep)
     {
       /* Initialize the signal type.                                                                    */
       if      ( type.compare("neumann") == 0 )             signalType_ = NEUMANN;
@@ -578,28 +462,11 @@ namespace Darius
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
 	  exit(1);
 	}
-    };
-
-  public:
-
-    /* Store type of the signal.                                                                        */
-    SignalType			signalType_;
-
-    /* Time offset of the signal.                                                                       */
-    Double     			t0_;
-
-    /* Variance of the signal. Variance is defined according to the point where the intensity of the
-     * signal, i.e. signal squared is half of the maximum.                                              */
-    Double     			s_;
-
-    /* Frequency of the modulation.                                                                     */
-    Double     			f0_;
-
-    /* Carrier envelope phase of the modulation.                                                        */
-    Double     			cep_;
-
-    /* Provide the signal at time t.                                                                    */
-    Double self (Double& t, Double& phase)
+    }
+}
+namespace Darius
+{
+  Double Signal::self (Double & t, Double & phase)
     {
       /* If the signal is out of the 20*s range around the center, consider it to be zero.		*/
       if ( fabs(t - t0_) > 10.0 * s_ )	return ( 0.0 );
@@ -626,9 +493,10 @@ namespace Darius
 	}
       return (0.0);
     }
-
-    /* Show the stored values for this signal.                                                          */
-    void show()
+}
+namespace Darius
+{
+  void Signal::show ()
     {
       if      (signalType_ == NEUMANN)
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Signal type = neumann pulse"));
@@ -643,15 +511,10 @@ namespace Darius
       printmessage(std::string(__FILE__), __LINE__, std::string(" Signal frequency  = ") + stringify(f0_));
       printmessage(std::string(__FILE__), __LINE__, std::string(" Signal carrier envelope phase = ") + stringify(cep_));
     }
-  };
-
-  /* Define the main seed class.                                                                  	*/
-  class Seed
-  {
-
-  public:
-
-    Seed()
+}
+namespace Darius
+{
+  Seed::Seed ()
   {
       seedType_ 		= PLANEWAVE;
       c0_			= 0.0;
@@ -675,15 +538,11 @@ namespace Darius
       profileBasename_		= "";
       profileTime_.clear();
       profileRhythm_		= 0.0;
-  };
-
-    void initialize (std::string        	type,
-		     std::vector<Double>    	position,
-		     std::vector<Double>    	direction,
-		     std::vector<Double>    	polarization,
-		     Double                 	amplitude,
-		     std::vector<Double>	radius,
-		     Signal                   	signal)
+  }
+}
+namespace Darius
+{
+  void Seed::initialize (std::string type, std::vector <Double> position, std::vector <Double> direction, std::vector <Double> polarization, Double amplitude, std::vector <Double> radius, Signal signal)
     {
       /* Set the seed type according to the returned string for seedType.                   		*/
       if      ( type.compare("plane-wave"         ) == 0 ) seedType_ = PLANEWAVE;
@@ -746,55 +605,11 @@ namespace Darius
 
       /* Initialize the signal of the seed.                                                       	*/
       signal_ 		= signal;
-    };
-
-  public:
-
-    /* Store type of the seed.                                                                    	*/
-    SeedType           			seedType_;
-
-    /* Speed of light value in terms of the given length-scale and time-scale.				*/
-    Double				c0_;
-
-    /* Store reference position of the seed. For waves, it is a reference position and for
-     * hertzian dipole, it is the position of the dipole.                                               */
-    FieldVector<Double>      		position_;
-
-    /* Store the direction of the seed. For waves, it is the propagation direction and for a
-     * hertzian dipole, it is the direction of the dipole.                                              */
-    FieldVector<Double>       		direction_;
-
-    /* Store the polarization of the wave in the seed.                                            	*/
-    FieldVector<Double>       		polarization_;
-
-    /* Store the amplitude of the seed.                                                           	*/
-    Double                  		amplitude_;
-
-    /* Store the Rayleigh radius of the Gaussian beam in the parallel and perpendicular directions.	*/
-    std::vector<Double>      		radius_;
-
-    /* Store the signal class for this seed.                                                      	*/
-    Signal                   		signal_;
-
-    /* Parameters for Lorentz transformation.								*/
-    Double				beta_;
-    Double				gamma_;
-    Double				dt_;
-
-  private:
-
-    /* Store all the required variables in the computations.                                            */
-    Double                    		gamma;
-    Double				tsignal;
-    Double				d, l, zRp, wrp, zRs, wrs, x, y, z, p, t;
-    FieldVector<Double>			rv, yv, ax, az;
-    FieldVector<Double>			rl;
-    Double				tl;
-
-  public:
-
-    /* Return the potentials at any desired location and time.                    			*/
-    void fields (FieldVector<Double>& aufpunkt, Double& time, FieldVector<Double>& a)
+    }
+}
+namespace Darius
+{
+  void Seed::fields (FieldVector <Double> & aufpunkt, Double & time, FieldVector <Double> & a)
     {
       /* Transfer the coordinate from the bunch rest frame to the lab frame.				*/
       rl[0] = aufpunkt[0]; rl[1] = aufpunkt[1];
@@ -875,34 +690,10 @@ namespace Darius
       /* Now transfer the computed magnetic vector potential into the bunch rest frame.			*/
       a[2] *= gamma_;
     }
-
-    /* Store the data required for sampling the radiated field in a point.                              */
-    bool                                sampling_;
-    SamplingType                        samplingType_;
-    std::vector<FieldType>              samplingField_;
-    std::string                         samplingDirectory_;
-    std::string                         samplingBasename_;
-    Double                        	samplingRhythm_;
-    std::vector<FieldVector<Double> >   samplingPosition_;
-    FieldVector<Double>                 samplingLineBegin_;
-    FieldVector<Double>                 samplingLineEnd_;
-    FieldVector<Double>                 samplingSurfaceBegin_;
-    FieldVector<Double>                 samplingSurfaceEnd_;
-    unsigned int                        samplingRes_;
-
-    /* Store data required for visualizing the radiated field in all-domain.                            */
-    struct vtk
-    {
-      bool                              sample_;
-      std::vector<FieldType>            field_;
-      std::string                       directory_;
-      SamplingType			type_;
-      std::string                       basename_;
-      Double                      	rhythm_;
-      PlaneType				plane_;
-      FieldVector<Double>		position_;
-
-      vtk()
+}
+namespace Darius
+{
+  Seed::vtk::vtk ()
       {
 	sample_				= false;
 	field_.clear();
@@ -913,45 +704,38 @@ namespace Darius
 	plane_				= ZNORMAL;
 	position_			= 0.0;
       }
-    };
-    std::vector<vtk> 			vtk_;
-
-
-    /* Store data required for writing the profile of the field in all-domain.                          */
-    bool                                profile_;
-    std::vector<FieldType>              profileField_;
-    std::string                         profileDirectory_;
-    std::string                         profileBasename_;
-    std::vector<Double>                 profileTime_;
-    Double                        	profileRhythm_;
-
-    /* Set the sampling type of the seed.                                                               */
-    SamplingType samplingType(std::string samplingType)
+}
+namespace Darius
+{
+  SamplingType Seed::samplingType (std::string samplingType)
     {
       if      ( samplingType.compare("at-point")   == 0 )	return( ATPOINT  );
       else if ( samplingType.compare("over-line")  == 0 )	return( OVERLINE );
       else { std::cout << samplingType << " is an unknown sampling type." << std::endl; exit(1); }
     }
-
-    /* Set the sampling type of the seed.                                                               */
-    SamplingType vtkType(std::string vtkType)
+}
+namespace Darius
+{
+  SamplingType Seed::vtkType (std::string vtkType)
     {
       if      ( vtkType.compare("in-plane") == 0 )	return( INPLANE   );
       else if ( vtkType.compare("all-domain") == 0 )	return( ALLDOMAIN );
       else { std::cout << vtkType << " is an unknown vtk type." << std::endl; exit(1); }
     }
-
-    /* Set the plane type for vtk in plane visualization.                                           	*/
-    PlaneType planeType(std::string planeType)
+}
+namespace Darius
+{
+  PlaneType Seed::planeType (std::string planeType)
     {
       if      ( planeType.compare("yz")     == 0 )	return( XNORMAL );
       else if ( planeType.compare("xz")     == 0 )	return( YNORMAL );
       else if ( planeType.compare("xy")     == 0 )	return( ZNORMAL );
       else { std::cout << planeType << " is an unknown vtk plane type." << std::endl; exit(1); }
     }
-
-    /* Set the field sampling type of the seed.                                                         */
-    FieldType fieldType(std::string fieldType)
+}
+namespace Darius
+{
+  FieldType Seed::fieldType (std::string fieldType)
     {
       if      ( fieldType.compare("Ex") == 0 )  return(Ex);
       else if ( fieldType.compare("Ey") == 0 )  return(Ey);
@@ -969,9 +753,10 @@ namespace Darius
       else if ( fieldType.compare("F") == 0 )   return(F);
       else { std::cout << fieldType << " is an unknown sampling field." << std::endl; exit(1); }
     }
-
-    /* Show the stored values for this signal.                                                          */
-    void show()
+}
+namespace Darius
+{
+  void Seed::show ()
     {
       if        (seedType_ == PLANEWAVE)      		printmessage(std::string(__FILE__), __LINE__, std::string("Seed type = plane-wave"));
       else if   (seedType_ == PLANEWAVECONFINED)   	printmessage(std::string(__FILE__), __LINE__, std::string("Seed type = confined-plane-wave"));
@@ -1029,15 +814,10 @@ namespace Darius
 	}
       signal_.show();
     }
-  };
-
-  /* Define the structure containing the main parameters for the undulator.				*/
-  class Undulator
-  {
-
-  public:
-
-    Undulator()
+}
+namespace Darius
+{
+  Undulator::Undulator ()
   {
       k_		= 0.0;
       lu_		= 0.0;
@@ -1052,73 +832,20 @@ namespace Darius
       c0_		= 0.0;
       amplitude_	= 0.0;
       radius_.resize(2,0.0);
-  };
-
-    /* The magnetic field of the undulator.                                                       	*/
-    Double				k_;
-
-    /* The period of the undulator.                                                       		*/
-    Double				lu_;
-
-    /* The start position of the undulator.								*/
-    Double				rb_;
-
-    /* The length of the undulator.									*/
-    unsigned int			length_;
-
-    /* The normalized velocity and the equivalent gamma of the undulator movement.			*/
-    Double				beta_;
-    Double				gamma_;
-    Double				dt_;
-
-    /* Angle of the undulator polarization with respect to x axis.					*/
-    Double				theta_;
-
-    /* Type of the undulator, it can be an optical or a static undulator.				*/
-    UndulatorType			type_;
-
-    /* Store type of the seed.                                                                    	*/
-    SeedType           			seedType_;
-
-    /* Speed of light value in terms of the given length-scale and time-scale.				*/
-    Double				c0_;
-
-    /* Store reference position of the seed. For waves, it is a reference position and for
-     * hertzian dipole, it is the position of the dipole.                                               */
-    FieldVector<Double>      		position_;
-
-    /* Store the direction of the seed. For waves, it is the propagation direction and for a
-     * hertzian dipole, it is the direction of the dipole.                                              */
-    FieldVector<Double>       		direction_;
-
-    /* Store the polarization of the wave in the seed.                                            	*/
-    FieldVector<Double>       		polarization_;
-
-    /* Store the amplitude of the seed.                                                           	*/
-    Double                  		amplitude_;
-
-    /* Store the Rayleigh radius of the Gaussian beam in the parallel and perpendicular directions.	*/
-    std::vector<Double>      		radius_;
-
-    /* Store the signal class for this seed.                                                      	*/
-    Signal                   		signal_;
-
-    /* Set the type of the undulator.                                                                   */
-    UndulatorType undulatorType(std::string undulatorType)
+  }
+}
+namespace Darius
+{
+  UndulatorType Undulator::undulatorType (std::string undulatorType)
     {
       if      ( undulatorType.compare("static")   == 0 )   return( STATIC  );
       else if ( undulatorType.compare("optical")  == 0 )   return( OPTICAL );
       else { std::cout << undulatorType << " is an unknown sampling type." << std::endl; exit(1); }
     }
-
-    void initialize (std::string        	type,
-		     std::vector<Double>    	position,
-		     std::vector<Double>    	direction,
-		     std::vector<Double>    	polarization,
-		     Double                 	amplitude,
-		     std::vector<Double>	radius,
-		     Double			wavelength,
-		     Signal                   	signal)
+}
+namespace Darius
+{
+  void Undulator::initialize (std::string type, std::vector <Double> position, std::vector <Double> direction, std::vector <Double> polarization, Double amplitude, std::vector <Double> radius, Double wavelength, Signal signal)
     {
       /* Set the seed type according to the returned string for seedType.                   		*/
       if      ( type.compare("plane-wave"         ) == 0 ) seedType_ = PLANEWAVE;
@@ -1184,10 +911,11 @@ namespace Darius
 
       /* Initialize the signal of the seed.                                                       	*/
       signal_ 		= signal;
-    };
-
-    /* Show the stored values for the undulator.                                                        */
-    void show()
+    }
+}
+namespace Darius
+{
+  void Undulator::show ()
     {
       if ( type_ == STATIC )
 	{
@@ -1224,55 +952,15 @@ namespace Darius
 	  signal_.show();
 	}
     }
-  };
-
-  /* Define the structure containing the main parameters for the undulator.                           */
-  class ExtField
-  {
-
-  public:
-
-    ExtField()
-  {
-  };
-
-    /* Type of the undulator, it can be an optical or a static undulator.                               */
-    ExtFieldType                        type_;
-
-    /* Store type of the seed.                                                                          */
-    SeedType                            seedType_;
-
-    /* Speed of light value in terms of the given length-scale and time-scale.                          */
-    Double                              c0_;
-
-    /* Store reference position of the seed. For waves, it is a reference position and for
-     * hertzian dipole, it is the position of the dipole.                                               */
-    FieldVector<Double>                 position_;
-
-    /* Store the direction of the seed. For waves, it is the propagation direction and for a
-     * hertzian dipole, it is the direction of the dipole.                                              */
-    FieldVector<Double>                 direction_;
-
-    /* Store the polarization of the wave in the seed.                                                  */
-    FieldVector<Double>                 polarization_;
-
-    /* Store the amplitude of the seed.                                                                 */
-    Double                              amplitude_;
-
-    /* Store the Rayleigh radius of the Gaussian beam in the parallel and perpendicular directions.     */
-    std::vector<Double>                 radius_;
-
-    /* Store the signal class for this seed.                                                            */
-    Signal                              signal_;
-
-    void initialize (std::string                type,
-		     std::vector<Double>        position,
-		     std::vector<Double>        direction,
-		     std::vector<Double>        polarization,
-		     Double                     amplitude,
-		     std::vector<Double>        radius,
-		     Double                     wavelength,
-		     Signal                     signal)
+}
+namespace Darius
+{
+  ExtField::ExtField ()
+  {}
+}
+namespace Darius
+{
+  void ExtField::initialize (std::string type, std::vector <Double> position, std::vector <Double> direction, std::vector <Double> polarization, Double amplitude, std::vector <Double> radius, Double wavelength, Signal signal)
     {
       /* Set the seed type according to the returned string for seedType.                               */
       if      ( type.compare("plane-wave"         ) == 0 ) seedType_ = PLANEWAVE;
@@ -1335,10 +1023,11 @@ namespace Darius
 
       /* Initialize the signal of the seed.                                                             */
       signal_           = signal;
-    };
-
-    /* Show the stored values for the undulator.                                                        */
-    void show()
+    }
+}
+namespace Darius
+{
+  void ExtField::show ()
     {
       if ( type_ == EMWAVE )
 	{
@@ -1366,54 +1055,19 @@ namespace Darius
 	  signal_.show();
 	}
     }
-  };
-
-  /* Structure containing all the parsed parameters for the free electron laser.			*/
-  struct FreeElectronLaser
-  {
-
-    /* Structure contianing the parsed parameters for the radiation power.				*/
-    struct RadiationPower
-    {
-      /* The distance of the planes from the bunch to sample the radiation power.			*/
-      std::vector<Double>			z_;
-
-      /* Store the data required for sampling the radiation power.					*/
-      bool					sampling_;
-
-      /* Store the directory in which the radiation data is saved.					*/
-      std::string				directory_;
-
-      /* Store the base-name of the file in which the radiation data is saved.				*/
-      std::string				basename_;
-
-      /* The begin and end of the line as well as the resolution on which the radiation data is saved.	*/
-      Double                 			lineBegin_;
-      Double                 			lineEnd_;
-      unsigned int                              res_;
-
-      /* Store the sampling type of the radiation power.						*/
-      SamplingType                        	samplingType_;
-
-      /* The wavelength of the harmonic whose power should be plotted.					*/
-      std::vector<Double>			lambda_;
-
-      /* The wavelength sweep data for the power computation.						*/
-      Double					lambdaMin_;
-      Double					lambdaMax_;
-      unsigned int				lambdaRes_;
-
-
-      /* Set the sampling type of the radiation power.                                                	*/
-      void samplingType(std::string samplingType)
+}
+namespace Darius
+{
+  void FreeElectronLaser::RadiationPower::samplingType (std::string samplingType)
       {
 	if      ( samplingType.compare("at-point")   == 0 )   samplingType_ = ATPOINT;
 	else if ( samplingType.compare("over-line")  == 0 )   samplingType_ = OVERLINE;
 	else { std::cout << samplingType << " is an unknown sampling type." << std::endl; exit(1); }
       }
-
-      /* Initialize the values for initializing the radiation power.                     		*/
-      RadiationPower()
+}
+namespace Darius
+{
+  FreeElectronLaser::RadiationPower::RadiationPower ()
       {
 	z_.clear();
 	sampling_	= false;
@@ -1428,32 +1082,10 @@ namespace Darius
 	lambdaMax_	= 0.0;
 	lambdaRes_	= 0.0;
       }
-    };
-    RadiationPower radiationPower_;
-
-    /* Structure containing the parsed parameters for the power-visualization.				*/
-    struct vtk
-    {
-      /* The distance of the plane from the bunch to sample the radiation power.			*/
-      Double					z_;
-
-      /* Store the data required for sampling the radiation power.					*/
-      bool					sampling_;
-
-      /* Store the directory in which the radiation data is saved.					*/
-      std::string				directory_;
-
-      /* Store the base-name of the file in which the radiation data is saved.				*/
-      std::string				basename_;
-
-      /* Store the rhythm for calculating and saving the radiation power.				*/
-      Double					rhythm_;
-
-      /* The wavelength of the harmonic whose power should be plotted.					*/
-      Double					lambda_;
-
-      /* Initialize the values for initializing the radiation power.                     		*/
-      vtk()
+}
+namespace Darius
+{
+  FreeElectronLaser::vtk::vtk ()
       {
 	z_		= 0.0;
 	sampling_	= false;
@@ -1461,53 +1093,19 @@ namespace Darius
 	basename_	= "";
 	rhythm_		= 0.0;
       }
-    };
-    vtk vtk_;
-
-    /* Structure contianing the parsed parameters for the radiation energy.				*/
-    struct RadiationEnergy
-    {
-      /* The distance of the planes from the bunch to sample the radiation power.			*/
-      std::vector<Double>			z_;
-
-      /* Store the data required for sampling the radiation power.					*/
-      bool					sampling_;
-
-      /* Store the directory in which the radiation data is saved.					*/
-      std::string				directory_;
-
-      /* Store the base-name of the file in which the radiation data is saved.				*/
-      std::string				basename_;
-
-      /* Store the rhythm for calculating and saving the radiation power.				*/
-      Double					rhythm_;
-
-      /* The begin and end of the line as well as the resolution on which the radiation data is saved.	*/
-      Double                 			lineBegin_;
-      Double                 			lineEnd_;
-      Double                              	res_;
-
-      /* Store the sampling type of the radiation power.						*/
-      SamplingType                        	samplingType_;
-
-      /* The wavelength of the harmonic whose power should be plotted.					*/
-      std::vector<Double>			lambda_;
-
-      /* The wavelength sweep data for the power computation.						*/
-      Double					lambdaMin_;
-      Double					lambdaMax_;
-      Double					lambdaRes_;
-
-      /* Set the sampling type of the radiation power.                                                	*/
-      void samplingType(std::string samplingType)
+}
+namespace Darius
+{
+  void FreeElectronLaser::RadiationEnergy::samplingType (std::string samplingType)
       {
 	if      ( samplingType.compare("at-point")   == 0 )   samplingType_ = ATPOINT;
 	else if ( samplingType.compare("over-line")  == 0 )   samplingType_ = OVERLINE;
 	else { std::cout << samplingType << " is an unknown sampling type." << std::endl; exit(1); }
       }
-
-      /* Initialize the values for initializing the radiation energy.                     		*/
-      RadiationEnergy()
+}
+namespace Darius
+{
+  FreeElectronLaser::RadiationEnergy::RadiationEnergy ()
       {
 	z_.clear();
 	sampling_	= false;
@@ -1522,10 +1120,4 @@ namespace Darius
 	lambdaMax_	= 0.0;
 	lambdaRes_	= 0.0;
       }
-    };
-    RadiationEnergy radiationEnergy_;
-
-
-  };
-}       /* End of namespace Cyrus3d.                                                                    */
-#endif
+}

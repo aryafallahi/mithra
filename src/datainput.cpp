@@ -1,39 +1,18 @@
-/********************************************************************************************************
- *  datainput.hh : Implementation of the parameter parser for the code
- ******************************************************************************************************** */
+// datainput.cpp
+//
 
-#ifndef DATAINPUT_HH_
-#define DATAINPUT_HH_
+#include "datainput.h"
+#include "readdata.h"
 
 namespace Darius
 {
-  /* The class of functions used for reading the text file of parameters and parsing them to the darius
-   * solver.                                                                                            */
-  class ParseDarius
-  {
-  private:
-
-    /* The parameters and data files needed for parsing the values.                                     */
-    std::list<std::string>&		jobFile_;
-    Mesh& 				mesh_;
-    Bunch&				bunch_;
-    Seed&				seed_;
-    std::vector<Undulator>&		undulator_;
-    std::vector<ExtField>&              extField_;
-    std::vector<FreeElectronLaser>&	FEL_;
-
-  public:
-
-    ParseDarius (std::list<std::string>& jobFile, Mesh& mesh, Bunch& bunch, Seed& seed,
-		 std::vector<Undulator>& undulator, std::vector<ExtField>& extField,
-		 std::vector<FreeElectronLaser>& FEL)
-  :   jobFile_ ( jobFile ), mesh_ ( mesh ), bunch_ ( bunch ), seed_ ( seed ), undulator_ ( undulator ),
-      extField_ ( extField ), FEL_ ( FEL )
-  {
-  };
-
-    /* Read the parameters from the file and set all the parsed parameters for FEL simulation.         	*/
-    void setJobParameters()
+  ParseDarius::ParseDarius (std::list <std::string> & jobFile, Mesh & mesh, Bunch & bunch, Seed & seed, std::vector <Undulator> & undulator, std::vector <ExtField> & extField, std::vector <FreeElectronLaser> & FEL)
+    : jobFile_ (jobFile), mesh_ (mesh), bunch_ (bunch), seed_ (seed), undulator_ (undulator), extField_ (extField), FEL_ (FEL)
+  {}
+}
+namespace Darius
+{
+  void ParseDarius::setJobParameters ()
     {
       std::list<std::string>::iterator iter = jobFile_.begin();
       do
@@ -61,10 +40,11 @@ namespace Darius
 	  ++iter;
 	}
       while (iter != jobFile_.end());
-    };
-
-    /* Read the parameters parsed for the mesh in the solver.                                    	*/
-    void readMesh ( std::list<std::string>::iterator& iter )
+    }
+}
+namespace Darius
+{
+  void ParseDarius::readMesh (std::list <std::string>::iterator & iter)
     {
       ++iter;
       if (*iter != "{") { std::cout << "The solver directory is empty" << std::endl; exit(1); }
@@ -138,9 +118,10 @@ namespace Darius
 	}
       while (*iter != "}");
     }
-
-    /* Read the parameters parsed for the bunch in the darius solver.                     		*/
-    void readBunch ( std::list<std::string>::iterator& iter )
+}
+namespace Darius
+{
+  void ParseDarius::readBunch (std::list <std::string>::iterator & iter)
     {
       ++iter;
       if (*iter != "{") { std::cout << "The bunch directory is empty" << std::endl; exit(1); }
@@ -271,9 +252,10 @@ namespace Darius
 	}
       while (*iter != "}");
     }
-
-    /* Read the parameters parsed for the seed in the darius solver.                               	*/
-    void readField ( std::list<std::string>::iterator& iter )
+}
+namespace Darius
+{
+  void ParseDarius::readField (std::list <std::string>::iterator & iter)
     {
       ++iter;
       if (*iter != "{") { std::cout << "The seed directory is empty" << std::endl; exit(1); }
@@ -415,9 +397,10 @@ namespace Darius
 	}
       while (*iter != "}");
     }
-
-    /* Read the parameters parsed for the mesh in the solver.                                    	*/
-    void readUndulator ( std::list<std::string>::iterator& iter )
+}
+namespace Darius
+{
+  void ParseDarius::readUndulator (std::list <std::string>::iterator & iter)
     {
       ++iter;
       if (*iter != "{") { std::cout << "The undulator directory is empty" << std::endl; exit(1); }
@@ -540,9 +523,10 @@ namespace Darius
 	}
       while (*iter != "}");
     }
-
-    /* Read the parameters parsed for the seed in the darius solver.                                    */
-    void readExtField ( std::list<std::string>::iterator& iter )
+}
+namespace Darius
+{
+  void ParseDarius::readExtField (std::list <std::string>::iterator & iter)
     {
       ++iter;
       if (*iter != "{") { std::cout << "The EXTERNAL-FIELD directory is empty" << std::endl; exit(1); }
@@ -600,9 +584,10 @@ namespace Darius
 	}
       while (*iter != "}");
     }
-
-    /* Read the parameters parsed for the FEL output in the darius solver.                              */
-    void readFEL ( std::list<std::string>::iterator& iter )
+}
+namespace Darius
+{
+  void ParseDarius::readFEL (std::list <std::string>::iterator & iter)
     {
       ++iter;
       if (*iter != "{") { std::cout << "The FEL-OUTPUT directory is empty" << std::endl; exit(1); }
@@ -700,8 +685,4 @@ namespace Darius
 	}
       while (*iter != "}");
     }
-
-  };    /* End of parseDarius class.                                                                	*/
-
-}       /* End of namespace Cyrus3d.                                                          		*/
-#endif
+}

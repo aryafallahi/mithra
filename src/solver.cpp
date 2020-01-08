@@ -1,31 +1,14 @@
-/********************************************************************************************************
- *  fdtd-d.hh : Implementation of the real fdtd time marching solution class for the darius code
- ********************************************************************************************************/
+// solver.cpp
+//
 
-#ifndef SOLVER_HH_
-#define SOLVER_HH_
+#include <algorithm>
+
+#include "solver.h"
 
 namespace Darius
 {
-
-  /* Class of functions used for the solution of the fields in time domain using FDTD.			*/
-  class Solver
-  {
-
-  public:
-
-    Solver( Mesh& 				mesh,
-	    Bunch& 				bunch,
-	    Seed& 				seed,
-	    std::vector<Undulator>&		undulator,
-	    std::vector<ExtField>& 		extField,
-	    std::vector<FreeElectronLaser>& 	FEL)
-  : mesh_ 	( mesh ),
-    bunch_ 	( bunch ),
-    seed_ 	( seed ),
-    undulator_ 	( undulator ),
-    extField_ 	( extField ),
-    FEL_ 	( FEL )
+  Solver::Solver (Mesh & mesh, Bunch & bunch, Seed & seed, std::vector <Undulator> & undulator, std::vector <ExtField> & extField, std::vector <FreeElectronLaser> & FEL)
+    : mesh_ (mesh), bunch_ (bunch), seed_ (seed), undulator_ (undulator), extField_ (extField), FEL_ (FEL)
   {
       /* Clear the vectors in the FdTd class.								*/
       anp1_ = new std::vector<FieldVector<Double> > ();
@@ -56,12 +39,11 @@ namespace Darius
       c0_ = C0 / mesh_.lengthScale_ * mesh_.timeScale_;
       m0_ = MU_ZERO / mesh_.lengthScale_;
       e0_ = 1.0 / ( c0_ * c0_ * m0_ );
-  };
-
-    /****************************************************************************************************
-     * Boost all the given parameters into the electron rest frame.
-     ****************************************************************************************************/
-    void lorentzBoost()
+  }
+}
+namespace Darius
+{
+  void Solver::lorentzBoost ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string("::: Boosting the given parameters into the electron rest frame ") );
 
@@ -277,12 +259,10 @@ namespace Darius
 
       printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );
     }
-
-    /****************************************************************************************************
-     * Initialize the matrix for the field values and the coordinates.
-     ****************************************************************************************************/
-
-    void initialize()
+}
+namespace Darius
+{
+  void Solver::initialize ()
     {
       /* Initialize the spatial and temporal mesh of the problem.					*/
       initializeMesh();
@@ -314,13 +294,11 @@ namespace Darius
       /* If sampling the radiation energy is enabled initialize the required data for calculating the
        * radiation energy and saving it.								*/
       initializeRadiationEnergySample();
-    };
-
-    /****************************************************************************************************
-     * Initialize the temporal and spatial mesh of the problem.
-     ****************************************************************************************************/
-
-    void initializeMesh()
+    }
+}
+namespace Darius
+{
+  void Solver::initializeMesh ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the temporal and spatial mesh of the problem.") );
 
@@ -408,13 +386,11 @@ namespace Darius
       timem1_ -= mesh_.timeStep_;
 
       printmessage(std::string(__FILE__), __LINE__, std::string("The temporal and spatial mesh of the problem is initialized. :::") );
-    };
-
-    /****************************************************************************************************
-     * Initialize the data for updating the field in the fdtd algorithm.
-     ****************************************************************************************************/
-
-    void initializeField()
+    }
+}
+namespace Darius
+{
+  void Solver::initializeField ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string(" ::: Initializing the field update data") );
 
@@ -561,12 +537,10 @@ namespace Darius
 
       printmessage(std::string(__FILE__), __LINE__, std::string(" The field update data are initialized. :::") );
     }
-
-    /****************************************************************************************************
-     * Initialize the data required for sampling seed or the total field in the computational domain.
-     ****************************************************************************************************/
-
-    void initializeSeedSampling()
+}
+namespace Darius
+{
+  void Solver::initializeSeedSampling ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string(" ::: Initializing the field sampling data") );
 
@@ -644,12 +618,10 @@ namespace Darius
 
       printmessage(std::string(__FILE__), __LINE__, std::string(" The field sampling data are initialized. :::") );
     }
-
-    /****************************************************************************************************
-     * Initialize the required data for visualizing and saving the field.
-     ****************************************************************************************************/
-
-    void initializeSeedVTK()
+}
+namespace Darius
+{
+  void Solver::initializeSeedVTK ()
     {
       /* Resize the visualization field database according to the number of defined visualizations.	*/
       vf_.resize( seed_.vtk_.size() );
@@ -728,12 +700,10 @@ namespace Darius
 	    }
 	}
     }
-
-    /****************************************************************************************************
-     * Initialize the required data for profiling and saving the field.
-     ****************************************************************************************************/
-
-    void initializeSeedProfile()
+}
+namespace Darius
+{
+  void Solver::initializeSeedProfile ()
     {
       /* Return an error if the bunch profiling rhythm is still zero and no time is set.		*/
       if ( seed_.profileRhythm_ == 0 && seed_.profileTime_.size() == 0 )
@@ -756,12 +726,10 @@ namespace Darius
 
       pf_.dt = 2.0 * mesh_.timeStep_;
     }
-
-    /****************************************************************************************************
-     * Initialize the required data for updating the bunch.
-     ****************************************************************************************************/
-
-    void initializeBunchUpdate()
+}
+namespace Darius
+{
+  void Solver::initializeBunchUpdate ()
     {
       /* Calculate the absolute values for the time step and the mesh resolution.			*/
       ub_.dt	= mesh_.timeStep_;
@@ -836,12 +804,10 @@ namespace Darius
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" The bunch profiling data are initialized. :::") );
 	}
     }
-
-    /****************************************************************************************************
-     * Initialize the charge vector containing the bunch given by the user.
-     ****************************************************************************************************/
-
-    void initializeBunch()
+}
+namespace Darius
+{
+  void Solver::initializeBunch ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string("[[[ Initializing the bunch and prepare the charge vector ") );
 
@@ -894,12 +860,10 @@ namespace Darius
 
       printmessage(std::string(__FILE__), __LINE__, std::string("The bunch is initialized and the charge vector is prepared. ]]]") );
     }
-
-    /****************************************************************************************************
-     * Update the fields for one time-step
-     ****************************************************************************************************/
-
-    void bunchUpdate()
+}
+namespace Darius
+{
+  void Solver::bunchUpdate ()
     {
       /* First define a parameter for the processor number.						*/
       std::list<Charge>::iterator	iter;
@@ -1089,12 +1053,10 @@ namespace Darius
 	  chargeVectorn_.push_back(ub_.Q);
 	}
     }
-
-    /****************************************************************************************************
-     * Sample the bunch data and save it to the given file.
-     ****************************************************************************************************/
-
-    void bunchSample()
+}
+namespace Darius
+{
+  void Solver::bunchSample ()
     {
       /* First define a iterator.                        						*/
       std::list<Charge>::iterator       iter;
@@ -1157,12 +1119,10 @@ namespace Darius
 	  *sb_.file << sqrt( sb_.gb2T[2] - sb_.gbT[2] * sb_.gbT[2] ) << std::endl ;
 	}
     }
-
-    /****************************************************************************************************
-     * Visualize the bunch as vtk files and save them to the file with given name.
-     ****************************************************************************************************/
-
-    void bunchVisualize()
+}
+namespace Darius
+{
+  void Solver::bunchVisualize ()
     {
       /* First define a parameters.                         						*/
       std::list<Charge>::iterator       iter;
@@ -1274,12 +1234,10 @@ namespace Darius
 	  (*vb_.file).close();
 	}
     }
-
-    /****************************************************************************************************
-     * Write the total profile of the field into the given file name.
-     ****************************************************************************************************/
-
-    void bunchProfile()
+}
+namespace Darius
+{
+  void Solver::bunchProfile ()
     {
       /* First define a iterator.									*/
       std::list<Charge>::iterator       iter;
@@ -1310,12 +1268,10 @@ namespace Darius
       /* Close the file.										*/
       (*pb_.file).close();
     }
-
-    /****************************************************************************************************
-     * Calculate the magnetic field of undulator and add it to the magnetic field of the seed.
-     ****************************************************************************************************/
-
-    void undulatorField (UpdateBunchParallel& ubp,  FieldVector<Double>& r)
+}
+namespace Darius
+{
+  void Solver::undulatorField (UpdateBunchParallel & ubp, FieldVector <Double> & r)
     {
       /* Initialize the undulator fields.								*/
       ubp.bt = 0.0;
@@ -1536,13 +1492,11 @@ namespace Darius
 	      ubp.et[2] += ubp.eT[2];
 	    }
 	}
-    };
-
-    /****************************************************************************************************
-     * Calculate the field of external field and add it to the field of the seed.
-     ****************************************************************************************************/
-
-    void externalField(UpdateBunchParallel& ubp,  FieldVector<Double>& r)
+    }
+}
+namespace Darius
+{
+  void Solver::externalField (UpdateBunchParallel & ubp, FieldVector <Double> & r)
     {
 
       /* Transfer the coordinate from the bunch rest frame to the lab frame.                            */
@@ -1673,38 +1627,11 @@ namespace Darius
 	  ubp.et[1] += gamma_ * ( ubp.eT[1] + beta_ * c0_ * ubp.bT[0] );
 	  ubp.et[2] += ubp.eT[2];
 	}
-    };
-
-    /****************************************************************************************************
-     * Initialize the data required for sampling and saving the radiation power at the given position.
-     ****************************************************************************************************/
-
-    void initializePowerSample();
-
-    /****************************************************************************************************
-     * Initialize the data required for visualizing the radiation power at the given position.
-     ****************************************************************************************************/
-
-    void initializePowerVisualize();
-
-    /****************************************************************************************************
-     * Sample the radiation power at the given position and save it to the file.
-     ****************************************************************************************************/
-
-    void powerSample();
-
-    /****************************************************************************************************
-     * Visualize the radiation power at the given position and save it to the file.
-     ****************************************************************************************************/
-
-    void powerVisualize();
-
-
-    /****************************************************************************************************
-     * Initialize the data required for sampling and saving the radiation energy at the given position.
-     ****************************************************************************************************/
-
-    void initializeRadiationEnergySample()
+    }
+}
+namespace Darius
+{
+  void Solver::initializeRadiationEnergySample ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the FEL radiation energy data.") );
       re_.clear(); re_.resize(FEL_.size());
@@ -1788,12 +1715,10 @@ namespace Darius
 
       printmessage(std::string(__FILE__), __LINE__, std::string(" The FEL radiation energy data is initialized. :::") );
     }
-
-    /****************************************************************************************************
-     * Sample the radiation energy at the given position and save it to the file.
-     ****************************************************************************************************/
-
-    void radiationEnergySample()
+}
+namespace Darius
+{
+  void Solver::radiationEnergySample ()
     {
       /* Declare the temporary parameters needed for calculating the radiated power.                    */
       unsigned int              mi, ni;
@@ -1891,12 +1816,10 @@ namespace Darius
 	    }
 	}
     }
-
-    /****************************************************************************************************
-     * Finalize the field calculations.
-     ****************************************************************************************************/
-
-    void finalize()
+}
+namespace Darius
+{
+  void Solver::finalize ()
     {
       /* If sampling was active, close the file since the simulation is finished now.			*/
       if (seed_.sampling_ && sf_.N > 0) 	(*sf_.file).close();
@@ -1904,153 +1827,9 @@ namespace Darius
       /* If bunch sampling was active, close the file since the simulation is finished now.		*/
       if (bunch_.sampling_) 	(*sb_.file).close();
     }
-
-    /****************************************************************************************************
-     * Define the virtual function for field evaluation.
-     ****************************************************************************************************/
-
-    virtual void fieldEvaluate (long int m) = 0;
-
-    /****************************************************************************************************
-     * Define the boolean function for comparing undulator begins.
-     ****************************************************************************************************/
-
-    static bool undulatorCompare (Undulator i, Undulator j) { return ( i.rb_ < j.rb_ ); }
-
-    /******************************************************************************************************
-     * List of required parameters in the FdTd code.
-     ******************************************************************************************************/
-
-    /* The parsed parameters for the simulation are written in four classes: mesh, bunch, seed, and
-     * undulator.											*/
-    Mesh& 								mesh_;
-    Bunch&								bunch_;
-    Seed&								seed_;
-    std::vector<Undulator>&						undulator_;
-    std::vector<ExtField>&                                              extField_;
-    std::vector<FreeElectronLaser>&					FEL_;
-
-    /* The vector potential at the nodes in the computational mesh at three different time points.	*/
-    std::vector<FieldVector<Double> >* 					anp1_;
-    std::vector<FieldVector<Double> >* 					an_;
-    std::vector<FieldVector<Double> >* 					anm1_;
-
-    /* The static potential at the nodes in the computational mesh at three different time points.	*/
-    std::vector<Double>* 						fnp1_;
-    std::vector<Double>* 						fn_;
-    std::vector<Double>* 						fnm1_;
-
-    /* Boolean vector determining the inclusion of particles.                                           */
-    std::vector<bool>                                                   pic_;
-
-    /* The vector potential at the nodes in the computational mesh at three different time points.	*/
-    std::vector<FieldVector<Double> > 					en_;
-    std::vector<FieldVector<Double> > 					bn_;
-
-    /* The current density at the nodes in the computational mesh at three different time points.	*/
-    std::vector<FieldVector<Double> > 					jn_;
-
-    /* The charge density at the nodes in the computational mesh at three different time points.	*/
-    std::vector<Double> 						rn_;
-
-    /* The coordinate of the nodes in the computational mesh.						*/
-    std::vector<FieldVector<Double> > 					r_;
-
-    /* Number of nodes in each direction.								*/
-    int									N0_, N1_, N2_, N1N0_;
-
-    /* total number of charges in the simulation.							*/
-    unsigned int							Nc_;
-
-    /* Iterators to the begin and end of the charge vector.						*/
-    std::list<Charge>::iterator					        iterQB_;
-    std::list<Charge>::iterator					        iterQE_;
-
-    /* Number of nodes along z in the specific processor and the index of the first column.		*/
-    int									np_, k0_;
-
-    /* z coordinates of the critical points in the mesh partitioning.					*/
-    Double								zp_ [2];
-
-    /* borders of the computational mesh.                                                               */
-    Double                                                              xmin_, xmax_;
-    Double                                                              ymin_, ymax_;
-    Double                                                              zmin_, zmax_;
-
-    /* Time and the time step number for the field calculations.					*/
-    Double								timep1_;
-    Double								time_;
-    Double								timem1_;
-    unsigned int 							nTime_;
-
-    /* vector of charge structures containing the position and momentum of the charge points.		*/
-    std::list<Charge>							chargeVectorn_;
-
-    /* Time and the time step number for the bunch calculations.					*/
-    Double								timeBunch_;
-    unsigned int 							nTimeBunch_;
-
-    /* Number of bunch updates within each field update.						*/
-    Double 								nUpdateBunch_;
-
-    /* The gamma, beta and dt factor for the moving frame derived from the first undulator parameter.	*/
-    Double								gamma_;
-    Double								beta_;
-    Double								dt_;
-
-    /* Define a structure containing the parameters needed to update the values. These parameters are
-     * defined once in the class to avoid declaring them every time a field is updated.			*/
-    UpdateField<Double>							uf_;
-
-    /* Define a structure containing the parameters needed to sample the fields the values. These
-     * parameters are defined once in the class to avoid declaring them every time a field is updated.	*/
-    SampleField<Double>							sf_;
-
-    /* Define a structure containing the parameters needed to visualize the field profile. These
-     * parameters are defined once in the class to avoid declaring them every time a field is updated.	*/
-    std::vector<VisualizeField<Double> >				vf_;
-
-    /* Define a structure containing the parameters needed to save the field profile. These
-     * parameters are defined once in the class to avoid declaring them every time a field is updated.	*/
-    ProfileField<Double>						pf_;
-
-    /* Define a structure containing the parameters needed to update the bunch distribution. These
-     * parameters are defined once in the class to avoid declaring them every time a field is updated.	*/
-    UpdateBunch						                ub_;
-
-    /* Define a structure containing the parameters needed to sample the bunch values. These parameters
-     * are defined once in the class to avoid declaring them every time a field is updated.		*/
-    SampleBunch								sb_;
-
-    /* Define a structure containing the parameters needed to visualize the bunch distribution. These
-     * parameters are defined once in the class to avoid declaring them every time a field is updated.	*/
-    VisualizeBunch							vb_;
-
-    /* Define a structure containing the parameters needed to save the bunch profile. These parameters
-     * are defined once in the class to avoid declaring them every time a field is updated.		*/
-    ProfileBunch							pb_;
-
-    /* Define a structure containing the parameters needed to update the current. These parameters
-     * are defined once in the class to avoid declaring them every time a field is updated.		*/
-    UpdateCurrent						        uc_;
-
-    /* Define a structure containing the parameters needed to sample the FEL radiation power the values.
-     * These parameters are defined once in the class to avoid declaring them every time a field is
-     * updated.												*/
-    std::vector<SampleRadiationPower>				        rp_;
-
-    /* Define a structure containing the parameters needed to sample the FEL radiation power the values.
-     * These parameters are defined once in the class to avoid declaring them every time a field is
-     * updated.												*/
-    std::vector<SampleRadiationEnergy>				        re_;
-
-    /* Define the value of MPI variables.								*/
-    int									rank_, size_;
-
-    /* Speed of light value in terms of the given length-scale and time-scale.				*/
-    Double								c0_, m0_, e0_;
-  };
-
 }
-
-#endif /* SOLVER_HH_ */
+namespace Darius
+{
+  bool Solver::undulatorCompare (Undulator i, Undulator j)
+                                                            { return ( i.rb_ < j.rb_ ); }
+}

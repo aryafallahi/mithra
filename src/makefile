@@ -1,5 +1,12 @@
 COMP=mpiCC
+
+UNAME := $(shell uname)
+ifeq ($(UNAME), Darwin)
+FLAGS=-lstdc++ -O3 -Werror
+else
 FLAGS=-O3 -Werror
+endif
+
 EXEC=../darius
 SRC_DIR=./
 SRCS:=$(shell find $(SRC_DIR)*.cpp)

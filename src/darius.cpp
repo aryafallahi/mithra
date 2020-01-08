@@ -6,6 +6,7 @@
 #include <string>
 #include <sys/time.h>
 #include <vector>
+#include <iostream>
 
 #include "classes.h"
 #include "darius.h"

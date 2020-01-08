@@ -10,18 +10,14 @@ namespace Darius
     struct stat buffer;
     return (stat (s.c_str(), &buffer) == 0);
   }
-}
-namespace Darius
-{
+
   void splitFilename (std::string const & str, std::string & path, std::string & file)
   {
     unsigned found = str.find_last_of("/");
     path = str.substr(0,found+1);
     file = str.substr(found+1);
   }
-}
-namespace Darius
-{
+
   void createDirectory (std::string filename, unsigned int rank)
   {
     std::string path, file;
@@ -33,16 +29,12 @@ namespace Darius
 	  exit(1);
 	}
   }
-}
-namespace Darius
-{
+
   Charge::Charge ()
     {
       q = 0.0; rnp = rnm = 0.0; gbnp = gbnm = 0.0;
     }
-}
-namespace Darius
-{
+
   Double halton (unsigned int i, unsigned int j)
   {
     if (i > 20)

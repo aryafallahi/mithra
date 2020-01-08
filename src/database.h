@@ -36,9 +36,7 @@ namespace Darius
     FieldVector <Double> betaVector_;
     BunchInitialize ();
   };
-}
-namespace Darius
-{
+
   template <typename T>
   class AdvanceField
   {
@@ -58,9 +56,7 @@ namespace Darius
     T alpha_;
     T beta_;
   };
-}
-namespace Darius
-{
+
   template <typename T>
   struct UpdateField
   {
@@ -127,9 +123,7 @@ namespace Darius
     unsigned int N1m1;
     unsigned int npm1;
   };
-}
-namespace Darius
-{
+
   template <typename T>
   struct SampleField
   {
@@ -154,9 +148,7 @@ namespace Darius
     double c1;
     unsigned int N;
   };
-}
-namespace Darius
-{
+
   template <typename T>
   struct VisualizeField
   {
@@ -171,9 +163,7 @@ namespace Darius
     std::vector <std::vector<T> > v;
     T jw;
   };
-}
-namespace Darius
-{
+
   template <typename T>
   struct ProfileField
   {
@@ -192,9 +182,7 @@ namespace Darius
     int kmin;
     int kmax;
   };
-}
-namespace Darius
-{
+
   struct UpdateBunchParallel
   {
     int i;
@@ -248,9 +236,7 @@ namespace Darius
     Double r0;
     UpdateBunchParallel ();
   };
-}
-namespace Darius
-{
+
   struct UpdateBunch
   {
     Double dx;
@@ -268,9 +254,7 @@ namespace Darius
     int i;
     Charge Q;
   };
-}
-namespace Darius
-{
+
   struct SampleBunch
   {
     std::ofstream * file;
@@ -286,9 +270,7 @@ namespace Darius
     FieldVector <Double> r2T;
     FieldVector <Double> gb2T;
   };
-}
-namespace Darius
-{
+
   struct VisualizeBunch
   {
     std::ofstream * file;
@@ -298,17 +280,13 @@ namespace Darius
     unsigned int i;
     unsigned int N;
   };
-}
-namespace Darius
-{
+
   struct ProfileBunch
   {
     std::ofstream * file;
     std::string fileName;
   };
-}
-namespace Darius
-{
+
   struct UpdateCurrent
   {
     int ip;
@@ -345,9 +323,7 @@ namespace Darius
     std::vector <FieldVector<Double> > jt;
     std::vector <Double> rt;
   };
-}
-namespace Darius
-{
+
   struct SampleRadiationPower
   {
     std::vector <std::ofstream*> file;
@@ -375,9 +351,7 @@ namespace Darius
     std::vector <std::vector<Complex> > ep;
     std::vector <std::vector<Complex> > em;
   };
-}
-namespace Darius
-{
+
   struct SampleRadiationEnergy
   {
     std::vector <std::ofstream*> file;
@@ -401,9 +375,7 @@ namespace Darius
     unsigned int Nf;
     std::vector <std::vector<std::vector<Double> > > fdt;
   };
-}
-namespace Darius
-{
+
   template <typename T>
   void AdvanceField <T>::advanceMagneticPotentialNSFD (T * v0, T * v1, T * v2, T * v3, T * v31, T * v32, T * v4, T * v41, T * v42, T * v5, T * v51, T * v52, T * v6, T * v61, T * v62, T * v7, T * v8, T * v9)
     {
@@ -426,9 +398,7 @@ namespace Darius
 	  *(ufa_+3) * ( *(v7+2) + *(v8+2) ) +
 	  *(ufa_+4) * *(v9+2);
     }
-}
-namespace Darius
-{
+
   template <typename T>
   void AdvanceField <T>::advanceScalarPotentialNSFD (T * v0, T * v1, T * v2, T * v3, T * v31, T * v32, T * v4, T * v41, T * v42, T * v5, T * v51, T * v52, T * v6, T * v61, T * v62, T * v7, T * v8, T * v9)
     {
@@ -439,9 +409,7 @@ namespace Darius
 	  *(ufa_+3) * ( *v7 + *v8 ) +
 	  *(ufa_+5) * *v9;
     }
-}
-namespace Darius
-{
+
   template <typename T>
   void AdvanceField <T>::advanceMagneticPotentialFD (T * v0, T * v1, T * v2, T * v3, T * v31, T * v32, T * v4, T * v41, T * v42, T * v5, T * v51, T * v52, T * v6, T * v61, T * v62, T * v7, T * v8, T * v9)
     {
@@ -464,9 +432,7 @@ namespace Darius
 	  *(ufa_+3) * ( *(v7+2) + *(v8+2) ) +
 	  *(ufa_+4) * *(v9+2);
     }
-}
-namespace Darius
-{
+
   template <typename T>
   void AdvanceField <T>::advanceScalarPotentialFD (T * v0, T * v1, T * v2, T * v3, T * v31, T * v32, T * v4, T * v41, T * v42, T * v5, T * v51, T * v52, T * v6, T * v61, T * v62, T * v7, T * v8, T * v9)
     {
@@ -477,9 +443,7 @@ namespace Darius
 	      *(ufa_+3) * ( *v7 + *v8 ) +
 	      *(ufa_+5) * *v9;
     }
-}
-namespace Darius
-{
+
   template <typename T>
   void AdvanceField <T>::advanceBoundaryF (T * v0, T * v1, T * v2, T * v3, T * v4, T * v5, T * v6, T * v7, T * v8, T * v9, T * v10, T * v11, T * v12, T * v13)
     {
@@ -502,9 +466,7 @@ namespace Darius
 	  *(ufB_+3) * ( *(v6+2) + *(v7+2) + *(v10+2) + *(v11+2) ) +
 	  *(ufB_+4) * ( *(v8+2) + *(v9+2) + *(v12+2) + *(v13+2) );
     }
-}
-namespace Darius
-{
+
   template <typename T>
   void AdvanceField <T>::advanceBoundaryS (T * v0, T * v1, T * v2, T * v3, T * v4, T * v5, T * v6, T * v7, T * v8, T * v9, T * v10, T * v11, T * v12, T * v13)
     {
@@ -515,9 +477,7 @@ namespace Darius
 	  *(ufB_+3) * ( *v6 + *v7 + *v10 + *v11 ) +
 	  *(ufB_+4) * ( *v8 + *v9 + *v12 + *v13 );
     }
-}
-namespace Darius
-{
+
   template <typename T>
   void AdvanceField <T>::advanceEdgeF (T * v0, T * v1, T * v2, T * v3, T * v4, T * v5, T * v6, T * v7, T * v8, T * v9, T * v10, T * v11, T * v12, T * v13, T * v14, T * v15, T * v16, T * v17, T * v18, T * v19)
     {
@@ -543,9 +503,7 @@ namespace Darius
       		*(v11+2);
 
     }
-}
-namespace Darius
-{
+
   template <typename T>
   void AdvanceField <T>::advanceEdgeS (T * v0, T * v1, T * v2, T * v3, T * v4, T * v5, T * v6, T * v7, T * v8, T * v9, T * v10, T * v11, T * v12, T * v13, T * v14, T * v15, T * v16, T * v17, T * v18, T * v19)
     {
@@ -556,9 +514,7 @@ namespace Darius
 		*(ufB_+4) * ( *v12 + *v13 + *v14 + *v15 + *v16 + *v17 + *v18 + *v19 ) -
 		*v11;
     }
-}
-namespace Darius
-{
+
   template <typename T>
   void AdvanceField <T>::advanceCornerF (T * v0, T * v1, T * v2, T * v3, T * v4, T * v5, T * v6, T * v7, T * v8, T * v9, T * v10, T * v11, T * v12, T * v13, T * v14, T * v15, T * v16, T * v17, T * v18, T * v19, T * v20, T * v21, T * v22, T * v23)
     {
@@ -590,9 +546,7 @@ namespace Darius
 		    *(v21+2) * *(ufB_+7) + *(v22+2) * *(ufB_+16) + *(v23+2) * *(ufB_+15)) / *ufB_;
 
     }
-}
-namespace Darius
-{
+
   template <typename T>
   void AdvanceField <T>::advanceCornerS (T * v0, T * v1, T * v2, T * v3, T * v4, T * v5, T * v6, T * v7, T * v8, T * v9, T * v10, T * v11, T * v12, T * v13, T * v14, T * v15, T * v16, T * v17, T * v18, T * v19, T * v20, T * v21, T * v22, T * v23)
     {

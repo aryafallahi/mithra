@@ -27,10 +27,7 @@ namespace Darius
   std::string const TXT_FILE_SUFFIX = ".txt";
   std::string const VTU_FILE_SUFFIX = ".vtu";
   Complex const I = Complex (0.0,1.0);
-}
 
-namespace Darius
-{
   enum SignalType
   {
     NEUMANN,
@@ -38,25 +35,19 @@ namespace Darius
     SECANT,
     FLATTOP
   };
-}
-namespace Darius
-{
+
   enum SeedType
   {
     PLANEWAVE,
     PLANEWAVECONFINED,
     GAUSSIANBEAM
   };
-}
-namespace Darius
-{
+
   enum ExtFieldType
   {
     EMWAVE
   };
-}
-namespace Darius
-{
+
   enum SamplingType
   {
     ATPOINT,
@@ -64,18 +55,14 @@ namespace Darius
     INPLANE,
     ALLDOMAIN
   };
-}
-namespace Darius
-{
+
   enum PlaneType
   {
     XNORMAL,
     YNORMAL,
     ZNORMAL
   };
-}
-namespace Darius
-{
+
   enum FieldType
   {
     Ex,
@@ -93,55 +80,35 @@ namespace Darius
     Q,
     F
   };
-}
-namespace Darius
-{
+
   enum UndulatorType
   {
     STATIC,
     OPTICAL
   };
-}
-namespace Darius
-{
+
   enum SolverType
   {
     FD,
     NSFD
   };
-}
-namespace Darius
-{
+
   bool isabsolute (std::string filename);
-}
-namespace Darius
-{
+
   bool pathExist (std::string const & s);
-}
-namespace Darius
-{
+
   void splitFilename (std::string const & str, std::string & path, std::string & file);
-}
-namespace Darius
-{
+
   void createDirectory (std::string filename, unsigned int rank);
-}
-namespace Darius
-{
+
   template <typename T>
   int signof (T x);
-}
-namespace Darius
-{
+
   void printmessage (std::string filename, unsigned int linenumber, std::string message);
-}
-namespace Darius
-{
+
   template <typename numbertype>
   std::string stringify (numbertype value);
-}
-namespace Darius
-{
+
   struct Charge
   {
     Double q;
@@ -151,28 +118,20 @@ namespace Darius
     FieldVector <Double> gbnm;
     Charge ();
   };
-}
-namespace Darius
-{
+
   Double halton (unsigned int i, unsigned int j);
-}
-namespace Darius
-{
+
   inline bool isabsolute (std::string filename)
   {
     return (filename.compare(0,1,"/") == 0);
   }
-}
-namespace Darius
-{
+
   template <typename T>
   inline int signof (T x)
   {
     return ( (x > 0) ? 1 : ( (x < 0) ? -1 : 0 ) );
   }
-}
-namespace Darius
-{
+
   inline void printmessage (std::string filename, unsigned int linenumber, std::string message)
   {
     int rank;
@@ -198,9 +157,7 @@ namespace Darius
 	if (printedMessage.str().length() > 0 )     std::cout << printedMessage.str() << std::endl;
       }
   }
-}
-namespace Darius
-{
+
   template <typename numbertype>
   inline std::string stringify (numbertype value)
   {

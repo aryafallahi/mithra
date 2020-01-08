@@ -25,17 +25,13 @@ namespace Darius
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Solver = finite-difference "));
 
     }
-}
-namespace Darius
-{
+
   void Mesh::initialize ()
     {
       spaceCharge_ 	= false;
       solver_		= NSFD;
     }
-}
-namespace Darius
-{
+
   Bunch::Bunch ()
     {
       /* Initialize the parameters for the bunch to some first values.                      		*/
@@ -60,9 +56,7 @@ namespace Darius
       bunchProfileTime_.clear();
       bunchProfileRhythm_		= 0.0;
     }
-}
-namespace Darius
-{
+
   void Bunch::initializeManual (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
     {
       /* Declare the required parameters for the initialization of charge vectors.                      */
@@ -77,9 +71,7 @@ namespace Darius
       if ( ( charge.rnp[2] < zp[1] || rank == size - 1 ) && ( charge.rnp[2] >= zp[0] || rank == 0 ) )
 	chargeVector.push_back(charge);
     }
-}
-namespace Darius
-{
+
   void Bunch::initializeEllipsoid (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
     {
       /* Save the initially given number of particles.							*/
@@ -259,9 +251,7 @@ namespace Darius
        * macro-particles and perform the corresponding changes.                                         */
       bunchInit.numberOfParticles_ = chargeVector.size();
     }
-}
-namespace Darius
-{
+
   void Bunch::initialize3DCrystal (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
     {
       /* Check if the numberOfParticles_ is a multiple of the product of values in numbers_.            */
@@ -312,9 +302,7 @@ namespace Darius
 	    }
 	}
     }
-}
-namespace Darius
-{
+
   void Bunch::initializeFile (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
     {
 
@@ -369,9 +357,7 @@ namespace Darius
 	  exit(1);
 	}
     }
-}
-namespace Darius
-{
+
   void Bunch::show ()
     {
       for (unsigned int i = 0; i < bunchInit_.size(); i++)
@@ -423,9 +409,7 @@ namespace Darius
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" Rhythm the bunch profiling = ") + stringify(bunchProfileRhythm_) );
 	}
     }
-}
-namespace Darius
-{
+
   Signal::Signal ()
   {
       t0_ 		= 0.0;
@@ -434,9 +418,7 @@ namespace Darius
       cep_		= 0.0;
       signalType_	= GAUSSIAN;
   }
-}
-namespace Darius
-{
+
   void Signal::initialize (std::string type, Double l0, Double s, Double l, Double cep)
     {
       /* Initialize the signal type.                                                                    */
@@ -463,9 +445,7 @@ namespace Darius
 	  exit(1);
 	}
     }
-}
-namespace Darius
-{
+
   Double Signal::self (Double & t, Double & phase)
     {
       /* If the signal is out of the 20*s range around the center, consider it to be zero.		*/
@@ -493,9 +473,7 @@ namespace Darius
 	}
       return (0.0);
     }
-}
-namespace Darius
-{
+
   void Signal::show ()
     {
       if      (signalType_ == NEUMANN)
@@ -511,9 +489,7 @@ namespace Darius
       printmessage(std::string(__FILE__), __LINE__, std::string(" Signal frequency  = ") + stringify(f0_));
       printmessage(std::string(__FILE__), __LINE__, std::string(" Signal carrier envelope phase = ") + stringify(cep_));
     }
-}
-namespace Darius
-{
+
   Seed::Seed ()
   {
       seedType_ 		= PLANEWAVE;
@@ -539,9 +515,7 @@ namespace Darius
       profileTime_.clear();
       profileRhythm_		= 0.0;
   }
-}
-namespace Darius
-{
+
   void Seed::initialize (std::string type, std::vector <Double> position, std::vector <Double> direction, std::vector <Double> polarization, Double amplitude, std::vector <Double> radius, Signal signal)
     {
       /* Set the seed type according to the returned string for seedType.                   		*/
@@ -606,9 +580,7 @@ namespace Darius
       /* Initialize the signal of the seed.                                                       	*/
       signal_ 		= signal;
     }
-}
-namespace Darius
-{
+
   void Seed::fields (FieldVector <Double> & aufpunkt, Double & time, FieldVector <Double> & a)
     {
       /* Transfer the coordinate from the bunch rest frame to the lab frame.				*/
@@ -690,9 +662,7 @@ namespace Darius
       /* Now transfer the computed magnetic vector potential into the bunch rest frame.			*/
       a[2] *= gamma_;
     }
-}
-namespace Darius
-{
+
   Seed::vtk::vtk ()
       {
 	sample_				= false;
@@ -704,27 +674,21 @@ namespace Darius
 	plane_				= ZNORMAL;
 	position_			= 0.0;
       }
-}
-namespace Darius
-{
+
   SamplingType Seed::samplingType (std::string samplingType)
     {
       if      ( samplingType.compare("at-point")   == 0 )	return( ATPOINT  );
       else if ( samplingType.compare("over-line")  == 0 )	return( OVERLINE );
       else { std::cout << samplingType << " is an unknown sampling type." << std::endl; exit(1); }
     }
-}
-namespace Darius
-{
+
   SamplingType Seed::vtkType (std::string vtkType)
     {
       if      ( vtkType.compare("in-plane") == 0 )	return( INPLANE   );
       else if ( vtkType.compare("all-domain") == 0 )	return( ALLDOMAIN );
       else { std::cout << vtkType << " is an unknown vtk type." << std::endl; exit(1); }
     }
-}
-namespace Darius
-{
+
   PlaneType Seed::planeType (std::string planeType)
     {
       if      ( planeType.compare("yz")     == 0 )	return( XNORMAL );
@@ -732,9 +696,7 @@ namespace Darius
       else if ( planeType.compare("xy")     == 0 )	return( ZNORMAL );
       else { std::cout << planeType << " is an unknown vtk plane type." << std::endl; exit(1); }
     }
-}
-namespace Darius
-{
+
   FieldType Seed::fieldType (std::string fieldType)
     {
       if      ( fieldType.compare("Ex") == 0 )  return(Ex);
@@ -753,9 +715,7 @@ namespace Darius
       else if ( fieldType.compare("F") == 0 )   return(F);
       else { std::cout << fieldType << " is an unknown sampling field." << std::endl; exit(1); }
     }
-}
-namespace Darius
-{
+
   void Seed::show ()
     {
       if        (seedType_ == PLANEWAVE)      		printmessage(std::string(__FILE__), __LINE__, std::string("Seed type = plane-wave"));
@@ -814,9 +774,7 @@ namespace Darius
 	}
       signal_.show();
     }
-}
-namespace Darius
-{
+
   Undulator::Undulator ()
   {
       k_		= 0.0;
@@ -833,18 +791,14 @@ namespace Darius
       amplitude_	= 0.0;
       radius_.resize(2,0.0);
   }
-}
-namespace Darius
-{
+
   UndulatorType Undulator::undulatorType (std::string undulatorType)
     {
       if      ( undulatorType.compare("static")   == 0 )   return( STATIC  );
       else if ( undulatorType.compare("optical")  == 0 )   return( OPTICAL );
       else { std::cout << undulatorType << " is an unknown sampling type." << std::endl; exit(1); }
     }
-}
-namespace Darius
-{
+
   void Undulator::initialize (std::string type, std::vector <Double> position, std::vector <Double> direction, std::vector <Double> polarization, Double amplitude, std::vector <Double> radius, Double wavelength, Signal signal)
     {
       /* Set the seed type according to the returned string for seedType.                   		*/
@@ -912,9 +866,7 @@ namespace Darius
       /* Initialize the signal of the seed.                                                       	*/
       signal_ 		= signal;
     }
-}
-namespace Darius
-{
+
   void Undulator::show ()
     {
       if ( type_ == STATIC )
@@ -952,14 +904,10 @@ namespace Darius
 	  signal_.show();
 	}
     }
-}
-namespace Darius
-{
+
   ExtField::ExtField ()
   {}
-}
-namespace Darius
-{
+
   void ExtField::initialize (std::string type, std::vector <Double> position, std::vector <Double> direction, std::vector <Double> polarization, Double amplitude, std::vector <Double> radius, Double wavelength, Signal signal)
     {
       /* Set the seed type according to the returned string for seedType.                               */
@@ -1024,9 +972,7 @@ namespace Darius
       /* Initialize the signal of the seed.                                                             */
       signal_           = signal;
     }
-}
-namespace Darius
-{
+
   void ExtField::show ()
     {
       if ( type_ == EMWAVE )
@@ -1055,18 +1001,14 @@ namespace Darius
 	  signal_.show();
 	}
     }
-}
-namespace Darius
-{
+
   void FreeElectronLaser::RadiationPower::samplingType (std::string samplingType)
       {
 	if      ( samplingType.compare("at-point")   == 0 )   samplingType_ = ATPOINT;
 	else if ( samplingType.compare("over-line")  == 0 )   samplingType_ = OVERLINE;
 	else { std::cout << samplingType << " is an unknown sampling type." << std::endl; exit(1); }
       }
-}
-namespace Darius
-{
+
   FreeElectronLaser::RadiationPower::RadiationPower ()
       {
 	z_.clear();
@@ -1082,9 +1024,7 @@ namespace Darius
 	lambdaMax_	= 0.0;
 	lambdaRes_	= 0.0;
       }
-}
-namespace Darius
-{
+
   FreeElectronLaser::vtk::vtk ()
       {
 	z_		= 0.0;
@@ -1093,18 +1033,14 @@ namespace Darius
 	basename_	= "";
 	rhythm_		= 0.0;
       }
-}
-namespace Darius
-{
+
   void FreeElectronLaser::RadiationEnergy::samplingType (std::string samplingType)
       {
 	if      ( samplingType.compare("at-point")   == 0 )   samplingType_ = ATPOINT;
 	else if ( samplingType.compare("over-line")  == 0 )   samplingType_ = OVERLINE;
 	else { std::cout << samplingType << " is an unknown sampling type." << std::endl; exit(1); }
       }
-}
-namespace Darius
-{
+
   FreeElectronLaser::RadiationEnergy::RadiationEnergy ()
       {
 	z_.clear();

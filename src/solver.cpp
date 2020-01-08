@@ -40,9 +40,7 @@ namespace Darius
       m0_ = MU_ZERO / mesh_.lengthScale_;
       e0_ = 1.0 / ( c0_ * c0_ * m0_ );
   }
-}
-namespace Darius
-{
+
   void Solver::lorentzBoost ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string("::: Boosting the given parameters into the electron rest frame ") );
@@ -259,9 +257,7 @@ namespace Darius
 
       printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );
     }
-}
-namespace Darius
-{
+
   void Solver::initialize ()
     {
       /* Initialize the spatial and temporal mesh of the problem.					*/
@@ -295,9 +291,7 @@ namespace Darius
        * radiation energy and saving it.								*/
       initializeRadiationEnergySample();
     }
-}
-namespace Darius
-{
+
   void Solver::initializeMesh ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the temporal and spatial mesh of the problem.") );
@@ -387,9 +381,7 @@ namespace Darius
 
       printmessage(std::string(__FILE__), __LINE__, std::string("The temporal and spatial mesh of the problem is initialized. :::") );
     }
-}
-namespace Darius
-{
+
   void Solver::initializeField ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string(" ::: Initializing the field update data") );
@@ -537,9 +529,7 @@ namespace Darius
 
       printmessage(std::string(__FILE__), __LINE__, std::string(" The field update data are initialized. :::") );
     }
-}
-namespace Darius
-{
+
   void Solver::initializeSeedSampling ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string(" ::: Initializing the field sampling data") );
@@ -618,9 +608,7 @@ namespace Darius
 
       printmessage(std::string(__FILE__), __LINE__, std::string(" The field sampling data are initialized. :::") );
     }
-}
-namespace Darius
-{
+
   void Solver::initializeSeedVTK ()
     {
       /* Resize the visualization field database according to the number of defined visualizations.	*/
@@ -700,9 +688,7 @@ namespace Darius
 	    }
 	}
     }
-}
-namespace Darius
-{
+
   void Solver::initializeSeedProfile ()
     {
       /* Return an error if the bunch profiling rhythm is still zero and no time is set.		*/
@@ -726,9 +712,7 @@ namespace Darius
 
       pf_.dt = 2.0 * mesh_.timeStep_;
     }
-}
-namespace Darius
-{
+
   void Solver::initializeBunchUpdate ()
     {
       /* Calculate the absolute values for the time step and the mesh resolution.			*/
@@ -804,9 +788,7 @@ namespace Darius
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" The bunch profiling data are initialized. :::") );
 	}
     }
-}
-namespace Darius
-{
+
   void Solver::initializeBunch ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string("[[[ Initializing the bunch and prepare the charge vector ") );
@@ -860,9 +842,7 @@ namespace Darius
 
       printmessage(std::string(__FILE__), __LINE__, std::string("The bunch is initialized and the charge vector is prepared. ]]]") );
     }
-}
-namespace Darius
-{
+
   void Solver::bunchUpdate ()
     {
       /* First define a parameter for the processor number.						*/
@@ -1053,9 +1033,7 @@ namespace Darius
 	  chargeVectorn_.push_back(ub_.Q);
 	}
     }
-}
-namespace Darius
-{
+
   void Solver::bunchSample ()
     {
       /* First define a iterator.                        						*/
@@ -1119,9 +1097,7 @@ namespace Darius
 	  *sb_.file << sqrt( sb_.gb2T[2] - sb_.gbT[2] * sb_.gbT[2] ) << std::endl ;
 	}
     }
-}
-namespace Darius
-{
+
   void Solver::bunchVisualize ()
     {
       /* First define a parameters.                         						*/
@@ -1234,9 +1210,7 @@ namespace Darius
 	  (*vb_.file).close();
 	}
     }
-}
-namespace Darius
-{
+
   void Solver::bunchProfile ()
     {
       /* First define a iterator.									*/
@@ -1268,9 +1242,7 @@ namespace Darius
       /* Close the file.										*/
       (*pb_.file).close();
     }
-}
-namespace Darius
-{
+
   void Solver::undulatorField (UpdateBunchParallel & ubp, FieldVector <Double> & r)
     {
       /* Initialize the undulator fields.								*/
@@ -1493,9 +1465,7 @@ namespace Darius
 	    }
 	}
     }
-}
-namespace Darius
-{
+
   void Solver::externalField (UpdateBunchParallel & ubp, FieldVector <Double> & r)
     {
 
@@ -1628,9 +1598,7 @@ namespace Darius
 	  ubp.et[2] += ubp.eT[2];
 	}
     }
-}
-namespace Darius
-{
+
   void Solver::initializeRadiationEnergySample ()
     {
       printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the FEL radiation energy data.") );
@@ -1715,9 +1683,7 @@ namespace Darius
 
       printmessage(std::string(__FILE__), __LINE__, std::string(" The FEL radiation energy data is initialized. :::") );
     }
-}
-namespace Darius
-{
+
   void Solver::radiationEnergySample ()
     {
       /* Declare the temporary parameters needed for calculating the radiated power.                    */
@@ -1816,9 +1782,7 @@ namespace Darius
 	    }
 	}
     }
-}
-namespace Darius
-{
+
   void Solver::finalize ()
     {
       /* If sampling was active, close the file since the simulation is finished now.			*/
@@ -1827,9 +1791,7 @@ namespace Darius
       /* If bunch sampling was active, close the file since the simulation is finished now.		*/
       if (bunch_.sampling_) 	(*sb_.file).close();
     }
-}
-namespace Darius
-{
+
   bool Solver::undulatorCompare (Undulator i, Undulator j)
                                                             { return ( i.rb_ < j.rb_ ); }
 }

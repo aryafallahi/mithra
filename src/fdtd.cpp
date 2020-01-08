@@ -10,9 +10,7 @@ namespace Darius
   FdTd::FdTd (Mesh & mesh, Bunch & bunch, Seed & seed, std::vector <Undulator> & undulator, std::vector <ExtField> & extField, std::vector <FreeElectronLaser> & FEL)
     : Solver (mesh, bunch, seed, undulator, extField, FEL)
   {}
-}
-namespace Darius
-{
+
   void FdTd::solve ()
     {
       /* Declare the required variables in the calculations to avoid redundant data decalaration.	*/
@@ -158,9 +156,7 @@ namespace Darius
       /* Finalize the calculations and the data saving.							*/
       finalize();
     }
-}
-namespace Darius
-{
+
   void FdTd::currentReset ()
     {
       Double*  jn = &jn_[0][0];
@@ -169,9 +165,7 @@ namespace Darius
 	*(jn++) = 0.0;
       *je = 0.0;
     }
-}
-namespace Darius
-{
+
   void FdTd::currentUpdate ()
     {
       FieldVector<Double>*	        jn   = &jn_[0];
@@ -316,9 +310,7 @@ namespace Darius
 	    }
 	}
     }
-}
-namespace Darius
-{
+
   void FdTd::currentCommunicate ()
     {
       int                               msgtag9 = 9;
@@ -354,9 +346,7 @@ namespace Darius
       iterQB_ = chargeVectorn_.begin();
       iterQE_ = chargeVectorn_.end();
     }
-}
-namespace Darius
-{
+
   void FdTd::fieldUpdate ()
     {
       /* Define the values temporally needed for updating the fields.					*/
@@ -927,9 +917,7 @@ namespace Darius
 	  MPI_Recv(uf_.bn+3*(np_-1)*N1N0_,	3*N1N0_,MPI_TYPE,rank_+1,msgtag8,MPI_COMM_WORLD,&status);
 	}
     }
-}
-namespace Darius
-{
+
   void FdTd::fieldEvaluate (long int m)
     {
       /* Calculate the electric field.                                                                  */
@@ -958,9 +946,7 @@ namespace Darius
       /* Set the boolean flag of this pixel to true.                                                    */
       pic_[m] = true;
     }
-}
-namespace Darius
-{
+
   void FdTd::fieldSample ()
     {
 
@@ -1077,9 +1063,7 @@ namespace Darius
 	  *(sf_.file) << std::endl;
 	}
     }
-}
-namespace Darius
-{
+
   void FdTd::fieldVisualizeAllDomain (unsigned int ivtk)
     {
       long int			m;
@@ -1232,9 +1216,7 @@ namespace Darius
 	  (*vf_[ivtk].file).close();
 	}
     }
-}
-namespace Darius
-{
+
   void FdTd::fieldVisualizeInPlane (unsigned int ivtk)
     {
       if	( seed_.vtk_[ivtk].plane_ == XNORMAL )  fieldVisualizeInPlaneXNormal(ivtk);
@@ -1245,9 +1227,7 @@ namespace Darius
 	    fieldVisualizeInPlaneZNormal(ivtk);
 	}
     }
-}
-namespace Darius
-{
+
   void FdTd::fieldVisualizeInPlaneXNormal (unsigned int ivtk)
     {
       unsigned int		i, n;
@@ -1406,9 +1386,7 @@ namespace Darius
 	  (*vf_[ivtk].file).close();
 	}
     }
-}
-namespace Darius
-{
+
   void FdTd::fieldVisualizeInPlaneYNormal (unsigned int ivtk)
     {
       unsigned int		j, n;
@@ -1567,9 +1545,7 @@ namespace Darius
 	  (*vf_[ivtk].file).close();
 	}
     }
-}
-namespace Darius
-{
+
   void FdTd::fieldVisualizeInPlaneZNormal (unsigned int ivtk)
     {
       unsigned int	        k, n;
@@ -1661,9 +1637,7 @@ namespace Darius
       /* Close the file.                                                                      		*/
       (*vf_[ivtk].file).close();
     }
-}
-namespace Darius
-{
+
   void FdTd::fieldProfile ()
     {
       /* Declare the iterators for the loop over the points.						*/

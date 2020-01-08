@@ -9,9 +9,7 @@ namespace Darius
   ParseDarius::ParseDarius (std::list <std::string> & jobFile, Mesh & mesh, Bunch & bunch, Seed & seed, std::vector <Undulator> & undulator, std::vector <ExtField> & extField, std::vector <FreeElectronLaser> & FEL)
     : jobFile_ (jobFile), mesh_ (mesh), bunch_ (bunch), seed_ (seed), undulator_ (undulator), extField_ (extField), FEL_ (FEL)
   {}
-}
-namespace Darius
-{
+
   void ParseDarius::setJobParameters ()
     {
       std::list<std::string>::iterator iter = jobFile_.begin();
@@ -41,9 +39,7 @@ namespace Darius
 	}
       while (iter != jobFile_.end());
     }
-}
-namespace Darius
-{
+
   void ParseDarius::readMesh (std::list <std::string>::iterator & iter)
     {
       ++iter;
@@ -118,9 +114,7 @@ namespace Darius
 	}
       while (*iter != "}");
     }
-}
-namespace Darius
-{
+
   void ParseDarius::readBunch (std::list <std::string>::iterator & iter)
     {
       ++iter;
@@ -252,9 +246,7 @@ namespace Darius
 	}
       while (*iter != "}");
     }
-}
-namespace Darius
-{
+
   void ParseDarius::readField (std::list <std::string>::iterator & iter)
     {
       ++iter;
@@ -397,9 +389,7 @@ namespace Darius
 	}
       while (*iter != "}");
     }
-}
-namespace Darius
-{
+
   void ParseDarius::readUndulator (std::list <std::string>::iterator & iter)
     {
       ++iter;
@@ -523,9 +513,7 @@ namespace Darius
 	}
       while (*iter != "}");
     }
-}
-namespace Darius
-{
+
   void ParseDarius::readExtField (std::list <std::string>::iterator & iter)
     {
       ++iter;
@@ -584,9 +572,7 @@ namespace Darius
 	}
       while (*iter != "}");
     }
-}
-namespace Darius
-{
+
   void ParseDarius::readFEL (std::list <std::string>::iterator & iter)
     {
       ++iter;

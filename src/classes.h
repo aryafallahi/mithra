@@ -28,9 +28,7 @@ namespace Darius
     void show ();
     void initialize ();
   };
-}
-namespace Darius
-{
+
   class Bunch
   {
   public:
@@ -59,9 +57,7 @@ namespace Darius
     Double beta_;
     void show ();
   };
-}
-namespace Darius
-{
+
   class Signal
   {
   public:
@@ -76,9 +72,7 @@ namespace Darius
     Double self (Double & t, Double & phase);
     void show ();
   };
-}
-namespace Darius
-{
+
   class Seed
   {
   public:
@@ -155,9 +149,7 @@ namespace Darius
     FieldType fieldType (std::string fieldType);
     void show ();
   };
-}
-namespace Darius
-{
+
   class Undulator
   {
   public:
@@ -183,9 +175,7 @@ namespace Darius
     void initialize (std::string type, std::vector <Double> position, std::vector <Double> direction, std::vector <Double> polarization, Double amplitude, std::vector <Double> radius, Double wavelength, Signal signal);
     void show ();
   };
-}
-namespace Darius
-{
+
   class ExtField
   {
   public:
@@ -202,9 +192,7 @@ namespace Darius
     void initialize (std::string type, std::vector <Double> position, std::vector <Double> direction, std::vector <Double> polarization, Double amplitude, std::vector <Double> radius, Double wavelength, Signal signal);
     void show ();
   };
-}
-namespace Darius
-{
+
   struct FreeElectronLaser
   {
     struct RadiationPower

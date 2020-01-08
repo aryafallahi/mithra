@@ -30,9 +30,7 @@ namespace Darius
 
     return jobFile;
   }
-}
-namespace Darius
-{
+
   void cleanJobFile (std::list <std::string> & jobFile)
   {
     std::list<std::string> cleanedJobFile;
@@ -50,18 +48,14 @@ namespace Darius
       }
     jobFile.swap(cleanedJobFile);
   }
-}
-namespace Darius
-{
+
   std::string parameterName (std::string line)
   {
     size_t posEqual = line.find("=");
     std::string name = line.substr(0,posEqual);
     return name;
   }
-}
-namespace Darius
-{
+
   std::string stringValue (std::string line)
   {
     size_t posEqual = line.find("=");
@@ -73,9 +67,7 @@ namespace Darius
       }
     return value;
   }
-}
-namespace Darius
-{
+
   Double doubleValue (std::string line)
   {
     size_t posEqual = line.find("=");
@@ -83,9 +75,7 @@ namespace Darius
     Double value = std::atof(doubleStr.c_str());
     return value;
   }
-}
-namespace Darius
-{
+
   int intValue (std::string line)
   {
     size_t posEqual = line.find("=");
@@ -94,9 +84,7 @@ namespace Darius
     int intvalue = int ( value );
     return intvalue;
   }
-}
-namespace Darius
-{
+
   bool boolValue (std::string line)
   {
     bool value;
@@ -110,9 +98,7 @@ namespace Darius
     }
     return value;
   }
-}
-namespace Darius
-{
+
   std::vector <Double> vectorDoubleValue (std::string line)
   {
     size_t posEqual = line.find("=");
@@ -129,9 +115,7 @@ namespace Darius
       }
     return doubleVector;
   }
-}
-namespace Darius
-{
+
   std::vector <unsigned int> vectorIntValue (std::string line)
   {
     size_t posEqual = line.find("=");
@@ -148,9 +132,7 @@ namespace Darius
       }
     return intVector;
   }
-}
-namespace Darius
-{
+
   void mapValue (std::string line, unsigned int & tag, std::string & model)
   {
     size_t posEqual = line.find("=");

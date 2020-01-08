@@ -32,9 +32,7 @@ namespace Darius
       shotNoise_			= false;
       lambda_				= 0.0;
     }
-}
-namespace Darius
-{
+
   UpdateBunchParallel::UpdateBunchParallel ()
     {
       qSB.clear(); qSF.clear(); qRB.clear(); qRF.clear();

@@ -114,9 +114,7 @@ namespace Darius
 
     printmessage(std::string(__FILE__), __LINE__, std::string(" The data for sampling FEL radiation power is initialized. :::") );
   }
-}
-namespace Darius
-{
+
   void Solver::initializePowerVisualize ()
   {
     printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the data for FEL radiation power visualization.") );
@@ -198,9 +196,7 @@ namespace Darius
 
     printmessage(std::string(__FILE__), __LINE__, std::string(" The data for FEL radiation power visualization is initialized. :::") );
   }
-}
-namespace Darius
-{
+
   void Solver::powerSample ()
   {
     /* Declare the temporary parameters needed for calculating the radiated power.                    	*/
@@ -307,9 +303,7 @@ namespace Darius
 	  }
       }
   }
-}
-namespace Darius
-{
+
   void Solver::powerVisualize ()
   {
 

@@ -1,7 +1,9 @@
-// stdinclude.h
-//
-#ifndef stdinclude_h
-#define stdinclude_h
+/********************************************************************************************************
+ *  stdinclude.hh, set of different standard databases used in the code.
+ ********************************************************************************************************/
+
+#ifndef STDINCLUDE_HH_
+#define STDINCLUDE_HH_
 
 #include <mpi.h>
 #include <sstream>
@@ -12,127 +14,65 @@
 
 namespace Darius
 {
-  Double const PI = 3.1415926535;
-  Double const EPSILON_ZERO = 8.85418782e-12;
-  Double const MU_ZERO = 4.0 * PI * 1.0e-7;
-  Double const C0 = 1.0 / sqrt(EPSILON_ZERO * MU_ZERO);
-  Double const Z0 = sqrt(MU_ZERO / EPSILON_ZERO);
-  Double const EC = 1.602e-19;
-  Double const EM = 9.109e-31;
-  Double const HB = 1.054e-34;
-  Double const KB = 1.381e-23;
-  std::string const VTS_FILE_SUFFIX = ".vts";
-  std::string const PTS_FILE_SUFFIX = ".pvts";
-  std::string const PTU_FILE_SUFFIX = ".pvtu";
-  std::string const TXT_FILE_SUFFIX = ".txt";
-  std::string const VTU_FILE_SUFFIX = ".vtu";
-  Complex const I = Complex (0.0,1.0);
+  /* Define the types of the time domain signals.                                                       */
+  enum SignalType       	{NEUMANN, GAUSSIAN, SECANT, FLATTOP};
 
-  enum SignalType
-  {
-    NEUMANN,
-    GAUSSIAN,
-    SECANT,
-    FLATTOP
-  };
+  /* Define the types of the excitations.                                                               */
+  enum SeedType   		{PLANEWAVE, PLANEWAVECONFINED, GAUSSIANBEAM};
 
-  enum SeedType
-  {
-    PLANEWAVE,
-    PLANEWAVECONFINED,
-    GAUSSIANBEAM
-  };
+  /* Define the type of the external field.                                                             */
+  enum ExtFieldType             {EMWAVE};
 
-  enum ExtFieldType
-  {
-    EMWAVE
-  };
+  /* Define the types of the excitations.                                                               */
+  enum SamplingType     	{ATPOINT, OVERLINE, INPLANE, ALLDOMAIN};
 
-  enum SamplingType
-  {
-    ATPOINT,
-    OVERLINE,
-    INPLANE,
-    ALLDOMAIN
-  };
+  /* Define the type of the plane normal to the axis.                                                  	*/
+  enum PlaneType     		{XNORMAL, YNORMAL, ZNORMAL};
 
-  enum PlaneType
-  {
-    XNORMAL,
-    YNORMAL,
-    ZNORMAL
-  };
+  /* Define the types of the fields to be sampled.                                                      */
+  enum FieldType		{Ex, Ey, Ez, Bx, By, Bz, Ax, Ay, Az, Jx, Jy, Jz, Q, F};
 
-  enum FieldType
-  {
-    Ex,
-    Ey,
-    Ez,
-    Bx,
-    By,
-    Bz,
-    Ax,
-    Ay,
-    Az,
-    Jx,
-    Jy,
-    Jz,
-    Q,
-    F
-  };
+  /* Define the types of the undulator supported by the code.                                           */
+  enum UndulatorType		{STATIC, OPTICAL};
 
-  enum UndulatorType
-  {
-    STATIC,
-    OPTICAL
-  };
+  /* Define the type of the solver to be used for the FEL interaction.					*/
+  enum SolverType		{FD, NSFD};
 
-  enum SolverType
-  {
-    FD,
-    NSFD
-  };
+  /* Scientific constants.                                                                              */
+  const Double PI           	= 3.1415926535;
+  const Double EPSILON_ZERO  	= 8.85418782e-12;
+  const Double MU_ZERO        	= 4.0 * PI * 1.0e-7;
+  const Double C0             	= 1.0 / sqrt(EPSILON_ZERO * MU_ZERO);
+  const Double Z0             	= sqrt(MU_ZERO / EPSILON_ZERO);
+  const Double EC             	= 1.602e-19;
+  const Double EM             	= 9.109e-31;
+  const Double HB              	= 1.054e-34;
+  const Double KB             	= 1.381e-23;
 
-  bool isabsolute (std::string filename);
+  /* File suffixes.                                                                                     */
+  const std::string VTS_FILE_SUFFIX = ".vts";
+  const std::string PTS_FILE_SUFFIX = ".pvts";
+  const std::string PTU_FILE_SUFFIX = ".pvtu";
+  const std::string TXT_FILE_SUFFIX = ".txt";
+  const std::string VTU_FILE_SUFFIX = ".vtu";
 
-  bool pathExist (std::string const & s);
+  /* Unit imaginary number.										*/
+  const Complex I = Complex (0.0,1.0);
 
-  void splitFilename (std::string const & str, std::string & path, std::string & file);
-
-  void createDirectory (std::string filename, unsigned int rank);
-
-  template <typename T>
-  int signof (T x);
-
-  void printmessage (std::string filename, unsigned int linenumber, std::string message);
-
-  template <typename numbertype>
-  std::string stringify (numbertype value);
-
-  struct Charge
-  {
-    Double q;
-    FieldVector <Double> rnp;
-    FieldVector <Double> rnm;
-    FieldVector <Double> gbnp;
-    FieldVector <Double> gbnm;
-    Charge ();
-  };
-
-  Double halton (unsigned int i, unsigned int j);
-
-  inline bool isabsolute (std::string filename)
+  /* Check if a path is an absolute path (beginning with an '/').                                       */
+  inline bool isabsolute(std::string filename)
   {
     return (filename.compare(0,1,"/") == 0);
   }
 
-  template <typename T>
-  inline int signof (T x)
+  /* Return the sign of the parameter.									*/
+  template <typename T> inline int signof(T x)
   {
     return ( (x > 0) ? 1 : ( (x < 0) ? -1 : 0 ) );
   }
 
-  inline void printmessage (std::string filename, unsigned int linenumber, std::string message)
+  /* Print a message on the terminal window.                                                            */
+  inline void printmessage(std::string filename, unsigned int linenumber, std::string message)
   {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
@@ -158,8 +98,9 @@ namespace Darius
       }
   }
 
-  template <typename numbertype>
-  inline std::string stringify (numbertype value)
+  /* Convert any number to a string.                                                                    */
+  template<typename numbertype>
+  inline std::string stringify(numbertype value)
   {
     std::ostringstream oStream;
     try
@@ -175,5 +116,30 @@ namespace Darius
 
     return oStream.str();
   }
+
+  /* Define the structure for each charge point.							*/
+  struct Charge
+  {
+
+    Double			q;		/* Charge of the point in the unit of electron charge.	*/
+    FieldVector<Double>		rnp, rnm;	/* Position vector of the charge.			*/
+    FieldVector<Double>		gbnp, gbnm;	/* Normalized velocity vector of the charge.		*/
+
+    Charge();
+
+  };
+
+  /* Check if a directory to save the data exists.							*/
+  bool pathExist (std::string const & s);
+
+  /* Split the file name to two strings including its path and file name.                               */
+  void splitFilename (std::string const & str, std::string & path, std::string & file);
+
+  /* Check if the directory referred to by the file-name exists. If not create the directory.		*/
+  void createDirectory (std::string filename, unsigned int rank);
+
+  /* Function creating a set of halton sequence for the random particle generation.			*/
+  Double halton (unsigned int i, unsigned int j);
+
 }
 #endif

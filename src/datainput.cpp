@@ -1,15 +1,20 @@
-// datainput.cpp
-//
+/********************************************************************************************************
+ *  datainput.cpp : Implementation of the functions to parse the parameters for the code
+ ********************************************************************************************************/
 
 #include "datainput.h"
 #include "readdata.h"
 
 namespace Darius
 {
-  ParseDarius::ParseDarius (std::list <std::string> & jobFile, Mesh & mesh, Bunch & bunch, Seed & seed, std::vector <Undulator> & undulator, std::vector <ExtField> & extField, std::vector <FreeElectronLaser> & FEL)
-    : jobFile_ (jobFile), mesh_ (mesh), bunch_ (bunch), seed_ (seed), undulator_ (undulator), extField_ (extField), FEL_ (FEL)
-  {}
+  ParseDarius::ParseDarius (std::list<std::string>& jobFile, Mesh& mesh, Bunch& bunch, Seed& seed,
+			    std::vector<Undulator>& undulator, std::vector<ExtField>& extField,
+			    std::vector<FreeElectronLaser>& FEL)
+  :   jobFile_ ( jobFile ), mesh_ ( mesh ), bunch_ ( bunch ), seed_ ( seed ), undulator_ ( undulator ),
+      extField_ ( extField ), FEL_ ( FEL )
+  {};
 
+  /* Read the parameters from the file and set all the parsed parameters for FEL simulation.         	*/
   void ParseDarius::setJobParameters ()
     {
       std::list<std::string>::iterator iter = jobFile_.begin();
@@ -40,6 +45,7 @@ namespace Darius
       while (iter != jobFile_.end());
     }
 
+  /* Read the parameters parsed for the mesh in the solver.                                    		*/
   void ParseDarius::readMesh (std::list <std::string>::iterator & iter)
     {
       ++iter;
@@ -115,6 +121,7 @@ namespace Darius
       while (*iter != "}");
     }
 
+  /* Read the parameters parsed for the bunch in the darius solver.                     		*/
   void ParseDarius::readBunch (std::list <std::string>::iterator & iter)
     {
       ++iter;
@@ -122,7 +129,7 @@ namespace Darius
       else ++iter;
       do
 	{
-	  /* The data related to the bunch initialization are to be parsed.                            */
+	  /* The data related to the bunch initialization are to be parsed.                            	*/
 	  if (*iter == "bunch-initialization")
 	    {
 	      ++iter;
@@ -247,6 +254,7 @@ namespace Darius
       while (*iter != "}");
     }
 
+  /* Read the parameters parsed for the seed in the darius solver.                               	*/
   void ParseDarius::readField (std::list <std::string>::iterator & iter)
     {
       ++iter;
@@ -390,6 +398,7 @@ namespace Darius
       while (*iter != "}");
     }
 
+  /* Read the parameters parsed for the mesh in the solver.                                    		*/
   void ParseDarius::readUndulator (std::list <std::string>::iterator & iter)
     {
       ++iter;
@@ -430,7 +439,7 @@ namespace Darius
 	      else ++iter;
 
 	      Undulator undulator;
-	      /* Initialize variables with default values from undulator constructor.				*/
+	      /* Initialize variables with default values from undulator constructor.			*/
 	      Double k = undulator.k_, lu = undulator.lu_, theta = undulator.theta_, g = 0.0, t = 0.0;
 	      unsigned int l = undulator.length_, N = 1;
 
@@ -514,6 +523,7 @@ namespace Darius
       while (*iter != "}");
     }
 
+  /* Read the parameters parsed for the seed in the darius solver.                                    	*/
   void ParseDarius::readExtField (std::list <std::string>::iterator & iter)
     {
       ++iter;
@@ -573,6 +583,7 @@ namespace Darius
       while (*iter != "}");
     }
 
+  /* Read the parameters parsed for the FEL output in the darius solver.                              	*/
   void ParseDarius::readFEL (std::list <std::string>::iterator & iter)
     {
       ++iter;

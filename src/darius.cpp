@@ -9,7 +9,6 @@
 #include <iostream>
 
 #include "classes.h"
-#include "darius.h"
 #include "database.h"
 #include "datainput.h"
 #include "fdtd.h"

@@ -1,24 +1,29 @@
-// stdinclude.cpp
-//
+/********************************************************************************************************
+ *  stdinclude.cpp, set of different standard functions used in the code.
+ ********************************************************************************************************/
 
 #include "stdinclude.h"
 
 namespace Darius
 {
+
+  /* Check if a directory to save the data exists.							*/
   bool pathExist (std::string const & s)
   {
     struct stat buffer;
     return (stat (s.c_str(), &buffer) == 0);
   }
 
-  void splitFilename (std::string const & str, std::string & path, std::string & file)
+  /* Split the file name to two strings including its path and file name.                               */
+  void splitFilename (const std::string& str, std::string& path, std::string& file)
   {
     unsigned found = str.find_last_of("/");
     path = str.substr(0,found+1);
     file = str.substr(found+1);
   }
 
-  void createDirectory (std::string filename, unsigned int rank)
+  /* Check if the directory referred to by the file-name exists. If not create the directory.		*/
+  void createDirectory(std::string filename, unsigned int rank)
   {
     std::string path, file;
     splitFilename(filename, path, file);
@@ -31,10 +36,11 @@ namespace Darius
   }
 
   Charge::Charge ()
-    {
-      q = 0.0; rnp = rnm = 0.0; gbnp = gbnm = 0.0;
-    }
+  {
+    q = 0.0; rnp = rnm = 0.0; gbnp = gbnm = 0.0;
+  }
 
+  /* Function creating a set of halton sequence for the random particle generation.			*/
   Double halton (unsigned int i, unsigned int j)
   {
     if (i > 20)

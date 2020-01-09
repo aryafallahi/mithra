@@ -87,10 +87,10 @@ namespace Darius
     Double gamma_;
     Double beta_;
     Double dt_;
-    UpdateField <Double> uf_;
-    SampleField <Double> sf_;
-    std::vector <VisualizeField<Double> > vf_;
-    ProfileField <Double> pf_;
+    UpdateField uf_;
+    SampleField sf_;
+    std::vector <VisualizeField> vf_;
+    ProfileField pf_;
     UpdateBunch ub_;
     SampleBunch sb_;
     VisualizeBunch vb_;

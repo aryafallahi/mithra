@@ -1111,6 +1111,7 @@ namespace Darius
       else { std::cout << undulatorType << " is an unknown sampling type." << std::endl; exit(1); }
     }
 
+    /* Initialize the data of the undulator according to the input parameters.				*/
     void initialize (std::string        	type,
 		     std::vector<Double>    	position,
 		     std::vector<Double>    	direction,

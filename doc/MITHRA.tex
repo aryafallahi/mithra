@@ -1,0 +1,131 @@
+\documentclass{report}
+
+\usepackage[english]{babel}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{epic}
+\usepackage{eepic}
+\usepackage{makeidx}
+\usepackage{array}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{esint}
+\usepackage{amssymb}
+\usepackage{fancyvrb}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{framed}
+\usepackage{multirow}
+\usepackage{enumerate}
+\usepackage[round,sort]{natbib}
+\usepackage{lscape}
+\usepackage{textcomp}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{tabto}
+\usepackage[toc,page]{appendix}
+
+\listfiles
+
+\newcommand{\convolution}{\mbox{$\otimes$}}          %% convolution
+\renewcommand{\vec}[1]{\mbox{\boldmath$#1$}}         %% vector
+
+\definecolor{shadecolor}{rgb}{0.74,0.74,0.74}
+
+\citestyle{plain}
+
+\setlength{\topmargin}{-15mm}
+\setlength{\footskip}{12mm}
+\setlength{\oddsidemargin}{-10mm}
+\setlength{\evensidemargin}{10mm}
+\setlength{\textwidth}{185mm}
+\setlength{\textheight}{230mm}
+\setlength{\footskip}{10mm}
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot{}
+\lhead{\textsf{\leftmark}}
+\rhead{\textsf{\thepage}}
+
+\makeindex
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+  \hrule \vspace{3mm}
+  {\Huge {MITHRA 2.0} \vspace{10mm} } \\
+  {\LARGE {\sc A Full-wave Simulation Tool } \vspace{3mm} } \\
+  {\LARGE {for Free Electron Lasers \vspace{3mm} } } \\
+\end{center}
+
+\vspace{5mm}
+
+
+\begin{center}
+   \includegraphics[width=180mm]{coverFigure.png}
+\end{center}
+
+\vspace{5mm}
+
+\begin{center}
+  \Large{ \textbf{Arya Fallahi} } \\
+  \Large{ Foundation for Research on Information Technology in Society (IT'IS Foundation)} \\
+  \Large{ Swiss Federal Institute of Technology (ETH Z\"urich)} \\
+\end{center}
+
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+
+\
+
+\vspace{8cm}
+
+{\large \noindent \textit{Mithra, also spelled Mithras, Sanskrit Mitra, in ancient Indo-Iranian mythology, is the god of light, whose cult spread from India in the east to as far west as Spain, Great Britain, and Germany. The first written mention of the Vedic Mitra dates to 1400 BC. His worship spread to Persia and, after the defeat of the Persians by Alexander the Great, throughout the Hellenic world. In the 3rd and 4th centuries AD, the cult of Mithra, carried and supported by the soldiers of the Roman Empire, was the chief rival to the newly developing religion of Christianity. The Roman emperors Commodus and Julian were initiates of Mithraism, and in 307 Diocletian consecrated a temple on the Danube River to Mithra, ``Protector of the Empire."}
+
+\noindent \textit{According to myth, Mithra was born, bearing a torch and armed with a knife, beside a sacred stream and under a sacred tree, a child of the earth itself. He soon rode, and later killed, the life-giving cosmic bull, whose blood fertilizes all vegetation. Mithra's slaying of the bull was a popular subject of Hellenic art and became the prototype for a bull-slaying ritual of fertility in the Mithraic cult.}
+
+\noindent \textit{As god of light, Mithra was associated with the Greek sun god, Helios, and the Roman Sol Invictus. He is often paired with Anahita, goddess of the fertilizing waters.}
+
+\
+
+\hspace{10cm} \textit{Source: Encyclopaedia Britannica}}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents
+\listoftables
+\listoffigures
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+\include{./MITHRA_PREFACE/MITHRA_PREFACE}
+
+\include{./MITHRA_INTRO/MITHRA_INTRO}
+
+\include{./MITHRA_FDTDPIC/MITHRA_FDTDPIC}
+
+% \include{./MITHRA_SVA/MITHRA_SVA}
+
+\include{./MITHRA_UI/MITHRA_UI}
+
+\include{./MITHRA_EXAMPLES/MITHRA_EXAMPLES}
+
+\include{./MITHRA_REFCARD/MITHRA_REFCARD}
+
+\include{./MITHRA_REFCARD/MITHRA_JOBFILES}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% index
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\printindex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% bibliography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{unsrtnat}
+\bibliography{./bib/references}
+
+\end{document}

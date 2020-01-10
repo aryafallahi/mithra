@@ -325,8 +325,7 @@ namespace Darius
       printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the temporal and spatial mesh of the problem.") );
 
       /* Declare the required variables in the calculations to avoid redundant data declaration.	*/
-      unsigned int 	i = 0, j = 0, k = 0, m = 0;
-      Double		temp;
+      unsigned int 	m = 0;
 
       /* First the mesh-length needs to be adjusted to contain a multiple number of the mesh-resolution
        * in each direction.										*/
@@ -391,9 +390,9 @@ namespace Darius
       zmax_ = mesh_.meshCenter_[2] + mesh_.meshLength_[2] / 2.0;
 
       /* Now set up the coordinate of nodes according to the number of nodes and mesh-length.		*/
-      for (i = 0; i < N0_; i++)
-	for (j = 0; j < N1_; j++)
-	  for (k = 0; k < np_; k++)
+      for (int i = 0; i < N0_; i++)
+	for (int j = 0; j < N1_; j++)
+	  for (int k = 0; k < np_; k++)
 	    {
 	      m = N1N0_*k+N1_*i+j;
 	      r_[m][0] = xmin_ + i         * mesh_.meshResolution_[0];
@@ -420,8 +419,7 @@ namespace Darius
       printmessage(std::string(__FILE__), __LINE__, std::string(" ::: Initializing the field update data") );
 
       /* Declare the required variables in the calculations to avoid redundant data declaration.	*/
-      unsigned int 	i = 0, j = 0, k = 0, m = 0;
-      Double		temp;
+      unsigned int      m = 0;
 
       /* Initialize the data for updating the currents.                                                 */
       uc_.dx = mesh_.meshResolution_[0];
@@ -551,9 +549,9 @@ namespace Darius
        * the mesh points within the TF domain.								*/
       if (seed_.amplitude_ > 1.0e-50)
 	{
-	  for (i = 2; i < N0_ - 2; i++)
-	    for (j = 2; j < N1_ - 2; j++)
-	      for (k = 2 * abs(signof(rank_) - 1 ) ; k < np_ - 2 * abs(signof(rank_ - size_ + 1) + 1 ); k++)
+	  for (int i = 2; i < N0_ - 2; i++)
+	    for (int j = 2; j < N1_ - 2; j++)
+	      for (int k = 2 * abs(signof(rank_) - 1 ) ; k < np_ - 2 * abs(signof(rank_ - size_ + 1) + 1 ); k++)
 		{
 		  m = N1N0_ * k + N1_ * i + j;
 		  seed_.fields(r_[m], time_,   (*an_)[m]   );
@@ -1052,41 +1050,41 @@ namespace Darius
 	}
 
       /* Now insert the newly incoming particles in this processor to the list of particles.            */
-      ub_.i = 0;
-      while ( ub_.i < ubp.qRF.size() )
+      unsigned i = 0;
+      while ( i < ubp.qRF.size() )
 	{
-	  ub_.Q.q       = ubp.qRF[ub_.i++];
-	  ub_.Q.rnp [0] = ubp.qRF[ub_.i++];
-	  ub_.Q.rnp [1] = ubp.qRF[ub_.i++];
-	  ub_.Q.rnp [2] = ubp.qRF[ub_.i++];
-	  ub_.Q.gbnp[0] = ubp.qRF[ub_.i++];
-	  ub_.Q.gbnp[1] = ubp.qRF[ub_.i++];
-	  ub_.Q.gbnp[2] = ubp.qRF[ub_.i++];
-	  ub_.Q.rnm [0] = ubp.qRF[ub_.i++];
-	  ub_.Q.rnm [1] = ubp.qRF[ub_.i++];
-	  ub_.Q.rnm [2] = ubp.qRF[ub_.i++];
-	  ub_.Q.gbnm[0] = ubp.qRF[ub_.i++];
-	  ub_.Q.gbnm[1] = ubp.qRF[ub_.i++];
-	  ub_.Q.gbnm[2] = ubp.qRF[ub_.i++];
+	  ub_.Q.q       = ubp.qRF[i++];
+	  ub_.Q.rnp [0] = ubp.qRF[i++];
+	  ub_.Q.rnp [1] = ubp.qRF[i++];
+	  ub_.Q.rnp [2] = ubp.qRF[i++];
+	  ub_.Q.gbnp[0] = ubp.qRF[i++];
+	  ub_.Q.gbnp[1] = ubp.qRF[i++];
+	  ub_.Q.gbnp[2] = ubp.qRF[i++];
+	  ub_.Q.rnm [0] = ubp.qRF[i++];
+	  ub_.Q.rnm [1] = ubp.qRF[i++];
+	  ub_.Q.rnm [2] = ubp.qRF[i++];
+	  ub_.Q.gbnm[0] = ubp.qRF[i++];
+	  ub_.Q.gbnm[1] = ubp.qRF[i++];
+	  ub_.Q.gbnm[2] = ubp.qRF[i++];
 
 	  chargeVectorn_.push_back(ub_.Q);
 	}
-      ub_.i = 0;
-      while ( ub_.i < ubp.qRB.size() )
+      i = 0;
+      while ( i < ubp.qRB.size() )
 	{
-	  ub_.Q.q       = ubp.qRB[ub_.i++];
-	  ub_.Q.rnp [0] = ubp.qRB[ub_.i++];
-	  ub_.Q.rnp [1] = ubp.qRB[ub_.i++];
-	  ub_.Q.rnp [2] = ubp.qRB[ub_.i++];
-	  ub_.Q.gbnp[0] = ubp.qRB[ub_.i++];
-	  ub_.Q.gbnp[1] = ubp.qRB[ub_.i++];
-	  ub_.Q.gbnp[2] = ubp.qRB[ub_.i++];
-	  ub_.Q.rnm [0] = ubp.qRB[ub_.i++];
-	  ub_.Q.rnm [1] = ubp.qRB[ub_.i++];
-	  ub_.Q.rnm [2] = ubp.qRB[ub_.i++];
-	  ub_.Q.gbnm[0] = ubp.qRB[ub_.i++];
-	  ub_.Q.gbnm[1] = ubp.qRB[ub_.i++];
-	  ub_.Q.gbnm[2] = ubp.qRB[ub_.i++];
+	  ub_.Q.q       = ubp.qRB[i++];
+	  ub_.Q.rnp [0] = ubp.qRB[i++];
+	  ub_.Q.rnp [1] = ubp.qRB[i++];
+	  ub_.Q.rnp [2] = ubp.qRB[i++];
+	  ub_.Q.gbnp[0] = ubp.qRB[i++];
+	  ub_.Q.gbnp[1] = ubp.qRB[i++];
+	  ub_.Q.gbnp[2] = ubp.qRB[i++];
+	  ub_.Q.rnm [0] = ubp.qRB[i++];
+	  ub_.Q.rnm [1] = ubp.qRB[i++];
+	  ub_.Q.rnm [2] = ubp.qRB[i++];
+	  ub_.Q.gbnm[0] = ubp.qRB[i++];
+	  ub_.Q.gbnm[1] = ubp.qRB[i++];
+	  ub_.Q.gbnm[2] = ubp.qRB[i++];
 
 	  chargeVectorn_.push_back(ub_.Q);
 	}
@@ -1098,10 +1096,8 @@ namespace Darius
 
     void bunchSample()
     {
-      /* First define a parameter for the processor number.						*/
-      unsigned int                      i, l;
+      /* First define a iterator.                        						*/
       std::list<Charge>::iterator       iter;
-      int                               k;
 
       /* First, we need to evaluate the charge cloud properties and for that the corresponding data
        * should be initialized.                                                                     	*/
@@ -1121,7 +1117,7 @@ namespace Darius
 	      sb_.r .pmv(   iter->q, iter->rnp );
 	      sb_.gb.pmv(   iter->q, iter->gbnp);
 
-	      for (l = 0; l < 3; l++)
+	      for (int l = 0; l < 3; l++)
 		{
 		  sb_.r2 [l] += iter->rnp[l]  * iter->rnp[l]  * iter->q;
 		  sb_.gb2[l] += iter->gbnp[l] * iter->gbnp[l] * iter->q;
@@ -1168,8 +1164,7 @@ namespace Darius
 
     void bunchVisualize()
     {
-      /* First define a parameter for the processor number.						*/
-      int                               k;
+      /* First define a parameters.                         						*/
       std::list<Charge>::iterator       iter;
       Double                            gamma, beta;
 
@@ -1210,7 +1205,7 @@ namespace Darius
       /* Insert each cell vertices number into the vtk file.                                            */
       *vb_.file << "<Cells>"                                                               	<< std::endl;
       *vb_.file << "<DataArray type=\"Int32\" Name=\"connectivity\" format=\"ascii\">"       	<< std::endl;
-      for (vb_.i = 0; vb_.i < vb_.N + 1 ; ++vb_.i) *vb_.file << vb_.i << " ";
+      for (unsigned i = 0; i < vb_.N + 1 ; ++i) *vb_.file << i << " ";
       *vb_.file                                                                         	<< std::endl;
       *vb_.file << "</DataArray>"                                                               << std::endl;
       *vb_.file << "<DataArray type=\"Int32\" Name=\"offsets\" format=\"ascii\">"         	<< std::endl;
@@ -1268,9 +1263,9 @@ namespace Darius
 	  *vb_.file << "<PDataArray type=\"Float64\" Name=\"charge\" NumberOfComponents=\"3\" format=\"ascii\" />"
 	      << std::endl;
 	  *vb_.file << "</PPointData>"                                                                	<< std::endl;
-	  for (vb_.i = 0; vb_.i < size_; ++vb_.i )
+	  for (int i = 0; i < size_; ++i )
 	    {
-	      vb_.fileName = vb_.name + "-p" + stringify(vb_.i) + "-" + stringify(nTimeBunch_) + VTU_FILE_SUFFIX;
+	      vb_.fileName = vb_.name + "-p" + stringify(i) + "-" + stringify(nTimeBunch_) + VTU_FILE_SUFFIX;
 	      *vb_.file << "<Piece  Source=\"" << vb_.fileName << "\"/>"                         	<< std::endl;
 	    }
 	  *vb_.file << "</PUnstructuredGrid>"                                                         	<< std::endl;
@@ -1286,8 +1281,7 @@ namespace Darius
 
     void bunchProfile()
     {
-      /* First define a parameter for the processor number.						*/
-      unsigned int                      i, k;
+      /* First define a iterator.									*/
       std::list<Charge>::iterator       iter;
 
       /* The old files if existing should be deleted.                                           	*/
@@ -1297,8 +1291,6 @@ namespace Darius
       (*pb_.file).setf(std::ios::scientific);
       (*pb_.file).precision(15);
       (*pb_.file).width(40);
-
-      Double qr = 0, q = 0;
 
       for (iter = iterQB_; iter != iterQE_; iter++)
 	{
@@ -1777,7 +1769,7 @@ namespace Darius
 	      /* Determine the number of time points needed to calculate the amplitude of each
 	       * radiation harmonic.                                                                    */
 	      Double dt = undulator_[0].lu_ / FEL_[jf].radiationEnergy_.lambda_[i] / ( gamma_ * c0_ );
-	      re_[jf].Nf = ( int( dt / mesh_.timeStep_ ) > re_[jf].Nf ) ? int(dt/mesh_.timeStep_) : re_[jf].Nf;
+	      re_[jf].Nf = ( unsigned( dt / mesh_.timeStep_ ) > re_[jf].Nf ) ? unsigned( dt/mesh_.timeStep_ ) : re_[jf].Nf;
 
 	      /* Calculate the angular frequency for each wavelength.                                   */
 	      re_[jf].w[i] = 2 * PI / dt;
@@ -1804,11 +1796,9 @@ namespace Darius
     void radiationEnergySample()
     {
       /* Declare the temporary parameters needed for calculating the radiated power.                    */
-      unsigned int              k, l, m, i, j, mi, ni, thid;
+      unsigned int              mi, ni;
       FieldVector<Double>       et, bt;
       Complex                   ew1, bw1, ew2, bw2, ex;
-      Double                    pt;
-      bool                      dt = false;
 
       /* Loop over the different FEL output parameters and calculate the radiation energy if the energy
        * calculation is activated.                                                                      */
@@ -1818,13 +1808,13 @@ namespace Darius
 	  if (!FEL_[jf].radiationEnergy_.sampling_) continue;
 
 	  /* First reset all the previously calculated powers.                                          */
-	  for (k = 0; k < re_[jf].N; ++k)
-	    for (l = 0; l < re_[jf].Nl; ++l)
+	  for (unsigned k = 0; k < re_[jf].N; ++k)
+	    for (unsigned l = 0; l < re_[jf].Nl; ++l)
 	      re_[jf].pL[k * re_[jf].Nl + l] = 0.0;
 
 	  /* Loop over the sampling positions, transverse dicretizations, and frequency to calculate the
 	   * radiated power at the specific point and frequency.                                        */
-	  for (k = 0; k < re_[jf].N; ++k)
+	  for (unsigned k = 0; k < re_[jf].N; ++k)
 	    {
 	      /* Obtain the z index of the cell containing the point.                                   */
 	      re_[jf].dzr = modf( ( FEL_[jf].radiationEnergy_.z_[k] - ( mesh_.meshCenter_[2] - mesh_.meshLength_[2] / 2.0 ) ) / mesh_.meshResolution_[2] , &re_[jf].c);
@@ -1834,8 +1824,8 @@ namespace Darius
 	      if ( re_[jf].k < k0_ || re_[jf].k > k0_ + np_ - 1) continue;
 
 	      /* Loop over the transverse indices.                                                      */
-	      for (i = 2; i < N0_ - 2; i += 1)
-		for (j = 2; j < N1_ - 2; j += 1)
+	      for (int i = 2; i < N0_ - 2; i += 1)
+		for (int j = 2; j < N1_ - 2; j += 1)
 		  {
 		    /* Get the index in the computation grid as well as the field storage grid. */
 		    mi = ( re_[jf].k - k0_) * N1_* N0_ + i*N1_ + j;
@@ -1859,11 +1849,11 @@ namespace Darius
 		    re_[jf].fdt[nTime_ % re_[jf].Nf][ni][3] = gamma_ * ( bt[1] + beta_ / c0_ * et[0] );
 
 		    /* Add the contribution of this field to the radiation power.                       */
-		    for ( l = 0; l < re_[jf].Nl; l++)
+		    for (unsigned l = 0; l < re_[jf].Nl; l++)
 		      {
 			ew1 = Complex (0.0, 0.0);
 			bw1 = Complex (0.0, 0.0);
-			for ( m = 0; m < re_[jf].Nf; m++)
+			for (unsigned m = 0; m < re_[jf].Nf; m++)
 			  {
 			    ex  = exp( I * ( re_[jf].w[l] * m * mesh_.timeStep_ ) );
 			    ew1 += re_[jf].fdt[m][ni][0] * ex;
@@ -1872,7 +1862,7 @@ namespace Darius
 
 			ew2 = Complex (0.0, 0.0);
 			bw2 = Complex (0.0, 0.0);
-			for ( m = 0; m < re_[jf].Nf; m++)
+			for (unsigned m = 0; m < re_[jf].Nf; m++)
 			  {
 			    ex  = exp( I * ( re_[jf].w[l] * m * mesh_.timeStep_ ) );
 			    ew2 += re_[jf].fdt[m][ni][1] * ex;
@@ -1889,11 +1879,11 @@ namespace Darius
 
 	  /* If the rank of the processor is equal to zero, i.e. root processor save the fields into the
 	   * given file.                                                                                */
-	  for ( l = 0; l < re_[jf].Nl; l++)
+	  for (unsigned l = 0; l < re_[jf].Nl; l++)
 	    {
-	      if ( rank_ == ( l % size_ ) )
+	      if ( rank_ == int( l % size_ ) )
 		{
-		  for (k = 0; k < re_[jf].N; ++k)
+		  for (unsigned k = 0; k < re_[jf].N; ++k)
 		    *(re_[jf].file[l]) << gamma_ * ( FEL_[jf].radiationEnergy_.z_[k] + beta_ * c0_ * timeBunch_ )
 		    - pow( gamma_ * beta_ , 2 ) * undulator_[0].rb_ << "\t" << re_[jf].pG[k * re_[jf].Nl + l] << "\t";
 		  *(re_[jf].file[l]) << std::endl;
@@ -1936,8 +1926,8 @@ namespace Darius
     Mesh& 								mesh_;
     Bunch&								bunch_;
     Seed&								seed_;
-    std::vector<ExtField>&                                              extField_;
     std::vector<Undulator>&						undulator_;
+    std::vector<ExtField>&                                              extField_;
     std::vector<FreeElectronLaser>&					FEL_;
 
     /* The vector potential at the nodes in the computational mesh at three different time points.	*/

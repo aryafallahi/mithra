@@ -287,10 +287,11 @@ namespace Darius
 	      if (*iter != "{") { std::cout << "The seed-initialization directory is empty" << std::endl; exit(1); }
 	      else ++iter;
 
+	      Signal                	signal;
 	      std::string		type, signalType;
 	      std::vector<Double>	position (3,0.0), direction (3,0.0), polarization (3,0.0);
-	      Double                	amplitude, offset, variance, wavelength, cep;
-	      Signal                	signal;
+	      /* Initialize variables with values from class constructors.				*/
+	      Double                	amplitude = seed_.amplitude_, offset = signal.t0_, variance = signal.s_, wavelength = 1 / signal.f0_, cep = signal.cep_;
 	      std::vector<Double>   	radius (2,0.0);
 
 	      do
@@ -455,8 +456,10 @@ namespace Darius
 	      if (*iter != "{") { std::cout << "The static undulator directory is empty" << std::endl; exit(1); }
 	      else ++iter;
 
-	      Double k, lu, theta, g, t;
-	      unsigned int l, N;
+	      Undulator undulator;
+	      /* Initialize variables with default values from undulator constructor.				*/
+	      Double k = undulator.k_, lu = undulator.lu_, theta = undulator.theta_, g = 0.0, t = 0.0;
+	      unsigned int l = undulator.length_, N = 1;
 
 	      do
 		{
@@ -475,9 +478,7 @@ namespace Darius
 	      /* Now add each undulator module to the array of undulators.				*/
 	      for (unsigned int i = 0; i < N; i++)
 		{
-
 		  /* First, calculate the values of the undulator module.				*/
-		  Undulator undulator;
 		  undulator.type_ 	= STATIC;
 		  undulator.k_  	= k + i * t;
 		  undulator.lu_ 	= lu;
@@ -497,12 +498,14 @@ namespace Darius
 	      if (*iter != "{") { std::cout << "The optical undulator directory is empty" << std::endl; exit(1); }
 	      else ++iter;
 
-	      std::string		type, signalType;
-	      std::vector<Double>	position (3,0.0), direction (3,0.0), polarization (3,0.0);
-	      Double                	amplitude, offset, variance, wavelength, cep;
 	      Signal                	signal;
-	      std::vector<Double>   	radius (2,0.0);
 	      Undulator 		undulator; undulator.type_ = OPTICAL;
+	      std::string		type, signalType;
+	      /* Initialize variables with default variables from the constructor.			*/
+	      std::vector<Double>	position (3,0.0), direction (3,0.0), polarization (3,0.0);
+	      Double                	amplitude = undulator.amplitude_, offset = signal.t0_, variance = signal.s_,
+					wavelength = 1 / signal.f0_, cep = signal.cep_ * 180 / PI;
+	      std::vector<Double>   	radius (2,0.0);
 
 	      do
 		{
@@ -558,10 +561,10 @@ namespace Darius
 
 	      extField.type_            = EMWAVE;
 
+	      Signal                    signal;
 	      std::string               type, signalType;
 	      std::vector<Double>       position (3,0.0), direction (3,0.0), polarization (3,0.0);
-	      Double                    amplitude, offset, variance, wavelength, cep;
-	      Signal                    signal;
+	      Double                    amplitude = extField.amplitude_, offset = signal.t0_, variance = signal.s_, wavelength = 1 / signal.f0_, cep = signal.cep_;
 	      std::vector<Double>       radius (2,0.0);
 
 	      do

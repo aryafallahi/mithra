@@ -1,0 +1,67 @@
+#  Mithra input file                                                                                                                                          
+#                                                                                                        
+#  physics - model an infra-red free electron laser based on a magnetic undulator 
+#
+#  manual: example 1, Fig. 5.3d ( size of the computational domain along x and y = 2500 um ) 
+#                                                                                                 
+#  mpirun -np 4 ../darius ./job-files/FEL-IR-LXLY2500.job
+#  
+#  in the LSF system: 
+#  bsub -n 48 -W 2:00 -J "FEL-IR-LXLY2500" -o mithra.out 'mpirun ../darius ./job-files/FEL-IR-LXLY2500.job'
+
+MESH
+{
+  length-scale						= MICROMETER
+  time-scale						= PICOSECOND
+  mesh-lengths						= ( 2500, 2500.0, 280.0) 
+  mesh-resolution					= ( 50.0,   50.0,   0.1)
+  mesh-center						= ( 0.0,     0.0,   0.0)
+  total-time						= 30000
+  bunch-time-step					= 1.6
+  mesh-truncation-order					= 2
+  space-charge						= false
+  solver						= NSFD
+}
+ 
+BUNCH
+{
+  bunch-initialization
+  {
+    type    						= ellipsoid
+    distribution					= uniform
+    charge						= 1.846e8
+    number-of-particles					= 131072
+    gamma						= 100.41
+    direction     	    				= (    0.0,     0.0,       1.0)
+    position						= (    0.0,     0.0,       0.0)
+    sigma-position					= (  260.0,   260.0,     50.25)
+    sigma-momentum					= ( 1.0e-8,  1.0e-8, 100.41e-4)
+    transverse-truncation				= 1040.0
+    longitudinal-truncation     			= 90.0
+    bunching-factor					= 0.01
+  }
+}
+
+UNDULATOR
+{
+  static-undulator
+  {  
+    undulator-parameter					= 1.417
+    period						= 3.0e4
+    length						= 300
+    polarization-angle					= 0.0
+  }
+}
+
+FEL-OUTPUT
+{
+  radiation-power
+  {
+    sample						= true
+    type						= at-point
+    directory						= ./
+    base-name						= power-sampling/power-LXLY2500
+    plane-position					= 110
+    normalized-frequency				= 1.00
+  }
+}

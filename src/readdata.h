@@ -1,8 +1,9 @@
-// readdata.h
-//
+/********************************************************************************************************
+ *  readdata.hh : Implementation of the functions reading the lines of the job file.
+ ********************************************************************************************************/
 
-#ifndef readdata_h
-#define readdata_h
+#ifndef READDATA_HH_
+#define READDATA_HH_
 
 #include <list>
 #include <string>
@@ -14,24 +15,35 @@
 
 namespace Darius
 {
-  std::list <std::string> read_file (char const * filename);
 
-  void cleanJobFile (std::list <std::string> & jobFile);
+  /* Read the data from the input file and store them into a string list.                               */
+  std::list <std::string> 	read_file 		(char const * filename);
 
-  std::string parameterName (std::string line);
+  /* Clean the stored string vector and make it organized.                                              */
+  void 				cleanJobFile 		(std::list <std::string> & jobFile);
 
-  std::string stringValue (std::string line);
+  /* Read the ParamaterName at the line.                                                                */
+  std::string 			parameterName 		(std::string line);
 
-  Double doubleValue (std::string line);
+  /* Read value of a string parameter.                                                                  */
+  std::string 			stringValue 		(std::string line);
 
-  int intValue (std::string line);
+  /* Read value of a double parameter.                                                                  */
+  Double 			doubleValue 		(std::string line);
 
-  bool boolValue (std::string line);
+  /* Read value of an integer parameter.                                                                */
+  int 				intValue 		(std::string line);
 
-  std::vector <Double> vectorDoubleValue (std::string line);
+  /* Read value of a boolean parameter.                                                                 */
+  bool 				boolValue 		(std::string line);
 
-  std::vector <unsigned int> vectorIntValue (std::string line);
+  /* Read value of a vector parameter.                                                                  */
+  std::vector <Double> 		vectorDoubleValue 	(std::string line);
 
-  void mapValue (std::string line, unsigned int & tag, std::string & model);
+  /* Read value of a vector parameter.                                                                  */
+  std::vector <unsigned int> 	vectorIntValue 		(std::string line);
+
+  /* Read value of a map parameter.                                                                     */
+  void 				mapValue 		(std::string line, unsigned int & tag, std::string & model);
 }
 #endif

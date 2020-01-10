@@ -1,16 +1,21 @@
-// radiation.cpp
-//
+/********************************************************************************************************
+ *  radiation.cpp : Implementation of the functions for calculation of radiated power
+ ********************************************************************************************************/
 
 #include <string>
 
 #include "fieldvector.h"
-#include "radiation.h"
 #include "solver.h"
 #include "stdinclude.h"
 
 namespace Darius
 {
-  void Solver::initializePowerSample ()
+
+  /******************************************************************************************************
+   * Initialize the data required for sampling and saving the radiation power at the given position.
+   ******************************************************************************************************/
+
+  void Solver::initializePowerSample()
   {
     printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the data for FEL radiation power sampling.") );
     rp_.clear(); rp_.resize(FEL_.size());
@@ -115,7 +120,11 @@ namespace Darius
     printmessage(std::string(__FILE__), __LINE__, std::string(" The data for sampling FEL radiation power is initialized. :::") );
   }
 
-  void Solver::initializePowerVisualize ()
+  /******************************************************************************************************
+   * Initialize the data required for visualizing the radiation power at the given position.
+   ******************************************************************************************************/
+
+  void Solver::initializePowerVisualize()
   {
     printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the data for FEL radiation power visualization.") );
 
@@ -197,7 +206,11 @@ namespace Darius
     printmessage(std::string(__FILE__), __LINE__, std::string(" The data for FEL radiation power visualization is initialized. :::") );
   }
 
-  void Solver::powerSample ()
+  /******************************************************************************************************
+   * Sample the radiation power at the given position and save it to the file.
+   ******************************************************************************************************/
+
+  void Solver::powerSample()
   {
     /* Declare the temporary parameters needed for calculating the radiated power.                    	*/
     unsigned int              	kz;
@@ -288,7 +301,7 @@ namespace Darius
 	  }
 
 	/* Add the data from each processor together at the root processor.                           	*/
-	MPI_Allreduce(&rp_[jf].pL[0],&rp_[jf].pG[0],rp_[jf].N*rp_[jf].Nl,MPI_TYPE,MPI_SUM,MPI_COMM_WORLD);
+	MPI_Allreduce(&rp_[jf].pL[0],&rp_[jf].pG[0],rp_[jf].N*rp_[jf].Nl,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
 
 	/* If the rank of the processor is equal to zero, i.e. root processor save the fields into the
 	 * given file.                                                                                	*/
@@ -304,7 +317,11 @@ namespace Darius
       }
   }
 
-  void Solver::powerVisualize ()
+  /******************************************************************************************************
+   * Visualize the radiation power at the given position and save it to the file.
+   ******************************************************************************************************/
+
+  void Solver::powerVisualize()
   {
 
     /* Declare the temporary parameters needed for calculating the radiated power.                    	*/
@@ -393,7 +410,7 @@ namespace Darius
 		    0 << " " << 0 << "\">"								<< std::endl;
 
 		/* Insert the coordinates of the grid for the charge points.				*/
-		*rp_[jf].file[0] << "<Points>"                                                        << std::endl;
+		*rp_[jf].file[0] << "<Points>"                                                        	<< std::endl;
 		*rp_[jf].file[0] << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"<< std::endl;
 		for (int j = 0; j < N1_; j++)
 		  for (int i = 0; i < N0_; i++)
@@ -402,15 +419,15 @@ namespace Darius
 		      *rp_[jf].file[0] << r_[m][0] * ( 1.0 - rp_[jf].dzr ) + r_[m + N1N0_][0] * rp_[jf].dzr << " "
 			  << r_[m][1] << " " << r_[m][2] 						<< std::endl;
 		    }
-		*rp_[jf].file[0] << "</DataArray>"                                                    << std::endl;
-		*rp_[jf].file[0] << "</Points>"                                                       << std::endl;
+		*rp_[jf].file[0] << "</DataArray>"                                                    	<< std::endl;
+		*rp_[jf].file[0] << "</Points>"                                                       	<< std::endl;
 
 		/* Insert each cell data into the vtk file.                                         	*/
-		*rp_[jf].file[0] << "<CellData>"                                                       << std::endl;
-		*rp_[jf].file[0] << "</CellData>"                                                      << std::endl;
+		*rp_[jf].file[0] << "<CellData>"                                                       	<< std::endl;
+		*rp_[jf].file[0] << "</CellData>"                                                      	<< std::endl;
 
 		/* Insert the point data based on the computed electric field.				*/
-		*rp_[jf].file[0] << "<PointData Vectors = \"power\">"                                 << std::endl;
+		*rp_[jf].file[0] << "<PointData Vectors = \"power\">"                                 	<< std::endl;
 		*rp_[jf].file[0] << "<DataArray type=\"Float64\" Name=\"power\" NumberOfComponents=\"" << 1 << "\" format=\"ascii\">"
 		    << std::endl;
 		for (int j = 0; j < N1_; j++)
@@ -418,15 +435,16 @@ namespace Darius
 		    *rp_[jf].file[0] << rp_[jf].pL[i * N1_ + j] 					<< std::endl;
 
 		*rp_[jf].file[0] << "</DataArray>"                                                   	<< std::endl;
-		*rp_[jf].file[0] << "</PointData>"                                                    << std::endl;
-		*rp_[jf].file[0] << "</Piece>"                                                        << std::endl;
-		*rp_[jf].file[0] << "</StructuredGrid>"                                               << std::endl;
-		*rp_[jf].file[0] << "</VTKFile>"                                                      << std::endl;
+		*rp_[jf].file[0] << "</PointData>"                                                    	<< std::endl;
+		*rp_[jf].file[0] << "</Piece>"                                                        	<< std::endl;
+		*rp_[jf].file[0] << "</StructuredGrid>"                                               	<< std::endl;
+		*rp_[jf].file[0] << "</VTKFile>"                                                      	<< std::endl;
 
-		/* Close the file.                                                                    */
+		/* Close the file.                                                                    	*/
 		(*rp_[jf].file[0]).close();
 	      }
 	  }
       }
   }
-}
+
+}       /* End of namespace Darius.                                                                    	*/

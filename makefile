@@ -7,10 +7,10 @@ else
 FLAGS=-O3 -Werror
 endif
 
-EXEC=../darius
-SRC_DIR=./
+EXEC=./project/darius
+SRC_DIR=./src/
 SRCS:=$(shell find $(SRC_DIR)*.cpp)
-OBJ_DIR= ../obj/
+OBJ_DIR= ./obj/
 OBJS:= $(SRCS:$(SRC_DIR)%.cpp=$(OBJ_DIR)%.o)
 
 all: $(EXEC)	

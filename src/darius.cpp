@@ -14,7 +14,6 @@
 #include "fdtd.h"
 #include "fdtdSC.h"
 #include "fieldvector.h"
-#include "radiation.h"
 #include "readdata.h"
 #include "solver.h"
 #include "stdinclude.h"

@@ -17,7 +17,7 @@ MESH
   mesh-resolution				= ( 30.0,   30.0,   0.02 )
   mesh-center					= ( 0.0,    0.0,    0.0  )
   total-time					= 50000
-  bunch-time-step				= 0.8
+  bunch-time-step				= 1.6
   mesh-truncation-order				= 2
   space-charge					= true
 }

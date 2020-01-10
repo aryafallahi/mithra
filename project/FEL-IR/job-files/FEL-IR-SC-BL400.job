@@ -7,14 +7,14 @@
 #  mpirun -np 4 ../darius ./job-files/FEL-IR-SC-BL400.job
 #  
 #  in the LSF system: 
-#  bsub -n 48 -W 2:00 -J "FEL-IR-SC-BL400" -o mithra.out 'mpirun ../darius ./job-files/FEL-IR-SC-BL400.job'
+#  bsub -n 48 -W 3:00 -J "FEL-IR-SC-BL400" -o mithra.out 'mpirun ../darius ./job-files/FEL-IR-SC-BL400.job'
 
 MESH
 {
   length-scale						= MICROMETER
   time-scale						= PICOSECOND
   mesh-lengths						= ( 3200, 3200.0, 580.0) 
-  mesh-resolution					= ( 50.0,   50.0,   0.05)
+  mesh-resolution					= ( 50.0,   50.0,   0.1)
   mesh-center						= ( 0.0,     0.0,   0.0)
   total-time						= 30000
   bunch-time-step					= 1.6

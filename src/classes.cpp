@@ -209,7 +209,7 @@ namespace Darius
 	t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * sin( 2.0 * PI * halton(5, i + Np0) );
 	t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
 
-	if ( fabs(r[0]) < bunchInit.tranTrun_ && fabs(r[1]) < bunchInit.tranTrun_ && fabs(r[2]) < bunchInit.longTrun_)
+	if ( sqrt( pow(r[0],2) + pow(r[1],2) ) < bunchInit.tranTrun_ && fabs(r[2]) < bunchInit.longTrun_)
 	  {
 	    /* Shift the generated charge to the center position and momentum space.			*/
 	    charge.rnp    = bunchInit.position_[ia];

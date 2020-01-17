@@ -90,7 +90,7 @@ namespace Darius
     void distributeParticles (std::list<Charge>& chargeVector, Double (zp) [2], int rank, int size);
 
     /* Compute bunch statistics.							                */
-    SampleBunch computeBunchSample (std::list<Charge> chargeVector, int size);
+    SampleBunch computeBunchSample (std::list<Charge> chargeVector);
 
     /****************************************************************************************************/
 

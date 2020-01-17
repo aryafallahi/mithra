@@ -232,20 +232,6 @@ namespace Darius
 			continue;
 		      (bunchInit.inputVector_).push_back(charge);
 		    }
-
-		  /* Get bunch statistics.								*/
-		  SampleBunch sb = bunch_.computeBunchSample(bunchInit.inputVector_, size);
-		  bunchInit.initialGamma_ = sqrt(1 + sb.gbT.norm());
-		  bunchInit.initialBeta_ = sqrt(1 - 1 / pow(bunchInit.initialGamma_,2));
-		  bunchInit.initialDirection_.dv(sqrt(sb.gbT.norm()), sb.gbT);
-		  bunchInit.position_[0] = sb.rT;
-		  bunchInit.sigmaPosition_[0] = sqrt(sb.r2T[0] - pow(sb.rT[0],2));
-		  bunchInit.sigmaPosition_[1] = sqrt(sb.r2T[1] - pow(sb.rT[1],2));
-		  bunchInit.sigmaPosition_[2] = sqrt(sb.r2T[2] - pow(sb.rT[2],2));
-		  bunchInit.sigmaGammaBeta_[0] = sqrt(sb.gb2T[0] - pow(sb.gbT[0],2));
-		  bunchInit.sigmaGammaBeta_[1] = sqrt(sb.gb2T[1] - pow(sb.gbT[1],2));
-		  bunchInit.sigmaGammaBeta_[2] = sqrt(sb.gb2T[2] - pow(sb.gbT[2],2));
-		  bunchInit.longTrun_ = sb.longTrunT;
 		}
 	      
 	      /* Add the bunch to the set of bunches in the database.					*/
@@ -309,6 +295,29 @@ namespace Darius
 	  ++iter;
 	}
       while (*iter != "}");
+
+      for (auto & bunchInit : bunch_.bunchInit_)
+	{
+	  if ( (bunchInit.bunchType_ == "file") || (bunchInit.bunchType_ == "OPAL") )
+	    {
+	      /* Get bunch statistics.								*/
+	      SampleBunch sb = bunch_.computeBunchSample(bunchInit.inputVector_);
+	      bunchInit.initialGamma_ = sqrt(1 + sb.gbT.norm());
+	      bunchInit.initialBeta_ = sqrt(1 - 1 / pow(bunchInit.initialGamma_,2));
+	      bunchInit.initialDirection_.dv(sqrt(sb.gbT.norm()), sb.gbT);
+	      if (bunchInit.position_.size() == 0)
+		bunchInit.position_.push_back(sb.rT);
+	      else
+		bunchInit.position_[0] = sb.rT;
+	      bunchInit.sigmaPosition_[0] = sqrt(sb.r2T[0] - pow(sb.rT[0],2));
+	      bunchInit.sigmaPosition_[1] = sqrt(sb.r2T[1] - pow(sb.rT[1],2));
+	      bunchInit.sigmaPosition_[2] = sqrt(sb.r2T[2] - pow(sb.rT[2],2));
+	      bunchInit.sigmaGammaBeta_[0] = sqrt(sb.gb2T[0] - pow(sb.gbT[0],2));
+	      bunchInit.sigmaGammaBeta_[1] = sqrt(sb.gb2T[1] - pow(sb.gbT[1],2));
+	      bunchInit.sigmaGammaBeta_[2] = sqrt(sb.gb2T[2] - pow(sb.gbT[2],2));
+	      bunchInit.longTrun_ = sb.longTrunT;
+	    }
+	}
     }
 
   /* Read the parameters parsed for the seed in the darius solver.                               	*/

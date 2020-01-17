@@ -881,7 +881,7 @@ namespace Darius
 	    for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
 	      bunch_.initialize3DCrystal(	bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
 	  }
-	else if ( bunch_.bunchInit_[i].bunchType_ == "file" )
+	else if ( ( bunch_.bunchInit_[i].bunchType_ == "file" ) || ( bunch_.bunchInit_[i].bunchType_ == "OPAL" ) )
 	  {
 	    for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
 	      bunch_.initializeFile(		bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);

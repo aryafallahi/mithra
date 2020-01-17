@@ -326,7 +326,8 @@ namespace Darius
   void Bunch::initializeFile (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
   {
     /* Impose bF unless bF = 0.									*/
-    if ( bunchInit.bF_ != 0 ){
+    if ( bunchInit.bF_ != 0 )
+      {
       bunchInit.numberOfParticles_ *= 4;
       for (std::list<Charge>::iterator it = bunchInit.inputVector_.begin(); it != bunchInit.inputVector_.end(); ++it)
 	{
@@ -342,7 +343,7 @@ namespace Darius
 	    }
 	}
       printmessage(std::string(__FILE__), __LINE__, std::string("Added bunching factor, and increased number of particles by a factor of 4.") );
-    }
+      }
 
     /* Fill in the charge vector.										 */
     distributeParticles(bunchInit.inputVector_, zp, rank, size);
@@ -419,8 +420,11 @@ namespace Darius
   }
 
   /* Compute bunch statistics.							                	*/
-  SampleBunch Bunch::computeBunchSample (std::list<Charge> chargeVector, int size)
+  SampleBunch Bunch::computeBunchSample (std::list<Charge> chargeVector)
   {
+    int size;
+    MPI_Comm_size(MPI_COMM_WORLD,&size);
+    
     SampleBunch sb;
     sb.longTrun = -1e3;
 

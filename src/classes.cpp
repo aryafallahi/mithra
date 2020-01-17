@@ -909,6 +909,7 @@ namespace Darius
     k_		= 0.0;
     lu_		= 0.0;
     rb_		= 0.0;
+    dist_	= 0.0;
     length_		= 0.0;
     beta_		= 0.0;
     gamma_		= 1.0;

@@ -488,6 +488,7 @@ namespace Darius
 		  else if (parameterName(*iter) == "polarization-angle")                undulator.theta_        = PI / 180.0 * doubleValue(*iter);
 		  else if (parameterName(*iter) == "length")                            undulator.length_       = intValue(*iter);
 		  else if (parameterName(*iter) == "offset")                            undulator.rb_       	= doubleValue(*iter);
+		  else if (parameterName(*iter) == "zmax-distance")			undulator.dist_       	= doubleValue(*iter);
 		  else { std::cout << parameterName(*iter) << " is not defined in the static-undulator group." << std::endl; exit(1); }
 		  ++iter;
 		}

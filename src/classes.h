@@ -318,6 +318,9 @@ namespace Darius
     /* The start position of the undulator.								*/
     Double				rb_;
 
+    /* Initial distance between the forward-most particle and the first undulator.	             	*/
+    Double				dist_;
+
     /* The length of the undulator.									*/
     unsigned int			length_;
 

@@ -273,17 +273,18 @@ namespace Darius
      * section. For optical undulator such a separation should be considered in the input parameters
      * where offset is given.										*/
 
-    /* This shift in time makes sure that the maximum z in the bunch at time zero is 2 undulator
-     * periods away from the undulator begin.								*/
-    dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmax + 2.0 * undulator_[0].lu_ / gamma_ );
+    /* This shift in time makes sure that the maximum z in the bunch at time zero is at undulator[0].dist_ 
+     * away from the undulator begin ( the default distance is 2 undulator periods)			*/
+    if (undulator_[0].dist_ == 0.0) undulator_[0].dist_ = 2.0 * undulator_[0].lu_;
+    dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmax + undulator_[0].dist_ / gamma_ );
 
     /* The same shift in time should also be done for the seed field.					*/
     seed_.dt_		= dt_;
 
     /* With the above definition in the time begin the entrance of the undulator, i.e. z = 0 in the lab
-     * frame, corresponds to the z = zmax + 2.0 * undulator_[0].lu_ / gamma_ in the bunch rest frame at
+     * frame, corresponds to the z = zmax + undulator_[0].dist_ / gamma_ in the bunch rest frame at
      * the initialization instant, i.e. timeBunch = 0.0.						*/
-    bunch_.zu_ 	= zmax + 2.0 * undulator_[0].lu_ / gamma_;
+    bunch_.zu_ 	= zmax + undulator_[0].dist_ / gamma_;
     bunch_.beta_ 	= beta_;
 
     printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );

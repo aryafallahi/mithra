@@ -6,6 +6,7 @@
 #define DATABASE_H_
 
 #include <fstream>
+#include <list>
 #include <string>
 #include <vector>
 
@@ -67,6 +68,9 @@ namespace Darius
 
     /* The radiation wavelength corresponding to the bunch length outside the undulator			*/
     Double				lambda_;
+
+    /* List of initial particles. Read from file or from OPAL.						*/
+    std::list<Charge>   inputVector_;
 
     /* Bunching factor for the initialization of the bunch.						*/
     Double				bF_;
@@ -289,6 +293,9 @@ namespace Darius
     Double				g, q, qT;
     FieldVector<Double>			r,  gb,  r2,  gb2;
     FieldVector<Double>			rT, gbT, r2T, gb2T;
+    Double				longTrun, longTrunT;
+    
+    SampleBunch();
   };
 
   /* Structure of data required for visualizing the bunch.						*/

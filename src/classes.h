@@ -85,6 +85,12 @@ namespace Darius
      * file format should contain the charge value, 3 position coordinates and 3 momentum coordinates of
      * of the charge distribution.							                */
     void initializeFile (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia);
+    
+    /* Redistribute particles among processors.								*/
+    void distributeParticles (std::list<Charge>& chargeVector, Double (zp) [2], int rank, int size);
+
+    /* Compute bunch statistics.							                */
+    SampleBunch computeBunchSample (std::list<Charge> chargeVector, int size);
 
     /****************************************************************************************************/
 

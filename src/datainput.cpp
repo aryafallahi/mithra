@@ -191,6 +191,63 @@ namespace Darius
 		}
 	      while (*iter != "}");
 
+	      /* If initialization type is file, read file into inputVector_.		               */
+	      if (bunchInit.bunchType_ == "file")
+		{
+		  std::ifstream myfile ( bunchInit.fileName_.c_str() );
+		  if (!myfile.is_open())
+		    {
+		      std::cout << "Unable to open file" << std::endl;
+		      exit(1);
+		    }
+		  
+		  /* Check for correct number of particles.    						*/
+		  unsigned int np;
+		  myfile >> np;
+		  if ( np != bunchInit.numberOfParticles_ ){
+		    printmessage(std::string(__FILE__), __LINE__, 
+				 std::string(" The given number of particles and number of particles in file are not the same. Taking the number from the file = ") + stringify(np));
+		    bunchInit.numberOfParticles_ = np;
+		  }
+
+		  /* Fill in inputVector_.								*/
+		  int rank, size;
+		  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+		  MPI_Comm_size(MPI_COMM_WORLD,&size);
+		  bunchInit.inputVector_.clear();
+		  int start = np / size * rank, end = np / size * (rank + 1);
+		  if (rank == size - 1)
+		    end = np;
+		  Charge charge;
+		  charge.q  = bunchInit.cloudCharge_ / np;
+		  for (unsigned int i = 0; i < end; i++)
+		    {
+ 		      myfile >> charge.rnp[0];
+		      myfile >> charge.gbnp[0];
+		      myfile >> charge.rnp[1];
+		      myfile >> charge.gbnp[1];
+		      myfile >> charge.rnp[2];
+		      myfile >> charge.gbnp[2];
+		      if (i < start)
+			continue;
+		      (bunchInit.inputVector_).push_back(charge);
+		    }
+
+		  /* Get bunch statistics.								*/
+		  SampleBunch sb = bunch_.computeBunchSample(bunchInit.inputVector_, size);
+		  bunchInit.initialGamma_ = sqrt(1 + sb.gbT.norm());
+		  bunchInit.initialBeta_ = sqrt(1 - 1 / pow(bunchInit.initialGamma_,2));
+		  bunchInit.initialDirection_.dv(sqrt(sb.gbT.norm()), sb.gbT);
+		  bunchInit.position_[0] = sb.rT;
+		  bunchInit.sigmaPosition_[0] = sqrt(sb.r2T[0] - pow(sb.rT[0],2));
+		  bunchInit.sigmaPosition_[1] = sqrt(sb.r2T[1] - pow(sb.rT[1],2));
+		  bunchInit.sigmaPosition_[2] = sqrt(sb.r2T[2] - pow(sb.rT[2],2));
+		  bunchInit.sigmaGammaBeta_[0] = sqrt(sb.gb2T[0] - pow(sb.gbT[0],2));
+		  bunchInit.sigmaGammaBeta_[1] = sqrt(sb.gb2T[1] - pow(sb.gbT[1],2));
+		  bunchInit.sigmaGammaBeta_[2] = sqrt(sb.gb2T[2] - pow(sb.gbT[2],2));
+		  bunchInit.longTrun_ = sb.longTrunT;
+		}
+	      
 	      /* Add the bunch to the set of bunches in the database.					*/
 	      (bunch_.bunchInit_).push_back(bunchInit);
 	    }

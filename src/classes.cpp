@@ -2,6 +2,7 @@
  *  classes.hh : Implementation of the functions related to classes used in mithra
  ********************************************************************************************************/
 
+#include <algorithm>
 #include <fstream>
 
 #include "classes.h"
@@ -324,57 +325,137 @@ namespace Darius
    * of the charge distribution.							                */
   void Bunch::initializeFile (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
   {
+    /* Impose bF unless bF = 0.									*/
+    if ( bunchInit.bF_ != 0 ){
+      bunchInit.numberOfParticles_ *= 4;
+      for (std::list<Charge>::iterator it = bunchInit.inputVector_.begin(); it != bunchInit.inputVector_.end(); ++it)
+	{
+	  it->q /= 4;
+	  for ( unsigned int ii = 1; ii < 4; ii++ )
+	    {
+	      Charge charge = *it;
+	      /* Do particle mirroring to suppress initial bunching factor                                */
+	      charge.rnp[2]  -=  ( bunchInit.lambda_ / 2.0 ) / 4 * ii;
+	      /* Impose the given bF                                                                      */
+	      charge.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bunchInit.bF_ * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * charge.rnp[2]);
+	      bunchInit.inputVector_.insert(it,charge);
+	    }
+	}
+      printmessage(std::string(__FILE__), __LINE__, std::string("Added bunching factor, and increased number of particles by a factor of 4.") );
+    }
 
-    /* Declare the required parameters for the initialization of charge vectors.                	*/
-    Charge                    charge;
-    FieldVector<Double>	gb (0.0);
-    FieldVector<Double>	r  (0.0);
-    FieldVector<Double> 	gbm (0.0);
-    gbm.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
-
-    /* Clear the charge vector for adding the charges.							*/
+    /* Fill in the charge vector.										 */
+    distributeParticles(bunchInit.inputVector_, zp, rank, size);
     chargeVector.clear();
-
-    /* Read the file and fill the position and electric field vectors according to the saved values.	*/
-    std::ifstream myfile ( bunchInit.fileName_.c_str() );
-
-    while (myfile.good())
-      {
-	charge.q  = bunchInit.cloudCharge_ / bunchInit.numberOfParticles_;
-
-	myfile >> r[0];
-	myfile >> r[1];
-	myfile >> r[2];
-
-	myfile >> gb[0];
-	myfile >> gb[1];
-	myfile >> gb[2];
-
-	charge.rnp   = bunchInit.position_[ia];
-	charge.rnp  += r;
-
-	charge.gbnp  = gbm;
-	charge.gbnp += gb;
-
-	/* Insert this charge to the charge list if and only if it resides in the processor's portion.	*/
-	if ( ( charge.rnp[2] < zp[1] || rank == size - 1 ) && ( charge.rnp[2] >= zp[0] || rank == 0 ) )
-	  chargeVector.push_back(charge);
-
-	if ( fabs(charge.rnp[0]) > bunchInit.tranTrun_ || fabs(charge.rnp[1]) > bunchInit.tranTrun_ )
-	  printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The particle coordinate is out of the truncation bunch. "
-	      "The results may be inaccurate !!!") );
-      }
+    chargeVector = bunchInit.inputVector_;
+    bunchInit.inputVector_.clear();
 
     /* Calculate the total amount of installed particles.						*/
     unsigned int NqL = chargeVector.size(), NqG = 0;
     MPI_Reduce(&NqL,&NqG,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
-
+    
     /* Check the size of the charge vector with the number of particles.                            	*/
     if ( bunchInit.numberOfParticles_ != NqG && rank == 0 )
       {
-	printmessage(std::string(__FILE__), __LINE__, std::string("The number of the particles and the file size do not match !!!") );
-	exit(1);
+        printmessage(std::string(__FILE__), __LINE__, std::string("The number of the particles and the input vector size do not match !!!") );
+        exit(1);
       }
+    printmessage(std::string(__FILE__), __LINE__, std::string("The number of electrons per macro particle is " + stringify(chargeVector.begin()->q) ) );
+  }
+
+  /* Redistribute particles among processors.								*/
+  void Bunch::distributeParticles (std::list<Charge>& chargeVector, Double (zp) [2], int rank, int size)
+  {
+    /* Note that this function only redistributes q, rnp, gbnp, but NOT rnm and gbnm.			*/
+
+    std::vector<Double> sendCV;
+    std::list<Charge>::iterator it = chargeVector.begin();
+    while(it != chargeVector.end())
+      {
+	if ( ( it->rnp[2] < zp[1] || rank == size - 1 ) && ( it->rnp[2] >= zp[0] || rank == 0 ) )
+	  it++;
+	else
+	  {
+	    sendCV.push_back(it->q);
+	    sendCV.push_back(it->rnp[0]);
+	    sendCV.push_back(it->rnp[1]);
+	    sendCV.push_back(it->rnp[2]);
+	    sendCV.push_back(it->gbnp[0]);
+	    sendCV.push_back(it->gbnp[1]);
+	    sendCV.push_back(it->gbnp[2]);
+	    it = chargeVector.erase(it);
+	  }
+      }
+
+    /* Send the charges that were erased from the charge vector.					*/
+    int sizeSend = sendCV.size();
+    int *counts = new int [size], *disps = new int [size];
+    MPI_Allgather( &sizeSend, 1, MPI_INT, counts, 1, MPI_INT, MPI_COMM_WORLD );
+    for (int i = 0; i < size; i++)
+      disps[i] = (i > 0) ? (disps[i-1] + counts[i-1]) : 0;
+    std::vector<Double> recvCV (disps[size-1] + counts[size-1], 0);
+    MPI_Allgatherv(&sendCV[0], sizeSend, MPI_DOUBLE,
+		   &recvCV[0], counts, disps, MPI_DOUBLE, MPI_COMM_WORLD);
+
+    /* And now replace all the charges in the charge vector of the corresponding processor.  */
+    unsigned i = 0;
+    Charge charge;
+    while ( i < recvCV.size() )
+      {
+	if (( recvCV[i+3] < zp[1] || rank == size - 1 ) && ( recvCV[i+3] >= zp[0] || rank == 0 ))
+	  {
+	    charge.q = recvCV[i++];
+	    charge.rnp[0] = recvCV[i++];
+	    charge.rnp[1] = recvCV[i++];
+	    charge.rnp[2] = recvCV[i++];
+	    charge.gbnp[0] = recvCV[i++];
+	    charge.gbnp[1] = recvCV[i++];
+	    charge.gbnp[2] = recvCV[i++];
+	    chargeVector.push_back(charge);	      
+	  }
+	else
+	  i += 7;
+      }
+  }
+
+  /* Compute bunch statistics.							                	*/
+  SampleBunch Bunch::computeBunchSample (std::list<Charge> chargeVector, int size)
+  {
+    SampleBunch sb;
+    sb.longTrun = -1e3;
+
+    for (std::list<Charge>::iterator iter = chargeVector.begin(); iter != chargeVector.end(); iter++)
+      {
+	sb.q	 += iter->q;
+	sb.r .pmv(   iter->q, iter->rnp );
+	sb.gb.pmv(   iter->q, iter->gbnp);	
+
+	for (int l = 0; l < 3; l++)
+	  {
+	    sb.r2 [l] += iter->rnp[l]  * iter->rnp[l]  * iter->q;
+	    sb.gb2[l] += iter->gbnp[l] * iter->gbnp[l] * iter->q;
+	  }
+	if (iter->rnp[2] > sb.longTrun)
+	  sb.longTrun = iter->rnp[2];
+      }
+
+    /* Add the contribution from each processor.							*/
+    MPI_Allreduce(&sb.q    , &sb.qT    , 1,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+    MPI_Allreduce(&sb.r[0] , &sb.rT[0] , 3,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+    MPI_Allreduce(&sb.r2[0], &sb.r2T[0], 3,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+    MPI_Allreduce(&sb.gb[0], &sb.gbT[0], 3,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+    MPI_Allreduce(&sb.gb2[0],&sb.gb2T[0],3,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+    double *lTs = new double [size];
+    MPI_Allgather(&sb.longTrun, 1, MPI_DOUBLE, lTs, 1, MPI_DOUBLE, MPI_COMM_WORLD );
+
+    /* Divide the obtained values by the number of particles to calculate the mean value.		*/
+    sb.rT   /= sb.qT;
+    sb.r2T  /= sb.qT;
+    sb.gbT  /= sb.qT;
+    sb.gb2T /= sb.qT;
+    sb.longTrunT = *std::max_element(lTs, lTs + size);
+
+    return sb;
   }
 
   /* Show the stored values for the bunch.                                                          	*/
@@ -383,7 +464,8 @@ namespace Darius
     for (unsigned int i = 0; i < bunchInit_.size(); i++)
       {
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Type of the bunch initialization = ") + bunchInit_[i].bunchType_ );
-	printmessage(std::string(__FILE__), __LINE__, std::string(" Type of the current profile = ") + bunchInit_[i].distribution_ );
+	if (bunchInit_[i].bunchType_ == "ellipsoid")
+	  printmessage(std::string(__FILE__), __LINE__, std::string(" Type of the current profile = ") + bunchInit_[i].distribution_ );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Number of macro-particles = ") + stringify(bunchInit_[i].numberOfParticles_) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Total charge of the cloud = ") + stringify(bunchInit_[i].cloudCharge_) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Initial mean gamma of the bunch = ") + stringify(bunchInit_[i].initialGamma_) );
@@ -393,6 +475,7 @@ namespace Darius
 	  printmessage(std::string(__FILE__), __LINE__, std::string(" Initial position of the bunch = ") + stringify(bunchInit_[i].position_[ia]));
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Position spread of the bunch = ") + stringify(bunchInit_[i].sigmaPosition_));
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Momentum spread of the bunch = ") + stringify(bunchInit_[i].sigmaGammaBeta_));
+	printmessage(std::string(__FILE__), __LINE__, std::string(" Longitudinal truncation of the bunch = ") + stringify(bunchInit_[i].longTrun_));
 	if ( bunchInit_[i].bunchType_ == "3D-crystal" )
 	  {
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Number of crystal points = ") + stringify(bunchInit_[i].numbers_) );

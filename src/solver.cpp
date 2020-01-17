@@ -188,6 +188,20 @@ namespace Darius
 	bunch_.bunchInit_[i].betaVector_[0] 	 	/= zeta[i];
 	bunch_.bunchInit_[i].betaVector_[1] 	 	/= zeta[i];
 	bunch_.bunchInit_[i].betaVector_[2] 	 	 = ( bunch_.bunchInit_[i].betaVector_[2] - beta_ ) / ( 1.0 - bunch_.bunchInit_[i].betaVector_[2] * beta_ );
+
+	/* Boost charge vector.					                                       */
+	for (std::list<Charge>::iterator it = bunch_.bunchInit_[i].inputVector_.begin(); it != bunch_.bunchInit_[i].inputVector_.end(); ++it)
+	  {
+	    Double particleGamma =  sqrt( 1 + it->gbnp.norm() );
+	    it->gbnp[2] = gamma_ * (it->gbnp[2] - beta_ * particleGamma);
+	    it->rnp[2] *= gamma_;
+	    /* Interpolate particle coordinates at time = 0 in the bunch-rest-frame.			*/
+	    Double t = -beta_  * it->rnp[2];
+	    particleGamma = sqrt( 1 + it->gbnp.norm() );
+	    it->rnp[0] -= t * it->gbnp[0] / particleGamma;
+	    it->rnp[1] -= t * it->gbnp[1] / particleGamma;
+	    it->rnp[2] -= t * it->gbnp[2] / particleGamma;
+	  }
       }
     bunch_.rhythm_			/= gamma_;
     bunch_.bunchVTKRhythm_		/= gamma_;
@@ -205,7 +219,7 @@ namespace Darius
     for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
       {
 	/* Correct the number of particles if it is not a multiple of four.				*/
-	if ( bunch_.bunchInit_[i].numberOfParticles_ % 4 != 0 )
+	if (( bunch_.bunchInit_[i].numberOfParticles_ % 4 != 0 ) && ( bunch_.bunchInit_[i].bunchType_ == "ellipsoid" ))
 	  {
 	    unsigned int n = bunch_.bunchInit_[i].numberOfParticles_ % 4;
 	    bunch_.bunchInit_[i].numberOfParticles_ += 4 - n;
@@ -231,6 +245,8 @@ namespace Darius
       {
 	for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
 	  bunch_.bunchInit_[i].position_[ia][2] -= zmax * ( 1.0 - zeta[imax] * gamma_ );
+	for (std::list<Charge>::iterator it = bunch_.bunchInit_[i].inputVector_.begin(); it != bunch_.bunchInit_[i].inputVector_.end(); ++it)
+	  it->rnp[2] -= zmax * ( 1.0 - zeta[imax] * gamma_ );
       }
     zmax -= zmax * ( 1.0 - zeta[imax] * gamma_ );
 
@@ -1089,19 +1105,19 @@ namespace Darius
 
   void Solver::bunchSample ()
   {
-    /* First define a iterator.                        							*/
+    /* First define a iterator.                        						*/
     std::list<Charge>::iterator       iter;
 
-    /* First, we need to evaluate the charge cloud properties and for that the corresponding data should
-     * be initialized.                                                                     		*/
+    /* First, we need to evaluate the charge cloud properties and for that the corresponding data
+     * should be initialized.                                                                     	*/
     sb_.q   = 0.0;
     sb_.r   = 0.0;
     sb_.r2  = 0.0;
     sb_.gb  = 0.0;
     sb_.gb2 = 0.0;
 
-    /* Now, we perform an addition of all the charges. Since the point charges are equal, we do not need
-     * to do weighted additions.                                            				*/
+    /* Now, we perform an addition of all the charges. Since the point charges are equal, we do not
+     * need to do weighted additions.                                            			*/
     for (iter = iterQB_; iter != iterQE_; iter++)
       {
 	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
@@ -1136,10 +1152,10 @@ namespace Darius
 	(*sb_.file).setf(std::ios::scientific);
 	(*sb_.file).precision(4);
 
-	/** Write time into the first column.                                                 		*/
+	/** Write time into the first column.                                                 	*/
 	*sb_.file << timeBunch_ << "\t";
 
-	/** Now write the calculated values for the charge distribution in this row.          		*/
+	/** Now write the calculated values for the charge distribution in this row.          	*/
 	*sb_.file << sb_.rT[0]   << "\t" << sb_.rT[1]   << "\t" << sb_.rT[2]   << "\t";
 	*sb_.file << sb_.gbT[0]  << "\t" << sb_.gbT[1]  << "\t" << sb_.gbT[2]  << "\t";
 	*sb_.file << sqrt( sb_.r2T[0]  - sb_.rT[0]  * sb_.rT[0]  ) << "\t" ;

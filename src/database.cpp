@@ -40,6 +40,14 @@ namespace Darius
     qSB.clear(); qSF.clear(); qRB.clear(); qRF.clear();
   }
 
+  SampleBunch::SampleBunch ()
+  {
+    g = 0.0; q = 0.0; qT = 0.0;
+    r = 0.0; gb = 0.0; r2 = 0.0; gb2 = 0.0;
+    rT  = 0.0; gbT = 0.0; r2T = 0.0; gb2T = 0.0;
+    longTrun = 0.0; longTrunT = 0.0;
+  }
+
   /* Advance the magnetic potential using the Non-standard Finite-Difference algorithm.			*/
   void AdvanceField::advanceMagneticPotentialNSFD (P v0 , P v1 , P v2 ,
 						   P v3 , P v31, P v32,

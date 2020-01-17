@@ -90,8 +90,15 @@ namespace Darius
 	/* Print the time into the string.                                                             	*/
 	printedMessage << timeStr.substr(0,timeStr.size()-1) << " ::: ";
 
-	/* Print the filename and linenumber into the string.                                          	*/
-	printedMessage  << filename << ":" << linenumber << " ::: \t \t " << message;
+	/* Print the shortened filename and linenumber into the string.                                	*/
+	const char * elem = filename.c_str();
+	const char * shortfn = elem;
+	while ( *elem != '\0' ){
+	  if ( *elem == '/' )
+	    shortfn = elem + 1;
+	  elem = elem + 1;
+	}
+	printedMessage  << shortfn << ":" << linenumber << " ::: \t \t " << message;
 
 	/* Print on the terminal if there is something written in the stream.                        	*/
 	if (printedMessage.str().length() > 0 )     std::cout << printedMessage.str() << std::endl;

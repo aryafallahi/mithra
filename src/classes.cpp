@@ -462,7 +462,7 @@ namespace Darius
     sb.r2T  /= sb.qT;
     sb.gbT  /= sb.qT;
     sb.gb2T /= sb.qT;
-    sb.longTrunT = *std::max_element(lTs, lTs + size);
+    sb.longTrunT = *std::max_element(lTs, lTs + size) - sb.rT[2];
 
     return sb;
   }

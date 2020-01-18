@@ -101,6 +101,12 @@ namespace Darius
     /* Define the boolean function for comparing undulator begins.					*/
     static bool 	undulatorCompare 		(Undulator i, Undulator j);
 
+    /* Compare charges according to z-coordinate.							*/
+    static bool		zChargeCompare 			(Charge lhs, Charge rhs);
+
+    /* Insert charges that have been emitted into the chargeVectorn.					*/
+    void		emitCharges	 		();
+
     /****************************************************************************************************
      * List of required parameters in the FdTd code.
      ****************************************************************************************************/
@@ -167,8 +173,11 @@ namespace Darius
     Double								timem1_;
     unsigned int 							nTime_;
 
-    /* vector of charge structures containing the position and momentum of the charge points.		*/
+    /* Vector of charge structures containing the position and momentum of the charge points.		*/
     std::list<Charge>							chargeVectorn_;
+
+    /* List of charges waiting to be emitted. Only used when "emission" feature is enabled.		*/
+    std::list<Charge>							waitVector_;
 
     /* Time and the time step number for the bunch calculations.					*/
     Double								timeBunch_;

@@ -40,6 +40,10 @@ namespace Darius
     /* Boolean flag returning the status of space charge assumption.					*/
     bool			spaceCharge_;
 
+    /* Boolean flag to indicate that particles should be emitted instead of injected.
+     * By default the whole particle bunch is injected at the beginning of the simulation.		*/
+    bool			emitParticles_;
+
     /* Solver type that will be used to update the field values.					*/
     SolverType			solver_;
 
@@ -141,6 +145,9 @@ namespace Darius
 
     /* Position of the undulator begin at the instance of bunch initialization.				*/
     Double				zu_;
+
+    /* Position of the forward-most particle at the instance of bunch initialization.			*/
+    Double				zmax_;
 
     /* Beta of the moving frame in the stationary lab frame.						*/
     Double				beta_;

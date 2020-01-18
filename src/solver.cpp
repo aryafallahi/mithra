@@ -195,12 +195,15 @@ namespace Darius
 	    Double particleGamma =  sqrt( 1 + it->gbnp.norm() );
 	    it->gbnp[2] = gamma_ * (it->gbnp[2] - beta_ * particleGamma);
 	    it->rnp[2] *= gamma_;
-	    /* Interpolate particle coordinates at time = 0 in the bunch-rest-frame.			*/
-	    Double t = -beta_  * it->rnp[2];
-	    particleGamma = sqrt( 1 + it->gbnp.norm() );
-	    it->rnp[0] -= t * it->gbnp[0] / particleGamma;
-	    it->rnp[1] -= t * it->gbnp[1] / particleGamma;
-	    it->rnp[2] -= t * it->gbnp[2] / particleGamma;
+	    if (!mesh_.emitParticles_)
+	      {
+		/* Interpolate particle coordinates at time = 0 in the bunch-rest-frame.			*/
+		Double t = -beta_  * it->rnp[2];
+		particleGamma = sqrt( 1 + it->gbnp.norm() );
+		it->rnp[0] -= t * it->gbnp[0] / particleGamma;
+		it->rnp[1] -= t * it->gbnp[1] / particleGamma;
+		it->rnp[2] -= t * it->gbnp[2] / particleGamma;
+	      }
 	  }
       }
     bunch_.rhythm_			/= gamma_;
@@ -284,7 +287,8 @@ namespace Darius
     /* With the above definition in the time begin the entrance of the undulator, i.e. z = 0 in the lab
      * frame, corresponds to the z = zmax + undulator_[0].dist_ / gamma_ in the bunch rest frame at
      * the initialization instant, i.e. timeBunch = 0.0.						*/
-    bunch_.zu_ 	= zmax + undulator_[0].dist_ / gamma_;
+    bunch_.zu_		= zmax + undulator_[0].dist_ / gamma_;
+    bunch_.zmax_        = zmax;
     bunch_.beta_ 	= beta_;
 
     printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );
@@ -859,8 +863,10 @@ namespace Darius
 
     /* Clear the global charge vector and define a temporary one.					*/
     chargeVectorn_.clear();
+    waitVector_.clear();
     std::list<Charge> qv;
-
+    unsigned int NqL = 0;  // Local number of particles
+    
     for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
       {
 	/* Clear the temprary charge vector.								*/
@@ -889,11 +895,21 @@ namespace Darius
 	  }
 
 	/* Add the bunch distribution to the global charge vector.					*/
-	chargeVectorn_.splice(chargeVectorn_.end(),qv);
+	if (mesh_.emitParticles_)
+	  {
+	    waitVector_.splice(waitVector_.end(),qv);
+	    waitVector_.sort(zChargeCompare);
+	    NqL = waitVector_.size();
+	  }
+	else
+	  {
+	    chargeVectorn_.splice(chargeVectorn_.end(),qv);
+	    NqL = chargeVectorn_.size();
+	  }
       }
 
     /* Print the total number of macro-particles for the user.						*/
-    unsigned int NqL = chargeVectorn_.size(), NqG = 0;
+    unsigned int NqG = 0;
     MPI_Reduce(&NqL,&NqG,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
     printmessage(std::string(__FILE__), __LINE__, std::string("The total number of macro-particles is equal to ") + stringify(NqG) + std::string(" .") );
 
@@ -1894,4 +1910,33 @@ namespace Darius
 
   bool Solver::undulatorCompare (Undulator i, Undulator j)
   { return ( i.rb_ < j.rb_ ); }
+
+  /******************************************************************************************************
+   * Compare charges according to z-coordinate.								
+   ******************************************************************************************************/
+  bool Solver::zChargeCompare (Charge lhs, Charge rhs)
+  { return (lhs.rnp[2] > rhs.rnp[2]); }
+
+  /*****************************************************************************************************
+   * Insert charges that have been emitted into the chargeVectorn. 
+   ******************************************************************************************************/
+  void Solver::emitCharges ()
+  {
+    std::list<Charge>::iterator it = waitVector_.begin();
+    Double ti = beta_ / c0_ * (bunch_.zmax_ - it->rnp[2]);
+    while ((ti < time_ + mesh_.timeStep_) && (it != waitVector_.end()))
+      {
+	/* Interpolate coordinates from ti to time_.							*/
+	Double particleGamma = sqrt( 1 + it->gbnp.norm() );
+	it->rnp[0] -= (ti - time_) * c0_ * it->gbnp[0] / particleGamma;
+	it->rnp[1] -= (ti - time_) * c0_ * it->gbnp[1] / particleGamma;
+	it->rnp[2] -= (ti - time_) * c0_ * it->gbnp[2] / particleGamma;
+
+	it++;
+	ti = beta_ / c0_ * (bunch_.zmax_ - it->rnp[2]);
+      }
+    chargeVectorn_.splice(chargeVectorn_.end(), waitVector_, waitVector_.begin(), it);
+    iterQE_ = chargeVectorn_.end(); 
+  }
+  
 }

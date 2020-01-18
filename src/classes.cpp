@@ -346,6 +346,8 @@ namespace Darius
 	      charge.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bunchInit.bF_ * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * charge.rnp[2]);
 	      bunchInit.inputVector_.insert(it,charge);
 	    }
+	  /* Impose the given bF                                                                      */
+	  it->rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bunchInit.bF_ * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * it->rnp[2]);
 	}
       printmessage(std::string(__FILE__), __LINE__, std::string("Added bunching factor, and increased number of particles by a factor of 4.") );
       }

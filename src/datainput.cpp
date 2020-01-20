@@ -745,6 +745,26 @@ namespace Darius
 
 	      FEL_.push_back(FEL);
 	    }
+	  	  /* The data related to the screen to measure bunch profile.                      */
+	  else if (*iter == "screen-profile")
+	    {
+	      ++iter;
+	      if (*iter != "{") { std::cout << "The screen-profile directory is empty" << std::endl; exit(1); }
+	      else ++iter;
+	      FreeElectronLaser		FEL;
+	      do
+		{
+		  if      (parameterName(*iter) == "sample")    FEL.screenProfile_.sampling_		= boolValue(*iter);
+		  else if (parameterName(*iter) == "directory") FEL.screenProfile_.directory_		= stringValue(*iter);
+		  else if (parameterName(*iter) == "base-name") FEL.screenProfile_.basename_		= stringValue(*iter);
+		  else if (parameterName(*iter) == "position")      (FEL.screenProfile_.pos_).push_back(doubleValue(*iter));
+		  else { std::cout << parameterName(*iter) << " is not defined in the screen-profile group." << std::endl; exit(1); }
+		  ++iter;
+		}
+	      while (*iter != "}");
+	      FEL_.push_back(FEL);
+	      
+	    }
 
 	  ++iter;
 	}

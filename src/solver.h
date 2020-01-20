@@ -80,11 +80,17 @@ namespace Darius
     /* Initialize the data required for visualizing the radiation power at the given position.		*/
     void 		initializePowerVisualize	();
 
+    /* Initialize the data required for storing particles hitting a screen at the given position.	*/
+    void 		initializeScreenProfile		();
+
     /* Sample the radiation power at the given position and save it to the file.			*/
     void 		powerSample			();
 
     /* Visualize the radiation power at the given position and save it to the file.			*/
     void 		powerVisualize			();
+
+    /* Store the bunch profile from particles hitting a screen at the given position and save it to the file. */
+    void 		screenProfile			();
 
     /* Initialize the data required for sampling and saving the radiation energy at the given position.	*/
     void 		initializeEnergySample		();
@@ -103,6 +109,9 @@ namespace Darius
 
     /* Compare charges according to z-coordinate.							*/
     static bool		zChargeCompare 			(Charge lhs, Charge rhs);
+
+    /* Define the function for linear interpolation.							*/
+    Double	 	interp				(Double x0, Double x1, Double y0, Double y1, Double x);
 
     /* Insert charges that have been emitted into the chargeVectorn.					*/
     void		emitCharges	 		();
@@ -236,6 +245,11 @@ namespace Darius
      * These parameters are defined once in the class to avoid declaring them every time a field is
      * updated.												*/
     std::vector<SampleRadiationEnergy>				        re_;
+
+    /* Define a structure containing the parameters needed to store the particles hitting screens
+     * These parameters are defined once in the class to avoid declaring them every time a bunch is
+     * updated.												*/
+    std::vector<SampleScreenProfile>				        scrp_;
 
     /* Define the value of MPI variables.								*/
     int									rank_, size_;

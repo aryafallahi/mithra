@@ -363,6 +363,13 @@ namespace Darius
     unsigned int					N, Nl, Nf;
     std::vector<std::vector<std::vector<Double> > >     fdt;
   };
+
+  /* Structure of data required for bunch profile from screens.							*/
+  struct SampleScreenProfile
+  {
+    std::vector<std::ofstream*> 	files;
+    std::vector<std::string>		fileNames;
+  };
 }
 
 #endif

@@ -1221,4 +1221,13 @@ namespace Darius
     lambdaMax_		= 0.0;
     lambdaRes_		= 0.0;
   }
+
+  /* Initialize the values for saving the particles hitting screens.                   			*/
+  FreeElectronLaser::ScreenProfile::ScreenProfile ()
+  {
+    sampling_          	= false;
+    directory_    	= "./";
+    basename_     	= "";
+    pos_.clear();
+  }
 }

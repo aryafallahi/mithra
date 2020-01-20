@@ -107,6 +107,8 @@ namespace Darius
 	    ++nTimeBunch_;
 	  }
 
+	screenProfile();
+	
 	/* Update the values of the current.								*/
 	currentUpdate();
 

@@ -2051,6 +2051,7 @@ namespace Darius
    ******************************************************************************************************/
   void Solver::emitCharges ()
   {
+    std::list<Charge> temp;  // Temporary list for particles that change domain upon emission.
     std::list<Charge>::iterator it = waitVector_.begin();
     Double ti = beta_ / c0_ * (bunch_.zmax_ - it->rnp[2]);
     while ((ti < time_ + mesh_.timeStep_) && (it != waitVector_.end()))
@@ -2060,11 +2061,20 @@ namespace Darius
 	it->rnp[0] -= (ti - time_) * c0_ * it->gbnp[0] / particleGamma;
 	it->rnp[1] -= (ti - time_) * c0_ * it->gbnp[1] / particleGamma;
 	it->rnp[2] -= (ti - time_) * c0_ * it->gbnp[2] / particleGamma;
+	
+	if (( it->rnp[2] < zp_[0] && rank_ != 0 )  ||  ( it->rnp[2] >= zp_[1] && rank_ != size_ - 1 ))
+	  {
+	    temp.push_back(*it);
+	    it = waitVector_.erase(it);
+	  }
+	else
+	  it++;
 
-	it++;
 	ti = beta_ / c0_ * (bunch_.zmax_ - it->rnp[2]);
       }
     chargeVectorn_.splice(chargeVectorn_.end(), waitVector_, waitVector_.begin(), it);
+    bunch_.distributeParticles(temp, zp_, rank_, size_);
+    chargeVectorn_.splice(chargeVectorn_.end(), temp);
     
     unsigned int NqL = chargeVectorn_.size(), NqG = 0;
     MPI_Reduce(&NqL,&NqG,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);

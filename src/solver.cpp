@@ -177,9 +177,9 @@ namespace Darius
 	/* Boosting the position is done considering that the start of simulation is at t = 0.		*/
 	zeta[i] 					 = gamma_ * ( 1.0 - bunch_.bunchInit_[i].betaVector_[2] * beta_ );
 	for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	  bunch_.bunchInit_[i].position_[ia][2]	*= gamma_;
-	bunch_.bunchInit_[i].sigmaPosition_[2] 	*= gamma_;
-	bunch_.bunchInit_[i].longTrun_ 		*= gamma_;
+	  bunch_.bunchInit_[i].position_[ia][2]	/= zeta[i];
+	bunch_.bunchInit_[i].sigmaPosition_[2] 	/= zeta[i];
+	bunch_.bunchInit_[i].longTrun_ 		/= zeta[i];
 
 	bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= zeta[i];
 
@@ -191,15 +191,6 @@ namespace Darius
 	bunch_.bunchInit_[i].betaVector_[0] 	 	/= zeta[i];
 	bunch_.bunchInit_[i].betaVector_[1] 	 	/= zeta[i];
 	bunch_.bunchInit_[i].betaVector_[2] 	 	 = ( bunch_.bunchInit_[i].betaVector_[2] - beta_ ) / ( 1.0 - bunch_.bunchInit_[i].betaVector_[2] * beta_ );
-
-	if (!mesh_.emitParticles_)
-	  {
-	    /* Interpolate coordinates at time = 0 in the bunch-rest-frame.			*/
-	    for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	      bunch_.bunchInit_[i].position_[ia][2]	+= bunch_.bunchInit_[i].position_[ia][2]	* beta_ * bunch_.bunchInit_[i].betaVector_[2];
-	    bunch_.bunchInit_[i].sigmaPosition_[2] 	+= bunch_.bunchInit_[i].sigmaPosition_[2]       * beta_ * bunch_.bunchInit_[i].betaVector_[2];
-	    bunch_.bunchInit_[i].longTrun_ 		+= bunch_.bunchInit_[i].longTrun_		* beta_ * bunch_.bunchInit_[i].betaVector_[2];
-	  }
 
 	/* Boost charge vector.					                                       */
 	for (std::list<Charge>::iterator it = bunch_.bunchInit_[i].inputVector_.begin(); it != bunch_.bunchInit_[i].inputVector_.end(); ++it)
@@ -2060,10 +2051,8 @@ namespace Darius
 	ti = beta_ / c0_ * (bunch_.zmax_ - it->rnp[2]);
       }
     chargeVectorn_.splice(chargeVectorn_.end(), waitVector_, waitVector_.begin(), it);
-    
-    unsigned int NqL = chargeVectorn_.size(), NqG = 0;
-    MPI_Reduce(&NqL,&NqG,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
-    printmessage(std::string(__FILE__), __LINE__, std::string("Current number of particles = ") + stringify(NqG) );
+
+    iterQE_ = chargeVectorn_.end(); 
   }
   
 }

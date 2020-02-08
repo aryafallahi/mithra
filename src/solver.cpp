@@ -183,7 +183,7 @@ namespace Darius
 
 	bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= zeta[i];
 
-	bunch_.bunchInit_[i].lambda_		= undulator_[0].lu_ / ( gamma_ * gamma_ ) * bunch_.bunchInit_[i].betaVector_[2] / beta_ * gamma_;
+	bunch_.bunchInit_[i].lambda_  		 = undulator_[0].lu_ / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].betaVector_[2] * zeta[i] );
 
 	printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
 
@@ -196,14 +196,9 @@ namespace Darius
 	  {
 	    /* Interpolate coordinates at time = 0 in the bunch-rest-frame.			*/
 	    for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	      {
-		bunch_.bunchInit_[i].position_[ia][0]	+= bunch_.bunchInit_[i].position_[ia][2]	* beta_ * bunch_.bunchInit_[i].betaVector_[0];
-		bunch_.bunchInit_[i].position_[ia][1]	+= bunch_.bunchInit_[i].position_[ia][2]	* beta_ * bunch_.bunchInit_[i].betaVector_[1];
-		bunch_.bunchInit_[i].position_[ia][2]	+= bunch_.bunchInit_[i].position_[ia][2]	* beta_ * bunch_.bunchInit_[i].betaVector_[2];
-	      }
+	      bunch_.bunchInit_[i].position_[ia][2]	+= bunch_.bunchInit_[i].position_[ia][2]	* beta_ * bunch_.bunchInit_[i].betaVector_[2];
 	    bunch_.bunchInit_[i].sigmaPosition_[2] 	+= bunch_.bunchInit_[i].sigmaPosition_[2]       * beta_ * bunch_.bunchInit_[i].betaVector_[2];
 	    bunch_.bunchInit_[i].longTrun_ 		+= bunch_.bunchInit_[i].longTrun_		* beta_ * bunch_.bunchInit_[i].betaVector_[2];
-	    bunch_.bunchInit_[i].lambda_		+= bunch_.bunchInit_[i].lambda_ 		* beta_ * bunch_.bunchInit_[i].betaVector_[2];
 	  }
 
 	/* Boost charge vector.					                                       */

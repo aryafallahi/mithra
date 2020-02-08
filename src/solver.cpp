@@ -2001,4 +2001,13 @@ namespace Darius
   bool Solver::undulatorCompare (Undulator i, Undulator j)
   { return ( i.rb_ < j.rb_ ); }
 
+  /****************************************************************************************************
+   * Define the function for linear interpolation.
+   ****************************************************************************************************/
+
+  Double Solver::interp( Double x0, Double x1, Double y0, Double y1, Double x )
+  {
+    return y0 + ( x - x0 ) / ( x1 - x0 ) * ( y1 - y0 );
+  }
+
 }

@@ -25,10 +25,6 @@ namespace Darius
       printmessage(std::string(__FILE__), __LINE__, std::string(" Space-charge = true "));
     else if 	( spaceCharge_ == false )
       printmessage(std::string(__FILE__), __LINE__, std::string(" Space-charge = false "));
-    if 	( emitParticles_ == true )
-      printmessage(std::string(__FILE__), __LINE__, std::string(" Emit particles = true "));
-    else if 	( emitParticles_ == false )
-      printmessage(std::string(__FILE__), __LINE__, std::string(" Emit particles = false "));
     if 	( solver_ == NSFD )
       printmessage(std::string(__FILE__), __LINE__, std::string(" Solver = Non-standard finite-difference "));
     else if 	( solver_ == FD )
@@ -40,7 +36,6 @@ namespace Darius
   void Mesh::initialize ()
   {
     spaceCharge_ 		= false;
-    emitParticles_ 		= false;
     solver_			= NSFD;
   }
 

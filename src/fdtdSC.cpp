@@ -51,9 +51,6 @@ namespace Darius
     printmessage(std::string(__FILE__), __LINE__, std::string("-> Run the time domain simulation ...") );
     while (time_ < mesh_.totalTime_)
       {
-	if (mesh_.emitParticles_)
-	  emitCharges();
-	
 	/* Update the fields for one time step using the FDTD algorithm					*/
 	fieldUpdate();
 

@@ -102,7 +102,6 @@ namespace Darius
 	      else                                              	mesh_.timeScale_      	= doubleValue(*iter);
 	    }
 	  else if (parameterName(*iter) == "space-charge") 		mesh_.spaceCharge_ 	= boolValue(*iter);
-	  else if (parameterName(*iter) == "emit-particles") 		mesh_.emitParticles_ 	= boolValue(*iter);
 	  else if (parameterName(*iter) == "solver")
 	    {
 	      std::string solver 	= stringValue(*iter);

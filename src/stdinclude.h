@@ -132,6 +132,10 @@ namespace Darius
     FieldVector<Double>		rnp, rnm;	/* Position vector of the charge.			*/
     FieldVector<Double>		gbnp, gbnm;	/* Normalized velocity vector of the charge.		*/
 
+    /* Determines whether the charge has gone past the point of emission. 
+     * If not, the charge does not feel the EM fields and moves in a straight line.*/
+    bool			fieldEffects_;
+
     Charge();
 
   };

@@ -32,6 +32,9 @@ namespace Darius
     std::vector<Double>*		ft;
     std::list<Charge>::iterator 	iter;
 
+    /* Create all the particles according to given parameters.										*/
+    initializeBunch();
+    
     /* Transfer the whole quantities to the electron rest frame.					*/
     lorentzBoost();
 

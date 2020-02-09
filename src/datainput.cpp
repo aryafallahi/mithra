@@ -211,16 +211,14 @@ namespace Darius
 		  }
 
 		  /* Fill in inputVector_.								*/
-		  int rank, size;
+		  int rank, size, rankToSave = 0;
 		  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
 		  MPI_Comm_size(MPI_COMM_WORLD,&size);
+          
 		  bunchInit.inputVector_.clear();
-		  int start = np / size * rank, end = np / size * (rank + 1);
-		  if (rank == size - 1)
-		    end = np;
 		  Charge charge;
 		  charge.q  = bunchInit.cloudCharge_ / np;
-		  for (unsigned int i = 0; i < end; i++)
+		  for (unsigned int i = 0; i < np; i++)
 		    {
  		      myfile >> charge.rnp[0];
 		      myfile >> charge.gbnp[0];
@@ -228,9 +226,11 @@ namespace Darius
 		      myfile >> charge.gbnp[1];
 		      myfile >> charge.rnp[2];
 		      myfile >> charge.gbnp[2];
-		      if (i < start)
-			continue;
-		      (bunchInit.inputVector_).push_back(charge);
+		      if (rankToSave == rank)
+                (bunchInit.inputVector_).push_back(charge);
+              rankToSave++;
+              if (rankToSave == size)
+                rankToSave = 0;
 		    }
 		}
 	      

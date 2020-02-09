@@ -93,20 +93,8 @@ namespace Darius
       iter->amplitude_        *= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
 
     /****************************************************************************************************/
-
-    /* Calculate the average gamma of the input bunches.						*/
-    Double gamma = 0.0;
-    for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
-      gamma += bunch_.bunchInit_[i].initialGamma_ / bunch_.bunchInit_.size();
-    if ( undulator_[0].type_ == STATIC )
-      gamma_  = gamma / sqrt( 1.0 + undulator_[0].k_ * undulator_[0].k_ / 2.0 );
-    else
-      gamma_  = gamma / sqrt( 1.0 + pow( undulator_[0].amplitude_ * EC / ( EM * c0_ * 2.0 * PI * undulator_[0].signal_.f0_ ) , 2 ) / 2.0 );
-
-    /****************************************************************************************************/
-
+    
     /* Boost and initialize the undulator related parameters.						*/
-    beta_ = sqrt( 1.0 - 1.0 / ( gamma_ * gamma_ ) );
     for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
       if ( iter->type_ == OPTICAL ) iter->lu_ /= ( 1 + beta_ );
 
@@ -167,91 +155,41 @@ namespace Darius
 
     /****************************************************************************************************/
 
-    /* Boost the bunch parameters into the electron rest frame.						*/
-    std::vector<Double> zeta ( bunch_.bunchInit_.size(), 0.0 );
-    for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
-      {
-	/* First determine the beta vector of the bunch.						*/
-	bunch_.bunchInit_[i].betaVector_.mv( bunch_.bunchInit_[i].initialBeta_, bunch_.bunchInit_[i].initialDirection_);
-
-	/* Boosting the position is done considering that the start of simulation is at t = 0.		*/
-	zeta[i] 					 = gamma_ * ( 1.0 - bunch_.bunchInit_[i].betaVector_[2] * beta_ );
-	for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	  bunch_.bunchInit_[i].position_[ia][2]	/= zeta[i];
-	bunch_.bunchInit_[i].sigmaPosition_[2] 	/= zeta[i];
-	bunch_.bunchInit_[i].longTrun_ 		/= zeta[i];
-
-	bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= zeta[i];
-
-	bunch_.bunchInit_[i].lambda_  		 = undulator_[0].lu_ / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].betaVector_[2] * zeta[i] );
-
-	printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
-
-	bunch_.bunchInit_[i].initialGamma_ 		*= zeta[i];
-	bunch_.bunchInit_[i].betaVector_[0] 	 	/= zeta[i];
-	bunch_.bunchInit_[i].betaVector_[1] 	 	/= zeta[i];
-	bunch_.bunchInit_[i].betaVector_[2] 	 	 = ( bunch_.bunchInit_[i].betaVector_[2] - beta_ ) / ( 1.0 - bunch_.bunchInit_[i].betaVector_[2] * beta_ );
-
-	/* Boost charge vector.					                                       */
-	for (std::list<Charge>::iterator it = bunch_.bunchInit_[i].inputVector_.begin(); it != bunch_.bunchInit_[i].inputVector_.end(); ++it)
-	  {
-	    Double particleGamma =  sqrt( 1 + it->gbnp.norm() );
-	    it->gbnp[2] = gamma_ * (it->gbnp[2] - beta_ * particleGamma);
-	    it->rnp[2] *= gamma_;
-	    /* Interpolate particle coordinates at time = 0 in the bunch-rest-frame.			*/
-	    Double t = -beta_  * it->rnp[2];
-	    particleGamma = sqrt( 1 + it->gbnp.norm() );
-	    it->rnp[0] -= t * it->gbnp[0] / particleGamma;
-	    it->rnp[1] -= t * it->gbnp[1] / particleGamma;
-	    it->rnp[2] -= t * it->gbnp[2] / particleGamma;
-	  }
-      }
-    bunch_.rhythm_			/= gamma_;
-    bunch_.bunchVTKRhythm_		/= gamma_;
-    for (unsigned int i = 0; i < bunch_.bunchProfileTime_.size(); i++)
-      bunch_.bunchProfileTime_[i] 	/= gamma_;
-    bunch_.bunchProfileRhythm_	/= gamma_;
-
-    /****************************************************************************************************/
-
-    /* The beginning of undulators are set automatically for static ones. Here, the array of undulators
-     * are first sorted according to their begin point and then the position of the bunch and undulator
-     * begin is set.											*/
+    /* Boost the bunch parameters into the electron rest frame, and get position of forward-most particle.		*/
     Double 		zmax = -1.0e100;
     unsigned int 	imax = 0;
     for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
       {
-	/* Correct the number of particles if it is not a multiple of four.				*/
-	if (( bunch_.bunchInit_[i].numberOfParticles_ % 4 != 0 ) && ( bunch_.bunchInit_[i].bunchType_ == "ellipsoid" ))
+        bunch_.bunchInit_[i].longTrun_ 		*= gamma_;
+        for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
+          {
+            bunch_.bunchInit_[i].position_[ia][2]	*= gamma_;
+            if ( zmax < bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_ )
+              {
+                zmax = bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_;
+                imax = ia;
+              }  
+          }
+      }
+    
+	/* Boost charge vector.					                                       			*/
+	for (std::list<Charge>::iterator it = chargeVectorn_.begin(); it != chargeVectorn_.end(); ++it)
 	  {
-	    unsigned int n = bunch_.bunchInit_[i].numberOfParticles_ % 4;
-	    bunch_.bunchInit_[i].numberOfParticles_ += 4 - n;
-	    printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The number of particles in the bunch is not a multiple of four. ") +
-			 std::string("It is corrected to ") +  stringify(bunch_.bunchInit_[i].numberOfParticles_) );
-	  }
-
-	for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	  if ( zmax < bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_ )
-	    {
-	      zmax = bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_;
-	      imax = ia;
-	    }
+	    Double particleGamma =  sqrt( 1 + it->gbnp.norm() );
+	    it->gbnp[2] = gamma_ * (it->gbnp[2] - beta_ * particleGamma);
+	    it->rnp[2] *= gamma_;
+        /* Interpolate particle coordinates at time = 0 in the bunch-rest-frame.			*/
+        Double t = beta_  * (zmax - it->rnp[2]);
+	    it->rnp[0] -= t * it->gbnp[0] / particleGamma;
+	    it->rnp[1] -= t * it->gbnp[1] / particleGamma;
+	    it->rnp[2] -= t * it->gbnp[2] / particleGamma;
       }
-
-    /* The bunch expands by the factor 1/zeta. However, the mesh size expands by the factor gamma. This
-     * difference is caused by the change in bunch gamma factor after it enters the undulator. The
-     * problem here is the inconsistencies that it introduces to the simulation. To solve such problems,
-     * the trick is to shift the bunch positions so that the front of the bunch stays in the mesh and
-     * before the undulator. After the bunch enters the undulator, the length will be automatically
-     * corrected and the inconsistencies are removed.							*/
-    for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
-      {
-	for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	  bunch_.bunchInit_[i].position_[ia][2] -= zmax * ( 1.0 - zeta[imax] * gamma_ );
-	for (std::list<Charge>::iterator it = bunch_.bunchInit_[i].inputVector_.begin(); it != bunch_.bunchInit_[i].inputVector_.end(); ++it)
-	  it->rnp[2] -= zmax * ( 1.0 - zeta[imax] * gamma_ );
-      }
-    zmax -= zmax * ( 1.0 - zeta[imax] * gamma_ );
+    
+    bunch_.rhythm_			/= gamma_;
+    bunch_.bunchVTKRhythm_		/= gamma_;
+    for (unsigned int i = 0; i < bunch_.bunchProfileTime_.size(); i++)
+      bunch_.bunchProfileTime_[i] 	/= gamma_;
+    bunch_.bunchProfileRhythm_	/= gamma_;      
 
     /****************************************************************************************************/
 
@@ -284,12 +222,6 @@ namespace Darius
     /* The same shift in time should also be done for the seed field.					*/
     seed_.dt_		= dt_;
 
-    /* With the above definition in the time begin the entrance of the undulator, i.e. z = 0 in the lab
-     * frame, corresponds to the z = zmax + undulator_[0].dist_ / gamma_ in the bunch rest frame at
-     * the initialization instant, i.e. timeBunch = 0.0.						*/
-    bunch_.zu_ 	= zmax + undulator_[0].dist_ / gamma_;
-    bunch_.beta_ 	= beta_;
-
     printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );
   }
 
@@ -314,9 +246,12 @@ namespace Darius
     /* If profiling is enabled initialize the required data for profiling the field and saving it.	*/
     if (seed_.profile_)				initializeSeedProfile();
 
-    /* We initialize the bunch at the beginning of the simulation. The previous feature for initializing
-     * in the middle of the simulation is removed.							*/
-    initializeBunch();
+    /* Distribute the particles into each processor's corresponding domain.
+     * We initialize the bunch at the beginning of the simulation. 
+     * The previous feature for initializing in the middle of the simulation is removed.							*/
+    distributeParticles(chargeVectorn_, zp_, rank_, size_);
+    iterQB_ = chargeVectorn_.begin();
+    iterQE_ = chargeVectorn_.end();
     timeBunch_ = time_;
 
     /* Initialize the data needed for updating the bunches.						*/
@@ -862,40 +797,65 @@ namespace Darius
   void Solver::initializeBunch ()
   {
     printmessage(std::string(__FILE__), __LINE__, std::string("[[[ Initializing the bunch and prepare the charge vector ") );
-
+    
+    /* Calculate the average gamma of the input bunches.						*/
+    Double gamma = 0.0;
+    for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
+      gamma += bunch_.bunchInit_[i].initialGamma_ / bunch_.bunchInit_.size();
+    if ( undulator_[0].type_ == STATIC )
+      gamma_  = gamma / sqrt( 1.0 + undulator_[0].k_ * undulator_[0].k_ / 2.0 );
+    else
+      gamma_  = gamma / sqrt( 1.0 + pow( undulator_[0].amplitude_ * EC / ( EM * c0_ * 2.0 * PI * undulator_[0].signal_.f0_ ) , 2 ) / 2.0 );
+    beta_ = sqrt( 1.0 - 1.0 / ( gamma_ * gamma_ ) );
+    printmessage(std::string(__FILE__), __LINE__, std::string("Average reduced gamma in the undulator is ") + stringify(gamma_) );
+    
     /* Clear the global charge vector and define a temporary one.					*/
     chargeVectorn_.clear();
     std::list<Charge> qv;
-
+    
     for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
       {
-	/* Clear the temprary charge vector.								*/
-	qv.clear();
+        /* Correct the number of particles if it is not a multiple of four.				*/
+        if (( bunch_.bunchInit_[i].numberOfParticles_ % 4 != 0 ) && ( bunch_.bunchInit_[i].bunchType_ == "ellipsoid" ))
+          {
+            unsigned int n = bunch_.bunchInit_[i].numberOfParticles_ % 4;
+            bunch_.bunchInit_[i].numberOfParticles_ += 4 - n;
+            printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The number of particles in the bunch is not a multiple of four. ") +
+                         std::string("It is corrected to ") +  stringify(bunch_.bunchInit_[i].numberOfParticles_) );
+          }
+  
+        /* Compute parameters for bunch initialisation.									*/
+        bunch_.bunchInit_[i].betaVector_.mv( bunch_.bunchInit_[i].initialBeta_, bunch_.bunchInit_[i].initialDirection_);
+        bunch_.bunchInit_[i].lambda_ = undulator_[0].lu_ / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].betaVector_[2]);
+        printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
+        
+        /* Clear the temporary charge vector.								*/
+        qv.clear();
 
-	/* Initialize the bunch in the code.								*/
-	if 	  ( bunch_.bunchInit_[i].bunchType_ == "manual" )
-	  {
-	    for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	      bunch_.initializeManual(	bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
-	  }
-	else if ( bunch_.bunchInit_[i].bunchType_ == "ellipsoid" )
-	  {
-	    for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	      bunch_.initializeEllipsoid(	bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
-	  }
-	else if ( bunch_.bunchInit_[i].bunchType_ == "3D-crystal" )
-	  {
-	    for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	      bunch_.initialize3DCrystal(	bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
-	  }
-	else if ( ( bunch_.bunchInit_[i].bunchType_ == "file" ) || ( bunch_.bunchInit_[i].bunchType_ == "OPAL" ) )
-	  {
-	    for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	      bunch_.initializeFile(		bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
-	  }
+        /* Initialize the bunch in the code.								*/
+        if 	  ( bunch_.bunchInit_[i].bunchType_ == "manual" )
+          {
+            for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
+              bunch_.initializeManual(	bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
+          }
+        else if ( bunch_.bunchInit_[i].bunchType_ == "ellipsoid" )
+          {
+            for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
+              bunch_.initializeEllipsoid(	bunch_.bunchInit_[i], qv, rank_, size_, ia);
+          }
+        else if ( bunch_.bunchInit_[i].bunchType_ == "3D-crystal" )
+          {
+            for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
+              bunch_.initialize3DCrystal(	bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
+          }
+        else if ( ( bunch_.bunchInit_[i].bunchType_ == "file" ) || ( bunch_.bunchInit_[i].bunchType_ == "OPAL" ) )
+          {
+            for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
+              bunch_.initializeFile(		bunch_.bunchInit_[i], qv, rank_);
+          }
 
-	/* Add the bunch distribution to the global charge vector.					*/
-	chargeVectorn_.splice(chargeVectorn_.end(),qv);
+        /* Add the bunch distribution to the global charge vector.					*/
+        chargeVectorn_.splice(chargeVectorn_.end(),qv);
       }
 
     /* Print the total number of macro-particles for the user.						*/
@@ -939,12 +899,12 @@ namespace Darius
 	    iter->rnp[2] < zp_[1]         && iter->rnp[2] >= zp_[0] );
 
 	/* Calculate the undulator field at the particle position.				        */
-	undulatorField(ubp, iter->rnp);
+	undulatorField(ubp, iter->rnp, *iter);
 
 	/* Calculate the external field at the particle position and add to the undulator field.      	*/
 	externalField(ubp, iter->rnp);
 
-	if (ubp.b1)
+	if (ubp.b1 and iter->fieldEffects_)
 	  {
 	    ubp.dxr = modf( ( iter->rnp[0] - xmin_ ) / ub_.dx , &ubp.d1 ); ubp.i = (int) ubp.d1;
 	    ubp.dyr = modf( ( iter->rnp[1] - ymin_ ) / ub_.dy , &ubp.d1 ); ubp.j = (int) ubp.d1;
@@ -1331,13 +1291,21 @@ namespace Darius
    * Calculate the magnetic field of undulator and add it to the magnetic field of the seed.
    ******************************************************************************************************/
 
-  void Solver::undulatorField (UpdateBunchParallel & ubp, FieldVector <Double> & r)
+  void Solver::undulatorField (UpdateBunchParallel & ubp, FieldVector <Double> & r, Charge &q)
   {
     /* Initialize the undulator fields.									*/
     ubp.bt = 0.0;
     ubp.et = 0.0;
 
-    /* For each external field given by the user, add the external fields to the undulator field.     	*/
+    /* Check if particle is past the emission point.													*/
+    if ( !q.fieldEffects_ )
+      {
+        q.fieldEffects_ = (gamma_ * ( r[2] + beta_ * c0_ * ( timeBunch_ + dt_ ) ) >=  -undulator_[0].dist_);
+        if (!q.fieldEffects_)
+          return;
+      }
+        
+    /* For each undulator, calculate and add its field to the rest.										*/
     for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
       {
 
@@ -2009,5 +1977,63 @@ namespace Darius
   {
     return y0 + ( x - x0 ) / ( x1 - x0 ) * ( y1 - y0 );
   }
+
+  /***************************************************************************************************
+   * Redistribute particles among processors.					
+   ****************************************************************************************************/
+  void Solver::distributeParticles (std::list<Charge>& chargeVector, Double (zp) [2], int rank, int size)
+  {
+    /* Note that this function only redistributes q, rnp, gbnp, but NOT rnm and gbnm.			*/
+
+    std::vector<Double> sendCV;
+    std::list<Charge>::iterator it = chargeVector.begin();
+    while(it != chargeVector.end())
+      {
+        if ( ( it->rnp[2] < zp[1] || rank == size - 1 ) && ( it->rnp[2] >= zp[0] || rank == 0 ) )
+          it++;
+        else
+          {
+            sendCV.push_back(it->q);
+            sendCV.push_back(it->rnp[0]);
+            sendCV.push_back(it->rnp[1]);
+            sendCV.push_back(it->rnp[2]);
+            sendCV.push_back(it->gbnp[0]);
+            sendCV.push_back(it->gbnp[1]);
+            sendCV.push_back(it->gbnp[2]);
+            it = chargeVector.erase(it);
+          }
+      }
+
+    /* Send the charges that were erased from the charge vector.					*/
+    int sizeSend = sendCV.size();
+    int *counts = new int [size], *disps = new int [size];
+    MPI_Allgather( &sizeSend, 1, MPI_INT, counts, 1, MPI_INT, MPI_COMM_WORLD );
+    for (int i = 0; i < size; i++)
+      disps[i] = (i > 0) ? (disps[i-1] + counts[i-1]) : 0;
+    std::vector<Double> recvCV (disps[size-1] + counts[size-1], 0);
+    MPI_Allgatherv(&sendCV[0], sizeSend, MPI_DOUBLE,
+                   &recvCV[0], counts, disps, MPI_DOUBLE, MPI_COMM_WORLD);
+
+    /* And now replace all the charges in the charge vector of the corresponding processor.  */
+    unsigned i = 0;
+    Charge charge;
+    while ( i < recvCV.size() )
+      {
+        if (( recvCV[i+3] < zp[1] || rank == size - 1 ) && ( recvCV[i+3] >= zp[0] || rank == 0 ))
+          {
+            charge.q = recvCV[i++];
+            charge.rnp[0] = recvCV[i++];
+            charge.rnp[1] = recvCV[i++];
+            charge.rnp[2] = recvCV[i++];
+            charge.gbnp[0] = recvCV[i++];
+            charge.gbnp[1] = recvCV[i++];
+            charge.gbnp[2] = recvCV[i++];
+            chargeVector.push_back(charge);	      
+          }
+        else
+          i += 7;
+      }
+  }
+
 
 }

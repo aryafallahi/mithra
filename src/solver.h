@@ -69,7 +69,7 @@ namespace Darius
     void 		bunchProfile			();
 
     /* Calculate the magnetic field of undulator and add it to the magnetic field of the seed.		*/
-    void 		undulatorField 			(UpdateBunchParallel& ubp,  FieldVector<Double>& r);
+    void 		undulatorField 			(UpdateBunchParallel& ubp,  FieldVector<Double>& r, Charge &q);
 
     /* Calculate the field of external field and add it to the field of the seed.			*/
     void 		externalField			(UpdateBunchParallel& ubp,  FieldVector<Double>& r);
@@ -98,17 +98,20 @@ namespace Darius
     /* Sample the radiation energy at the given position and save it to the file. 			*/
     void 		energySample			();
 
-    /* Finalize the field calculations. 								*/
+    /* Finalize the field calculations. 													*/
     void 		finalize			();
 
-    /* Define the virtual function for field evaluation.						*/
+    /* Define the virtual function for field evaluation.									*/
     virtual void 	fieldEvaluate 			(long int m) = 0;
 
-    /* Define the boolean function for comparing undulator begins.					*/
+    /* Define the boolean function for comparing undulator begins.							*/
     static bool 	undulatorCompare 		(Undulator i, Undulator j);
 
-    /* Define the function for linear interpolation.							*/
+    /* Define the function for linear interpolation.										*/
     Double	 	interp				(Double x0, Double x1, Double y0, Double y1, Double x);
+
+    /* Redistribute particles among processors.												*/
+    void distributeParticles (std::list<Charge>& chargeVector, Double (zp) [2], int rank, int size);
 
     /****************************************************************************************************
      * List of required parameters in the FdTd code.

@@ -88,7 +88,7 @@ namespace Darius
    * ellipsoid with dimensions given by sigmaPosition_ and center given by the position vector. The
    * particles have uniform energy distribution centered at initialEnergy_ with variances determined by
    * sigmaGammaBeta_.                                                         				*/
-  void Bunch::initializeEllipsoid (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
+  void Bunch::initializeEllipsoid (BunchInitialize bunchInit, ChargeVector & chargeVector, int rank, int size, int ia)
   {
     /* Save the initially given number of particles.							*/
     unsigned int	Np = bunchInit.numberOfParticles_, i, Np0 = chargeVector.size();
@@ -102,6 +102,7 @@ namespace Darius
     Double		zmin = 1e100;
     Double		Ne, bF, bFi;
     unsigned int	bmi;
+    unsigned		rankToSave = 0;
 
     /* Check the bunching factor.                                                                     	*/
     if ( bunchInit.bF_ > 2.0 || bunchInit.bF_ < 0.0 )
@@ -135,18 +136,12 @@ namespace Darius
 	      q.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bunchInit.bF_ * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * q.rnp[2] + bunchInit.bFP_ * PI / 180.0 );
 	    }
 
-	  /* Before add the bunch to the global charge vector, a correction on the position of the bunch
-	   * should be made. This correction assures that the bunch properties are valid at the entrance
-	   * of the undulator.										*/
-	  g		= sqrt( 1.0 + charge.gbnp.norm() );
-	  q.rnp[0] -= ( charge.gbnp[0] / g - bunchInit.betaVector_[0] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
-	  q.rnp[1] -= ( charge.gbnp[1] / g - bunchInit.betaVector_[1] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
-	  q.rnp[2] -= ( charge.gbnp[2] / g - bunchInit.betaVector_[2] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
-
-	  /* Insert this charge to the charge list if and only if it resides in the processor's
-	   * portion.                                                                               	*/
-	  if ( ( q.rnp[2] < zp[1] || rank == size - 1 ) && ( q.rnp[2] >= zp[0] || rank == 0 ) )
-	    chargeVector.push_back(q);
+      /* Equally distribute the particles among processors. */
+      if (rank == rankToSave)
+        chargeVector.push_back(q);
+      rankToSave++;
+      if (rankToSave == size)
+        rankToSave = 0;
 	}
     };
 
@@ -323,33 +318,31 @@ namespace Darius
    * The number of initialized charge is equal to the vertical length of the table in the text file. The
    * file format should contain the charge value, 3 position coordinates and 3 momentum coordinates of
    * of the charge distribution.							                */
-  void Bunch::initializeFile (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
+  void Bunch::initializeFile (BunchInitialize bunchInit, ChargeVector & chargeVector, int rank)
   {
     /* Impose bF unless bF = 0.									*/
     if ( bunchInit.bF_ != 0 )
       {
-      bunchInit.numberOfParticles_ *= 4;
-      for (std::list<Charge>::iterator it = bunchInit.inputVector_.begin(); it != bunchInit.inputVector_.end(); ++it)
-	{
-	  it->q /= 4;
-	  for ( unsigned int ii = 1; ii < 4; ii++ )
-	    {
-	      Charge charge = *it;
-	      /* Do particle mirroring to suppress initial bunching factor                                */
-	      charge.rnp[2]  -=  ( bunchInit.lambda_ / 2.0 ) / 4 * ii;
-	      /* Impose the given bF                                                                      */
-	      charge.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bunchInit.bF_ * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * charge.rnp[2]);
-	      bunchInit.inputVector_.insert(it,charge);
-	    }
-	  /* Impose the given bF                                                                      */
-	  it->rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bunchInit.bF_ * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * it->rnp[2]);
-	}
-      printmessage(std::string(__FILE__), __LINE__, std::string("Added bunching factor, and increased number of particles by a factor of 4.") );
+        bunchInit.numberOfParticles_ *= 4;
+        for (std::list<Charge>::iterator it = bunchInit.inputVector_.begin(); it != bunchInit.inputVector_.end(); ++it)
+          {
+            it->q /= 4;
+            for ( unsigned int ii = 1; ii < 4; ii++ )
+              {
+                Charge charge = *it;
+                /* Do particle mirroring to suppress initial bunching factor                                */
+                charge.rnp[2]  -=  ( bunchInit.lambda_ / 2.0 ) / 4 * ii;
+                /* Impose the given bF                                                                      */
+                charge.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bunchInit.bF_ * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * charge.rnp[2]);
+                bunchInit.inputVector_.insert(it,charge);
+              }
+            /* Impose the given bF                                                                      */
+            it->rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bunchInit.bF_ * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * it->rnp[2]);
+          }
+        printmessage(std::string(__FILE__), __LINE__, std::string("Added bunching factor, and increased number of particles by a factor of 4.") );
       }
 
     /* Fill in the charge vector.										 */
-    distributeParticles(bunchInit.inputVector_, zp, rank, size);
-    chargeVector.clear();
     chargeVector = bunchInit.inputVector_;
     bunchInit.inputVector_.clear();
 
@@ -358,69 +351,14 @@ namespace Darius
     MPI_Reduce(&NqL,&NqG,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
     
     /* Check the size of the charge vector with the number of particles.                            	*/
-    if ( bunchInit.numberOfParticles_ != NqG && rank == 0 )
+    if ( bunchInit.numberOfParticles_ != NqG && rank == 0)
       {
         printmessage(std::string(__FILE__), __LINE__, std::string("The number of the particles and the input vector size do not match !!!") );
         exit(1);
       }
     printmessage(std::string(__FILE__), __LINE__, std::string("The number of electrons per macro particle is " + stringify(chargeVector.begin()->q) ) );
   }
-
-  /* Redistribute particles among processors.								*/
-  void Bunch::distributeParticles (std::list<Charge>& chargeVector, Double (zp) [2], int rank, int size)
-  {
-    /* Note that this function only redistributes q, rnp, gbnp, but NOT rnm and gbnm.			*/
-
-    std::vector<Double> sendCV;
-    std::list<Charge>::iterator it = chargeVector.begin();
-    while(it != chargeVector.end())
-      {
-	if ( ( it->rnp[2] < zp[1] || rank == size - 1 ) && ( it->rnp[2] >= zp[0] || rank == 0 ) )
-	  it++;
-	else
-	  {
-	    sendCV.push_back(it->q);
-	    sendCV.push_back(it->rnp[0]);
-	    sendCV.push_back(it->rnp[1]);
-	    sendCV.push_back(it->rnp[2]);
-	    sendCV.push_back(it->gbnp[0]);
-	    sendCV.push_back(it->gbnp[1]);
-	    sendCV.push_back(it->gbnp[2]);
-	    it = chargeVector.erase(it);
-	  }
-      }
-
-    /* Send the charges that were erased from the charge vector.					*/
-    int sizeSend = sendCV.size();
-    int *counts = new int [size], *disps = new int [size];
-    MPI_Allgather( &sizeSend, 1, MPI_INT, counts, 1, MPI_INT, MPI_COMM_WORLD );
-    for (int i = 0; i < size; i++)
-      disps[i] = (i > 0) ? (disps[i-1] + counts[i-1]) : 0;
-    std::vector<Double> recvCV (disps[size-1] + counts[size-1], 0);
-    MPI_Allgatherv(&sendCV[0], sizeSend, MPI_DOUBLE,
-		   &recvCV[0], counts, disps, MPI_DOUBLE, MPI_COMM_WORLD);
-
-    /* And now replace all the charges in the charge vector of the corresponding processor.  */
-    unsigned i = 0;
-    Charge charge;
-    while ( i < recvCV.size() )
-      {
-	if (( recvCV[i+3] < zp[1] || rank == size - 1 ) && ( recvCV[i+3] >= zp[0] || rank == 0 ))
-	  {
-	    charge.q = recvCV[i++];
-	    charge.rnp[0] = recvCV[i++];
-	    charge.rnp[1] = recvCV[i++];
-	    charge.rnp[2] = recvCV[i++];
-	    charge.gbnp[0] = recvCV[i++];
-	    charge.gbnp[1] = recvCV[i++];
-	    charge.gbnp[2] = recvCV[i++];
-	    chargeVector.push_back(charge);	      
-	  }
-	else
-	  i += 7;
-      }
-  }
-
+  
   /* Compute bunch statistics.							                	*/
   SampleBunch Bunch::computeBunchSample (std::list<Charge> chargeVector)
   {

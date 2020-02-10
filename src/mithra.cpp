@@ -1,4 +1,4 @@
-// darius.cpp
+// mithra.cpp
 //
 
 #include <list>
@@ -25,7 +25,7 @@ int main (int argc, char * (argv) [])
   MPI_Init(&argc,&argv);
 
   /* Activate namespaces                                                                                */
-  using namespace Darius;
+  using namespace Mithra;
   using namespace std;
 
   /* Retrieve time when we start the simulation.                                                        */
@@ -66,7 +66,7 @@ int main (int argc, char * (argv) [])
   FEL.clear();
 
   /* Open input parameter parser and instantiate the databases.                                         */
-  ParseDarius parser (jobFile, mesh, bunch, seed, undulator, extField, FEL);
+  ParseMithra parser (jobFile, mesh, bunch, seed, undulator, extField, FEL);
   parser.setJobParameters();
 
   /* Show the parameters for the simulation.                                                            */

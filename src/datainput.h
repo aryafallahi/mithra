@@ -14,12 +14,12 @@
 #include "classes.h"
 #include "datainput.h"
 
-namespace Darius
+namespace Mithra
 {
 
-  /* The class of functions used for reading the text file of parameters and parsing them to the darius
+  /* The class of functions used for reading the text file of parameters and parsing them to the mithra
    * solver.                                                                                            */
-  class ParseDarius
+  class ParseMithra
   {
 
   private:
@@ -35,7 +35,7 @@ namespace Darius
 
   public:
 
-    ParseDarius 	(std::list<std::string>& jobFile, Mesh& mesh, Bunch& bunch, Seed& seed,
+    ParseMithra 	(std::list<std::string>& jobFile, Mesh& mesh, Bunch& bunch, Seed& seed,
 			 std::vector<Undulator>& undulator, std::vector<ExtField>& extField,
 			 std::vector<FreeElectronLaser>& FEL);
 
@@ -45,19 +45,19 @@ namespace Darius
     /* Read the parameters parsed for the mesh in the solver.                                    	*/
     void readMesh 	(std::list <std::string>::iterator & iter);
 
-    /* Read the parameters parsed for the bunch in the darius solver.                     		*/
+    /* Read the parameters parsed for the bunch in the mithra solver.                     		*/
     void readBunch 	(std::list <std::string>::iterator & iter);
 
-    /* Read the parameters parsed for the seed in the darius solver.                               	*/
+    /* Read the parameters parsed for the seed in the mithra solver.                               	*/
     void readField 	(std::list <std::string>::iterator & iter);
 
     /* Read the parameters parsed for the mesh in the solver.                                    	*/
     void readUndulator 	(std::list <std::string>::iterator & iter);
 
-    /* Read the parameters parsed for the seed in the darius solver.                                    */
+    /* Read the parameters parsed for the seed in the mithra solver.                                    */
     void readExtField 	(std::list <std::string>::iterator & iter);
 
-    /* Read the parameters parsed for the FEL output in the darius solver.                              */
+    /* Read the parameters parsed for the FEL output in the mithra solver.                              */
     void readFEL 	(std::list <std::string>::iterator & iter);
   };
 }

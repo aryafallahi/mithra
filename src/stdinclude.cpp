@@ -4,7 +4,7 @@
 
 #include "stdinclude.h"
 
-namespace Darius
+namespace Mithra
 {
 
   /* Check if a directory to save the data exists.							*/

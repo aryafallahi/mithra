@@ -9,7 +9,7 @@ MITHRA-2.0 (Completely Numerical Calculation of Free Electron Laser Radiation)
 Version 2.0, copyright 2019, Arya Fallahi
 ********************************************************************************************************
  
-darius.cpp: Main program file
+mithra.cpp: Main program file
 
 stdinclude: Set of different standard functions and constants used in the code.
 
@@ -21,7 +21,7 @@ fieldvector: Implementation of the field vector class for the analysis.
 
 datainput: Implementation of the parameter parser
 
-classes: Implementation of the classes used in the darius code
+classes: Implementation of the classes used in the mithra code
 
 fdtd: Implementation of the real fdtd time marching solution class for the MITHRA code without space-charge
 

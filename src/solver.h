@@ -1,5 +1,5 @@
 /********************************************************************************************************
- *  solver.h : Implementation of the solver class for the darius code
+ *  solver.h : Implementation of the solver class for the mithra code
  ********************************************************************************************************/
 
 #ifndef SOLVER_H_
@@ -13,7 +13,7 @@
 #include "database.h"
 #include "fieldvector.h"
 
-namespace Darius
+namespace Mithra
 {
 
   /* Class of functions used for the solution of the fields in time domain using FDTD.			*/

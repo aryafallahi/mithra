@@ -1,5 +1,5 @@
 /********************************************************************************************************
- *  fdtdSC.cpp : Implementation of the functions for real fdtd time marching solution class for the darius
+ *  fdtdSC.cpp : Implementation of the functions for real fdtd time marching solution class for the mithra
  *  code with space-charge effect.
  ********************************************************************************************************/
 
@@ -7,7 +7,7 @@
 
 #include "fdtdSC.h"
 
-namespace Darius
+namespace Mithra
 {
   FdTdSC::FdTdSC( Mesh& 				mesh,
 		  Bunch& 				bunch,

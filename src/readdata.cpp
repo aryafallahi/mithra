@@ -4,7 +4,7 @@
 
 #include "readdata.h"
 
-namespace Darius
+namespace Mithra
 {
   /* Read the data from the input file and store them into a string list.                               */
   std::list <std::string> read_file (char const * filename)

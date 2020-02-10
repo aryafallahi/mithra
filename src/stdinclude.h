@@ -12,7 +12,7 @@
 
 #include "fieldvector.h"
 
-namespace Darius
+namespace Mithra
 {
   /* Define the types of the time domain signals.                                                       */
   enum SignalType       	{NEUMANN, GAUSSIAN, SECANT, FLATTOP};

@@ -1,12 +1,12 @@
 /********************************************************************************************************
- *  solver.cpp : Implementation of the functions for the solver class in the darius code
+ *  solver.cpp : Implementation of the functions for the solver class in the mithra code
  ********************************************************************************************************/
 
 #include <algorithm>
 
 #include "solver.h"
 
-namespace Darius
+namespace Mithra
 {
   Solver::Solver (Mesh& 				mesh,
 		  Bunch& 				bunch,

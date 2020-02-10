@@ -5,9 +5,9 @@
 #include "datainput.h"
 #include "readdata.h"
 
-namespace Darius
+namespace Mithra
 {
-  ParseDarius::ParseDarius (std::list<std::string>& jobFile, Mesh& mesh, Bunch& bunch, Seed& seed,
+  ParseMithra::ParseMithra (std::list<std::string>& jobFile, Mesh& mesh, Bunch& bunch, Seed& seed,
 			    std::vector<Undulator>& undulator, std::vector<ExtField>& extField,
 			    std::vector<FreeElectronLaser>& FEL)
   :   jobFile_ ( jobFile ), mesh_ ( mesh ), bunch_ ( bunch ), seed_ ( seed ), undulator_ ( undulator ),
@@ -15,7 +15,7 @@ namespace Darius
   {};
 
   /* Read the parameters from the file and set all the parsed parameters for FEL simulation.         	*/
-  void ParseDarius::setJobParameters ()
+  void ParseMithra::setJobParameters ()
     {
       std::list<std::string>::iterator iter = jobFile_.begin();
       do
@@ -46,7 +46,7 @@ namespace Darius
     }
 
   /* Read the parameters parsed for the mesh in the solver.                                    		*/
-  void ParseDarius::readMesh (std::list <std::string>::iterator & iter)
+  void ParseMithra::readMesh (std::list <std::string>::iterator & iter)
     {
       ++iter;
       if (*iter != "{") { std::cout << "The solver directory is empty" << std::endl; exit(1); }
@@ -121,8 +121,8 @@ namespace Darius
       while (*iter != "}");
     }
 
-  /* Read the parameters parsed for the bunch in the darius solver.                     		*/
-  void ParseDarius::readBunch (std::list <std::string>::iterator & iter)
+  /* Read the parameters parsed for the bunch in the mithra solver.                     		*/
+  void ParseMithra::readBunch (std::list <std::string>::iterator & iter)
     {
       ++iter;
       if (*iter != "{") { std::cout << "The bunch directory is empty" << std::endl; exit(1); }
@@ -320,8 +320,8 @@ namespace Darius
 	}
     }
 
-  /* Read the parameters parsed for the seed in the darius solver.                               	*/
-  void ParseDarius::readField (std::list <std::string>::iterator & iter)
+  /* Read the parameters parsed for the seed in the mithra solver.                               	*/
+  void ParseMithra::readField (std::list <std::string>::iterator & iter)
     {
       ++iter;
       if (*iter != "{") { std::cout << "The seed directory is empty" << std::endl; exit(1); }
@@ -465,7 +465,7 @@ namespace Darius
     }
 
   /* Read the parameters parsed for the mesh in the solver.                                    		*/
-  void ParseDarius::readUndulator (std::list <std::string>::iterator & iter)
+  void ParseMithra::readUndulator (std::list <std::string>::iterator & iter)
     {
       ++iter;
       if (*iter != "{") { std::cout << "The undulator directory is empty" << std::endl; exit(1); }
@@ -590,8 +590,8 @@ namespace Darius
       while (*iter != "}");
     }
 
-  /* Read the parameters parsed for the seed in the darius solver.                                    	*/
-  void ParseDarius::readExtField (std::list <std::string>::iterator & iter)
+  /* Read the parameters parsed for the seed in the mithra solver.                                    	*/
+  void ParseMithra::readExtField (std::list <std::string>::iterator & iter)
     {
       ++iter;
       if (*iter != "{") { std::cout << "The EXTERNAL-FIELD directory is empty" << std::endl; exit(1); }
@@ -650,8 +650,8 @@ namespace Darius
       while (*iter != "}");
     }
 
-  /* Read the parameters parsed for the FEL output in the darius solver.                              	*/
-  void ParseDarius::readFEL (std::list <std::string>::iterator & iter)
+  /* Read the parameters parsed for the FEL output in the mithra solver.                              	*/
+  void ParseMithra::readFEL (std::list <std::string>::iterator & iter)
     {
       ++iter;
       if (*iter != "{") { std::cout << "The FEL-OUTPUT directory is empty" << std::endl; exit(1); }

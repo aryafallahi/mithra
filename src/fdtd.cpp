@@ -1,5 +1,5 @@
 /********************************************************************************************************
- *  fdtd.cpp : Implementation of the functions for real fdtd time marching solution class for the darius
+ *  fdtd.cpp : Implementation of the functions for real fdtd time marching solution class for the mithra
  *  code
  ********************************************************************************************************/
 
@@ -7,7 +7,7 @@
 
 #include "fdtd.h"
 
-namespace Darius
+namespace Mithra
 {
   FdTd::FdTd( Mesh& 				mesh,
 	      Bunch& 				bunch,

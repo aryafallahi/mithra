@@ -1,5 +1,5 @@
 /********************************************************************************************************
- *  fdtdSC.hh : Implementation of the real fdtd time marching solution class for the darius code with
+ *  fdtdSC.hh : Implementation of the real fdtd time marching solution class for the mithra code with
  *  space-charge
  ********************************************************************************************************/
 
@@ -9,7 +9,7 @@
 #include "classes.h"
 #include "solver.h"
 
-namespace Darius
+namespace Mithra
 {
   /* Class of functions used for the solution of the fields in time domain using FDTD.			*/
   class FdTdSC : public Solver

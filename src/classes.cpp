@@ -7,7 +7,7 @@
 
 #include "classes.h"
 
-namespace Darius
+namespace Mithra
 {
 
   /*** Mesh class ***************************************************************************************/

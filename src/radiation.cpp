@@ -8,7 +8,7 @@
 #include "solver.h"
 #include "stdinclude.h"
 
-namespace Darius
+namespace Mithra
 {
 
   /******************************************************************************************************
@@ -447,4 +447,4 @@ namespace Darius
       }
   }
 
-}       /* End of namespace Darius.                                                                    	*/
+}       /* End of namespace Mithra.                                                                    	*/

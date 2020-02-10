@@ -191,6 +191,49 @@ namespace Darius
 		}
 	      while (*iter != "}");
 
+	      /* If initialization type is file, read file into inputVector_.		               */
+	      if (bunchInit.bunchType_ == "file")
+		{
+		  std::ifstream myfile ( bunchInit.fileName_.c_str() );
+		  if (!myfile.is_open())
+		    {
+		      std::cout << "Unable to open file" << std::endl;
+		      exit(1);
+		    }
+		  
+		  /* Check for correct number of particles.    						*/
+		  unsigned int np;
+		  myfile >> np;
+		  if ( np != bunchInit.numberOfParticles_ ){
+		    printmessage(std::string(__FILE__), __LINE__, 
+				 std::string(" The given number of particles and number of particles in file are not the same. Taking the number from the file = ") + stringify(np));
+		    bunchInit.numberOfParticles_ = np;
+		  }
+
+		  /* Fill in inputVector_.								*/
+		  int rank, size, rankToSave = 0;
+		  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+		  MPI_Comm_size(MPI_COMM_WORLD,&size);
+          
+		  bunchInit.inputVector_.clear();
+		  Charge charge;
+		  charge.q  = bunchInit.cloudCharge_ / np;
+		  for (unsigned int i = 0; i < np; i++)
+		    {
+ 		      myfile >> charge.rnp[0];
+		      myfile >> charge.gbnp[0];
+		      myfile >> charge.rnp[1];
+		      myfile >> charge.gbnp[1];
+		      myfile >> charge.rnp[2];
+		      myfile >> charge.gbnp[2];
+		      if (rankToSave == rank)
+                (bunchInit.inputVector_).push_back(charge);
+              rankToSave++;
+              if (rankToSave == size)
+                rankToSave = 0;
+		    }
+		}
+	      
 	      /* Add the bunch to the set of bunches in the database.					*/
 	      (bunch_.bunchInit_).push_back(bunchInit);
 	    }
@@ -252,6 +295,29 @@ namespace Darius
 	  ++iter;
 	}
       while (*iter != "}");
+
+      for (auto & bunchInit : bunch_.bunchInit_)
+	{
+	  if ( (bunchInit.bunchType_ == "file") || (bunchInit.bunchType_ == "OPAL") )
+	    {
+	      /* Get bunch statistics.								*/
+	      SampleBunch sb = bunch_.computeBunchSample(bunchInit.inputVector_);
+	      bunchInit.initialGamma_ = sqrt(1 + sb.gbT.norm());
+	      bunchInit.initialBeta_ = sqrt(1 - 1 / pow(bunchInit.initialGamma_,2));
+	      bunchInit.initialDirection_.dv(sqrt(sb.gbT.norm()), sb.gbT);
+	      if (bunchInit.position_.size() == 0)
+		bunchInit.position_.push_back(sb.rT);
+	      else
+		bunchInit.position_[0] = sb.rT;
+	      bunchInit.sigmaPosition_[0] = sqrt(sb.r2T[0] - pow(sb.rT[0],2));
+	      bunchInit.sigmaPosition_[1] = sqrt(sb.r2T[1] - pow(sb.rT[1],2));
+	      bunchInit.sigmaPosition_[2] = sqrt(sb.r2T[2] - pow(sb.rT[2],2));
+	      bunchInit.sigmaGammaBeta_[0] = sqrt(sb.gb2T[0] - pow(sb.gbT[0],2));
+	      bunchInit.sigmaGammaBeta_[1] = sqrt(sb.gb2T[1] - pow(sb.gbT[1],2));
+	      bunchInit.sigmaGammaBeta_[2] = sqrt(sb.gb2T[2] - pow(sb.gbT[2],2));
+	      bunchInit.longTrun_ = sb.longTrunT;
+	    }
+	}
     }
 
   /* Read the parameters parsed for the seed in the darius solver.                               	*/
@@ -422,6 +488,7 @@ namespace Darius
 		  else if (parameterName(*iter) == "polarization-angle")                undulator.theta_        = PI / 180.0 * doubleValue(*iter);
 		  else if (parameterName(*iter) == "length")                            undulator.length_       = intValue(*iter);
 		  else if (parameterName(*iter) == "offset")                            undulator.rb_       	= doubleValue(*iter);
+		  else if (parameterName(*iter) == "zmax-distance")			undulator.dist_       	= doubleValue(*iter);
 		  else { std::cout << parameterName(*iter) << " is not defined in the static-undulator group." << std::endl; exit(1); }
 		  ++iter;
 		}
@@ -676,6 +743,26 @@ namespace Darius
 	      while (*iter != "}");
 
 	      FEL_.push_back(FEL);
+	    }
+	  	  /* The data related to the screen to measure bunch profile.                      */
+	  else if (*iter == "screen-profile")
+	    {
+	      ++iter;
+	      if (*iter != "{") { std::cout << "The screen-profile directory is empty" << std::endl; exit(1); }
+	      else ++iter;
+	      FreeElectronLaser		FEL;
+	      do
+		{
+		  if      (parameterName(*iter) == "sample")    FEL.screenProfile_.sampling_		= boolValue(*iter);
+		  else if (parameterName(*iter) == "directory") FEL.screenProfile_.directory_		= stringValue(*iter);
+		  else if (parameterName(*iter) == "base-name") FEL.screenProfile_.basename_		= stringValue(*iter);
+		  else if (parameterName(*iter) == "position")      (FEL.screenProfile_.pos_).push_back(doubleValue(*iter));
+		  else { std::cout << parameterName(*iter) << " is not defined in the screen-profile group." << std::endl; exit(1); }
+		  ++iter;
+		}
+	      while (*iter != "}");
+	      FEL_.push_back(FEL);
+	      
 	    }
 
 	  ++iter;

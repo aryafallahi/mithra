@@ -69,7 +69,7 @@ namespace Darius
      * ellipsoid with dimensions given by sigmaPosition_ and center given by the position vector. The
      * particles have uniform energy distribution centered at initialEnergy_ with variances determined by
      * sigmaGammaBeta_.                                                         			*/
-    void initializeEllipsoid (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia);
+    void initializeEllipsoid (BunchInitialize bunchInit, ChargeVector & chargeVector, int rank, int size, int ia);
 
     /* Initialize a bunch with a 3D-crystal type. This bunch produces a number of charges equal
      * to the numberOfParticles_ with the total charge equal to the cloudCharge_ which are arranged in a
@@ -84,7 +84,10 @@ namespace Darius
      * The number of initialized charge is equal to the vertical length of the table in the text file. The
      * file format should contain the charge value, 3 position coordinates and 3 momentum coordinates of
      * of the charge distribution.							                */
-    void initializeFile (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia);
+    void initializeFile (BunchInitialize bunchInit, ChargeVector & chargeVector, int rank);
+
+    /* Compute bunch statistics.							                */
+    SampleBunch computeBunchSample (std::list<Charge> chargeVector);
 
     /****************************************************************************************************/
 
@@ -312,6 +315,9 @@ namespace Darius
     /* The start position of the undulator.								*/
     Double				rb_;
 
+    /* Initial distance between the forward-most particle and the first undulator.	             	*/
+    Double				dist_;
+
     /* The length of the undulator.									*/
     unsigned int			length_;
 
@@ -529,6 +535,18 @@ namespace Darius
     };
 
     RadiationEnergy 				radiationEnergy_;
+
+    /* Parsed parameters for the screens that record the bunch profile.					*/
+    struct ScreenProfile
+    {
+      bool				sampling_;
+      std::string			directory_;
+      std::string			basename_;
+      std::vector<Double>      		pos_;
+      ScreenProfile ();
+    };
+
+    ScreenProfile screenProfile_;
   };
 }
 #endif

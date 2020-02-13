@@ -614,6 +614,8 @@ Note that the reference undulator for initializing bunches or setting the electr
 	%
 	\item {\tt \small \em polarization-angle} is the angle between the magnetic field polarization and the $x$-axis in degrees.
 	%
+	\item {\tt \small \em distance-to-bunch-head} is the initial distance between the head of the bunch and the beginning of the undulator. By default, a distance of two undulator periods is considered in MITHRA.
+	%
 	\item {\tt \small \em gap} determines the gap between the adjacent undulators.
 	%
     \item {\tt \small \em number} is the total number of undulator modules in the array.
@@ -663,6 +665,7 @@ UNDULATOR
 		length					  = < int >
 		polarization-angle		  = < real >
 		offset					  = < real >
+		distance-to-bunch-head 	  = < real >
 	\textcolor{red}{\}}
 
 	\textcolor{red}{static-undulator-array}
@@ -674,6 +677,7 @@ UNDULATOR
 		gap						  = < real >
 		number					  = < int >
 		tapering-parameter		  = < real >
+		distance-to-bunch-head    = < real >
 	\textcolor{red}{\}}
 
 	\textcolor{red}{optical-undulator}

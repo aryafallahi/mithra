@@ -4,10 +4,10 @@
 #
 #  manual: example 1, Fig. 5.4a and 5.4b (simulation results with space-charge bunch length = 200 um) 
 #                                                                                                 
-#  mpirun -np 4 ../darius ./job-files/FEL-IR-SC-BL200.job
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-IR-SC-BL200.job
 #  
 #  in the LSF system: 
-#  bsub -n 48 -W 2:00 -J "FEL-IR-SC-BL200" -o mithra.out 'mpirun ../darius ./job-files/FEL-IR-SC-BL200.job'
+#  bsub -n 48 -W 2:00 -J "FEL-IR-SC-BL200" -o mithra.out 'mpirun ../MITHRA ./job-files/FEL-IR-SC-BL200.job'
 
 MESH
 {

@@ -968,13 +968,13 @@ namespace MITHRA
 
 	/* Second, calculate the value of (gamma*beta)'.				                */
 	ubp.gbp   = cross( ubp.gbm , ubp.bt );
-	ubp.d1    = sqrt( 1.0 + ubp.gbm.norm() );
+	ubp.d1    = sqrt( 1.0 + ubp.gbm.norm2() );
 	ubp.gbp.mv( ub_.r2 / ubp.d1, ubp.gbp);
 	ubp.gbp  += ubp.gbm;
 
 	/* Third, calculate the (gamma*beta)+.								*/
 	ubp.gbpl  = cross( ubp.gbp , ubp.bt );
-	ubp.gbpl.mv( 2.0 / ( ubp.d1 / ub_.r2 + ub_.r2 / ubp.d1 * ubp.bt.norm() ), ubp.gbpl);
+	ubp.gbpl.mv( 2.0 / ( ubp.d1 / ub_.r2 + ub_.r2 / ubp.d1 * ubp.bt.norm2() ), ubp.gbpl);
 	ubp.gbpl += ubp.gbm;
 
 	/* Fourth, update the (gamma*beta) vector.						        */
@@ -982,7 +982,7 @@ namespace MITHRA
 	iter->gbnp.pmv( ub_.r1 , ubp.et );
 
 	/* Determine the final position of the particle.				                */
-	iter->rnp.pmv( ub_.dtb / sqrt (1.0 + iter->gbnp.norm()) , iter->gbnp );
+	iter->rnp.pmv( ub_.dtb / sqrt (1.0 + iter->gbnp.norm2()) , iter->gbnp );
 
 	/* If the particle enters the adjacent computational domain, save it to communication buffer. 	*/
 	if ( iter->rnp[2] < zp_[0] && rank_ != 0 )
@@ -1216,7 +1216,7 @@ namespace MITHRA
       {
 	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
 	  {
-	    gamma = sqrt( 1.0 + iter->gbnp.norm() );
+	    gamma = sqrt( 1.0 + iter->gbnp.norm2() );
 	    beta  = iter->gbnp[2] / gamma;
 	    *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
             				    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;

@@ -4,10 +4,10 @@
 #
 #  manual: example 1, Fig. 5.3a (number of particles = 262144) 
 #                                                                                                 
-#  mpirun -np 4 ../darius ./job-files/FEL-IR-N262144.job
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-IR-N262144.job
 #  
 #  in the LSF system: 
-#  bsub -n 48 -W 2:00 -J "FEL-IR-N262144" -o mithra.out 'mpirun ../darius ./job-files/FEL-IR-N262144.job'
+#  bsub -n 48 -W 2:00 -J "FEL-IR-N262144" -o mithra.out 'mpirun ../MITHRA ./job-files/FEL-IR-N262144.job'
 
 MESH
 {

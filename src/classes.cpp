@@ -137,7 +137,7 @@ namespace MITHRA
 	  /* Before add the bunch to the global charge vector, a correction on the position of the bunch
 	   * should be made. This correction assures that the bunch properties are valid at the entrance
 	   * of the undulator.										*/
-	  g	    = sqrt( 1.0 + charge.gbnp.norm() );
+	  g	    = sqrt( 1.0 + charge.gbnp.norm2() );
 	  q.rnp[0] -= ( charge.gbnp[0] / g - bunchInit.betaVector_[0] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
 	  q.rnp[1] -= ( charge.gbnp[1] / g - bunchInit.betaVector_[1] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
 	  q.rnp[2] -= ( charge.gbnp[2] / g - bunchInit.betaVector_[2] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
@@ -563,7 +563,7 @@ namespace MITHRA
     direction_ 	= direction;
 
     /* check if length of diection vector is zero and normalize the vector.				*/
-    if ( direction_.norm() == 0.0)
+    if ( direction_.norm2() == 0.0)
       {
 	printmessage(std::string(__FILE__), __LINE__, std::string("The direction vector has length zero."));
 	printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
@@ -571,12 +571,12 @@ namespace MITHRA
       }
     else
       {
-	Double vl = sqrt( direction_.norm() );
+	Double vl = sqrt( direction_.norm2() );
 	direction_ /= vl;
       }
 
     /* check if length of polarization vector is zero and normalize the vector.				*/
-    if ( polarization_.norm() == 0.0)
+    if ( polarization_.norm2() == 0.0)
       {
 	printmessage(std::string(__FILE__), __LINE__, std::string("The polarization vector has length zero."));
 	printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
@@ -584,7 +584,7 @@ namespace MITHRA
       }
     else
       {
-	Double vl = sqrt( polarization_.norm() );
+	Double vl = polarization_.norm();
 	polarization_ /= vl;
       }
 
@@ -864,7 +864,7 @@ namespace MITHRA
     direction_ 		= direction;
 
     /* check if length of diection vector is zero and normalize the vector.                           	*/
-    if ( direction_.norm() == 0.0)
+    if ( direction_.norm2() == 0.0)
       {
 	printmessage(std::string(__FILE__), __LINE__, std::string("The direction vector has length zero."));
 	printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
@@ -872,12 +872,12 @@ namespace MITHRA
       }
     else
       {
-	Double vl = sqrt( direction_.norm() );
+	Double vl = sqrt( direction_.norm2() );
 	direction_ /= vl;
       }
 
     /* check if length of polarization vector is zero and normalize the vector.                       	*/
-    if ( polarization_.norm() == 0.0)
+    if ( polarization_.norm2() == 0.0)
       {
 	printmessage(std::string(__FILE__), __LINE__, std::string("The polarization vector has length zero."));
 	printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
@@ -885,7 +885,7 @@ namespace MITHRA
       }
     else
       {
-	Double vl = sqrt( polarization_.norm() );
+	Double vl = polarization_.norm();
 	polarization_ /= vl;
       }
 

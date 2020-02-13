@@ -44,9 +44,14 @@ namespace MITHRA
       return this->a[n];
     };
 
-    ElementType norm()
+    ElementType norm2()
     {
       return ( a[0]*a[0] + a[1]*a[1] + a[2]*a[2] );
+    };
+
+    ElementType norm()
+    {
+      return ( sqrt( this->norm2() ) );
     };
 
     template <class T1, class T2>

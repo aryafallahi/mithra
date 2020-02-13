@@ -4,10 +4,10 @@
 #
 #  manual: example 1, Fig. 5.3d ( size of the computational domain along x and y = 3000 um ) 
 #                                                                                                 
-#  mpirun -np 4 ../darius ./job-files/FEL-IR-LXLY3000.job
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-IR-LXLY3000.job
 #  
 #  in the LSF system: 
-#  bsub -n 48 -W 2:00 -J "FEL-IR-LXLY3000" -o mithra.out 'mpirun ../darius ./job-files/FEL-IR-LXLY3000.job'
+#  bsub -n 48 -W 2:00 -J "FEL-IR-LXLY3000" -o mithra.out 'mpirun ../MITHRA ./job-files/FEL-IR-LXLY3000.job'
 
 MESH
 {

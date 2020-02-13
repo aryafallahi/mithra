@@ -32,9 +32,6 @@ namespace Darius
     std::vector<Double>*		ft;
     std::list<Charge>::iterator 	iter;
 
-    /* Create all the particles according to given parameters.										*/
-    initializeBunch();
-    
     /* Transfer the whole quantities to the electron rest frame.					*/
     lorentzBoost();
 
@@ -107,8 +104,6 @@ namespace Darius
 	    timeBunch_ += bunch_.timeStep_;
 	    ++nTimeBunch_;
 	  }
-
-	screenProfile();
 
 	/* Update the values of the current.								*/
 	currentUpdate();

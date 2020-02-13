@@ -58,7 +58,6 @@ MESH
 	bunch-time-start  				= < real >
 	mesh-truncation-order 		= < 1 | 2 >
 	space-charge  						= < true | false >
-	emit-particles						= < true | false >
 	solver										= < NSFD | FD >
 \}
 
@@ -71,7 +70,7 @@ BUNCH
 																3D-crystal | 
 																file >
 		distribution  					= < uniform | gaussian >
-		file										= < string>
+		file-name							 = < string >
 		charge  								= < real >
 		number-of-particles  	 = < int >
 		gamma  								 = < real >
@@ -195,7 +194,7 @@ UNDULATOR
 		length  								= < int >
 		polarization-angle  		= < real >
 		offset  								= < real >
-		zmax-distance 					= < real >
+		distance-to-bunch-head  = < real >
 	\textcolor{red}{\}}
 
 	\textcolor{red}{static-undulator-array}
@@ -281,7 +280,7 @@ FEL-OUTPUT
 		rhythm		 						 = < real >
 	\textcolor{red}{\}}
 
-	\textcolor{red}{screen-profile}
+	\textcolor{red}{bunch-profile-lab-frame}
 	\textcolor{red}{\{}
 		sample  								= < false | true >
 		directory  						 = < /path/to/location >

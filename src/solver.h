@@ -69,7 +69,7 @@ namespace Darius
     void 		bunchProfile			();
 
     /* Calculate the magnetic field of undulator and add it to the magnetic field of the seed.		*/
-    void 		undulatorField 			(UpdateBunchParallel& ubp,  FieldVector<Double>& r, Charge &q);
+    void 		undulatorField 			(UpdateBunchParallel& ubp,  FieldVector<Double>& r);
 
     /* Calculate the field of external field and add it to the field of the seed.			*/
     void 		externalField			(UpdateBunchParallel& ubp,  FieldVector<Double>& r);
@@ -80,17 +80,11 @@ namespace Darius
     /* Initialize the data required for visualizing the radiation power at the given position.		*/
     void 		initializePowerVisualize	();
 
-    /* Initialize the data required for storing particles hitting a screen at the given position.	*/
-    void 		initializeScreenProfile		();
-
     /* Sample the radiation power at the given position and save it to the file.			*/
     void 		powerSample			();
 
     /* Visualize the radiation power at the given position and save it to the file.			*/
     void 		powerVisualize			();
-
-    /* Store the bunch profile from particles hitting a screen at the given position and save it to the file. */
-    void 		screenProfile			();
 
     /* Initialize the data required for sampling and saving the radiation energy at the given position.	*/
     void 		initializeEnergySample		();
@@ -98,20 +92,14 @@ namespace Darius
     /* Sample the radiation energy at the given position and save it to the file. 			*/
     void 		energySample			();
 
-    /* Finalize the field calculations. 													*/
+    /* Finalize the field calculations. 								*/
     void 		finalize			();
 
-    /* Define the virtual function for field evaluation.									*/
+    /* Define the virtual function for field evaluation.						*/
     virtual void 	fieldEvaluate 			(long int m) = 0;
 
-    /* Define the boolean function for comparing undulator begins.							*/
+    /* Define the boolean function for comparing undulator begins.					*/
     static bool 	undulatorCompare 		(Undulator i, Undulator j);
-
-    /* Define the function for linear interpolation.										*/
-    Double	 	interp				(Double x0, Double x1, Double y0, Double y1, Double x);
-
-    /* Redistribute particles among processors.												*/
-    void distributeParticles (std::list<Charge>& chargeVector, Double (zp) [2], int rank, int size);
 
     /****************************************************************************************************
      * List of required parameters in the FdTd code.
@@ -239,11 +227,6 @@ namespace Darius
      * These parameters are defined once in the class to avoid declaring them every time a field is
      * updated.												*/
     std::vector<SampleRadiationEnergy>				        re_;
-
-    /* Define a structure containing the parameters needed to store the particles hitting screens
-     * These parameters are defined once in the class to avoid declaring them every time a bunch is
-     * updated.												*/
-    std::vector<SampleScreenProfile>				        scrp_;
 
     /* Define the value of MPI variables.								*/
     int									rank_, size_;

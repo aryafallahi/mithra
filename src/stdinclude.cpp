@@ -37,7 +37,7 @@ namespace Darius
 
   Charge::Charge ()
   {
-    q = 0.0; rnp = rnm = 0.0; gbnp = gbnm = 0.0; fieldEffects_ = false;
+    q = 0.0; rnp = rnm = 0.0; gbnp = gbnm = 0.0;
   }
 
   /* Function creating a set of halton sequence for the random particle generation.			*/

@@ -90,15 +90,8 @@ namespace Darius
 	/* Print the time into the string.                                                             	*/
 	printedMessage << timeStr.substr(0,timeStr.size()-1) << " ::: ";
 
-	/* Print the shortened filename and linenumber into the string.                                	*/
-	const char * elem = filename.c_str();
-	const char * shortfn = elem;
-	while ( *elem != '\0' ){
-	  if ( *elem == '/' )
-	    shortfn = elem + 1;
-	  elem = elem + 1;
-	}
-	printedMessage  << shortfn << ":" << linenumber << " ::: \t \t " << message;
+	/* Print the filename and linenumber into the string.                                          	*/
+	printedMessage  << filename << ":" << linenumber << " ::: \t \t " << message;
 
 	/* Print on the terminal if there is something written in the stream.                        	*/
 	if (printedMessage.str().length() > 0 )     std::cout << printedMessage.str() << std::endl;
@@ -131,10 +124,6 @@ namespace Darius
     Double			q;		/* Charge of the point in the unit of electron charge.	*/
     FieldVector<Double>		rnp, rnm;	/* Position vector of the charge.			*/
     FieldVector<Double>		gbnp, gbnm;	/* Normalized velocity vector of the charge.		*/
-
-    /* Determines whether the charge has gone past the point of emission. 
-     * If not, the charge does not feel the EM fields and moves in a straight line.*/
-    bool			fieldEffects_;
 
     Charge();
 

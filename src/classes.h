@@ -315,6 +315,9 @@ namespace MITHRA
     /* The length of the undulator.									*/
     unsigned int			length_;
 
+    /* The initial distance between the bunch head and the undulator begin.						*/
+    Double				dist_;
+    
     /* The normalized velocity and the equivalent gamma of the undulator movement.			*/
     Double				beta_;
     Double				gamma_;

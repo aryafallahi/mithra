@@ -8,7 +8,7 @@
 #include "classes.h"
 #include "solver.h"
 
-namespace Darius
+namespace MITHRA
 {
 
   /* Class of functions used for the solution of the fields in time domain using FDTD.			*/

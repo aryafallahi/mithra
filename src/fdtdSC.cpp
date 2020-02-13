@@ -7,7 +7,7 @@
 
 #include "fdtdSC.h"
 
-namespace Darius
+namespace MITHRA
 {
   FdTdSC::FdTdSC( Mesh& 				mesh,
 		  Bunch& 				bunch,

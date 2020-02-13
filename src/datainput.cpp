@@ -5,7 +5,7 @@
 #include "datainput.h"
 #include "readdata.h"
 
-namespace Darius
+namespace MITHRA
 {
   ParseDarius::ParseDarius (std::list<std::string>& jobFile, Mesh& mesh, Bunch& bunch, Seed& seed,
 			    std::vector<Undulator>& undulator, std::vector<ExtField>& extField,

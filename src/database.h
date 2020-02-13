@@ -12,7 +12,7 @@
 #include "fieldvector.h"
 #include "stdinclude.h"
 
-namespace Darius
+namespace MITHRA
 {
 
   /* The structure of data for initializing a bunch.							*/

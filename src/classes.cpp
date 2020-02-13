@@ -6,7 +6,7 @@
 
 #include "classes.h"
 
-namespace Darius
+namespace MITHRA
 {
 
   /*** Mesh class ***************************************************************************************/
@@ -137,7 +137,7 @@ namespace Darius
 	  /* Before add the bunch to the global charge vector, a correction on the position of the bunch
 	   * should be made. This correction assures that the bunch properties are valid at the entrance
 	   * of the undulator.										*/
-	  g		= sqrt( 1.0 + charge.gbnp.norm() );
+	  g	    = sqrt( 1.0 + charge.gbnp.norm() );
 	  q.rnp[0] -= ( charge.gbnp[0] / g - bunchInit.betaVector_[0] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
 	  q.rnp[1] -= ( charge.gbnp[1] / g - bunchInit.betaVector_[1] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
 	  q.rnp[2] -= ( charge.gbnp[2] / g - bunchInit.betaVector_[2] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );

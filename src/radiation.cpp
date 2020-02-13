@@ -8,7 +8,7 @@
 #include "solver.h"
 #include "stdinclude.h"
 
-namespace Darius
+namespace MITHRA
 {
 
   /******************************************************************************************************

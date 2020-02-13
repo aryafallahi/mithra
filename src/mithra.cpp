@@ -1,5 +1,13 @@
-// darius.cpp
-//
+/********************************************************************************************************
+ MITHRA (Completely Numerical Calculation of Free Electron Laser Radiation)
+ Version 2.0, copyright 2019, Arya Fallahi
+ ********************************************************************************************************
+ mithra.cpp: Main program file
+ MPI version should be compiled in the mithra folder using the make file:
+ make
+ to commit to git use
+ git add -u - git commit -m "message" - git push
+ ********************************************************************************************************/
 
 #include <list>
 #include <mpi.h>
@@ -25,7 +33,7 @@ int main (int argc, char * (argv) [])
   MPI_Init(&argc,&argv);
 
   /* Activate namespaces                                                                                */
-  using namespace Darius;
+  using namespace MITHRA;
   using namespace std;
 
   /* Retrieve time when we start the simulation.                                                        */

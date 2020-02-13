@@ -11,7 +11,7 @@
 #include <sstream>
 #include <vector>
 
-namespace Darius
+namespace MITHRA
 {
 
   /* Define the types of values used in the analysis.							*/

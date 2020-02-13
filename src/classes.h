@@ -11,7 +11,7 @@
 #include "fieldvector.h"
 #include "stdinclude.h"
 
-namespace Darius
+namespace MITHRA
 {
 
   /* Structure containing all the parsed parameters for mesh.                                           */

@@ -7,7 +7,7 @@
 
 #include "fdtd.h"
 
-namespace Darius
+namespace MITHRA
 {
   FdTd::FdTd( Mesh& 				mesh,
 	      Bunch& 				bunch,

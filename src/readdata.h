@@ -13,7 +13,7 @@
 #include "fieldvector.h"
 #include "stdinclude.h"
 
-namespace Darius
+namespace MITHRA
 {
 
   /* Read the data from the input file and store them into a string list.                               */

@@ -6,7 +6,7 @@
 
 #include "solver.h"
 
-namespace Darius
+namespace MITHRA
 {
   Solver::Solver (Mesh& 				mesh,
 		  Bunch& 				bunch,

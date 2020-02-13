@@ -14,7 +14,7 @@
 #include "classes.h"
 #include "datainput.h"
 
-namespace Darius
+namespace MITHRA
 {
 
   /* The class of functions used for reading the text file of parameters and parsing them to the darius

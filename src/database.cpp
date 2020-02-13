@@ -9,7 +9,7 @@
 #include "database.h"
 #include "stdinclude.h"
 
-namespace Darius
+namespace MITHRA
 {
   /* Initialize the parameters for the bunch initialization to some first values.                     	*/
   BunchInitialize::BunchInitialize ()

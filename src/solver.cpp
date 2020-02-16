@@ -311,6 +311,9 @@ namespace MITHRA
     /* If sampling the radiation energy is enabled initialize the required data for calculating the
      * radiation energy and saving it.									*/
     initializeEnergySample();
+
+    /* Initialize required data for saving particles hitting screens.					*/
+    initializeScreenProfile();
   }
 
   /******************************************************************************************************
@@ -1861,6 +1864,106 @@ namespace MITHRA
   }
 
   /******************************************************************************************************
+   * Initialize the data required for storing particles hitting a screen at the given position.
+   ******************************************************************************************************/
+
+  void Solver::initializeScreenProfile ()
+  {
+    scrp_.clear(); scrp_.resize(FEL_.size());
+    printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the screen to measure bunch profile.") );
+    for ( unsigned int jf = 0; jf < FEL_.size(); jf++)
+      {
+        /* Initialize if and only if screens have been enabled.		                            	*/
+        if (!FEL_[jf].screenProfile_.sampling_) continue;
+
+        if (!(isabsolute(FEL_[jf].screenProfile_.basename_))) FEL_[jf].screenProfile_.basename_ = FEL_[jf].screenProfile_.directory_ + FEL_[jf].screenProfile_.basename_;
+
+        /*  resize vectors storing filenames                   */
+        scrp_[jf].fileNames.resize((FEL_[jf].screenProfile_.pos_).size());
+        scrp_[jf].files.resize((FEL_[jf].screenProfile_.pos_).size());
+
+        /* If the directory of the baseFilename does not exist create this directory.			*/
+        createDirectory(FEL_[jf].screenProfile_.basename_, rank_);
+
+        /* Order screens                          */
+        std::sort(FEL_[jf].screenProfile_.pos_.begin(), FEL_[jf].screenProfile_.pos_.end());
+
+        MPI_Barrier(MPI_COMM_WORLD);
+        /* Open files for each screen and write its position in first line.                    	       */
+        for ( unsigned int i = 0; i < (FEL_[jf].screenProfile_.pos_).size(); i++ ){
+          printmessage(std::string(__FILE__), __LINE__, std::string("Screen ") + stringify(i) + std::string(" is at distance ") + stringify(FEL_[jf].screenProfile_.pos_[i]) + std::string(" from the undulator beginning.") );
+          scrp_[jf].fileNames[i] = FEL_[jf].screenProfile_.basename_ + "-p" + stringify(rank_) + "-screen" + stringify(i) + TXT_FILE_SUFFIX;
+          scrp_[jf].files[i] = new std::ofstream(scrp_[jf].fileNames[i].c_str(),std::ios::trunc);
+          (*scrp_[jf].files[i]).setf(std::ios::scientific);
+          (*scrp_[jf].files[i]).precision(15);
+          (*scrp_[jf].files[i]).width(40);
+          *scrp_[jf].files[i] << "Screen distance from the beginning of the undulator = " << stringify(FEL_[jf].screenProfile_.pos_[i]) << std::endl;
+        }
+
+        /* Return an error if the screen sampling is activated but no screen is given.	       		*/
+        if ( FEL_[jf].screenProfile_.pos_.size() == 0 )
+          {
+            printmessage(std::string(__FILE__), __LINE__, std::string("No position is set for the screen although the screen sampling is activated !!!") );
+            exit(1);
+          }
+
+        printmessage(std::string(__FILE__), __LINE__, std::string(" The screen profiling data is initialized. :::") );
+      }
+  }
+
+  /******************************************************************************************************
+   * Store the bunch profile from particles hitting a screen at the given position and save it to the file.
+   ******************************************************************************************************/
+
+  void Solver::screenProfile ()
+  {
+    for ( unsigned jf = 0; jf < FEL_.size(); jf++)
+      {
+        /* Continued past this function if screen profile sampling is not enabled.			*/
+        if (!FEL_[jf].screenProfile_.sampling_) continue;
+
+        /* Iterate through all the screens.								*/
+        for (unsigned i = 0; i < (FEL_[jf].screenProfile_.pos_).size(); i++ )
+          {
+            Double lzScreen = FEL_[jf].screenProfile_.pos_[i];
+            for (std::list<Charge>::iterator iter = iterQB_; iter != iterQE_; iter++)
+              {
+                /* Only look at particles which belong to the domain of this processor.			*/
+                if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+                  {
+                    Double lzm = gamma_ * ( iter->rnm[2] + beta_ * c0_ * ( timeBunch_- mesh_.timeStep_ + dt_ ) );
+                    if ( lzm >= lzScreen )
+                      continue;
+                    Double lzp = gamma_ * ( iter->rnp[2] + beta_ * c0_ * ( timeBunch_ + dt_) );
+                    if ( lzp < lzScreen )
+                      continue;
+
+                    /* Interpolate quantities and write them in file                                             */
+                    *scrp_[jf].files[i] << iter->q  	        << "\t";
+                    *scrp_[jf].files[i] << interp( lzm, lzp, iter->rnm[0], iter->rnp[0], lzScreen ) << "\t";
+                    *scrp_[jf].files[i] << interp( lzm, lzp, iter->rnm[1], iter->rnp[1], lzScreen ) << "\t";
+                    Double tm  = gamma_ * ( (timeBunch_ - mesh_.timeStep_)	+ beta_ / c0_ * iter->rnm[2] );
+                    Double tp  = gamma_ * ( timeBunch_	  			+ beta_ / c0_ * iter->rnp[2] );
+                    *scrp_[jf].files[i] << interp( lzm, lzp, tm, tp, lzScreen ) << "\t";
+
+                    /* Use different positions since momenta are found at (time - 1/2*bunchTimeStep).		*/
+                    Double gm = sqrt( 1 + pow(iter->gbnm[0], 2) + pow(iter->gbnm[1], 2) + pow(iter->gbnm[2], 2) );
+                    lzm -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnm[2] / gm + beta_ );
+                    Double gp = sqrt( 1 + pow(iter->gbnp[0], 2) + pow(iter->gbnp[1], 2) + pow(iter->gbnp[2], 2) );
+                    lzp -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnp[2] / gp + beta_ );
+                    Double gbzm = gamma_ * ( iter->gbnm[2] + beta_ * gm );
+                    Double gbzp = gamma_ * ( iter->gbnp[2] + beta_ * gp );
+
+                    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[0], iter->gbnp[0], lzScreen ) << "\t";
+                    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[1], iter->gbnp[1], lzScreen ) << "\t";
+                    *scrp_[jf].files[i] << interp( lzm, lzp, gbzm, gbzp, lzScreen ) << std::endl;
+                  }
+              }
+          }
+      }
+  }
+
+  /******************************************************************************************************
    * Finalize the field calculations.
    ******************************************************************************************************/
 
@@ -1879,4 +1982,14 @@ namespace MITHRA
 
   bool Solver::undulatorCompare (Undulator i, Undulator j)
   { return ( i.rb_ < j.rb_ ); }
+
+  /****************************************************************************************************
+   * Define the function for linear interpolation.
+   ****************************************************************************************************/
+
+  Double Solver::interp( Double x0, Double x1, Double y0, Double y1, Double x )
+  {
+    return y0 + ( x - x0 ) / ( x1 - x0 ) * ( y1 - y0 );
+  }
+
 }

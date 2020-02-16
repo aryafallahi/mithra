@@ -680,10 +680,10 @@ namespace MITHRA
 	    }
 
       /* The data related to the screen to measure bunch profile.                      */
-	  else if (*iter == "screen-profile")
+	  else if (*iter == "bunch-profile-lab-frame")
 	    {
 	      ++iter;
-	      if (*iter != "{") { std::cout << "The screen-profile directory is empty" << std::endl; exit(1); }
+	      if (*iter != "{") { std::cout << "The bunch-profile-lab-frame directory is empty" << std::endl; exit(1); }
 	      else ++iter;
 	      FreeElectronLaser		FEL;
 	      do
@@ -692,7 +692,7 @@ namespace MITHRA
               else if (parameterName(*iter) == "directory") FEL.screenProfile_.directory_		= stringValue(*iter);
               else if (parameterName(*iter) == "base-name") FEL.screenProfile_.basename_		= stringValue(*iter);
               else if (parameterName(*iter) == "position")      (FEL.screenProfile_.pos_).push_back(doubleValue(*iter));
-              else { std::cout << parameterName(*iter) << " is not defined in the screen-profile group." << std::endl; exit(1); }
+              else { std::cout << parameterName(*iter) << " is not defined in the bunch-profile-lab-frame group." << std::endl; exit(1); }
               ++iter;
             }
 	      while (*iter != "}");

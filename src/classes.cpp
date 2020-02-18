@@ -1069,7 +1069,7 @@ namespace MITHRA
   /*** FreeElectronLaser class **************************************************************************/
 
   /* Set the sampling type of the radiation power.                                                	*/
-  void FreeElectronLaser::RadiationPower::samplingType (std::string samplingType)
+  void FreeElectronLaser::RadiationSampling::samplingType (std::string samplingType)
   {
     if      ( samplingType.compare("at-point")   == 0 )   samplingType_ = ATPOINT;
     else if ( samplingType.compare("over-line")  == 0 )   samplingType_ = OVERLINE;
@@ -1077,7 +1077,7 @@ namespace MITHRA
   }
 
   /* Initialize the values for initializing the radiation power.                     			*/
-  FreeElectronLaser::RadiationPower::RadiationPower ()
+  FreeElectronLaser::RadiationSampling::RadiationSampling ()
   {
     z_.clear();
     sampling_		= false;
@@ -1091,6 +1091,16 @@ namespace MITHRA
     lambdaMin_		= 0.0;
     lambdaMax_		= 0.0;
     lambdaRes_		= 0.0;
+  }
+
+  /* Initialize the values for initializing the radiation power.                     			*/
+  FreeElectronLaser::RadiationVisualization::RadiationVisualization ()
+  {
+    z_			= 0.0;
+    sampling_		= false;
+    directory_		= "";
+    basename_		= "";
+    rhythm_		= 0.0;
   }
 
   /* Initialize the values for saving the particles hitting screens.                   			*/
@@ -1100,40 +1110,5 @@ namespace MITHRA
     directory_    	= "./";
     basename_     	= "";
     pos_.clear();
-  }
-
-  /* Initialize the values for initializing the radiation power.                     			*/
-  FreeElectronLaser::vtk::vtk ()
-  {
-    z_			= 0.0;
-    sampling_		= false;
-    directory_		= "";
-    basename_		= "";
-    rhythm_		= 0.0;
-  }
-
-  /* Set the sampling type of the radiation power.                                                	*/
-  void FreeElectronLaser::RadiationEnergy::samplingType (std::string samplingType)
-  {
-    if      ( samplingType.compare("at-point")   == 0 )   samplingType_ = ATPOINT;
-    else if ( samplingType.compare("over-line")  == 0 )   samplingType_ = OVERLINE;
-    else { std::cout << samplingType << " is an unknown sampling type." << std::endl; exit(1); }
-  }
-
-  /* Initialize the values for initializing the radiation energy.                     			*/
-  FreeElectronLaser::RadiationEnergy::RadiationEnergy ()
-  {
-    z_.clear();
-    sampling_		= false;
-    directory_		= "";
-    basename_		= "";
-    lineBegin_		= 0.0;
-    lineEnd_		= 0.0;
-    res_		= 0.0;
-    samplingType_	= ATPOINT;
-    lambda_.clear();
-    lambdaMin_		= 0.0;
-    lambdaMax_		= 0.0;
-    lambdaRes_		= 0.0;
   }
 }

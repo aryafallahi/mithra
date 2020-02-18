@@ -634,12 +634,12 @@ namespace MITHRA
 
 	      do
 		{
-		  if      (parameterName(*iter) == "sample")         			FEL.vtk_.sampling_	= boolValue(*iter);
-		  else if (parameterName(*iter) == "directory")         		FEL.vtk_.directory_	= stringValue(*iter);
-		  else if (parameterName(*iter) == "base-name")         		FEL.vtk_.basename_	= stringValue(*iter);
-		  else if (parameterName(*iter) == "plane-position")	        	FEL.vtk_.z_		= doubleValue(*iter);
-		  else if (parameterName(*iter) == "rhythm")            		FEL.vtk_.rhythm_   	= doubleValue(*iter);
-		  else if (parameterName(*iter) == "normalized-frequency")	        FEL.vtk_.lambda_        = doubleValue(*iter);
+		  if      (parameterName(*iter) == "sample")         			FEL.vtkPower_.sampling_		= boolValue(*iter);
+		  else if (parameterName(*iter) == "directory")         		FEL.vtkPower_.directory_	= stringValue(*iter);
+		  else if (parameterName(*iter) == "base-name")         		FEL.vtkPower_.basename_		= stringValue(*iter);
+		  else if (parameterName(*iter) == "plane-position")	        	FEL.vtkPower_.z_		= doubleValue(*iter);
+		  else if (parameterName(*iter) == "rhythm")            		FEL.vtkPower_.rhythm_   	= doubleValue(*iter);
+		  else if (parameterName(*iter) == "normalized-frequency")	        FEL.vtkPower_.lambda_        	= doubleValue(*iter);
 		  else { std::cout << parameterName(*iter) << " is not defined in power-visualization group." << std::endl; exit(1); }
 		  ++iter;
 		}

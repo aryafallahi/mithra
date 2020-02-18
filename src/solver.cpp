@@ -1295,7 +1295,7 @@ namespace MITHRA
 	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
 	  {
 	    /* Loop over the particles and print the data of each particle into the file.		*/
-	    *pb_.file << iter->q  	        << "\t";
+	    //*pb_.file << iter->q  	        << "\t";
 	    *pb_.file << iter->rnp[0]  	<< "\t";
 	    *pb_.file << iter->rnp[1]  	<< "\t";
 	    *pb_.file << iter->rnp[2]  	<< "\t";
@@ -1885,10 +1885,11 @@ namespace MITHRA
         /* If the directory of the baseFilename does not exist create this directory.			*/
         createDirectory(FEL_[jf].screenProfile_.basename_, rank_);
 
-        /* Order screens                          */
+        /* Order screens                          							*/
         std::sort(FEL_[jf].screenProfile_.pos_.begin(), FEL_[jf].screenProfile_.pos_.end());
 
         MPI_Barrier(MPI_COMM_WORLD);
+
         /* Open files for each screen and write its position in first line.                    	       */
         for ( unsigned int i = 0; i < (FEL_[jf].screenProfile_.pos_).size(); i++ ){
           printmessage(std::string(__FILE__), __LINE__, std::string("Screen ") + stringify(i) + std::string(" is at distance ") + stringify(FEL_[jf].screenProfile_.pos_[i]) + std::string(" from the undulator beginning.") );
@@ -1897,7 +1898,7 @@ namespace MITHRA
           (*scrp_[jf].files[i]).setf(std::ios::scientific);
           (*scrp_[jf].files[i]).precision(15);
           (*scrp_[jf].files[i]).width(40);
-          *scrp_[jf].files[i] << "Screen distance from the beginning of the undulator = " << stringify(FEL_[jf].screenProfile_.pos_[i]) << std::endl;
+          //*scrp_[jf].files[i] << "Screen distance from the beginning of the undulator = " << stringify(FEL_[jf].screenProfile_.pos_[i]) << std::endl;
         }
 
         /* Return an error if the screen sampling is activated but no screen is given.	       		*/
@@ -1932,21 +1933,20 @@ namespace MITHRA
                 if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
                   {
                     Double lzm = gamma_ * ( iter->rnm[2] + beta_ * c0_ * ( timeBunch_- mesh_.timeStep_ + dt_ ) );
-                    if ( lzm >= lzScreen )
-                      continue;
-                    Double lzp = gamma_ * ( iter->rnp[2] + beta_ * c0_ * ( timeBunch_ + dt_) );
-                    if ( lzp < lzScreen )
-                      continue;
+                    if ( lzm >= lzScreen )	continue;
 
-                    /* Interpolate quantities and write them in file                                             */
-                    *scrp_[jf].files[i] << iter->q  	        << "\t";
+                    Double lzp = gamma_ * ( iter->rnp[2] + beta_ * c0_ * ( timeBunch_ + dt_) );
+                    if ( lzp <  lzScreen )	continue;
+
+                    /* Interpolate quantities and write them in file.					*/
+                    // *scrp_[jf].files[i] << iter->q  	        << "\t";
                     *scrp_[jf].files[i] << interp( lzm, lzp, iter->rnm[0], iter->rnp[0], lzScreen ) << "\t";
                     *scrp_[jf].files[i] << interp( lzm, lzp, iter->rnm[1], iter->rnp[1], lzScreen ) << "\t";
                     Double tm  = gamma_ * ( (timeBunch_ - mesh_.timeStep_)	+ beta_ / c0_ * iter->rnm[2] );
                     Double tp  = gamma_ * ( timeBunch_	  			+ beta_ / c0_ * iter->rnp[2] );
                     *scrp_[jf].files[i] << interp( lzm, lzp, tm, tp, lzScreen ) << "\t";
 
-                    /* Use different positions since momenta are found at (time - 1/2*bunchTimeStep).		*/
+                    /* Use different positions since momenta are found at (time - 1/2*bunchTimeStep).	*/
                     Double gm = sqrt( 1 + pow(iter->gbnm[0], 2) + pow(iter->gbnm[1], 2) + pow(iter->gbnm[2], 2) );
                     lzm -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnm[2] / gm + beta_ );
                     Double gp = sqrt( 1 + pow(iter->gbnp[0], 2) + pow(iter->gbnp[1], 2) + pow(iter->gbnp[2], 2) );
@@ -1954,6 +1954,7 @@ namespace MITHRA
                     Double gbzm = gamma_ * ( iter->gbnm[2] + beta_ * gm );
                     Double gbzp = gamma_ * ( iter->gbnp[2] + beta_ * gp );
 
+                    /* Write the momentum data into the file.						*/
                     *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[0], iter->gbnp[0], lzScreen ) << "\t";
                     *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[1], iter->gbnp[1], lzScreen ) << "\t";
                     *scrp_[jf].files[i] << interp( lzm, lzp, gbzm, gbzp, lzScreen ) << std::endl;

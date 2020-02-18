@@ -424,7 +424,7 @@ namespace MITHRA
   struct FreeElectronLaser
   {
     /* Structure contianing the parsed parameters for the radiation power.				*/
-    struct RadiationPower
+    struct RadiationSampling
     {
       /* The distance of the planes from the bunch to sample the radiation power.			*/
       std::vector<Double>			z_;
@@ -458,18 +458,16 @@ namespace MITHRA
       void samplingType(std::string samplingType);
 
       /* Initialize the values for initializing the radiation power.                     		*/
-      RadiationPower();
+      RadiationSampling();
     };
 
-    RadiationPower 				radiationPower_;
-
-    /* Structure containing the parsed parameters for the power-visualization.				*/
-    struct vtk
+    /* Structure containing the parsed parameters for the power or energy visualization.		*/
+    struct RadiationVisualization
     {
-      /* The distance of the plane from the bunch to sample the radiation power.			*/
+      /* The distance of the plane from the bunch to sample the radiation power or energy.		*/
       Double					z_;
 
-      /* Store the data required for sampling the radiation power.					*/
+      /* Store the data required for sampling the radiation power or energy.				*/
       bool					sampling_;
 
       /* Store the directory in which the radiation data is saved.					*/
@@ -478,72 +476,45 @@ namespace MITHRA
       /* Store the base-name of the file in which the radiation data is saved.				*/
       std::string				basename_;
 
-      /* Store the rhythm for calculating and saving the radiation power.				*/
+      /* Store the rhythm for calculating and saving the radiation power or energy.			*/
       Double					rhythm_;
 
-      /* The wavelength of the harmonic whose power should be plotted.					*/
+      /* The wavelength of the harmonic whose power or energy should be plotted.			*/
       Double					lambda_;
 
-      /* Initialize the values for initializing the radiation power.                     		*/
-      vtk ();
+      /* Initialize the values for initializing the radiation power or energy.                     	*/
+      RadiationVisualization ();
     };
 
-    vtk vtk_;
+    /* Define the variables containing the required structures for power sampling and visualization.	*/
+    RadiationSampling 				radiationPower_;
+    RadiationVisualization 			vtkPower_;
 
-    /* Structure contianing the parsed parameters for the radiation energy.				*/
-    struct RadiationEnergy
-    {
-      /* The distance of the planes from the bunch to sample the radiation power.			*/
-      std::vector<Double>			z_;
-
-      /* Store the data required for sampling the radiation power.					*/
-      bool					sampling_;
-
-      /* Store the directory in which the radiation data is saved.					*/
-      std::string				directory_;
-
-      /* Store the base-name of the file in which the radiation data is saved.				*/
-      std::string				basename_;
-
-      /* Store the rhythm for calculating and saving the radiation power.				*/
-      Double					rhythm_;
-
-      /* The begin and end of the line as well as the resolution on which the radiation data is saved.	*/
-      Double                 			lineBegin_;
-      Double                 			lineEnd_;
-      Double                              	res_;
-
-      /* Store the sampling type of the radiation power.						*/
-      SamplingType                        	samplingType_;
-
-      /* The wavelength of the harmonic whose power should be plotted.					*/
-      std::vector<Double>			lambda_;
-
-      /* The wavelength sweep data for the power computation.						*/
-      Double					lambdaMin_;
-      Double					lambdaMax_;
-      Double					lambdaRes_;
-
-      /* Set the sampling type of the radiation power.                                                	*/
-      void samplingType (std::string samplingType);
-
-      /* Initialize the values for initializing the radiation energy.                     		*/
-      RadiationEnergy   ();
-    };
-
-    RadiationEnergy 				radiationEnergy_;
+    /* Define the variables containing the required structures for energy sampling and visualization.	*/
+    RadiationSampling 				radiationEnergy_;
+    RadiationVisualization 			vtkEnergy_;
     
-    /* Parsed parameters for the screens that record the bunch profile.					*/
+    /* Parsed parameters for the screens that record the bunch profile. This produces the bunch profile
+     * in the lab frame.										*/
     struct ScreenProfile
     {
-      bool				sampling_;
-      std::string			directory_;
-      std::string			basename_;
-      std::vector<Double>      		pos_;
+      /* Flag that activates storing the data required for sampling the bunch on a screen.		*/
+      bool					sampling_;
+
+      /* Store the directory in which the bunch profile in the lab frame is saved.			*/
+      std::string				directory_;
+
+      /* Store the base-name of the file in which this bunch profile is saved.				*/
+      std::string				basename_;
+
+      /* Store the positions in the undulator where the saving of the bunch profile is done.		*/
+      std::vector<Double>      			pos_;
+
       ScreenProfile ();
     };
 
-    ScreenProfile screenProfile_;
+    /* Define the variables containing the required structure for profiling the bunch in the lab frame.	*/
+    ScreenProfile 				screenProfile_;
   };
 }
 #endif

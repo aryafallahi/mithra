@@ -156,7 +156,7 @@ In what follows, the parameters in each group are introduced:
 	%
 	\item {\tt \small \em 3D-crystal} initializes multiple bunches on the points of a 3D crystal centered at the coordinate specified by the position vector and extends over the space by the number vector and the considered lattice constant. Each single bunch has a ellipsoid Gaussian property with the values read from the deviation parameters.
 	%
-	\item {\tt \small \em file} reads a list of 6D position and momentum coordinates from a file and initializes the macro-particles correspondingly in the solver.
+	\item {\tt \small \em file} reads a list of 6D position and momentum coordinates from a file and initializes the macro-particles correspondingly in the solver. The format of the file that is read by MITHRA is a text ({\tt \small .txt}) file. In this file, each line presents the properties of one macro-particle that should be initialized in the code. In each line, six values corresponding to position of the macro-particle ($x, y, z$) and its normalized momentum ($\gamma\beta_x, \gamma\beta_y, \gamma\beta_z$) are written. This simple format is also the general format of all the bunch profiles produced by the MITHRA code.
 \end{enumerate}
 %
 \item {\tt \small \em distribution} determines if the initialized particle distribution should have a uniform or Gaussian current profile. In MITHRA, the transverse distributions are always Gaussian, unless the bunch is given manually. This parameter merely affects the distribution along the traveling path, i.e. $z$.

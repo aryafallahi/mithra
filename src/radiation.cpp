@@ -133,31 +133,31 @@ namespace MITHRA
     for ( unsigned int jf = 0; jf < FEL_.size(); jf++)
       {
 	/* Initialize if and only if the sampling of the power is enabled.				*/
-	if (!FEL_[jf].vtk_.sampling_) continue;
+	if (!FEL_[jf].vtkPower_.sampling_) continue;
 
 	/* Return an error if the power visualization rhythm is still zero.				*/
-	if ( FEL_[jf].vtk_.rhythm_ == 0 )
+	if ( FEL_[jf].vtkPower_.rhythm_ == 0 )
 	  {
 	    printmessage(std::string(__FILE__), __LINE__, std::string("The power visualization rhythm of the field is zero although power visualization is activated !!!") );
 	    exit(1);
 	  }
 
 	/* Lorentz boost the power-visualization sampling rhythm to the electron rest frame.		*/
-	FEL_[jf].vtk_.rhythm_		/= gamma_;
+	FEL_[jf].vtkPower_.rhythm_		/= gamma_;
 
 	/* Perform the Lorentz boost for the sampling data.						*/
-	FEL_[jf].vtk_.z_ 		*= gamma_;
+	FEL_[jf].vtkPower_.z_ 		*= gamma_;
 
 	/* Create the filename for saving the visualization data.					*/
-	if (!(isabsolute(FEL_[jf].vtk_.basename_)))
-	  FEL_[jf].vtk_.basename_ = FEL_[jf].vtk_.directory_ + FEL_[jf].vtk_.basename_;
+	if (!(isabsolute(FEL_[jf].vtkPower_.basename_)))
+	  FEL_[jf].vtkPower_.basename_ = FEL_[jf].vtkPower_.directory_ + FEL_[jf].vtkPower_.basename_;
 
 	/* If the directory of the baseFilename does not exist create this directory.			*/
-	createDirectory(FEL_[jf].vtk_.basename_, rank_);
+	createDirectory(FEL_[jf].vtkPower_.basename_, rank_);
 
 	/* Set the number of sampling points in each processor.                                       	*/
 	rp_[jf].N  = 1;
-	rp_[jf].Nz = ( FEL_[jf].vtk_.z_ < zp_[1] && FEL_[jf].vtk_.z_ >= zp_[0] ) ? 1 : 0;
+	rp_[jf].Nz = ( FEL_[jf].vtkPower_.z_ < zp_[1] && FEL_[jf].vtkPower_.z_ >= zp_[0] ) ? 1 : 0;
 	rp_[jf].Nl = 1;
 
 	/* Do not continue the loop if Nz is not equal to one.						*/
@@ -175,7 +175,7 @@ namespace MITHRA
 	/* Determine the number of time points needed to calculate the amplitude of each radiation
 	 * harmonic. Here, we use the power inside three radiation cycles to calculate the instantaneous
 	 * power at the selected harmonic.								*/
-	Double dt = undulator_[0].lu_ / FEL_[jf].vtk_.lambda_ / ( gamma_ * c0_ );
+	Double dt = undulator_[0].lu_ / FEL_[jf].vtkPower_.lambda_ / ( gamma_ * c0_ );
 	rp_[jf].Nf = unsigned( 3.0 * dt / mesh_.timeStep_ );
 
 	/* Calculate the angular frequency for each wavelength.						*/
@@ -336,11 +336,11 @@ namespace MITHRA
       {
 
 	/* Initialize if and only if the sampling of the power is enabled.                            	*/
-	if ( FEL_[jf].vtk_.sampling_ && rp_[jf].Nz == 1 )
+	if ( FEL_[jf].vtkPower_.sampling_ && rp_[jf].Nz == 1 )
 	  {
 
 	    /* Calculate the index of the cell at which the plane resides.				*/
-	    rp_[jf].dzr 	= modf( ( FEL_[jf].vtk_.z_ - zmin_ ) / mesh_.meshResolution_[2] , &rp_[jf].c);
+	    rp_[jf].dzr 	= modf( ( FEL_[jf].vtkPower_.z_ - zmin_ ) / mesh_.meshResolution_[2] , &rp_[jf].c);
 	    rp_[jf].k   	= (int) rp_[jf].c - k0_;
 
 	    /* Get the index in the time series for power calculation.					*/
@@ -390,11 +390,11 @@ namespace MITHRA
 		    }
 		}
 
-	    if ( fmod(time_, FEL_[jf].vtk_.rhythm_) < mesh_.timeStep_ )
+	    if ( fmod(time_, FEL_[jf].vtkPower_.rhythm_) < mesh_.timeStep_ )
 	      {
 
 		/* The old files if existing should be deleted.						*/
-		std::string baseFilename = FEL_[jf].vtk_.basename_ + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
+		std::string baseFilename = FEL_[jf].vtkPower_.basename_ + "-" + stringify(nTime_) + VTS_FILE_SUFFIX;
 		rp_[jf].file[0] = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
 
 		rp_[jf].file[0]->setf(std::ios::scientific);

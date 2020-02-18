@@ -77,26 +77,27 @@ namespace MITHRA
     /* Initialize the data required for sampling and saving the radiation power at the given position.	*/
     void 		initializePowerSample		();
 
-    /* Initialize the data required for visualizing the radiation power at the given position.		*/
-    void 		initializePowerVisualize	();
-
-    /* Initialize the data required for storing particles hitting a screen at the given position.	*/
-    void 		initializeScreenProfile		();
-
     /* Sample the radiation power at the given position and save it to the file.			*/
     void 		powerSample			();
 
+    /* Initialize the data required for visualizing the radiation power at the given position.		*/
+    void 		initializePowerVisualize	();
+
     /* Visualize the radiation power at the given position and save it to the file.			*/
     void 		powerVisualize			();
-
-    /* Store the bunch profile from particles hitting a screen at the given position and save it to the file. */
-    void 		screenProfile			();
 
     /* Initialize the data required for sampling and saving the radiation energy at the given position.	*/
     void 		initializeEnergySample		();
 
     /* Sample the radiation energy at the given position and save it to the file. 			*/
     void 		energySample			();
+
+    /* Initialize the data required for storing particles hitting a screen at the given position.	*/
+    void 		initializeScreenProfile		();
+
+    /* Store the bunch profile from particles hitting a screen at the given position and save it to the
+     * file. 												*/
+    void 		screenProfile			();
 
     /* Finalize the field calculations. 								*/
     void 		finalize			();

@@ -904,8 +904,11 @@ namespace MITHRA
     /* First define a parameter for the processor number.						*/
     std::list<Charge>::iterator	iter;
     UpdateBunchParallel	        ubp;
-    MPI_Status                        status;
-    int                               msgtag1 = 1, msgtag2 = 2;
+    MPI_Status                  status;
+    int                         msgtag1 = 1, msgtag2 = 2;
+
+    /* Set the count for particles outside the transverse domain of the bunch to zero.			*/
+    ubp.nt = 0;
 
     /* Loop over the charge points in the bunch, extract the real field values of the seed at their point,
      * superpose with the undulator field and eventually accelerate the particles within the field.	*/
@@ -916,9 +919,9 @@ namespace MITHRA
 	if ( !( ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) ) ) continue;
 
 	/* Get the boolean flag determining if the particle resides in the computational domain.      	*/
-	ubp.b1 = ( iter->rnp[0] < xmax_ - ub_.dx && iter->rnp[0] > xmin_ + ub_.dx &&
-	    iter->rnp[1] < ymax_ - ub_.dy && iter->rnp[1] > ymin_ + ub_.dy &&
-	    iter->rnp[2] < zp_[1]         && iter->rnp[2] >= zp_[0] );
+	ubp.b1x = ( iter->rnp[0] < xmax_ - ub_.dx && iter->rnp[0] > xmin_ + ub_.dx );
+	ubp.b1y = ( iter->rnp[1] < ymax_ - ub_.dy && iter->rnp[1] > ymin_ + ub_.dy );
+	ubp.b1z = ( iter->rnp[2] < zp_[1]         && iter->rnp[2] >= zp_[0] );
 
 	/* Calculate the undulator field at the particle position.				        */
 	undulatorField(ubp, iter->rnp);
@@ -926,7 +929,7 @@ namespace MITHRA
 	/* Calculate the external field at the particle position and add to the undulator field.      	*/
 	externalField(ubp, iter->rnp);
 
-	if (ubp.b1)
+	if ( ubp.b1x && ubp.b1y && ubp.b1z )
 	  {
 	    ubp.dxr = modf( ( iter->rnp[0] - xmin_ ) / ub_.dx , &ubp.d1 ); ubp.i = (int) ubp.d1;
 	    ubp.dyr = modf( ( iter->rnp[1] - ymin_ ) / ub_.dy , &ubp.d1 ); ubp.j = (int) ubp.d1;
@@ -963,6 +966,12 @@ namespace MITHRA
 	    ubp.bt.pmv(         ubp.dxr   * ( 1.0 - ubp.dyr ) *         ubp.dzr  , bn_[ubp.m+N1N0_+N1_  ]);
 	    ubp.bt.pmv( ( 1.0 - ubp.dxr ) *         ubp.dyr   *         ubp.dzr  , bn_[ubp.m+N1N0_+1	  ]);
 	    ubp.bt.pmv(         ubp.dxr   *         ubp.dyr   *         ubp.dzr  , bn_[ubp.m+N1N0_+N1_+1]);
+	  }
+	else if ( !(ubp.b1x) && !(ubp.b1y) && ubp.b1z )
+	  {
+	    /* Add one to the number of particles that do not reside in the transverse size of the
+	     * computational domain.									*/
+	    ubp.nt++;
 	  }
 
 	/* Update the velocity of the particle according to the calculated electric and magnetic field.	*/
@@ -1086,11 +1095,18 @@ namespace MITHRA
 
 	chargeVectorn_.push_back(ub_.Q);
       }
+
+    /* Add the number of charge points that do not reside in the transverse size of the domain from
+     * different processors.										*/
+    MPI_Reduce(&ubp.nt, &ub_.nt,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
+    if ( rank_ == 0 && ub_.nt > 0 )
+      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: " + stringify(ub_.nt) +
+	" particles have transverse dimensions that are larger than the computational domain size.") );
   }
 
-  /****************************************************************************************************
+  /******************************************************************************************************
    * Sample the bunch data and save it to the given file.
-   ****************************************************************************************************/
+   ******************************************************************************************************/
 
   void Solver::bunchSample ()
   {

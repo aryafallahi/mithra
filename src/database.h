@@ -249,7 +249,8 @@ namespace MITHRA
   {
     int					i, j, k, n;
     long int                            m;
-    bool                                b1, b2;
+    bool                                b1x, b1y, b1z;
+    int					nt;
     std::vector<Double>                 qSB, qSF, qRB, qRF;
 
     FieldVector<Double>			et, bt;
@@ -280,6 +281,7 @@ namespace MITHRA
     Double				ct, st;
     int                                 nL, i;
     Charge                              Q;
+    int					nt;
   };
 
   /* Structure of data required for sampling the bunch.							*/

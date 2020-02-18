@@ -60,7 +60,7 @@ FEL-OUTPUT
     sample						= true
     type						= at-point
     directory						= ./
-    base-name						= power-sampling/power-FD
+    base-name						= power-sampling/power-FDtest
     plane-position					= 110
     normalized-frequency				= 1.00
   }

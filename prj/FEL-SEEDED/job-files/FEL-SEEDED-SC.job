@@ -4,10 +4,10 @@
 #
 #  manual: example 2, Fig. 5.6a and Fig. 5.6b (simulation results with space-charge)
 #
-#  mpirun -np 4 ../darius ./job-files/FEL-SEEDED-SC.job
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-SEEDED-SC.job
 #
 #  in the LSF system:
-#  bsub -n 48 -W 2:00 -J "FEL-SEEDED-SC" -o mithra.out 'mpirun ../darius ./job-files/FEL-SEEDED-SC.job'
+#  bsub -n 48 -W 2:00 -J "FEL-SEEDED-SC" -o mithra.out 'mpirun ../MITHRA ./job-files/FEL-SEEDED-SC.job'
 
 MESH
 {

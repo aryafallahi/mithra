@@ -864,7 +864,7 @@ EXTERNAL-FIELD
 
 The typical parameters for a free electron laser instrument are calculated from the radiated fields using the parameter definitions at this section.
 %
-Currently, there are two groups implemented in MITHRA, for computation of radiated power and visualization of this power on a detector in front of the bunch.
+Currently, there are three groups implemented in MITHRA, for computation of radiated power, visualization of this power on a detector in front of the bunch, and visualization of the bunch profile in the lab frame by recording the particles that are intercepted by screens placed along the z-axis.
 %
 In what follows, the parameters in each group are introduced:
 
@@ -918,6 +918,20 @@ The set of values accepted in this group include:
 	\item {\tt \small \em rhythm} is a real value determining the intervals for power-visualization. Note that because of the requirements on the Fourier transform, the power computation is accomplished at each time step. However, the saving of the visualization files will be done according to the set value for this parameter.
 \end{itemize}
 %
+\item {\tt \small \em bunch-profile-lab-frame:} This group determines the z-coordinates where the diagnostics screens are placed. Particles that are intercepted by these screens will have their momentum, transverse position, and time of intersection stored in a .txt file. Each line of the file is one particle, and the columns are $q, x, y, t, p_x, p_y, p_z$ respectively.
+%
+The set of values accepted in this group include:
+%
+\begin{itemize}
+	\item {\tt \small \em sample} is a boolean parameter which activates the computation of the total radiated power at each instant.
+	%
+	\item {\tt \small \em base-name} is the file name (no suffix) with the required address of the file to save the output data.
+	%
+	\item {\tt \small \em directory} is the address where the above file should be saved. The file name with the address can also be given in the base-name section. The software eventually considers the combination of directory and base-name as the final complete file name.
+	%
+	\item {\tt \small \em position} gives the distance from the undulator begin at which to place the diagnostics screen. A negative position will mean that the screen is placed before the undulator.
+\end{itemize}
+%
 \end{enumerate}
 
 The format of the \texttt{FEL-OUTPUT} group is (the red groups and parameters are repeatable parts):
@@ -950,6 +964,14 @@ FEL-OUTPUT
 		normalized-frequency	  = < real >
 		rhythm					  = < real >
 	\textcolor{red}{\}}
+
+	\textcolor{red}{bunch-profile-lab-frame}
+	\textcolor{red}{\{}
+		sample  								= < false | true >
+		directory  						 = < /path/to/location >
+		base-name  						 = < string >
+        \textcolor{red}{position                            = < real >}
+	\textcolor{red}{\}}
 \}
 \end{Verbatim}
 %%
@@ -977,6 +999,16 @@ FEL-OUTPUT
 		plane-position			  = 110.0
 		normalized-frequency	  = 1.00
 		rhythm					  = 32.0
+	\}
+
+	bunch-profile-lab-frame
+	\{
+		sample  								= true
+		directory  						 = ./
+		base-name  						 = bunch-profile-lab-frame/profile
+		position		  					= -.1e6
+        position		  					= 2.5e6
+        position		  					= 9.0e6
 	\}
 \}
 \end{Verbatim}

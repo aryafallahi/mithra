@@ -1093,6 +1093,15 @@ namespace MITHRA
     lambdaRes_		= 0.0;
   }
 
+  /* Initialize the values for saving the particles hitting screens.                   			*/
+  FreeElectronLaser::ScreenProfile::ScreenProfile ()
+  {
+    sampling_          	= false;
+    directory_    	= "./";
+    basename_     	= "";
+    pos_.clear();
+  }
+
   /* Initialize the values for initializing the radiation power.                     			*/
   FreeElectronLaser::vtk::vtk ()
   {

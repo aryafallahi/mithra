@@ -532,6 +532,18 @@ namespace MITHRA
     };
 
     RadiationEnergy 				radiationEnergy_;
+    
+    /* Parsed parameters for the screens that record the bunch profile.					*/
+    struct ScreenProfile
+    {
+      bool				sampling_;
+      std::string			directory_;
+      std::string			basename_;
+      std::vector<Double>      		pos_;
+      ScreenProfile ();
+    };
+
+    ScreenProfile screenProfile_;
   };
 }
 #endif

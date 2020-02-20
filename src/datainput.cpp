@@ -421,7 +421,7 @@ namespace MITHRA
 		  else if (parameterName(*iter) == "period")                            undulator.lu_           = doubleValue(*iter);
 		  else if (parameterName(*iter) == "polarization-angle")                undulator.theta_        = PI / 180.0 * doubleValue(*iter);
 		  else if (parameterName(*iter) == "length")                            undulator.length_       = intValue(*iter);
-          else if (parameterName(*iter) == "distance-to-bunch-head")            undulator.dist_         = doubleValue(*iter);
+		  else if (parameterName(*iter) == "distance-to-bunch-head")            undulator.dist_         = doubleValue(*iter);
 		  else if (parameterName(*iter) == "offset")                            undulator.rb_       	= doubleValue(*iter);
 		  else { std::cout << parameterName(*iter) << " is not defined in the static-undulator group." << std::endl; exit(1); }
 		  ++iter;
@@ -441,7 +441,7 @@ namespace MITHRA
 
 	      Undulator undulator;
 	      /* Initialize variables with default values from undulator constructor.			*/
-	      Double k = undulator.k_, lu = undulator.lu_, theta = undulator.theta_, g = 0.0, t = 0.0;
+	      Double k = undulator.k_, lu = undulator.lu_, theta = undulator.theta_, g = 0.0, t = 0.0, d = 0.0;
 	      unsigned int l = undulator.length_, N = 1;
 
 	      do
@@ -453,6 +453,7 @@ namespace MITHRA
 		  else if (parameterName(*iter) == "gap")                            g		= doubleValue(*iter);
 		  else if (parameterName(*iter) == "number")                         N		= intValue(*iter);
 		  else if (parameterName(*iter) == "tapering-parameter")             t		= doubleValue(*iter);
+		  else if (parameterName(*iter) == "distance-to-bunch-head")         d          = doubleValue(*iter);
 		  else { std::cout << parameterName(*iter) << " is not defined in the static-undulator-array group." << std::endl; exit(1); }
 		  ++iter;
 		}
@@ -468,6 +469,7 @@ namespace MITHRA
 		  undulator.theta_ 	= theta;
 		  undulator.length_	= l;
 		  undulator.rb_		= i * ( l * lu + g );
+		  undulator.dist_	= d;
 
 		  /* Now, add the undulator module ot the array of undulators.				*/
 		  undulator_.push_back(undulator);

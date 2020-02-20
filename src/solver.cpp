@@ -63,21 +63,21 @@ namespace MITHRA
     /****************************************************************************************************/
 
     /* Initialize the corresponding length and time scales in other parts of the solver.		*/
-    seed_.c0_ 		 = c0_;
-    seed_.signal_.t0_ 	/= c0_;
-    seed_.signal_.f0_ 	*= c0_;
-    seed_.signal_.s_          /= c0_;
+    seed_.c0_ 			 = c0_;
+    seed_.signal_.t0_ 		/= c0_;
+    seed_.signal_.f0_ 		*= c0_;
+    seed_.signal_.s_          	/= c0_;
     for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
       {
-	iter->c0_ 	         = c0_;
-	iter->signal_.t0_     /= c0_;
+	iter->c0_ 	       	 = c0_;
+	iter->signal_.t0_     	/= c0_;
 	iter->signal_.f0_ 	*= c0_;
 	iter->signal_.s_ 	/= c0_;
       }
     for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
       {
 	iter->c0_ 	         = c0_;
-	iter->signal_.t0_     /= c0_;
+	iter->signal_.t0_     	/= c0_;
 	iter->signal_.f0_ 	*= c0_;
 	iter->signal_.s_ 	/= c0_;
       }
@@ -88,9 +88,9 @@ namespace MITHRA
      * and undulator.											*/
     seed_.amplitude_ 	        *= EM * c0_ / EC;
     for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
-      iter->amplitude_ 	*= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
+      iter->amplitude_ 		*= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
     for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
-      iter->amplitude_        *= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
+      iter->amplitude_        	*= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
 
     /****************************************************************************************************/
 
@@ -123,7 +123,7 @@ namespace MITHRA
     mesh_.meshLength_[2] 	*= gamma_;
     mesh_.meshResolution_[2] 	*= gamma_;
     mesh_.meshCenter_[2] 	*= gamma_;
-    mesh_.totalTime_          /= gamma_;
+    mesh_.totalTime_		/= gamma_;
 
     /****************************************************************************************************/
 
@@ -193,7 +193,7 @@ namespace MITHRA
     bunch_.bunchVTKRhythm_		/= gamma_;
     for (unsigned int i = 0; i < bunch_.bunchProfileTime_.size(); i++)
       bunch_.bunchProfileTime_[i] 	/= gamma_;
-    bunch_.bunchProfileRhythm_	/= gamma_;
+    bunch_.bunchProfileRhythm_		/= gamma_;
 
     /****************************************************************************************************/
 
@@ -260,6 +260,8 @@ namespace MITHRA
     /* This shift in time makes sure that the maximum z in the bunch at time zero is at undulator[0].dist_ 
      * away from the undulator begin ( the default distance is 2 undulator periods)			*/
     if (undulator_[0].dist_ == 0.0) undulator_[0].dist_ = 2.0 * undulator_[0].lu_;
+    else if (undulator_[0].dist_ < 2.0 * undulator_[0].lu_)
+      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: the undulator is set very close to the bunch, the results may be inaccurate.") );
     dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmax + undulator_[0].dist_ / gamma_ );
     printmessage(std::string(__FILE__), __LINE__, std::string("Initial distance from bunch head to undulator is ") + stringify(undulator_[0].dist_) );
 
@@ -268,8 +270,11 @@ namespace MITHRA
 
     /* With the above definition in the time begin the entrance of the undulator, i.e. z = 0 in the lab
      * frame, corresponds to the z = zmax + undulator_[0].dist_ / gamma_ in the bunch rest frame at
-     * the initialization instant, i.e. timeBunch = 0.0.						*/
-    bunch_.zu_ 	= zmax + undulator_[0].dist_ / gamma_;
+     * the initialization instant, i.e. timeBunch = 0.0.
+     * In MITHRA, we assume that the particle move on a straight line before reaching the start point.
+     * This forces the bunch properties to be as given at the start point of the undulator. The start
+     * point is here the undulator entrance minus the undulator distance.				*/
+    bunch_.zu_ 		= zmax;
     bunch_.beta_ 	= beta_;
 
     printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );
@@ -923,55 +928,69 @@ namespace MITHRA
 	ubp.b1y = ( iter->rnp[1] < ymax_ - ub_.dy && iter->rnp[1] > ymin_ + ub_.dy );
 	ubp.b1z = ( iter->rnp[2] < zp_[1]         && iter->rnp[2] >= zp_[0] );
 
-	/* Calculate the undulator field at the particle position.				        */
-	undulatorField(ubp, iter->rnp);
+	/* Initialize the undulator fields.								*/
+	ubp.bt = 0.0;
+	ubp.et = 0.0;
 
-	/* Calculate the external field at the particle position and add to the undulator field.      	*/
-	externalField(ubp, iter->rnp);
-
-	if ( ubp.b1x && ubp.b1y && ubp.b1z )
+	/* Compute the fields if the particle has passed the entrance zone of the undulator.		*/
+	if ( iter->e )
 	  {
-	    ubp.dxr = modf( ( iter->rnp[0] - xmin_ ) / ub_.dx , &ubp.d1 ); ubp.i = (int) ubp.d1;
-	    ubp.dyr = modf( ( iter->rnp[1] - ymin_ ) / ub_.dy , &ubp.d1 ); ubp.j = (int) ubp.d1;
-	    ubp.dzr = modf( ( iter->rnp[2] - zmin_ ) / ub_.dz , &ubp.d1 ); ubp.k = (int) ubp.d1;
+	    /* Calculate the undulator field at the particle position.				        */
+	    undulatorField(ubp, iter->rnp);
 
-	    /* Get the index of the cell.								*/
-	    ubp.m   = ( ubp.k - k0_) * N1N0_ + ubp.i * N1_ + ubp.j;
+	    /* Calculate the external field at the particle position and add to the undulator field.	*/
+	    externalField(ubp, iter->rnp);
 
-	    if (!pic_[ubp.m            ])     fieldEvaluate(ubp.m            );
-	    if (!pic_[ubp.m+N1_        ])     fieldEvaluate(ubp.m+N1_        );
-	    if (!pic_[ubp.m+1          ])     fieldEvaluate(ubp.m+1          );
-	    if (!pic_[ubp.m+N1_+1      ])     fieldEvaluate(ubp.m+N1_+1      );
-	    if (!pic_[ubp.m+N1N0_      ])     fieldEvaluate(ubp.m+N1N0_      );
-	    if (!pic_[ubp.m+N1N0_+N1_  ])     fieldEvaluate(ubp.m+N1N0_+N1_  );
-	    if (!pic_[ubp.m+N1N0_+1    ])     fieldEvaluate(ubp.m+N1N0_+1    );
-	    if (!pic_[ubp.m+N1N0_+N1_+1])     fieldEvaluate(ubp.m+N1N0_+N1_+1);
+	    if ( ubp.b1x && ubp.b1y && ubp.b1z )
+	      {
+		ubp.dxr = modf( ( iter->rnp[0] - xmin_ ) / ub_.dx , &ubp.d1 ); ubp.i = (int) ubp.d1;
+		ubp.dyr = modf( ( iter->rnp[1] - ymin_ ) / ub_.dy , &ubp.d1 ); ubp.j = (int) ubp.d1;
+		ubp.dzr = modf( ( iter->rnp[2] - zmin_ ) / ub_.dz , &ubp.d1 ); ubp.k = (int) ubp.d1;
 
-	    /* Calculate and interpolate the electric field to find the value at the bunch point.	*/
-	    ubp.et.pmv( ( 1.0 - ubp.dxr ) * ( 1.0 - ubp.dyr ) * ( 1.0 - ubp.dzr) , en_[ubp.m		  ]);
-	    ubp.et.pmv(         ubp.dxr   * ( 1.0 - ubp.dyr ) * ( 1.0 - ubp.dzr) , en_[ubp.m+N1_	  ]);
-	    ubp.et.pmv( ( 1.0 - ubp.dxr ) *         ubp.dyr   * ( 1.0 - ubp.dzr) , en_[ubp.m+1	  ]);
-	    ubp.et.pmv(         ubp.dxr   *         ubp.dyr   * ( 1.0 - ubp.dzr) , en_[ubp.m+N1_+1	  ]);
-	    ubp.et.pmv( ( 1.0 - ubp.dxr ) * ( 1.0 - ubp.dyr ) *         ubp.dzr  , en_[ubp.m+N1N0_	  ]);
-	    ubp.et.pmv(         ubp.dxr   * ( 1.0 - ubp.dyr ) *         ubp.dzr  , en_[ubp.m+N1N0_+N1_  ]);
-	    ubp.et.pmv( ( 1.0 - ubp.dxr ) *         ubp.dyr   *         ubp.dzr  , en_[ubp.m+N1N0_+1	  ]);
-	    ubp.et.pmv(         ubp.dxr   *         ubp.dyr   *         ubp.dzr  , en_[ubp.m+N1N0_+N1_+1]);
+		/* Get the index of the cell.								*/
+		ubp.m   = ( ubp.k - k0_) * N1N0_ + ubp.i * N1_ + ubp.j;
 
-	    /* Calculate and interpolate the magnetic field to find the value at the bunch point.	*/
-	    ubp.bt.pmv( ( 1.0 - ubp.dxr ) * ( 1.0 - ubp.dyr ) * ( 1.0 - ubp.dzr) , bn_[ubp.m		  ]);
-	    ubp.bt.pmv(         ubp.dxr   * ( 1.0 - ubp.dyr ) * ( 1.0 - ubp.dzr) , bn_[ubp.m+N1_	  ]);
-	    ubp.bt.pmv( ( 1.0 - ubp.dxr ) *         ubp.dyr   * ( 1.0 - ubp.dzr) , bn_[ubp.m+1	  ]);
-	    ubp.bt.pmv(         ubp.dxr   *         ubp.dyr   * ( 1.0 - ubp.dzr) , bn_[ubp.m+N1_+1	  ]);
-	    ubp.bt.pmv( ( 1.0 - ubp.dxr ) * ( 1.0 - ubp.dyr ) *         ubp.dzr  , bn_[ubp.m+N1N0_	  ]);
-	    ubp.bt.pmv(         ubp.dxr   * ( 1.0 - ubp.dyr ) *         ubp.dzr  , bn_[ubp.m+N1N0_+N1_  ]);
-	    ubp.bt.pmv( ( 1.0 - ubp.dxr ) *         ubp.dyr   *         ubp.dzr  , bn_[ubp.m+N1N0_+1	  ]);
-	    ubp.bt.pmv(         ubp.dxr   *         ubp.dyr   *         ubp.dzr  , bn_[ubp.m+N1N0_+N1_+1]);
+		if (!pic_[ubp.m            ])     fieldEvaluate(ubp.m            );
+		if (!pic_[ubp.m+N1_        ])     fieldEvaluate(ubp.m+N1_        );
+		if (!pic_[ubp.m+1          ])     fieldEvaluate(ubp.m+1          );
+		if (!pic_[ubp.m+N1_+1      ])     fieldEvaluate(ubp.m+N1_+1      );
+		if (!pic_[ubp.m+N1N0_      ])     fieldEvaluate(ubp.m+N1N0_      );
+		if (!pic_[ubp.m+N1N0_+N1_  ])     fieldEvaluate(ubp.m+N1N0_+N1_  );
+		if (!pic_[ubp.m+N1N0_+1    ])     fieldEvaluate(ubp.m+N1N0_+1    );
+		if (!pic_[ubp.m+N1N0_+N1_+1])     fieldEvaluate(ubp.m+N1N0_+N1_+1);
+
+		/* Calculate and interpolate the electric field to find the value at the bunch point.	*/
+		ubp.et.pmv( ( 1.0 - ubp.dxr ) * ( 1.0 - ubp.dyr ) * ( 1.0 - ubp.dzr) , en_[ubp.m		]);
+		ubp.et.pmv(         ubp.dxr   * ( 1.0 - ubp.dyr ) * ( 1.0 - ubp.dzr) , en_[ubp.m+N1_	  	]);
+		ubp.et.pmv( ( 1.0 - ubp.dxr ) *         ubp.dyr   * ( 1.0 - ubp.dzr) , en_[ubp.m+1	  	]);
+		ubp.et.pmv(         ubp.dxr   *         ubp.dyr   * ( 1.0 - ubp.dzr) , en_[ubp.m+N1_+1	  	]);
+		ubp.et.pmv( ( 1.0 - ubp.dxr ) * ( 1.0 - ubp.dyr ) *         ubp.dzr  , en_[ubp.m+N1N0_	  	]);
+		ubp.et.pmv(         ubp.dxr   * ( 1.0 - ubp.dyr ) *         ubp.dzr  , en_[ubp.m+N1N0_+N1_  	]);
+		ubp.et.pmv( ( 1.0 - ubp.dxr ) *         ubp.dyr   *         ubp.dzr  , en_[ubp.m+N1N0_+1	]);
+		ubp.et.pmv(         ubp.dxr   *         ubp.dyr   *         ubp.dzr  , en_[ubp.m+N1N0_+N1_+1	]);
+
+		/* Calculate and interpolate the magnetic field to find the value at the bunch point.	*/
+		ubp.bt.pmv( ( 1.0 - ubp.dxr ) * ( 1.0 - ubp.dyr ) * ( 1.0 - ubp.dzr) , bn_[ubp.m		]);
+		ubp.bt.pmv(         ubp.dxr   * ( 1.0 - ubp.dyr ) * ( 1.0 - ubp.dzr) , bn_[ubp.m+N1_		]);
+		ubp.bt.pmv( ( 1.0 - ubp.dxr ) *         ubp.dyr   * ( 1.0 - ubp.dzr) , bn_[ubp.m+1		]);
+		ubp.bt.pmv(         ubp.dxr   *         ubp.dyr   * ( 1.0 - ubp.dzr) , bn_[ubp.m+N1_+1		]);
+		ubp.bt.pmv( ( 1.0 - ubp.dxr ) * ( 1.0 - ubp.dyr ) *         ubp.dzr  , bn_[ubp.m+N1N0_		]);
+		ubp.bt.pmv(         ubp.dxr   * ( 1.0 - ubp.dyr ) *         ubp.dzr  , bn_[ubp.m+N1N0_+N1_	]);
+		ubp.bt.pmv( ( 1.0 - ubp.dxr ) *         ubp.dyr   *         ubp.dzr  , bn_[ubp.m+N1N0_+1	]);
+		ubp.bt.pmv(         ubp.dxr   *         ubp.dyr   *         ubp.dzr  , bn_[ubp.m+N1N0_+N1_+1	]);
+	      }
+	    else if ( !(ubp.b1x) && !(ubp.b1y) && ubp.b1z )
+	      {
+		/* Add one to the number of particles that do not reside in the transverse size of the
+		 * computational domain.								*/
+		ubp.nt++;
+	      }
 	  }
-	else if ( !(ubp.b1x) && !(ubp.b1y) && ubp.b1z )
+	else
 	  {
-	    /* Add one to the number of particles that do not reside in the transverse size of the
-	     * computational domain.									*/
-	    ubp.nt++;
+	    /* Update the emission vector flag based on the particle position in lab frame.		*/
+	    ubp.lz 	= gamma_ * ( iter->rnp[2] + beta_ * c0_ * ( timeBunch_ + dt_ ) );
+	    iter->e 	= ( ubp.lz > - undulator_[0].dist_ );
 	  }
 
 	/* Update the velocity of the particle according to the calculated electric and magnetic field.	*/
@@ -1331,19 +1350,15 @@ namespace MITHRA
 
   void Solver::undulatorField (UpdateBunchParallel & ubp, FieldVector <Double> & r)
   {
-    /* Initialize the undulator fields.									*/
-    ubp.bt = 0.0;
-    ubp.et = 0.0;
-
     /* For each external field given by the user, add the external fields to the undulator field.     	*/
     for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
       {
 
 	/* Calculate the undulator magnetic field.							*/
-	ub_.b0 	= (iter->lu_ != 0.0 ) ? EM * c0_ * 2 * PI / iter->lu_ * iter->k_ / EC : 0.0;
+	ub_.b0	= (iter->lu_ != 0.0 ) ? EM * c0_ * 2 * PI / iter->lu_ * iter->k_ / EC : 0.0;
 
 	/* Calculate the undulator wave number.								*/
-	ub_.ku     	= (iter->lu_ != 0.0 ) ? 2 * PI / iter->lu_ : 0.0;
+	ub_.ku 	= (iter->lu_ != 0.0 ) ? 2 * PI / iter->lu_ : 0.0;
 
 	/* Calculate the sine and cosine functions of the undulator angle.				*/
 	ub_.ct	= cos( iter->theta_ );

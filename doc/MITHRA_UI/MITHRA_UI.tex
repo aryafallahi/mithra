@@ -601,6 +601,8 @@ Note that the reference undulator for initializing bunches or setting the electr
     %
     \item {\tt \small \em offset} determines the point where the beginning of undulator resides. For the first undulator, it is automatically set to zero.
     %
+    \item {\tt \small \em distance-to-bunch-head} determines the distance between the undulator entrance and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default two undulator periods.
+    %
 \end{itemize}
 %
 \item {\tt \small \em static-undulator-array:} This group determines the required parameters for defining an array of static undulators. The set of values accepted in this group include:
@@ -620,7 +622,10 @@ Note that the reference undulator for initializing bunches or setting the electr
 	%
     \item {\tt \small \em number} is the total number of undulator modules in the array.
     %
-    \item {\tt \small \em tapering-parameter} is the tapering parameter of the undulator array, i.e. $\delta K$ in $K_i=K_0+i \delta K$ giving the K parameters of the $i$'th undulator module. 
+    \item {\tt \small \em tapering-parameter} is the tapering parameter of the undulator array, i.e. $\delta K$ in $K_i=K_0+i \delta K$ giving the K parameters of the $i$'th undulator module.
+    %
+    \item {\tt \small \em distance-to-bunch-head} determines the distance between the {\em first} undulator entrance and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default two undulator periods.
+    %
 \end{itemize}
 %
 \item {\tt \small \em optical-undulator:} This group mainly determines the parameters for defining an optical undulator. The set of values accepted in this group include:

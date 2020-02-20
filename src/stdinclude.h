@@ -132,7 +132,14 @@ namespace MITHRA
     FieldVector<Double>		rnp, rnm;	/* Position vector of the charge.			*/
     FieldVector<Double>		gbnp, gbnm;	/* Normalized velocity vector of the charge.		*/
 
-    Charge();
+    /* Boolean flag determining if the particle is passing the entrance point of the undulator. This flag
+     * can be used for better boosting the bunch to the moving frame.					*/
+    bool			e;
+
+    Charge()
+    {
+      e = false;
+    };
 
   };
 

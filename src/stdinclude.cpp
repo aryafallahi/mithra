@@ -38,6 +38,7 @@ namespace MITHRA
   Charge::Charge ()
   {
     q = 0.0; rnp = rnm = 0.0; gbnp = gbnm = 0.0;
+    e = false;
   }
 
   /* Function creating a set of halton sequence for the random particle generation.			*/

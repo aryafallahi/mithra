@@ -136,10 +136,7 @@ namespace MITHRA
      * can be used for better boosting the bunch to the moving frame.					*/
     bool			e;
 
-    Charge()
-    {
-      e = false;
-    };
+    Charge();
 
   };
 

@@ -220,6 +220,7 @@ namespace MITHRA
     Double				c2, jw, p;
     double				c1;
     unsigned int			N;
+    Double				Ce, Cb, Ca, Cj, Cf;
   };
 
   /* Structure of data required for visualizing the field.						*/

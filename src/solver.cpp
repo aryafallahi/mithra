@@ -647,6 +647,13 @@ namespace MITHRA
 	sf_.file = new std::ofstream(baseFilename.c_str(),std::ios::trunc);
       }
 
+    /* Set the constants to change the units in the output file.					*/
+    sf_.Ce = mesh_.lengthScale_ / pow( mesh_.timeScale_ , 2 );
+    sf_.Cb = 1.0 / ( mesh_.lengthScale_ * mesh_.timeScale_  );
+    sf_.Ca = 1.0 / mesh_.timeScale_;
+    sf_.Cj = 1.0 / ( pow( mesh_.lengthScale_ , 2 ) * mesh_.timeScale_ );
+    sf_.Cf = pow( mesh_.lengthScale_ / mesh_.timeScale_ , 2 );
+
     printmessage(std::string(__FILE__), __LINE__, std::string(" The field sampling data are initialized. :::") );
   }
 

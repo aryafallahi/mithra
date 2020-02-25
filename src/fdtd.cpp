@@ -1068,32 +1068,32 @@ namespace MITHRA
 	    for (unsigned int i = 0; i < seed_.samplingField_.size(); i++)
 	      {
 		if 		( seed_.samplingField_[i] == Ex )
-		  *(sf_.file) << gamma_ * sf_.et[0] + c0_ * sqrt( pow(gamma_, 2) - 1 ) * sf_.bt[1] << "\t";
+		  *(sf_.file) << ( gamma_ * sf_.et[0] + c0_ * sqrt( pow(gamma_, 2) - 1 ) * sf_.bt[1] ) * sf_.Ce << "\t";
 		else if 	( seed_.samplingField_[i] == Ey )
-		  *(sf_.file) << gamma_ * sf_.et[1] - c0_ * sqrt( pow(gamma_, 2) - 1 ) * sf_.bt[0] << "\t";
+		  *(sf_.file) << ( gamma_ * sf_.et[1] - c0_ * sqrt( pow(gamma_, 2) - 1 ) * sf_.bt[0] ) * sf_.Ce << "\t";
 		else if	( seed_.samplingField_[i] == Ez )
-		  *(sf_.file) << sf_.et[2] << "\t";
+		  *(sf_.file) << sf_.et[2] * sf_.Ce << "\t";
 
 		else if	( seed_.samplingField_[i] == Bx )
-		  *(sf_.file) << gamma_ * sf_.bt[0] - sqrt( pow(gamma_, 2) - 1 ) / c0_ * sf_.et[1] << "\t";
+		  *(sf_.file) << ( gamma_ * sf_.bt[0] - sqrt( pow(gamma_, 2) - 1 ) / c0_ * sf_.et[1] ) * sf_.Cb << "\t";
 		else if	( seed_.samplingField_[i] == By )
-		  *(sf_.file) << gamma_ * sf_.bt[1] + sqrt( pow(gamma_, 2) - 1 ) / c0_ * sf_.et[0] << "\t";
+		  *(sf_.file) << ( gamma_ * sf_.bt[1] + sqrt( pow(gamma_, 2) - 1 ) / c0_ * sf_.et[0] ) * sf_.Cb << "\t";
 		else if	( seed_.samplingField_[i] == Bz )
-		  *(sf_.file) << sf_.bt[2] << "\t";
+		  *(sf_.file) << sf_.bt[2] * sf_.Cb << "\t";
 
 		else if	( seed_.samplingField_[i] == Ax )
-		  *(sf_.file) << sf_.at[0] << "\t";
+		  *(sf_.file) << sf_.at[0] * sf_.Ca << "\t";
 		else if	( seed_.samplingField_[i] == Ay )
-		  *(sf_.file) << sf_.at[1] << "\t";
+		  *(sf_.file) << sf_.at[1] * sf_.Ca << "\t";
 		else if	( seed_.samplingField_[i] == Az )
-		  *(sf_.file) << sf_.at[2] << "\t";
+		  *(sf_.file) << sf_.at[2] * sf_.Ca << "\t";
 
 		else if	( seed_.samplingField_[i] == Jx )
-		  *(sf_.file) << sf_.jt[0] << "\t";
+		  *(sf_.file) << sf_.jt[0] * sf_.Cj << "\t";
 		else if	( seed_.samplingField_[i] == Jy )
-		  *(sf_.file) << sf_.jt[1] << "\t";
+		  *(sf_.file) << sf_.jt[1] * sf_.Cj << "\t";
 		else if	( seed_.samplingField_[i] == Jz )
-		  *(sf_.file) << sf_.jt[2] << "\t";
+		  *(sf_.file) << sf_.jt[2] * sf_.Cj << "\t";
 	      }
 	  }
 

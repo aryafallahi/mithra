@@ -933,7 +933,7 @@ namespace MITHRA
 	ubp.et = 0.0;
 
 	/* Compute the fields if the particle has passed the entrance zone of the undulator.		*/
-	if ( iter->e )
+	if ( iter->e == 1.0 )
 	  {
 	    /* Calculate the undulator field at the particle position.				        */
 	    undulatorField(ubp, iter->rnp);
@@ -990,7 +990,7 @@ namespace MITHRA
 	  {
 	    /* Update the emission vector flag based on the particle position in lab frame.		*/
 	    ubp.lz 	= gamma_ * ( iter->rnp[2] + beta_ * c0_ * ( timeBunch_ + dt_ ) );
-	    iter->e 	= ( ubp.lz > - undulator_[0].dist_ );
+	    iter->e 	= ( ubp.lz > - undulator_[0].dist_ ) ? 1.0 : 0.0;
 	  }
 
 	/* Update the velocity of the particle according to the calculated electric and magnetic field.	*/
@@ -1033,6 +1033,7 @@ namespace MITHRA
 	    ubp.qSB.push_back( iter->gbnm[0] );
 	    ubp.qSB.push_back( iter->gbnm[1] );
 	    ubp.qSB.push_back( iter->gbnm[2] );
+	    ubp.qSB.push_back( iter->e 	     );
 	  }
 	else if ( iter->rnp[2] >= zp_[1] && rank_ != size_ - 1 )
 	  {
@@ -1049,6 +1050,7 @@ namespace MITHRA
 	    ubp.qSF.push_back( iter->gbnm[0] );
 	    ubp.qSF.push_back( iter->gbnm[1] );
 	    ubp.qSF.push_back( iter->gbnm[2] );
+	    ubp.qSF.push_back( iter->e 	     );
 	  }
       }
 
@@ -1092,6 +1094,7 @@ namespace MITHRA
 	ub_.Q.gbnm[0] = ubp.qRF[i++];
 	ub_.Q.gbnm[1] = ubp.qRF[i++];
 	ub_.Q.gbnm[2] = ubp.qRF[i++];
+	ub_.Q.e       = ubp.qRF[i++];
 
 	chargeVectorn_.push_back(ub_.Q);
       }
@@ -1111,6 +1114,7 @@ namespace MITHRA
 	ub_.Q.gbnm[0] = ubp.qRB[i++];
 	ub_.Q.gbnm[1] = ubp.qRB[i++];
 	ub_.Q.gbnm[2] = ubp.qRB[i++];
+	ub_.Q.e       = ubp.qRB[i++];
 
 	chargeVectorn_.push_back(ub_.Q);
       }

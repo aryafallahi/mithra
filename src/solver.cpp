@@ -98,10 +98,38 @@ namespace MITHRA
     Double gamma = 0.0;
     for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
       gamma += bunch_.bunchInit_[i].initialGamma_ / bunch_.bunchInit_.size();
-    if ( undulator_[0].type_ == STATIC )
-      gamma_  = gamma / sqrt( 1.0 + undulator_[0].k_ * undulator_[0].k_ / 2.0 );
-    else
-      gamma_  = gamma / sqrt( 1.0 + pow( undulator_[0].amplitude_ * EC / ( EM * c0_ * 2.0 * PI * undulator_[0].signal_.f0_ ) , 2 ) / 2.0 );
+
+    /* Now, depending on the undulator type determine the maximum and minimum gamma of the bunch
+     * travelling through the undulator.								*/
+    Double gmin = 1.0e100, gmax = -1.0e100, g;
+    for (unsigned int i = 0; i < undulator_.size(); i++)
+      {
+	if ( undulator_[i].type_ == STATIC )
+	  {
+	    g  = gamma / sqrt( 1.0 + undulator_[i].k_ * undulator_[0].k_ / 2.0 );
+	    gmin = std::min( gmin, g);
+	    gmax = std::max( gmax, g);
+	  }
+	else if ( undulator_[i].signal_.signalType_ == FLATTOP )
+	  {
+	    g  = gamma / sqrt( 1.0 + pow( undulator_[i].amplitude_ * EC / ( EM * c0_ * 2.0 * PI * undulator_[i].signal_.f0_ ) , 2 ) / 2.0 );
+	    gmin = std::min( gmin, g);
+	    gmax = std::max( gmax, g);
+	  }
+	else
+	  {
+	    /* For optical undulator, when a pulse other than flattop is the pulse format, the gamma of
+	     * the electrons change throughout the interaction.						*/
+	    g  = gamma / sqrt( 1.0 + pow( undulator_[i].amplitude_ * EC / ( EM * c0_ * 2.0 * PI * undulator_[i].signal_.f0_ ) , 2 ) / 2.0 );
+	    gmin = std::min( gmin, g);
+	    g  = gamma;
+	    gmax = std::max( gmax, g);
+	  }
+
+      }
+
+    /* Set the gamma of the moving frame equal to the average of the maximum and minimum gamma.		*/
+    gamma_ = ( gmin + gmax ) / 2.0;
 
     /****************************************************************************************************/
 
@@ -236,18 +264,6 @@ namespace MITHRA
 
     /****************************************************************************************************/
 
-    /* Check if the given offset of the bunch is correct according to the MITHRA conditions.		*/
-    for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
-      {
-	if ( iter->type_ == OPTICAL )
-	  if ( zmax / gamma_  > ( iter->position_[2] + iter->signal_.t0_ - iter->signal_.s_ / 2.0 ) )
-	    printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The offset value of the signal is not given properly. Part of a bunch is initialized in the undulator.") );
-	if ( iter->type_ == STATIC )
-	  printmessage(std::string(__FILE__), __LINE__, std::string("The beginning of the undulator is set automatically in the static mode.") );
-      }
-
-    /****************************************************************************************************/
-
     /* The Lorentz boost parameters should also be transfered to the seed class in order to correctly
      * compute the fields within the computational domain.						*/
     seed_.beta_    	= beta_;
@@ -264,6 +280,30 @@ namespace MITHRA
       printmessage(std::string(__FILE__), __LINE__, std::string("Warning: the undulator is set very close to the bunch, the results may be inaccurate.") );
     dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmax + undulator_[0].dist_ / gamma_ );
     printmessage(std::string(__FILE__), __LINE__, std::string("Initial distance from bunch head to undulator is ") + stringify(undulator_[0].dist_) );
+
+    /* Such a shift should only be done for static undulators. For optical undulator, the user has the
+     * possibility to play with the pulse begin in the job file. The code mainly shifts the pulse by the
+     * maximum distance of the bunch macro-particles from the origin. So that this distance is considered
+     * in the cqalculations.										*/
+    if ( undulator_[0].type_ == OPTICAL )
+      dt_ = 0.0;
+    for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
+      {
+	if ( iter->type_ == OPTICAL )
+	  {
+	    if ( iter->position_[2] < zmax / gamma_ )
+	      iter->signal_.t0_ += zmax / gamma_ / undulator_[0].c0_;
+
+	    /* To check if the bunch is initialized inside the undulator first obtain the undulator
+	     * length.											*/
+	    Double l = ( iter->signal_.signalType_ == FLATTOP ) ? iter->signal_.s_ : 6.0 * iter->signal_.s_;
+	    if ( zmax / gamma_  > ( iter->position_[2] + iter->signal_.t0_ - l / 2.0 ) )
+	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The offset value of the signal is not given properly. "
+		  "Part of a bunch is initialized in the undulator. Please increase the offset to avoid this effect.") );
+	  }
+	if ( iter->type_ == STATIC )
+	  printmessage(std::string(__FILE__), __LINE__, std::string("The beginning of the undulator is set automatically in the static mode if distance to the bunch head is not given.") );
+      }
 
     /* The same shift in time should also be done for the seed field.					*/
     seed_.dt_		= dt_;

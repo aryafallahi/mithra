@@ -385,7 +385,7 @@ In what follows, the parameters in each group are introduced:
 	%
 	\item {\tt \small \em offset} is the distance offset of the signal $ct_0$ with respect to the reference position.
 	%
-	\item {\tt \small \em variance} is the variance of the signal in length units $c\tau$.
+	\item {\tt \small \em pulse-length} is the pulse duration of the signal in length units $c\tau$. The pulse duration is defined as the interval in which the pulse intensity is larger than half the maximum intensity of the pulse, i.e. FWHM of the intensity.
 	%
 	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal.
 	%
@@ -467,7 +467,7 @@ FIELD
 		signal-type  			 = < neumann | gaussian | secant-hyperbolic | flat-top >
 		strength-parameter  	 = < real >
 		offset  				 = < real >
-		variance  				 = < real >
+		pulse-length  			 = < real >
 		wavelength  			 = < real >
 		CEP  					 = < real >
 	\}
@@ -530,7 +530,7 @@ FIELD
 		strength-parameter		  = 0.0
 		signal-type				  = gaussian
 		offset					  = 0.00
-		variance				  = 1.00
+		pulse-length			  = 1.00
 		wavelength				  = 0.0
 		CEP						  = 0.0
 	\}
@@ -649,7 +649,7 @@ Note that the reference undulator for initializing bunches or setting the electr
 	%
 	\item {\tt \small \em offset} is the distance offset of the signal $ct_0$.
 	%
-	\item {\tt \small \em variance} is the time variance of the signal in length unit $c\tau$.
+	\item {\tt \small \em pulse-length} is the pulse duration of the signal in length units $c\tau$. The pulse duration is defined as the interval in which the pulse intensity is larger than half the maximum intensity of the pulse, i.e. FWHM of the intensity.
 	%
 	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal.
 	%
@@ -696,7 +696,7 @@ UNDULATOR
 		signal-type				  = < neumann | gaussian | secant-hyperbolic | flat-top >
 		strength-parameter		  = < real >
 		offset					  = < real >
-		variance				  = < real >
+		pulse-length			  = < real >
 		wavelength				  = < real >
 		CEP						  = < real >
 	\textcolor{red}{\}}
@@ -744,7 +744,7 @@ UNDULATOR
 		strength-parameter		  = 0.5
 		signal-type				  = flat-top
 		wavelength				  = 1.0e3
-		variance				  = 1200.0e3
+		pulse-length			  = 1200.0e3
 		offset					  = 600118.0
 		CEP						  = 0.0
   \}
@@ -795,7 +795,7 @@ The current version of MITHRA accepts the following set of external fields:
 	%
 	\item {\tt \small \em offset} is the distance offset of the signal $ct_0$.
 	%
-	\item {\tt \small \em variance} is the variance of the signal in length units $c\tau$.
+	\item {\tt \small \em pulse-length} is the pulse duration of the signal in length units $c\tau$. The pulse duration is defined as the interval in which the pulse intensity is larger than half the maximum intensity of the pulse, i.e. FWHM of the intensity.
 	%
 	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal.
 	%
@@ -820,7 +820,7 @@ EXTERNAL-FIELD
 		signal-type				  = < neumann | gaussian | secant-hyperbolic | flat-top >
 		strength-parameter		  = < real >
 		offset					  = < real >
-		variance				  = < real >
+		pulse-length			  = < real >
 		wavelength				  = < real >
 		CEP						  = < real >
 	\textcolor{red}{\}}
@@ -842,7 +842,7 @@ EXTERNAL-FIELD
     	strength-parameter		  = 1.0
     	signal-type				  = flat-top
     	offset					  = 0.00
-    	variance				  = 1.00
+    	pulse-length			  = 1.00
     	wavelength				  = 0.0
     	CEP						  = 0.0
 	\}
@@ -856,7 +856,7 @@ EXTERNAL-FIELD
 		strength-parameter		  = 1.0
 		signal-type				  = flat-top
 		offset					  = 0.00
-		variance				  = 1.00
+		pulse-length			  = 1.00
 		wavelength				  = 0.0
 		CEP						  = 0.0
 	\}

@@ -76,13 +76,17 @@ A list of new features and applied changes in version 2.0 released with this man
 	%
 	\item The names {\tt \em \small rayleigh-radius-parallel} and {\tt \em \small rayleigh-radius-perpendicular} are changed to {\tt \em \small radius-parallel} and {\tt \em \small radius-perpendicular}.
 	%
+	\item The name {\tt \em \small variance} is changed to {\tt \em \small pulse-length}.
+	%
 	\item The parameter {\tt \em \small resolution} in the field-sampling category as well as the radiation-power subgroup is changed to {\tt \em \small number-of\-points} which is more meaningful. Similarly, in the radiation-power subgroup, the {\tt \em \small normalized-frequency-resolution} is changed to the {\tt \em \small number-of-frequency-points}. With these changes in parameter names, the definitions of the given values are correspondingly changed.
 	%
 	\item In the new version, the possibility to save 2D visualization data over Cartesian planes is added. In the field-visualization subgroup two parameters {\tt \em \small type} and {\tt \em \small plane} are added, which determine the type of the visualization (2D in-plane or 3D all-domain) and plane of the 2D data ($xy$, $xz$, or $yz$) respectively. Moreover, the field-visualization subgroup can be repeated in order to obtain different visualizations of the radiated fields.
 	%
 	\item Several changes are applied to the undulator part. First, different undulator types are now introduced as subgroups in the undulator section. In the new version, a subgroup named {\em \tt \small static-undulator-array} is added that defines an array of undulators with or without the tapering of the undulator parameter. For detailed description on how undulator arrays are introduced to the code, the user interface chapter can be studied. In addition, the undulator group is now repeatable, meaning that several undulators with different types can be given and superposed in a single FEL simulation.
 	%
-	\item Possibility to visualize the radiated power in front of the bunch over a plane perpendicular to the undulator axis is an added feature to the software. This feature is added through th subgroup {\tt \em \small power-visualization}.
+	\item Possibility to visualize the radiated power in front of the bunch over a plane perpendicular to the undulator axis is an added feature to the software. This feature is added through the subgroup {\tt \em \small power-visualization}.
+	%
+	\item Another new feature is added by Arnau Alb\'{a} to the software that visualizes the bunch in the lab frame. This is done by placing a screen at a certain position in the undulator and visualizing the electron bunch passing through this screen. This feature is added through the subgroup {\tt \em \small bunch-profile-lab-frame}.
 	%
 	\item Besides this manual, a new reference card is prepared in addition to the chapter on user interface. The content of this reference card can be used as a cheat sheet when using MITHRA. The reference card is available both separately and as a chapter in this manual. 
 \end{itemize}

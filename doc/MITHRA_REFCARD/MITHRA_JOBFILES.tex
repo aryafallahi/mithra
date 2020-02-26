@@ -58,10 +58,13 @@ FIELD
 	
 UNDULATOR
 \{
-	undulator-parameter				= 1.417
-	period							= 3.0e4
-	length							= 300
-	polarization-angle				= 0.0
+	static-undulator
+	\{
+		undulator-parameter			= 1.417
+		period						= 3.0e4
+		length						= 300
+		polarization-angle			= 0.0
+	\}
 \}
 	
 FEL-OUTPUT
@@ -94,10 +97,10 @@ MESH
 	total-time 						= 50000
 	bunch-time-step 				= 1.6
 	mesh-truncation-order 			= 2
- 	space-charge 					= false
+	space-charge 					= false
 	solver							= NSFD
 \}
-
+	
 BUNCH
 \{
 	bunch-initialization
@@ -115,7 +118,7 @@ BUNCH
 		longitudinal-truncation		= 78.0
 		bunching-factor				= 0.0
 	\}
-
+	
 	bunch-visualization
 	\{
 		sample						= true
@@ -124,7 +127,7 @@ BUNCH
 		rhythm						= 500
 	\}
 \}
-
+	
 FIELD
 \{
 	field-initialization
@@ -138,12 +141,12 @@ FIELD
 		strength-parameter			= 9.857e-7
 		signal-type					= gaussian
 		offset						= 700000.0 #not really needed
-		variance					= 1.0e12
+		pulse-length				= 1.0e12
 		wavelength					= 0.265187
 		CEP							= 0.0
 	\}
 \}
-
+	
 UNDULATOR
 \{
 	static-undulator
@@ -155,7 +158,7 @@ UNDULATOR
 		offset						= 0.0
 	\}
 \}
-
+	
 FEL-OUTPUT
 \{
 	radiation-power
@@ -167,8 +170,92 @@ FEL-OUTPUT
 		plane-position				= 78.0
 		normalized-frequency		= 1.00
 	\}
+	
+	bunch-profile-lab-frame
+	\{
+		sample						= true
+		directory					= ./
+		base-name					= bunch-profile-lab-frame/profile
+		position					=  0.0e6
+		position					=  2.0e6
+		position					=  4.0e6
+		position					=  6.0e6
+		position					=  8.0e6
+		position					= 10.0e6
+		position					= 12.0e6
+	\}
 \}
 \end{Verbatim}
+\end{snugshade}
+
+\section{Example 3: Infrared FEL with Optical Undulator}
+\label{job_file_3}
+
+\begin{snugshade}
+\begin{Verbatim}[fontsize=\footnotesize, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
+MESH
+\{
+	length-scale					= MICROMETER
+	time-scale						= PICOSECOND
+	mesh-lengths					= ( 3200,  3200.0,    280.0)
+	mesh-resolution					= ( 50.0,    50.0,      0.1)
+	mesh-center						= ( 0.0,      0.0,      0.0)
+	total-time						= 30000
+	bunch-time-step					= 1.6
+	mesh-truncation-order			= 2
+	space-charge					= false
+	solver							= NSFD
+\}
+	
+BUNCH
+\{
+	bunch-initialization
+	\{
+		type						= ellipsoid
+		distribution				= uniform
+		charge						= 1.846e8
+		number-of-particles			= 131072
+		gamma						= 100.41
+		direction					= (    0.0,     0.0,       1.0)
+		position					= (    0.0,     0.0,       0.0)
+		sigma-position				= (  260.0,   260.0,     50.25)
+		sigma-momentum				= ( 1.0e-8,  1.0e-8, 100.41e-4)
+		transverse-truncation		= 1040.0
+		longitudinal-truncation		= 90.0
+		bunching-factor				= 0.01
+	\}
+\}
+	
+UNDULATOR
+\{
+	optical-undulator
+	\{
+		beam-type					= plane-wave
+		position					= ( 0.0, 0.0, 0.0 )
+		direction					= ( 0.0, 0.0,-1.0 )
+		polarization				= ( 0.0, 1.0, 0.0 )
+		strength-parameter			= 1.417
+		signal-type					= flat-top
+		wavelength					= 6.0e4
+		pulse-length				= 1800.0e4
+		offset						= 9000150
+		CEP							= 0.0
+	\}
+\}
+	
+FEL-OUTPUT
+\{
+	radiation-power
+	\{
+		sample						= true
+		type						= at-point
+		directory					= ./
+		base-name					= power-sampling/power
+		plane-position				= 110.0
+		normalized-frequency		= 1.00
+	\}
+\}
+	\end{Verbatim}
 \end{snugshade}
 
 \end{appendices}

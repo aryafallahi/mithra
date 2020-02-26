@@ -361,26 +361,7 @@ It is known that electron trajectories in a static undulator with undulator para
 %
 We take the first SASE FEL example in table \ref{example1} into account and analyze the same configuration but with an equivalent optical undulator.
 %
-For this purpose, the undulator definition of example 1 is entered according to the following:
-%
-\begin{snugshade}
-\begin{Verbatim}[fontsize=\small, tabsize = 4]
-UNDULATOR
-{
-  undulator-type                   = optical
-  beam-type                        = plane-wave
-  position                         = ( 0.0, 0.0, 0.0 )
-  direction                        = ( 0.0, 0.0,-1.0 )
-  polarization                     = ( 0.0, 1.0, 0.0 )
-  strength-parameter               = 1.417
-  signal-type                      = flat-top
-  wavelength                       = 6.0e4
-  variance                         = 1800.0e4
-  offset                           = 9000150
-  CEP                              = 0.0
-}
-\end{Verbatim}
-\end{snugshade}
+For this purpose, the undulator definition of example 1 is entered as an electromagnetic undulator with the wavelength and strength parameter obtained from aforementioned relations (see \ref{job_file_3}).
 %
 Fig.\,\ref{ICS-benchmark} illustrates a comparison between the radiated infrared light for the static and optical undulator cases.
 %

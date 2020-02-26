@@ -4,10 +4,10 @@
 #
 #  manual: example 3, Fig. 5.7
 #
-#  mpirun -np 4 ../darius ./job-files/FEL-ICS-IR.job
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS-IR.job
 #
 #  in the LSF system:
-#  bsub -n 48 -W 20:00 -J "FEL-ICS-IR" -o mithra.out 'mpirun ../darius ./job-files/FEL-ICS-IR.job'
+#  bsub -n 48 -W 20:00 -J "FEL-ICS-IR" -o mithra.out 'mpirun ../MITHRA ./job-files/FEL-ICS-IR.job'
 
 MESH
 {
@@ -20,6 +20,7 @@ MESH
   bunch-time-step				= 1.6
   mesh-truncation-order				= 2
   space-charge					= false
+  solver					= NSFD
 }
  
 BUNCH
@@ -52,8 +53,8 @@ UNDULATOR
     strength-parameter				= 1.417
     signal-type					= flat-top
     wavelength					= 6.0e4
-    variance					= 1800.0e4
-    offset					= 9000150
+    pulse-length				= 18.0e6
+    offset					=  9.0e6
     CEP						= 0.0
   }
 }

@@ -62,7 +62,7 @@ FIELD
     strength-parameter				= 9.857e-7
     signal-type					= gaussian
     offset					= 700000.0 #not really needed
-    variance					= 1.0e12
+    pulse-length				= 1.0e12
     wavelength					= 0.265187
     CEP						= 0.0
   }
@@ -90,5 +90,19 @@ FEL-OUTPUT
     base-name					= power-sampling/power-SC
     plane-position				= 78.0
     normalized-frequency			= 1.00
+  }
+
+  bunch-profile-lab-frame
+  {
+    sample                                      = true
+    directory                                   = ./
+    base-name                                   = bunch-profile-lab-frame/profileSC
+    position                                    =  0.0e6
+    position                                    =  2.0e6
+    position                                    =  4.0e6
+    position                                    =  6.0e6
+    position                                    =  8.0e6
+    position                                    = 10.0e6
+    position                                    = 12.0e6
   }
 }

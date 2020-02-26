@@ -285,8 +285,6 @@ namespace MITHRA
      * possibility to play with the pulse begin in the job file. The code mainly shifts the pulse by the
      * maximum distance of the bunch macro-particles from the origin. So that this distance is considered
      * in the cqalculations.										*/
-    if ( undulator_[0].type_ == OPTICAL )
-      dt_ = 0.0;
     for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
       {
 	if ( iter->type_ == OPTICAL )

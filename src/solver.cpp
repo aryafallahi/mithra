@@ -290,7 +290,7 @@ namespace MITHRA
 	if ( iter->type_ == OPTICAL )
 	  {
 	    if ( iter->position_[2] < zmax / gamma_ )
-	      iter->signal_.t0_ += zmax / gamma_ / undulator_[0].c0_;
+	      iter->signal_.t0_ += 1.01 * zmax / gamma_;
 
 	    /* To check if the bunch is initialized inside the undulator first obtain the undulator
 	     * length.											*/

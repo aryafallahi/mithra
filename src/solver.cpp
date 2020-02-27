@@ -290,12 +290,12 @@ namespace MITHRA
 	if ( iter->type_ == OPTICAL )
 	  {
 	    if ( iter->position_[2] < zmax / gamma_ )
-	      iter->signal_.t0_ += 1.01 * zmax / gamma_;
+	      iter->signal_.t0_ += 1.01 * zmax / gamma_ / c0_;
 
 	    /* To check if the bunch is initialized inside the undulator first obtain the undulator
 	     * length.											*/
 	    Double l = ( iter->signal_.signalType_ == FLATTOP ) ? iter->signal_.s_ : 6.0 * iter->signal_.s_;
-	    if ( zmax / gamma_  > ( iter->position_[2] + iter->signal_.t0_ - l / 2.0 ) )
+	    if ( zmax / gamma_  > ( iter->position_[2] + c0_ * ( iter->signal_.t0_ - l / 2.0 ) ) )
 	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The offset value of the signal is not given properly. "
 		  "Part of a bunch is initialized in the undulator. Please increase the offset to avoid this effect.") );
 	  }

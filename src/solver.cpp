@@ -2022,8 +2022,8 @@ namespace MITHRA
                     // *scrp_[jf].files[i] << iter->q  	        << "\t";
                     *scrp_[jf].files[i] << interp( lzm, lzp, iter->rnm[0], iter->rnp[0], lzScreen ) << "\t";
                     *scrp_[jf].files[i] << interp( lzm, lzp, iter->rnm[1], iter->rnp[1], lzScreen ) << "\t";
-                    Double tm  = gamma_ * ( (timeBunch_ - mesh_.timeStep_)	+ beta_ / c0_ * iter->rnm[2] );
-                    Double tp  = gamma_ * ( timeBunch_	  			+ beta_ / c0_ * iter->rnp[2] );
+                    Double tm  = gamma_ * ( timeBunch_ + dt_ - mesh_.timeStep_	+ beta_ / c0_ * iter->rnm[2] );
+                    Double tp  = gamma_ * ( timeBunch_ + dt_	  		+ beta_ / c0_ * iter->rnp[2] );
                     *scrp_[jf].files[i] << interp( lzm, lzp, tm, tp, lzScreen ) << "\t";
 
                     /* Use different positions since momenta are found at (time - 1/2*bunchTimeStep).	*/

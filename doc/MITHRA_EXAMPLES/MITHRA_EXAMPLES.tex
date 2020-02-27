@@ -72,6 +72,16 @@ In the illustrated job file, some of the output formats are turned off which can
 
 \subsection{Simulation Results}
 
+\begin{figure}
+	\centering
+	$\begin{array}{cc}
+	\includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig1/Fig1a.pdf} & \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig1/Fig1b.pdf} \\
+	(a) & (b)
+	\end{array}$
+	\caption{(a) The transverse field $E_y$ at 110\,{\textmu}m distance from the bunch center and (b) the total radiated power calculated at 110\,{\textmu}m distance from the bunch center in terms of the traveled undulator length.}
+	\label{power-example1}
+\end{figure}
+%
 In the beginning, we neglect the space-charge effect only to achieve a good assessment of MITHRA simulation results.
 %
 The investigation of space-charge effect will be performed in the second step.
@@ -121,16 +131,6 @@ The backward radiation although is seldom used due to its long wavelength, it in
 The influence of low-frequency backward radiation on the performance of free electron lasers has been already studied in a 1D regime \cite{maroli2000effects}.
 %
 The effect becomes stronger in the saturation regime, where the electron bunch is modulated and the FEL radiation is a strong function of the particles distribution.
-%
-\begin{figure}
-\centering
-$\begin{array}{cc}
-\includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig1/Fig1a.pdf} & \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig1/Fig1b.pdf} \\
-(a) & (b)
-\end{array}$
-\caption{(a) The transverse field $E_y$ at 110\,{\textmu}m distance from the bunch center and (b) the total radiated power calculated at 110\,{\textmu}m distance from the bunch center in terms of the traveled undulator length.}
-\label{power-example1}
-\end{figure}
 
 Furthermore, in Fig.\,\ref{power-example1}b, we compare the results obtained using the NSFD implemented in MITHRA and standard FD scheme.
 %
@@ -169,24 +169,25 @@ This effect may not be easily observed in real laboratory frame, but is signific
 
 \subsection{Convergence Analysis}
 
-The convergence rate of the results is the main factor used to assess a numerical algorithm. %%
-%%
-In our FEL analysis, there are several parameters introduced by the numerical method which may affect the final result. %%
-%%
-These parameters include (1) number of macro-particles ($n$), (2) time step for updating equation of motion ($\Delta t_b$), (3) longitudinal mesh size ($l_z$), (4) transverse mesh size ($l_x=l_y$), (5) longitudinal discretization ($\Delta z$) and (6) transverse discretization ($\Delta x = \Delta y$). %%
-%%
-Studying the convergence of the results is crucial to acquire an estimate for the uncertainty in the reported values. %%
-%%
+The convergence rate of the results is the main factor used to assess a numerical algorithm.
+%
+In our FEL analysis, there are several parameters introduced by the numerical method which may affect the final result.
+%
+These parameters include (1) number of macro-particles ($n$), (2) time step for updating equation of motion ($\Delta t_b$), (3) longitudinal mesh size ($l_z$), (4) transverse mesh size ($l_x=l_y$), (5) longitudinal discretization ($\Delta z$) and (6) transverse discretization ($\Delta x = \Delta y$).
+%
+Studying the convergence of the results is crucial to acquire an estimate for the uncertainty in the reported values.
+%
 Here, this task is accomplished by sweeping over the above parameters and plotting the error function defined as the following:
-%%
+%
 \begin{equation}
 \label{errorDefinition}
 \mathrm{error} = \frac{\int_{z_i}^{z_f} | P(z)-P_0(z) | \mathrm{dz}}{\int_{z_i}^{z_f} P_0(z) \mathrm{dz}},
 \end{equation}
-%%
-where $z_i$ and $z_f$ are the beginning and end of the undulator, respectively and $P_0$ is the reference simulation result which is chosen as the results with the highest resolution. %%
+%
+where $z_i$ and $z_f$ are the beginning and end of the undulator, respectively and $P_0$ is the reference simulation result which is chosen as the results with the highest resolution.
 
-In Fig.\,\ref{convergenceStudy} the convergence study is shown for the aforementioned parameters. %%
+In Fig.\,\ref{convergenceStudy} the convergence study is shown for the aforementioned parameters.
+%
 \begin{figure}
 \centering
 \includegraphics[width=7.0in]{./MITHRA_EXAMPLES/Fig3/Fig3.pdf}
@@ -325,13 +326,21 @@ The investigation of the results with and without considering space-charge effec
 %
 However, in the saturation regime the effect of space-charge predicted by MITHRA is stronger than the effect predicted by Genesis.
 %
+By visualizing the bunch in the laboratory frame, one can explore the origin of the small change due to space-charge effect.
+%
+Fig.\,\ref{power-example2}c and \ref{power-example2}d illustrate this comparison.
+%
+As observed from these figures, the total bunch profile in both cases are similar, whereas the microbunches in the simulation without space-charge are slightly denser than the case with space-charge consideration.
+%
 \begin{figure}
 \centering
 $\begin{array}{cc}
 \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig6/Fig6a.pdf} & \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig6/Fig6b.pdf} \\
-(a) & (b)
+(a) & (b) \\
+\includegraphics[height=3.0in]{./MITHRA_EXAMPLES/Fig6/Fig6c.pdf} & \includegraphics[height=3.0in]{./MITHRA_EXAMPLES/Fig6/Fig6d.pdf} \\
+(c) & (d) \\
 \end{array}$
-\caption{(a) The total radiated power measured at 80\,{\textmu}m distance from the bunch center in terms of the traveled undulator length and (b) the bunch profile in the rest frame at 12\,m from the undulator begin.}
+\caption{(a) The total radiated power measured at 80\,{\textmu}m distance from the bunch center in terms of the traveled undulator length and (b) the bunch profile in the rest frame at 12\,m from the undulator begin. (c) Bunch profile and (d) microbunch profiles of the electron beam with and without space-charge considerations are compared. }
 \label{power-example2}
 \end{figure}
 

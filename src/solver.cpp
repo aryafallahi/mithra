@@ -1424,13 +1424,11 @@ namespace MITHRA
 	    /* Now, calculate the undulator field according to the obtained position.               	*/
 	    if ( ubp.lz >= 0.0 && ubp.lz <= iter->length_ * iter->lu_ )
 	      {
-		ubp.sz = sin (ub_.ku * ubp.lz);
-		ubp.cy = cosh(ub_.ku * ubp.ly);
 
-		ubp.d1     = ub_.b0 * ubp.cy * ubp.sz * gamma_;
+		ubp.d1     = ub_.b0 * cosh(ub_.ku * ubp.ly) * sin(ub_.ku * ubp.lz) * gamma_;
 		ubp.bt[0] += ubp.d1 * ub_.ct;
 		ubp.bt[1] += ubp.d1 * ub_.st;
-		ubp.bt[2] += ub_.b0 * sqrt( ( ubp.cy * ubp.cy - 1.0 ) * ( 1.0 - ubp.sz * ubp.sz ) );
+		ubp.bt[2] += ub_.b0 * sinh(ub_.ku * ubp.ly) * cos(ub_.ku * ubp.lz);
 
 		ubp.d1    *= c0_ * beta_;
 		ubp.et[1] +=   ubp.d1 * ub_.ct;
@@ -1449,12 +1447,11 @@ namespace MITHRA
 		    else
 		      ubp.sz *= 0.35875 + 0.48829 * cos( PI * ubp.lz / ubp.r0 ) + 0.14128 * cos( 2.0 * PI * ubp.lz / ubp.r0 ) + 0.01168 * cos( 3.0 * PI * ubp.lz / ubp.r0 );
 		  }
-		ubp.cy = cosh(ub_.ku * ubp.ly );
 
-		ubp.d1     = ub_.b0 * ubp.cy * ubp.sz * ub_.ku * ubp.lz * gamma_;
+		ubp.d1     = ub_.b0 * cosh(ub_.ku * ubp.ly ) * ubp.sz * ub_.ku * ubp.lz * gamma_;
 		ubp.bt[0] += ubp.d1 * ub_.ct;
 		ubp.bt[1] += ubp.d1 * ub_.st;
-		ubp.bt[2] += ub_.b0 * sqrt( ubp.cy * ubp.cy - 1.0 ) * ubp.sz;
+		ubp.bt[2] += ub_.b0 * sinh(ub_.ku * ubp.ly) * ubp.sz;
 
 		ubp.d1    *= c0_ * beta_;
 		ubp.et[1] +=   ubp.d1 * ub_.ct;
@@ -1475,12 +1472,11 @@ namespace MITHRA
 		    else
 		      ubp.sz *= 0.35875 + 0.48829 * cos( PI * ubp.t0 / ubp.r0 ) + 0.14128 * cos( 2.0 * PI * ubp.t0 / ubp.r0 ) + 0.01168 * cos( 3.0 * PI * ubp.t0 / ubp.r0 );
 		  }
-		ubp.cy = cosh(ub_.ku * ubp.ly );
 
-		ubp.d1     = ub_.b0 * ubp.cy * ubp.sz * ub_.ku * ubp.t0 * gamma_;
+		ubp.d1     = ub_.b0 * cosh(ub_.ku * ubp.ly ) * ubp.sz * ub_.ku * ubp.t0 * gamma_;
 		ubp.bt[0] += ubp.d1 * ub_.ct;
 		ubp.bt[1] += ubp.d1 * ub_.st;
-		ubp.bt[2] += ub_.b0 * sqrt( ubp.cy * ubp.cy - 1.0 ) * ubp.sz;
+		ubp.bt[2] += ub_.b0 * sinh(ub_.ku * ubp.ly ) * ubp.sz;
 
 		ubp.d1    *= c0_ * beta_;
 		ubp.et[1] +=   ubp.d1 * ub_.ct;

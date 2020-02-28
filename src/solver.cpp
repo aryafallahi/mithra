@@ -1425,7 +1425,6 @@ namespace MITHRA
 	    /* Now, calculate the undulator field according to the obtained position.               	*/
 	    if ( ubp.lz >= 0.0 && ubp.lz <= iter->length_ * iter->lu_ )
 	      {
-
 		ubp.d1     = ub_.b0 * cosh(ub_.ku * ubp.ly) * sin(ub_.ku * ubp.lz) * gamma_;
 		ubp.bt[0] += ubp.d1 * ub_.ct;
 		ubp.bt[1] += ubp.d1 * ub_.st;

@@ -488,11 +488,11 @@ namespace MITHRA
 	else if  ( signalType_ == FLATTOP )
 	  {
 	    if      ( t - t0_ <= - s_ / 2.0 )
-	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) * exp( - pow( (t-t0_+s_/2.0)*2*PI*f0_/2.0, 2) ) );
+	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) * exp( - pow( (t-t0_+s_/2.0)*f0_/2.0, 2) ) );
 	    else if ( t - t0_ <= s_ / 2.0   )
 	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) );
 	    else
-	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) * exp( - pow( (t-t0_-s_/2.0)*2*PI*f0_/2.0, 2) ) );
+	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) * exp( - pow( (t-t0_-s_/2.0)*f0_/2.0, 2) ) );
 	  }
       }
     return (0.0);

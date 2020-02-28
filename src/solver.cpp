@@ -273,10 +273,11 @@ namespace MITHRA
      * section. For optical undulator such a separation should be considered in the input parameters
      * where offset is given.										*/
 
-    /* This shift in time makes sure that the maximum z in the bunch at time zero is at undulator[0].dist_ 
+    /* This shift in time makes sure that the maximum z in the bunch at time zero is at undulator[0].dist_
      * away from the undulator begin ( the default distance is 2 undulator periods)			*/
-    if (undulator_[0].dist_ == 0.0) undulator_[0].dist_ = 2.0 * undulator_[0].lu_;
-    else if (undulator_[0].dist_ < 2.0 * undulator_[0].lu_)
+    Double nl = ( undulator_[0].type_ == STATIC ) ? 2.0 : 10.0;
+    if (undulator_[0].dist_ == 0.0) undulator_[0].dist_ = nl * undulator_[0].lu_;
+    else if (undulator_[0].dist_ < nl * undulator_[0].lu_)
       printmessage(std::string(__FILE__), __LINE__, std::string("Warning: the undulator is set very close to the bunch, the results may be inaccurate.") );
     dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmax + undulator_[0].dist_ / gamma_ );
     printmessage(std::string(__FILE__), __LINE__, std::string("Initial distance from bunch head to undulator is ") + stringify(undulator_[0].dist_) );
@@ -285,23 +286,23 @@ namespace MITHRA
      * possibility to play with the pulse begin in the job file. The code mainly shifts the pulse by the
      * maximum distance of the bunch macro-particles from the origin. So that this distance is considered
      * in the cqalculations.										*/
-    for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
-      {
-	if ( iter->type_ == OPTICAL )
-	  {
-	    if ( iter->position_[2] < zmax / gamma_ )
-	      iter->signal_.t0_ += 1.01 * zmax / gamma_ / c0_;
-
-	    /* To check if the bunch is initialized inside the undulator first obtain the undulator
-	     * length.											*/
-	    Double l = ( iter->signal_.signalType_ == FLATTOP ) ? iter->signal_.s_ : 6.0 * iter->signal_.s_;
-	    if ( zmax / gamma_  > ( iter->position_[2] + c0_ * ( iter->signal_.t0_ - l / 2.0 ) ) )
-	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The offset value of the signal is not given properly. "
-		  "Part of a bunch is initialized in the undulator. Please increase the offset to avoid this effect.") );
-	  }
-	if ( iter->type_ == STATIC )
-	  printmessage(std::string(__FILE__), __LINE__, std::string("The beginning of the undulator is set automatically in the static mode if distance to the bunch head is not given.") );
-      }
+//    for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
+//      {
+//	if ( iter->type_ == OPTICAL )
+//	  {
+//	    if ( iter->position_[2] < zmax / gamma_ )
+//	      iter->signal_.t0_ += 1.01 * zmax / gamma_ / c0_;
+//
+//	    /* To check if the bunch is initialized inside the undulator first obtain the undulator
+//	     * length.											*/
+//	    Double l = ( iter->signal_.signalType_ == FLATTOP ) ? iter->signal_.s_ : 6.0 * iter->signal_.s_;
+//	    if ( zmax / gamma_  > ( iter->position_[2] + c0_ * ( iter->signal_.t0_ - l / 2.0 ) ) )
+//	      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The offset value of the signal is not given properly. "
+//		  "Part of a bunch is initialized in the undulator. Please increase the offset to avoid this effect.") );
+//	  }
+//	if ( iter->type_ == STATIC )
+//	  printmessage(std::string(__FILE__), __LINE__, std::string("The beginning of the undulator is set automatically in the static mode if distance to the bunch head is not given.") );
+//      }
 
     /* The same shift in time should also be done for the seed field.					*/
     seed_.dt_		= dt_;

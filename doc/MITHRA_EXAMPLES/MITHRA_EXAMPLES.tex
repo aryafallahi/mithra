@@ -376,6 +376,8 @@ Fig.\,\ref{ICS-benchmark} illustrates a comparison between the radiated infrared
 %
 The very close agreement between the two results validates the implementation of optical undulators in MITHRA.
 %
+The small discrepancies observed are mainly due to the different fringe fields implemented for static undulator and optical undulator with flat-top temporal signature for the signal.
+%
 \begin{figure}
 \centering
 \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig7/Fig7.pdf}
@@ -421,84 +423,7 @@ To simulate the considered FEL configuration, the following job file is written 
 %
 \begin{snugshade}
 \begin{Verbatim}[fontsize=\small, tabsize = 4]
-MESH
-{
-  length-scale                     = NANOMETER
-  time-scale                       = ATTOSECOND
-  mesh-lengths                     = ( 2000.0, 2000.0, 165.0 )
-  mesh-resolution                  = (    5.0,    5.0,   0.05)
-  mesh-center                      = (    0.0,    0.0,   0.0 )
-  total-time                       = 2000000
-  bunch-time-step                  = 20.0
-  bunch-time-start                 = 0.0
-  mesh-truncation-order            = 2
-  space-charge                     = true
-}
 
-BUNCH
-{
-  bunch-initialization
-  {
-    type                           = ellipsoid
-    distribution                   = uniform
-    charge                         = 2800
-    number-of-particles            = 2800
-    gamma                          = 30.0
-    direction                      = (  0.0,   0.0,   1.0)
-    position                       = (  0.0,   0.0,   0.0)
-    sigma-position                 = ( 60.0,  60.0,  72.0)
-    sigma-momentum                 = ( 0.03,  0.03,  0.03)
-    transverse-truncation          = 240.0
-    longitudinal-truncation        = 77.0
-    bunching-factor                = 0.0
-  }
-}
-
-FIELD
-{
-  field-sampling
-  {
-    sample                         = true
-    type                           = at-point
-    field                          = Ex
-    field                          = Ey
-    field                          = Ez
-    directory                      = ./
-    base-name                      = field-sampling/field
-    rhythm                         = 3.2
-    position                       = (0.0, 0.0, 110.0)
-  }
-}
-
-UNDULATOR
-{
-  undulator-type                   = optical
-  beam-type                        = plane-wave
-  position                         = ( 0.0, 0.0, 0.0 )
-  direction                        = ( 0.0, 0.0,-1.0 )
-  polarization                     = ( 0.0, 1.0, 0.0 )
-  strength-parameter               = 0.5
-  signal-type                      = flat-top
-  wavelength                       = 1.0e3
-  variance                         = 1200.0e3
-  offset                           = 600082.0
-  CEP                              = 0.0
-}
-
-FEL-OUTPUT
-{
-  radiation-power
-  {
-    sample                         = true
-    type                           = at-point
-    directory                      = ./
-    base-name                      = power-sampling/power
-    distance-from-bunch            = 82
-    normalized-frequency           = 1.000
-    normalized-frequency           = 2.000
-    normalized-frequency           = 3.000
-  }
-}
 \end{Verbatim}
 \end{snugshade}
 

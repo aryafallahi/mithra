@@ -1934,6 +1934,14 @@ namespace MITHRA
 
         if (!(isabsolute(FEL_[jf].screenProfile_.basename_))) FEL_[jf].screenProfile_.basename_ = FEL_[jf].screenProfile_.directory_ + FEL_[jf].screenProfile_.basename_;
 
+        /* According to the given rhythm add to the position vector.					*/
+        Double	z = 0.0;
+        while ( z < ( undulator_.end()->rb_ + undulator_.end()->length_ * undulator_.end()->lu_ ) )
+          {
+            FEL_[jf].screenProfile_.pos_.push_back(z);
+            z += FEL_[jf].screenProfile_.rhythm_;
+          }
+
         /*  resize vectors storing filenames                   */
         scrp_[jf].fileNames.resize((FEL_[jf].screenProfile_.pos_).size());
         scrp_[jf].files.resize((FEL_[jf].screenProfile_.pos_).size());
@@ -1946,7 +1954,7 @@ namespace MITHRA
 
         MPI_Barrier(MPI_COMM_WORLD);
 
-        /* Open files for each screen and write its position in first line.                    	       */
+        /* Open files for each screen and write its position in first line.                    	       	*/
         for ( unsigned int i = 0; i < (FEL_[jf].screenProfile_.pos_).size(); i++ ){
           printmessage(std::string(__FILE__), __LINE__, std::string("Screen ") + stringify(i) + std::string(" is at distance ") + stringify(FEL_[jf].screenProfile_.pos_[i]) + std::string(" from the undulator beginning.") );
           scrp_[jf].fileNames[i] = FEL_[jf].screenProfile_.basename_ + "-p" + stringify(rank_) + "-screen" + stringify(i) + TXT_FILE_SUFFIX;

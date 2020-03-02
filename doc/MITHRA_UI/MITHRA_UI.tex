@@ -935,6 +935,9 @@ The set of values accepted in this group include:
 	\item {\tt \small \em directory} is the address where the above file should be saved. The file name with the address can also be given in the base-name section. The software eventually considers the combination of directory and base-name as the final complete file name.
 	%
 	\item {\tt \small \em position} gives the distance from the undulator begin at which to place the diagnostics screen. A negative position will mean that the screen is placed before the undulator.
+	%
+	\item {\tt \small \em rhythm} is the rhythm in position with respect to the undulator begin for initializing the screens. The sequence of screens starts at the undulator begin.
+	%
 \end{itemize}
 %
 \end{enumerate}
@@ -976,6 +979,7 @@ FEL-OUTPUT
 		directory  				  = < /path/to/location >
 		base-name  				  = < string >
         \textcolor{red}{position                  = < real >}
+        rhythm					  = < real >
 	\textcolor{red}{\}}
 \}
 \end{Verbatim}

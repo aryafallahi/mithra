@@ -237,8 +237,8 @@ UNDULATOR
 		strength-parameter			= 1.417
 		signal-type					= flat-top
 		wavelength					= 6.0e4
-		pulse-length				= 1800.0e4
-		offset						= 9000150
+		pulse-length				= 18.0e6
+		offset						=  9.0e6
 		CEP							= 0.0
 	\}
 \}
@@ -255,7 +255,104 @@ FEL-OUTPUT
 		normalized-frequency		= 1.00
 	\}
 \}
-	\end{Verbatim}
+\end{Verbatim}
+\end{snugshade}
+
+\section{Example 3: Inverse Compton Scattering}
+\label{job_file_4}
+
+\begin{snugshade}
+\begin{Verbatim}[fontsize=\footnotesize, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
+MESH
+\{
+	length-scale                     = NANOMETER
+	time-scale                       = ATTOSECOND
+	mesh-lengths                     = ( 2000.0, 2000.0, 165.0 )
+	mesh-resolution                  = (    5.0,    5.0,   0.05)
+	mesh-center                      = (    0.0,    0.0,   0.0 )
+	total-time                       = 1300000
+	bunch-time-step                  = 20.0
+	mesh-truncation-order            = 2
+	space-charge                     = false
+	solver							= NSFD
+\}
+
+BUNCH
+\{
+	bunch-initialization
+	\{
+		type                           = ellipsoid
+		distribution                   = uniform
+		charge                         = 2800
+		number-of-particles            = 2800
+		gamma                          = 30.0
+		direction                      = (  0.0,   0.0,   1.0)
+		position                       = (  0.0,   0.0,   0.0)
+		sigma-position                 = ( 60.0,  60.0,  72.0)
+		sigma-momentum                 = ( 0.03,  0.03,  0.03)
+		transverse-truncation          = 240.0
+		longitudinal-truncation        = 77.0
+		bunching-factor                = 0.0
+		shot-noise						= true
+	\}
+\}
+
+FIELD
+\{
+	field-sampling
+	\{
+		sample                         = true
+		type                           = at-point
+		field                          = Ex
+		field                          = Ey
+		field                          = Ez
+		directory                      = ./
+		base-name                      = field-sampling/field
+		rhythm                         = 3.2
+		position                       = (0.0, 0.0, 80.0)
+	\}
+\}
+
+UNDULATOR
+\{
+	optical-undulator
+	\{
+		beam-type                        = plane-wave
+		position                         = ( 0.0, 0.0, 0.0 )
+		direction                        = ( 0.0, 0.0,-1.0 )
+		polarization                     = ( 0.0, 1.0, 0.0 )
+		strength-parameter               = 0.5
+		signal-type                      = flat-top
+		wavelength                       = 1.0e3
+		pulse-length                    = 1.2e6
+		offset 								= 6.0e6
+		CEP                              = 0.0
+	\}
+\}
+
+FEL-OUTPUT
+\{
+	radiation-power
+	\{
+		sample                         = true
+		type                           = at-point
+		directory                      = ./
+		base-name                      = power-sampling/power
+		plane-position            = 82
+		normalized-frequency           = 1.0
+		normalized-frequency           = 2.0
+		normalized-frequency           = 3.0
+	\}
+	
+	bunch-profile-lab-frame
+	\{
+		sample						= true
+		directory					= ./
+		base-name					= bunch-profile-lab-frame/profile
+		rhythm						=  1.0e3
+	\}
+\}
+\end{Verbatim}
 \end{snugshade}
 
 \end{appendices}

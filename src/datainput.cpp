@@ -690,10 +690,11 @@ namespace MITHRA
 	      FreeElectronLaser		FEL;
 	      do
             {
-              if      (parameterName(*iter) == "sample")    FEL.screenProfile_.sampling_		= boolValue(*iter);
-              else if (parameterName(*iter) == "directory") FEL.screenProfile_.directory_		= stringValue(*iter);
-              else if (parameterName(*iter) == "base-name") FEL.screenProfile_.basename_		= stringValue(*iter);
+              if      (parameterName(*iter) == "sample")    	FEL.screenProfile_.sampling_		= boolValue(*iter);
+              else if (parameterName(*iter) == "directory") 	FEL.screenProfile_.directory_		= stringValue(*iter);
+              else if (parameterName(*iter) == "base-name") 	FEL.screenProfile_.basename_		= stringValue(*iter);
               else if (parameterName(*iter) == "position")      (FEL.screenProfile_.pos_).push_back(doubleValue(*iter));
+              else if (parameterName(*iter) == "rhythm") 	FEL.screenProfile_.rhythm_		= doubleValue(*iter);
               else { std::cout << parameterName(*iter) << " is not defined in the bunch-profile-lab-frame group." << std::endl; exit(1); }
               ++iter;
             }

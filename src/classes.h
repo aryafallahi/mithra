@@ -510,6 +510,9 @@ namespace MITHRA
       /* Store the positions in the undulator where the saving of the bunch profile is done.		*/
       std::vector<Double>      			pos_;
 
+      /* Store the rhythm in position for saving the bunch profile.					*/
+      Double					rhythm_;
+
       ScreenProfile ();
     };
 

@@ -113,7 +113,7 @@ namespace MITHRA
 	  }
 	else if ( undulator_[i].signal_.signalType_ == FLATTOP )
 	  {
-	    g  = gamma / sqrt( 1.0 + pow( undulator_[i].amplitude_ * EC / ( EM * c0_ * 2.0 * PI * undulator_[i].signal_.f0_ ) , 2 ) / 2.0 );
+	    g  = gamma / sqrt( 1.0 + undulator_[i].a0_ * undulator_[0].a0_ / 2.0 );
 	    gmin = std::min( gmin, g);
 	    gmax = std::max( gmax, g);
 	  }
@@ -121,7 +121,7 @@ namespace MITHRA
 	  {
 	    /* For optical undulator, when a pulse other than flattop is the pulse format, the gamma of
 	     * the electrons change throughout the interaction.						*/
-	    g  = gamma / sqrt( 1.0 + pow( undulator_[i].amplitude_ * EC / ( EM * c0_ * 2.0 * PI * undulator_[i].signal_.f0_ ) , 2 ) / 2.0 );
+	    g  = gamma / sqrt( 1.0 + undulator_[i].a0_ * undulator_[0].a0_ / 2.0 );
 	    gmin = std::min( gmin, g);
 	    g  = gamma;
 	    gmax = std::max( gmax, g);
@@ -209,7 +209,7 @@ namespace MITHRA
 
 	bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= zeta[i];
 
-	bunch_.bunchInit_[i].lambda_  		 = undulator_[0].lu_ / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].betaVector_[2] * zeta[i] );
+	bunch_.bunchInit_[i].lambda_  		 	 = undulator_[0].lu_ / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].betaVector_[2] * zeta[i] );
 
 	printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
 

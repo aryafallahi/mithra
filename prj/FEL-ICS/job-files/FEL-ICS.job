@@ -13,13 +13,14 @@ MESH
 {
   length-scale					= NANOMETER
   time-scale					= ATTOSECOND
-  mesh-lengths					= (  2000.0,  2000.0,  165.0) 
+  mesh-lengths					= ( 2000.0, 2000.0,  165.0) 
   mesh-resolution				= (    5.0,    5.0,   0.05)
   mesh-center					= (    0.0,    0.0,   0.0 )
   total-time					= 2000000
-  bunch-time-step				= 20.0
+  bunch-time-step				= 100.0
   mesh-truncation-order				= 2
-  space-charge					= true
+  space-charge					= false
+  solver					= NSFD
 }
  
 BUNCH
@@ -37,15 +38,8 @@ BUNCH
     sigma-momentum				= ( 0.03,  0.03,   0.03)
     transverse-truncation			= 240.0
     longitudinal-truncation                     = 77.0
-    bunching-factor				= 0.001
-  }
-    
-  bunch-profile
-  {
-    sample					= true
-    directory					= ./
-    base-name					= /data/fhgfs/afallahi/bunch-profile/bunch
-    rhythm					= 2000
+    bunching-factor				= 0.0
+    shot-noise					= true
   }
 }
 
@@ -53,14 +47,14 @@ FIELD
 { 
   field-sampling
   {
-    sample					= true
+    sample					= false
     type					= at-point
     field					= Ex
     field                                       = Ey
     field                                       = Ez
     directory					= ./
-    base-name					= /data/fhgfs/afallahi/field-sampling/field
-    rhythm					= 160
+    base-name					= field-sampling/field
+    rhythm					= 3.2
     position					= (0.0, 0.0, 82.0)
   }
 }
@@ -76,8 +70,8 @@ UNDULATOR
     strength-parameter				= 1.0
     signal-type					= flat-top
     wavelength					= 1.0e3
-    pulse-length				= 2.4e6
-    offset					= 1.2e6
+    pulse-length				= 12.0e5
+    offset					=  6.0e5
     CEP						= 0.0
   }
 }
@@ -89,12 +83,10 @@ FEL-OUTPUT
     sample					= true
     type					= at-point
     directory					= ./
-    base-name					= /data/fhgfs/afallahi/power-sampling/power
-    distance-from-bunch				= 82
+    base-name					= power-sampling/power2
+    plane-position				= 82
     normalized-frequency                        = 1.0
-    normalized-frequency                        = 2.0
-    normalized-frequency                        = 3.0
-    normalized-frequency                        = 4.0
-    normalized-frequency                        = 5.0
+#    normalized-frequency                        = 2.0
+#    normalized-frequency                        = 3.0
   }
 }

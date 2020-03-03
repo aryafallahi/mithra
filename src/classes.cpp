@@ -449,7 +449,7 @@ namespace MITHRA
     if      ( type.compare("neumann") == 0 )             signalType_ = NEUMANN;
     else if ( type.compare("gaussian") == 0 )            signalType_ = GAUSSIAN;
     else if ( type.compare("secant-hyperbolic") == 0 )   signalType_ = SECANT;
-    else if ( type.compare("flat-top") == 0 )   	   signalType_ = FLATTOP;
+    else if ( type.compare("flat-top") == 0 )   	 signalType_ = FLATTOP;
     else { std::cout << type << " is an unknown signal type for the given set of parameters." << std::endl; exit(1); }
 
     /* Initialize the time delay, variance and the frequency of the carrier.                          	*/
@@ -547,7 +547,7 @@ namespace MITHRA
 			 std::vector<Double>    position,
 			 std::vector<Double>    direction,
 			 std::vector<Double>    polarization,
-			 Double                 amplitude,
+			 Double                 a0,
 			 std::vector<Double>	radius,
 			 Signal                 signal)
   {
@@ -597,7 +597,7 @@ namespace MITHRA
       }
 
     /* Initialize the amplitude of the seed.                                                    	*/
-    amplitude_ 		= amplitude;
+    a0_ 		= a0;
 
     /* Initialize the Rayleigh radius of the Gaussian beam.                                           	*/
     radius_ 		= radius;
@@ -848,7 +848,7 @@ namespace MITHRA
 			      std::vector<Double>    	position,
 			      std::vector<Double>    	direction,
 			      std::vector<Double>    	polarization,
-			      Double                 	amplitude,
+			      Double                 	a0,
 			      std::vector<Double>	radius,
 			      Double			wavelength,
 			      Signal                   	signal)
@@ -898,8 +898,8 @@ namespace MITHRA
 	exit(1);
       }
 
-    /* Initialize the amplitude of the seed.                                                    	*/
-    amplitude_ 		= amplitude;
+    /* Initialize the amplitude of the seed and undulator.                                              */
+    a0_ 		= a0;
 
     /* Initialize the Rayleigh radius of the Gaussian beam.                                           	*/
     radius_ 		= radius;
@@ -968,7 +968,7 @@ namespace MITHRA
 			     std::vector<Double>        position,
 			     std::vector<Double>        direction,
 			     std::vector<Double>        polarization,
-			     Double                     amplitude,
+			     Double                     a0,
 			     std::vector<Double>        radius,
 			     Double                     wavelength,
 			     Signal                     signal)
@@ -1019,10 +1019,10 @@ namespace MITHRA
       }
 
     /* Initialize the amplitude of the seed.                                                          	*/
-    amplitude_        = amplitude;
+    a0_        		= a0;
 
     /* Initialize the Rayleigh radius of the Gaussian beam.                                           	*/
-    radius_           = radius;
+    radius_           	= radius;
 
     /* check if length of polarization vector is zero and normalize the vector.                       	*/
     if ( seedType_ == GAUSSIANBEAM && radius_[0] * radius_[1] == 0.0)

@@ -85,12 +85,13 @@ namespace MITHRA
     /****************************************************************************************************/
 
     /* According to the set parameters for length and time scales correct the amplitudes of the seed
-     * and undulator.											*/
-    seed_.amplitude_ 	        *= EM * c0_ / EC;
+     * and undulator. Note that the seed amplitude is the amplitude of the vector potential, whereas the
+     * undulator amplitude is the amplitude of the fields.						*/
+    seed_.amplitude_ 	        = seed_.a0_ * EM * c0_ / EC;
     for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
-      iter->amplitude_ 		*= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
+      iter->amplitude_ 		= seed_.a0_ * EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
     for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
-      iter->amplitude_        	*= EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
+      iter->amplitude_        	= seed_.a0_ * EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
 
     /****************************************************************************************************/
 

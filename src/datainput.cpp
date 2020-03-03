@@ -486,9 +486,10 @@ namespace MITHRA
 	      Signal                	signal;
 	      Undulator 		undulator; undulator.type_ = OPTICAL;
 	      std::string		type, signalType;
+
 	      /* Initialize variables with default variables from the constructor.			*/
 	      std::vector<Double>	position (3,0.0), direction (3,0.0), polarization (3,0.0);
-	      Double                	amplitude = undulator.amplitude_, offset = signal.t0_, pulseLength = signal.s_,
+	      Double                	a0 = undulator.a0_, offset = signal.t0_, pulseLength = signal.s_,
 					wavelength = 1 / signal.f0_, cep = signal.cep_ * 180 / PI;
 	      std::vector<Double>   	radius (2,0.0);
 
@@ -498,7 +499,7 @@ namespace MITHRA
 		  else if (parameterName(*iter) == "position")                          position                = vectorDoubleValue(*iter);
 		  else if (parameterName(*iter) == "direction")                         direction               = vectorDoubleValue(*iter);
 		  else if (parameterName(*iter) == "polarization")                      polarization            = vectorDoubleValue(*iter);
-		  else if (parameterName(*iter) == "strength-parameter")                amplitude               = doubleValue(*iter);
+		  else if (parameterName(*iter) == "strength-parameter")                a0               	= doubleValue(*iter);
 		  else if (parameterName(*iter) == "radius-parallel")          		radius[0]               = doubleValue(*iter);
 		  else if (parameterName(*iter) == "radius-perpendicular")     		radius[1]               = doubleValue(*iter);
 		  else if (parameterName(*iter) == "signal-type")                       signalType              = stringValue(*iter);
@@ -516,7 +517,7 @@ namespace MITHRA
 		signal.initialize(signalType, offset, pulseLength, wavelength, cep);
 	      else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
 
-	      undulator.initialize(type, position, direction, polarization, amplitude, radius, wavelength, signal);
+	      undulator.initialize(type, position, direction, polarization, a0, radius, wavelength, signal);
 
 	      undulator_.push_back(undulator);
 	    }
@@ -549,7 +550,7 @@ namespace MITHRA
 	      Signal                    signal;
 	      std::string               type, signalType;
 	      std::vector<Double>       position (3,0.0), direction (3,0.0), polarization (3,0.0);
-	      Double                    amplitude = extField.amplitude_, offset = signal.t0_, pulseLength = signal.s_, wavelength = 1 / signal.f0_, cep = signal.cep_;
+	      Double                    a0 = extField.a0_, offset = signal.t0_, pulseLength = signal.s_, wavelength = 1 / signal.f0_, cep = signal.cep_;
 	      std::vector<Double>       radius (2,0.0);
 
 	      do
@@ -558,7 +559,7 @@ namespace MITHRA
 		  else if (parameterName(*iter) == "position")                          position                = vectorDoubleValue(*iter);
 		  else if (parameterName(*iter) == "direction")                         direction               = vectorDoubleValue(*iter);
 		  else if (parameterName(*iter) == "polarization")                      polarization            = vectorDoubleValue(*iter);
-		  else if (parameterName(*iter) == "strength-parameter")                amplitude               = doubleValue(*iter);
+		  else if (parameterName(*iter) == "strength-parameter")                a0               	= doubleValue(*iter);
 		  else if (parameterName(*iter) == "radius-parallel")          		radius[0]               = doubleValue(*iter);
 		  else if (parameterName(*iter) == "radius-perpendicular")     		radius[1]               = doubleValue(*iter);
 		  else if (parameterName(*iter) == "signal-type")                       signalType              = stringValue(*iter);
@@ -576,7 +577,7 @@ namespace MITHRA
 		signal.initialize(signalType, offset, pulseLength, wavelength, cep);
 	      else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
 
-	      extField.initialize(type, position, direction, polarization, amplitude, radius, wavelength, signal);
+	      extField.initialize(type, position, direction, polarization, a0, radius, wavelength, signal);
 
 	      extField_.push_back(extField);
 	    }

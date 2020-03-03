@@ -196,14 +196,14 @@ namespace MITHRA
     /* Store data required for visualizing the radiated field in all-domain.                            */
     struct vtk
     {
-      bool sample_;
-      std::vector <FieldType> field_;
-      std::string directory_;
-      SamplingType type_;
-      std::string basename_;
-      Double rhythm_;
-      PlaneType plane_;
-      FieldVector <Double> position_;
+      bool 				sample_;
+      std::vector <FieldType> 		field_;
+      std::string 			directory_;
+      SamplingType 			type_;
+      std::string 			basename_;
+      Double 				rhythm_;
+      PlaneType 			plane_;
+      FieldVector <Double> 		position_;
 
       /* Initialize the data-base for field visualization.						*/
       vtk ();
@@ -230,6 +230,9 @@ namespace MITHRA
 
     /* Store the amplitude of the seed.                                                           	*/
     Double                  		amplitude_;
+
+    /* Store the normalized amplitude of the seed.							*/
+    Double                  		a0_;
 
     /* Store the Rayleigh radius of the Gaussian beam in the parallel and perpendicular directions.	*/
     std::vector<Double>      		radius_;
@@ -349,6 +352,9 @@ namespace MITHRA
     /* Store the amplitude of the seed.                                                           	*/
     Double                  		amplitude_;
 
+    /* Store the normalized amplitude of the seed.							*/
+    Double				a0_;
+
     /* Store the Rayleigh radius of the Gaussian beam in the parallel and perpendicular directions.	*/
     std::vector<Double>      		radius_;
 
@@ -400,6 +406,9 @@ namespace MITHRA
 
     /* Store the amplitude of the seed.                                                            	*/
     Double                              amplitude_;
+
+    /* Store the normalized amplitude of the seed.							*/
+    Double				a0_;
 
     /* Store the Rayleigh radius of the Gaussian beam in the parallel and perpendicular directions.  	*/
     std::vector<Double>                 radius_;

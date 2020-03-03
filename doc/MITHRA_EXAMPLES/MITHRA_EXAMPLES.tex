@@ -311,6 +311,18 @@ Furthermore, the stronger undulator parameter dictates a smaller time step for t
 Note that MITHRA, takes the bunch step value as an initial guess, it automatically adjusts the value based on the calculated time step for mesh update.
 %
 To simulate the considered FEL configuration, the job file presented in \ref{job_file_2} is written and given to the software to analyze the interaction.
+%
+\begin{figure}[H]
+	\centering
+	$\begin{array}{cc}
+	\includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig6/Fig6a.pdf} & \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig6/Fig6b.pdf} \\
+	(a) & (b) \\
+	\includegraphics[height=3.0in]{./MITHRA_EXAMPLES/Fig6/Fig6c.pdf} & \includegraphics[height=3.0in]{./MITHRA_EXAMPLES/Fig6/Fig6d.pdf} \\
+	(c) & (d) \\
+	\end{array}$
+	\caption{(a) The total radiated power measured at 80\,{\textmu}m distance from the bunch center in terms of the traveled undulator length and (b) the bunch profile in the rest frame at 12\,m from the undulator begin. (c) Bunch profile and (d) microbunch profiles of the electron beam with and without space-charge considerations are compared. }
+	\label{power-example2}
+\end{figure}
 
 \subsection{Simulation Results}
 
@@ -331,18 +343,6 @@ By visualizing the bunch in the laboratory frame, one can explore the origin of 
 Fig.\,\ref{power-example2}c and \ref{power-example2}d illustrate this comparison.
 %
 As observed from these figures, the total bunch profile in both cases are similar, whereas the microbunches in the simulation without space-charge are slightly denser than the case with space-charge consideration.
-%
-\begin{figure}
-\centering
-$\begin{array}{cc}
-\includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig6/Fig6a.pdf} & \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig6/Fig6b.pdf} \\
-(a) & (b) \\
-\includegraphics[height=3.0in]{./MITHRA_EXAMPLES/Fig6/Fig6c.pdf} & \includegraphics[height=3.0in]{./MITHRA_EXAMPLES/Fig6/Fig6d.pdf} \\
-(c) & (d) \\
-\end{array}$
-\caption{(a) The total radiated power measured at 80\,{\textmu}m distance from the bunch center in terms of the traveled undulator length and (b) the bunch profile in the rest frame at 12\,m from the undulator begin. (c) Bunch profile and (d) microbunch profiles of the electron beam with and without space-charge considerations are compared. }
-\label{power-example2}
-\end{figure}
 
 \section{Example 3: Optical Undulator}
 
@@ -378,7 +378,7 @@ The very close agreement between the two results validates the implementation of
 %
 The small discrepancies observed are mainly due to the different fringe fields implemented for static undulator and optical undulator with flat-top temporal signature for the signal.
 %
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig7/Fig7.pdf}
 \caption{The total radiated power calculated at 110\,$\mu$m distance from the bunch center in terms of the traveled undulator length compared for two cases of an optical and static undulator.}
@@ -394,6 +394,8 @@ We believe the discrepancies are originated from the small number of electrons i
 This strongly intensifies the 3D effects, dramatically reduces the transverse coherence of the radiation, and indeed makes analysis using 1D FEL theory completely invalid.
 %
 We comment that for the listed parameters $\rho_1=2\times10^{-4}$ and $\rho_2=0.003$, which are much smaller than errors caused by space-time discretization.
+%
+To simulate the considered FEL configuration, the  job file in \ref{job_file_4} is written and given to the software to analyze the interaction.
 %
 \begin{table}
 \label{example3}
@@ -418,14 +420,6 @@ Electron density & $5.4\times10^{18} 1/\text{cm}^3$ \\ \hline
 Initial bunching factor & $0.0$ \\ \hline
 \end{tabular}
 \end{table}
-
-To simulate the considered FEL configuration, the following job file is written and given to the software to analyze the interaction.
-%
-\begin{snugshade}
-\begin{Verbatim}[fontsize=\small, tabsize = 4]
-
-\end{Verbatim}
-\end{snugshade}
 
 \subsection{Simulation Results}
 

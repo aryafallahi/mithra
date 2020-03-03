@@ -81,6 +81,7 @@ int main (int argc, char * (argv) [])
   mesh.show();
   bunch.show();
   seed.show();
+
   for (unsigned int i = 0; i < undulator.size(); i++) 	undulator[i].show();
   for (unsigned int i = 0; i < extField.size();  i++) 	extField[i] .show();
 

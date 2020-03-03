@@ -107,13 +107,13 @@ namespace MITHRA
       {
 	if ( undulator_[i].type_ == STATIC )
 	  {
-	    g  = gamma / sqrt( 1.0 + undulator_[i].k_ * undulator_[0].k_ / 2.0 );
+	    g  = gamma / sqrt( 1.0 + undulator_[i].k_ * undulator_[i].k_ / 2.0 );
 	    gmin = std::min( gmin, g);
 	    gmax = std::max( gmax, g);
 	  }
 	else if ( undulator_[i].signal_.signalType_ == FLATTOP )
 	  {
-	    g  = gamma / sqrt( 1.0 + undulator_[i].a0_ * undulator_[0].a0_ / 2.0 );
+	    g  = gamma / sqrt( 1.0 + undulator_[i].a0_ * undulator_[i].a0_ / 2.0 );
 	    gmin = std::min( gmin, g);
 	    gmax = std::max( gmax, g);
 	  }
@@ -121,7 +121,7 @@ namespace MITHRA
 	  {
 	    /* For optical undulator, when a pulse other than flattop is the pulse format, the gamma of
 	     * the electrons change throughout the interaction.						*/
-	    g  = gamma / sqrt( 1.0 + undulator_[i].a0_ * undulator_[0].a0_ / 2.0 );
+	    g  = gamma / sqrt( 1.0 + undulator_[i].a0_ * undulator_[i].a0_ / 2.0 );
 	    gmin = std::min( gmin, g);
 	    g  = gamma;
 	    gmax = std::max( gmax, g);

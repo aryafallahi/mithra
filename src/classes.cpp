@@ -769,7 +769,7 @@ namespace MITHRA
     + stringify(direction_[0]) + std::string("; ")
     + stringify(direction_[1]) + std::string("; ")
     + stringify(direction_[2]) + std::string("]"));
-    printmessage(std::string(__FILE__), __LINE__, std::string("Seed amplitude = ") + stringify(amplitude_));
+    printmessage(std::string(__FILE__), __LINE__, std::string("Seed normalized amplitude = ") + stringify(a0_));
     if      ( seedType_ == PLANEWAVE || seedType_ == GAUSSIANBEAM )
       printmessage(std::string(__FILE__), __LINE__, std::string("Seed polarization [")
     + stringify(polarization_[0]) + std::string("; ")
@@ -943,8 +943,8 @@ namespace MITHRA
 	+ stringify(direction_[0]) + std::string("; ")
 	+ stringify(direction_[1]) + std::string("; ")
 	+ stringify(direction_[2]) + std::string("]"));
-	printmessage(std::string(__FILE__), __LINE__, std::string("Beam amplitude = ")
-	+ stringify(amplitude_));
+	printmessage(std::string(__FILE__), __LINE__, std::string("Beam normalized amplitude = ")
+	+ stringify(a0_));
 	printmessage(std::string(__FILE__), __LINE__, std::string("Beam polarization [")
 	+ stringify(polarization_[0]) + std::string("; ")
 	+ stringify(polarization_[1]) + std::string("; ")
@@ -1051,7 +1051,7 @@ namespace MITHRA
 	+ stringify(direction_[0]) + std::string("; ")
 	+ stringify(direction_[1]) + std::string("; ")
 	+ stringify(direction_[2]) + std::string("]"));
-	printmessage(std::string(__FILE__), __LINE__, std::string("Beam amplitude = ") + stringify(amplitude_));
+	printmessage(std::string(__FILE__), __LINE__, std::string("Beam normalized amplitude = ") + stringify(a0_));
 	if      ( seedType_ == PLANEWAVE || seedType_ == GAUSSIANBEAM )
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Beam polarization [")
 	+ stringify(polarization_[0]) + std::string("; ")

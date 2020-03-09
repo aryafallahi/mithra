@@ -89,9 +89,9 @@ namespace MITHRA
      * undulator amplitude is the amplitude of the fields.						*/
     seed_.amplitude_ 	        = seed_.a0_ * EM * c0_ / EC;
     for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
-      iter->amplitude_ 		= seed_.a0_ * EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
+      iter->amplitude_ 		= iter->a0_ * EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
     for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
-      iter->amplitude_        	= seed_.a0_ * EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
+      iter->amplitude_        	= iter->a0_ * EM * c0_ * 2 * PI * iter->signal_.f0_ / EC;
 
     /****************************************************************************************************/
 

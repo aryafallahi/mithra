@@ -4,10 +4,10 @@
 #
 #  manual: example 3, Fig. 5.8a-d
 #
-#  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS.job
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS-SC.job
 #
 #  in the LSF system:
-#  bsub -n 48 -W 20:00 -J "FEL-ICS" -o mithra.out 'mpirun ../MITHRA ./job-files/FEL-ICS.job'
+#  bsub -n 48 -W 20:00 -J "FEL-ICS-SC" -o mithra.out 'mpirun ../MITHRA ./job-files/FEL-ICS-SC.job'
 
 MESH
 {
@@ -19,7 +19,7 @@ MESH
   total-time					= 2000000
   bunch-time-step				= 100.0
   mesh-truncation-order				= 2
-  space-charge					= false
+  space-charge					= true
   solver					= NSFD
 }
  
@@ -46,7 +46,7 @@ BUNCH
   {
     sample					= true
     directory					= ./
-    base-name					= /cluster/scratch/afallahi/bunch-profile/bunch
+    base-name					= /cluster/scratch/afallahi/bunch-profile/bunch-SC
     rhythm					= 2000
   }
 }
@@ -61,7 +61,7 @@ FIELD
     field                                       = Ey
     field                                       = Ez
     directory					= ./
-    base-name					= field-sampling/field
+    base-name					= field-sampling/field-SC
     rhythm					= 320
     position					= (0.0, 0.0, 82.0)
   }
@@ -91,7 +91,7 @@ FEL-OUTPUT
     sample					= true
     type					= at-point
     directory					= ./
-    base-name					= power-sampling/power
+    base-name					= power-sampling/power-SC
     plane-position				= 82
     normalized-frequency                        = 1.0
     normalized-frequency                        = 2.0

@@ -1,0 +1,50 @@
+#  Mithra input file                                                                                                                                          
+#                                                                                                        
+#  physics - model free propagation of a bunch to test the space-charge effect
+#                                                                                                 
+#  manual: example 4, Fig. 5.10a and Fig. 5.10b (simulation results for Mithra to be compared with Astra)
+#
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-FSP.job
+#
+#  in the LSF system:
+#  bsub -n 48 -W 2:00 -J "FEL-FSP" -o mithra.out 'mpirun ../MITHRA ./job-files/FEL-FSP.job'
+
+MESH
+{
+  length-scale					= MICROMETER
+  time-scale					= PICOSECOND
+  mesh-lengths					= ( 3200,  3200.0, 500.0) 
+  mesh-resolution				= ( 50.0,    50.0,   0.5)
+  mesh-center					= (  0.0,     0.0,   0.0)
+  total-time					= 30000
+  bunch-time-step				= 1.6
+  mesh-truncation-order				= 2
+  space-charge					= true
+}
+ 
+BUNCH
+{
+  bunch-initialization
+  {
+    type    					= ellipsoid
+    distribution				= gaussian
+    charge					= 1.846e8
+    number-of-particles				= 262144
+    gamma					= 100.41
+    direction     	    			= (    0.0,     0.0,       1.0)
+    position					= (    0.0,     0.0,       0.0)
+    sigma-position				= (  260.0,   260.0,     50.25)
+    sigma-momentum				= ( 1.0e-8,  1.0e-8, 100.41e-4)
+    transverse-truncation			= 1040.0
+    longitudinal-truncation                     = 200.0
+    bunching-factor				= 0.0
+  }
+  
+  bunch-sampling
+  {
+    sample					= true
+    directory					= ./
+    base-name 					= bunch-sampling/bunchSC
+    rhythm					= 8
+  }
+}

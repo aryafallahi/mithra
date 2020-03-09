@@ -1,13 +1,13 @@
 #  Mithra input file
 #
-#  physics - model a free electron mechanism based on optical undulator
+#  physics - model a free electron mechanism based on optical undulator with fictituous number of electrons
 #
-#  manual: example 3, Fig. 5.8a-d
+#  manual: example 3, Fig. 5.9
 #
-#  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS.job
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS-N2800000.job
 #
 #  in the LSF system:
-#  bsub -n 48 -W 20:00 -J "FEL-ICS" -o mithra.out 'mpirun ../MITHRA ./job-files/FEL-ICS.job'
+#  bsub -n 48 -W 20:00 -J "FEL-ICS-N2800000" -o mithra.out 'mpirun ../MITHRA ./job-files/FEL-ICS-N2800000.job'
 
 MESH
 {
@@ -30,7 +30,7 @@ BUNCH
     type    					= ellipsoid
     distribution				= uniform
     charge					= 2800
-    number-of-particles				= 2800
+    number-of-particles				= 2800000
     gamma					= 30.0
     direction     	    			= (  0.0,   0.0,    1.0)
     position					= (  0.0,   0.0,    0.0)
@@ -38,32 +38,8 @@ BUNCH
     sigma-momentum				= ( 0.03,  0.03,   0.03)
     transverse-truncation			= 240.0
     longitudinal-truncation                     = 77.0
-    bunching-factor				= 0.0
-    shot-noise					= true
-  }
-
-  bunch-profile
-  {
-    sample					= true
-    directory					= ./
-    base-name					= /cluster/scratch/afallahi/bunch-profile/bunch
-    rhythm					= 2000
-  }
-}
-
-FIELD
-{ 
-  field-sampling
-  {
-    sample					= true
-    type					= at-point
-    field					= Ex
-    field                                       = Ey
-    field                                       = Ez
-    directory					= ./
-    base-name					= field-sampling/field
-    rhythm					= 320
-    position					= (0.0, 0.0, 82.0)
+    bunching-factor				= 0.001
+    shot-noise					= false
   }
 }
 
@@ -91,10 +67,8 @@ FEL-OUTPUT
     sample					= true
     type					= at-point
     directory					= ./
-    base-name					= power-sampling/power
+    base-name					= power-sampling/power-N2800000
     plane-position				= 82
     normalized-frequency                        = 1.0
-    normalized-frequency                        = 2.0
-    normalized-frequency                        = 3.0
   }
 }

@@ -103,28 +103,28 @@ namespace MITHRA
     /* Now, depending on the undulator type determine the maximum and minimum gamma of the bunch
      * travelling through the undulator.								*/
     Double gmin = 1.0e100, gmax = -1.0e100, g;
-    for (unsigned int i = 0; i < undulator_.size(); i++)
+    for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
       {
-	if ( undulator_[i].type_ == STATIC )
+	if ( iter->type_ == STATIC )
 	  {
-	    g  = gamma / sqrt( 1.0 + undulator_[i].k_ * undulator_[i].k_ / 2.0 );
-	    gmin = std::min( gmin, g);
-	    gmax = std::max( gmax, g);
+	    g  	 = gamma / sqrt( 1.0 + iter->k_ * iter->k_ / 2.0 );
+	    gmin = ( gmin < g ) ? gmin : g;
+	    gmax = ( gmax > g ) ? gmax : g;
 	  }
-	else if ( undulator_[i].signal_.signalType_ == FLATTOP )
+	else if ( iter->signal_.signalType_ == FLATTOP )
 	  {
-	    g  = gamma / sqrt( 1.0 + undulator_[i].a0_ * undulator_[i].a0_ / 2.0 );
-	    gmin = std::min( gmin, g);
-	    gmax = std::max( gmax, g);
+	    g  = gamma / sqrt( 1.0 + iter->a0_ * iter->a0_ / 2.0 );
+	    gmin = ( gmin < g ) ? gmin : g;
+	    gmax = ( gmax > g ) ? gmax : g;
 	  }
 	else
 	  {
 	    /* For optical undulator, when a pulse other than flattop is the pulse format, the gamma of
 	     * the electrons change throughout the interaction.						*/
-	    g  = gamma / sqrt( 1.0 + undulator_[i].a0_ * undulator_[i].a0_ / 2.0 );
-	    gmin = std::min( gmin, g);
+	    g  = gamma / sqrt( 1.0 + iter->a0_ * iter->a0_ / 2.0 );
+	    gmin = ( gmin < g ) ? gmin : g;
 	    g  = gamma;
-	    gmax = std::max( gmax, g);
+	    gmax = ( gmax > g ) ? gmax : g;
 	  }
 
       }

@@ -1,0 +1,69 @@
+#  Mithra input file                                                                                                                                          
+#                                                                                                        
+#  physics - model the LCLS X-ray free electron laser in the short pulse regime 
+#
+#  manual: example 5, Fig. 11 (simulation results without consideration of space-charge effects) 
+#                                                                                                 
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-LCLS.job
+#  
+#  in the LSF system: 
+#  bsub -n 48 -W 2:00 -J "FEL-LCLS" -o mithra.out 'mpirun ../MITHRA ./job-files/FEL-LCLS.job'
+
+
+MESH
+{
+  length-scale					= MICROMETER
+  time-scale					= PICOSECOND
+  mesh-lengths					= ( 400.0, 400.0,   1.5   ) 
+  mesh-resolution				= ( 4.0,     4.0,   3.0e-5 )
+  mesh-center					= ( 0.0,     0.0,   0.0    )
+  total-time					= 350000
+  bunch-time-step				= 1.6
+  mesh-truncation-order				= 2
+  space-charge					= false
+  solver					= NSFD
+}
+ 
+BUNCH
+{
+  bunch-initialization
+  {
+    type    					= ellipsoid
+    distribution				= uniform
+    charge					= 1.25e8
+    number-of-particles				= 33554432
+    gamma					= 13089
+    direction     	    			= ( 0.0,     0.0,  1.0)
+    position					= ( 0.0,     0.0,  0.0)
+    sigma-position				= ( 30.0,   30.0,  0.4)
+    sigma-momentum				= ( 0.007, 0.007, 13089e-3)
+    transverse-truncation			= 180.0
+    longitudinal-truncation                     = 0.43
+    bunching-factor				= 0.0
+    shot-noise					= true
+  }
+}
+
+UNDULATOR
+{
+  static-undulator
+  {
+    undulator-parameter				= 3.5
+    period					= 3.0e4
+    length					= 2500
+    polarization-angle				= 0.0
+  }
+}
+
+FEL-OUTPUT
+{
+  radiation-power
+  {
+    sample					= true
+    type					= at-point
+    directory					= ./
+    base-name					= power-sampling/power-1
+    plane-position				= 0.45
+    normalized-frequency			= 1.00
+  }
+}

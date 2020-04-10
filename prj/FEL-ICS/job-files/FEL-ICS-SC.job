@@ -16,7 +16,7 @@ MESH
   mesh-lengths					= ( 2000.0, 2000.0,  165.0) 
   mesh-resolution				= (    5.0,    5.0,   0.05)
   mesh-center					= (    0.0,    0.0,   0.0 )
-  total-time					= 2000000
+  total-time					= 4000000
   bunch-time-step				= 100.0
   mesh-truncation-order				= 2
   space-charge					= true
@@ -35,7 +35,7 @@ BUNCH
     direction     	    			= (  0.0,   0.0,    1.0)
     position					= (  0.0,   0.0,    0.0)
     sigma-position				= ( 60.0,  60.0,   72.0)
-    sigma-momentum				= ( 0.03,  0.03,   0.03)
+    sigma-momentum				= (0.001, 0.001,  0.001)
     transverse-truncation			= 240.0
     longitudinal-truncation                     = 77.0
     bunching-factor				= 0.0
@@ -78,8 +78,8 @@ UNDULATOR
     strength-parameter				= 1.0
     signal-type					= flat-top
     wavelength					= 1.0e3
-    pulse-length				= 12.0e5
-    offset					=  6.0e5
+    pulse-length				= 24.0e5
+    offset					= 12.0e5
     CEP						= 0.0
   }
 }

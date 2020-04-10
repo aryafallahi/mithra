@@ -104,10 +104,10 @@ namespace MITHRA
 	    timeBunch_ += bunch_.timeStep_;
 	    ++nTimeBunch_;
 	  }
-    
-    /* Record particles that have gone through the diagnostics screens.					*/
-    screenProfile();
-    
+
+	/* Record particles that have gone through the diagnostics screens.				*/
+	screenProfile();
+
 	/* Update the values of the current.								*/
 	currentUpdate();
 

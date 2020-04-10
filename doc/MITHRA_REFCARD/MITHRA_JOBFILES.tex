@@ -270,8 +270,8 @@ MESH
 	mesh-lengths                     = ( 2000.0, 2000.0, 165.0 )
 	mesh-resolution                  = (    5.0,    5.0,   0.05)
 	mesh-center                      = (    0.0,    0.0,   0.0 )
-	total-time                       = 1300000
-	bunch-time-step                  = 20.0
+	total-time                       = 4000000
+	bunch-time-step                  = 100.0
 	mesh-truncation-order            = 2
 	space-charge                     = false
 	solver							 = NSFD
@@ -289,11 +289,19 @@ BUNCH
 		direction					 = (  0.0,   0.0,   1.0)
 		position					 = (  0.0,   0.0,   0.0)
 		sigma-position				 = ( 60.0,  60.0,  72.0)
-		sigma-momentum				 = ( 0.03,  0.03,  0.03)
+		sigma-momentum				 = ( 0.001,  0.001,  0.001)
 		transverse-truncation		 = 240.0
 		longitudinal-truncation		 = 77.0
 		bunching-factor				 = 0.0
 		shot-noise					 = true
+	\}
+	
+	bunch-profile
+	\{
+		sample						 = true
+		directory					 = ./
+		base-name					 = bunch-profile/bunch
+		rhythm						 = 2000
 	\}
 \}
 
@@ -324,8 +332,8 @@ UNDULATOR
 		strength-parameter           = 0.5
 		signal-type                  = flat-top
 		wavelength                   = 1.0e3
-		pulse-length                 = 1.2e6
-		offset 						 = 6.0e6
+		pulse-length                 = 2.4e6
+		offset 						 = 1.2e6
 		CEP                          = 0.0
 	\}
 \}
@@ -343,13 +351,53 @@ FEL-OUTPUT
 		normalized-frequency         = 2.0
 		normalized-frequency         = 3.0
 	\}
-	
-	bunch-profile-lab-frame
+\}
+\end{Verbatim}
+\end{snugshade}
+
+\section{Example 4: Free-space Propagation}
+\label{job_file_5}
+
+\begin{snugshade}
+\begin{Verbatim}[fontsize=\footnotesize, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
+MESH
+\{
+	length-scale					= MICROMETER
+	time-scale						= PICOSECOND
+	mesh-lengths					= ( 3200,  3200.0,    500.0)
+	mesh-resolution					= ( 50.0,    50.0,      0.1)
+	mesh-center						= ( 0.0,      0.0,      0.0)
+	total-time						= 30000
+	bunch-time-step					= 1.6
+	mesh-truncation-order			= 2
+	space-charge					= true
+	solver							= NSFD
+\}
+
+BUNCH
+\{
+	bunch-initialization
 	\{
-		sample						 = true
-		directory					 = ./
-		base-name					 = bunch-profile-lab-frame/profile
-		rhythm						 = 1.0e3
+		type						= ellipsoid
+		distribution				= gaussian
+		charge						= 1.846e8
+		number-of-particles			= 262144
+		gamma						= 100.41
+		direction					= (    0.0,     0.0,       1.0)
+		position					= (    0.0,     0.0,       0.0)
+		sigma-position				= (  260.0,   260.0,     50.25)
+		sigma-momentum				= ( 1.0e-8,  1.0e-8, 100.41e-4)
+		transverse-truncation		= 1040.0
+		longitudinal-truncation		= 200.0
+		bunching-factor				= 0.00
+	\}
+	
+	bunch-sampling
+	\{
+		sample						= true
+		directory					= ./
+		base-name					= bunch-sampling/bunchSC
+		rhythm						= 8
 	\}
 \}
 \end{Verbatim}

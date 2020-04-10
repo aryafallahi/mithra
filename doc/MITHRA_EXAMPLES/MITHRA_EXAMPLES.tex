@@ -395,6 +395,8 @@ This strongly intensifies the 3D effects, dramatically reduces the transverse co
 %
 We comment that for the listed parameters $\rho_1=2\times10^{-4}$ and $\rho_2=0.003$, which are much smaller than errors caused by space-time discretization.
 %
+In addition, the energy spread and normalized emittance of the electron beam is assumed to be very low to remove the effects of beam divergence on the interaction, thereby easing the interpretation of the simulation outcomes.
+%
 To simulate the considered FEL configuration, the  job file in \ref{job_file_4} is written and given to the software to analyze the interaction.
 %
 \begin{table}
@@ -409,11 +411,11 @@ Bunch size & $(60\times60\times144)$\,nm \\ \hline
 Bunch charge & 0.45\,fC \\ \hline
 Bunch energy & 15\,MeV \\	\hline
 Bunch current & 0.93\,A \\ \hline
-Longitudinal momentum spread & 0.1\% \\ \hline
-Normalized emittance & 1.75 nm-rad \\	\hline
+Longitudinal momentum spread & 0.003\% \\ \hline
+Normalized emittance & 0.06 nm-rad \\	\hline
 Laser wavelength & 1\,$\mu$m \\ \hline
 Laser strength parameter & 1.0 \\ \hline
-Pulse duration & 4\,ps \\ \hline
+Pulse duration & 8\,ps \\ \hline
 Laser pulse type & flat-top \\ \hline
 Radiation wavelength & 0.41\,nm \\ \hline
 Electron density & $5.4\times10^{18} 1/\text{cm}^3$ \\ \hline
@@ -423,33 +425,33 @@ Initial bunching factor & $0.0$ \\ \hline
 
 \subsection{Simulation Results}
 
-Fig.\,\ref{power-example3}a illustrates the radiation field 82\,nm away from the bunch center.
+Fig.\,\ref{power-example3}a illustrates the radiation field 82\,nm away from the bunch center with and without space-charge.
 %
-In addition, Fig.\,\ref{power-example3}b shows the radiated power in terms of travelled undulator distance computed using MITHRA, illustrating the effect of space charge and energy spread.
+In addition, Fig.\,\ref{power-example3}b shows the radiated power in terms of travelled undulator distance computed using MITHRA, illustrating the effect of space charge.
 %
-It is observed that the gain obtained in this regime is very small compared with a usual static undulators.
+It is observed that the gain obtained in this regime is very small compared with typical static undulators, i.e. a factor of $\sim10$ when space-charge is neglected and a factor of $\sim7$ for a simulation including space-charge effects.
 %
-The reason for this effect is the very large shot noise in the bunch because of the low number of particles in each micro-bunch.
+To explore the reason for such observation, the micro-bunching of the electron beam is studied.
 %
-Note that in this simulation, each electron is modeled as one single particle with quite loading assumption before entering the undulator.
-%
-The strong shot noise causes a strong initial radiation, which reaches the expected saturation power after a low gain.
-%
-As a matter of fact, the micro-bunching process increases the coherence of the output radiation rather than power amplification.
-%
-Another aspect in this regime of interaction is the generation of strong higher order harmonics, which are depicted up to the third harmonic in Fig.\,\ref{power-example3}c.
-%
-Note that the accuracy of the results decreases for higher harmonics due to the required resolution in the computational mesh.
-%
-To show that the micro-bunching effect takes place in this regime as well, the bunching factor of the electron beam is depicted in Fig.\,\ref{power-example3}d.
+To show that the micro-bunching effect takes place in this regime, the bunching factor of the electron beam in the moving frame is depicted in Fig.\,\ref{power-example3}d \footnote{Currently, bunching factor calculation is not implemented in MITHRA. The user should save the bunch profile using the {\tt \em \footnotesize bunch-profile} group and subsequently extract the bunching factor from the saved distribution.}.
 %
 The bunching of the electrons due to the ICS interaction is clearly observed in the plot of bunching factor.
 %
-The investigation of bunching factor throughout the interaction shows that despite the low-gain, micro-bunching takes place. This micro-bunching process increases the longitudinal coherence of the output radiation. However, due to very strong initial radiation no coherent amplification is observed.
+Here, a question rises; why despite the micro-bunching process no gain in the radiation is observed?
+
+The reason for this effect is the very large shot noise in the bunch because of the low number of particles in each micro-bunch.
+%
+The strong shot noise causes a strong initial incoherent radiation, which reaches close to the expected saturation power even at the beginning of the interaction.
+%
+As a matter of fact, the micro-bunching process here increases the coherence of the output radiation rather than power amplification.
+%
+The investigation of bunching factor throughout the interaction shows that micro-bunching takes place.
+%
+Nonetheless, the low numnber of particles in each micro-bunch results in enhancement of micro-bunching only with a factor of $\sim$ 3.
 %
 According to the depicted power and pulse shape, total number of emitted photons is approximately equal to $4.2\times10^3$.
 %
-\begin{figure}
+\begin{figure}[t]
 \centering
 $\begin{array}{cc}
 \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig8/Fig8a.pdf} & \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig8/Fig8b.pdf} \\
@@ -457,7 +459,7 @@ $\begin{array}{cc}
 \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig8/Fig8c.pdf} & \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig8/Fig8d.pdf} \\
 (c) & (d)
 \end{array}$
-\caption{(a) Electric field of the generated radiation in front of the bunch, (b) the total radiated power measured at 82\,nm distance from the bunch center in terms of the traveled distance, (c) the same radiation power for various harmonic orders, and (d) bunching factor of the considered bunch during the ICS interaction.}
+\caption{(a) Electric field of the generated radiation in front of the bunch, (b) the total radiated power measured at 82\,nm distance from the bunch center in terms of the traveled distance, (c) the same radiation power for various harmonic orders, and (d) bunching factor of the considered bunch in the moving frame during the ICS interaction.}
 \label{power-example3}
 \end{figure}
 
@@ -471,9 +473,9 @@ In addition, we assume an initial bunching factor equal to 0.001 for the input b
 %
 In Fig.\,\ref{powerUnreal-example3}, the radiation of such a charge configuration is depicted.
 %
-The results clearly reveal the radiation start from much lower powers, possibility of achieving the FEL gain and saturating in the same power level as above, thereby confirming the above theory for radiation of low density electron bunches.
+The results clearly reveal the radiation start from much lower powers, possibility of achieving the FEL gain and saturating in the same power level as observed with \emph{real} number of particles, thereby confirming the above theory for radiation of low density electron bunches.
 %
-Consequently, the presented simulation by MITHRA agrees with the already developed FEL theory, according to which low number of electrons per coherence volume prevents achieving the radiation gain, even if the electron bunch is micro-bunched.
+Consequently, the presented simulation by MITHRA agrees with the already developed FEL principle, according to which low number of electrons per coherence volume prevents achieving the radiation gain, even if the electron bunch is micro-bunched.
 %
 \begin{figure}
 \centering
@@ -481,6 +483,10 @@ Consequently, the presented simulation by MITHRA agrees with the already develop
 \caption{The total radiated power measured at 82\,nm distance from the bunch center in terms of the traveled distance for an imaginary bunch where each electron is represented by a cloud of 1000 particles.}
 \label{powerUnreal-example3}
 \end{figure}
+
+Another aspect in this regime of interaction is the generation of strong higher order harmonics, which are depicted up to the third harmonic in Fig.\,\ref{power-example3}c.
+%
+Note that the accuracy of the results decreases for higher harmonics due to the required resolution in the computational mesh.
 
 \section{Example 4: Free Propagation}
 
@@ -496,54 +502,11 @@ We take the bunch of the first example, but with Gaussian distribution along the
 %
 The computational domain needs to be slightly larger to account for the Gaussian distribution, and additionally no undulator parameter needs to be parsed to the solver.
 %
+Transverse emittance of the bunch is assumed to be very small so that the bunch transverse expansion occurs only due to the space-charge effect.
+%
 The bunch sampling option in MITHRA is activated to save the statistical phase-space data during the propagation.
 %
-The job file to perform the above simulation in MITHRA will thus correspond to the following:
-%
-\begin{snugshade}
-\begin{Verbatim}[fontsize=\small, tabsize = 4]
-MESH
-{
-  length-scale                     = MICROMETER
-  time-scale                       = PICOSECOND
-  mesh-lengths                     = ( 3200,  3200.0,    350.0)
-  mesh-resolution                  = ( 100.0,  100.0,      0.5)
-  mesh-center                      = ( 0.0,      0.0,      0.0)
-  total-time                       = 30000
-  bunch-time-step                  = 1.6
-  bunch-time-start                 = 0.0
-  mesh-truncation-order            = 2
-  space-charge                     = true
-}
-
-BUNCH
-{
-  bunch-initialization
-  {
-    type                           = ellipsoid
-    distribution                   = gaussian
-    charge                         = 1.846e8
-    number-of-particles            = 262144
-    gamma                          = 100.41
-    direction                      = (    0.0,     0.0,       1.0)
-    position                       = (    0.0,     0.0,       0.0)
-    sigma-position                 = (  260.0,   260.0,     50.25)
-    sigma-momentum                 = ( 1.0e-8,  1.0e-8, 100.41e-4)
-    transverse-truncation          = 1040.0
-    longitudinal-truncation        = 150.0
-    bunching-factor                = 0.01
-  }
-
-  bunch-sampling
-  {
-    sample                         = true
-    directory                      = ./
-    base-name                      = bunch-sampling/bunchSC
-    rhythm                         = 8
-  }
-}
-\end{Verbatim}
-\end{snugshade}
+The job file to perform the above simulation in MITHRA is presented in \ref{job_file_5}.
 
 \subsection{Simulation Results}
 
@@ -555,9 +518,9 @@ This is a confirmation for the considerable space-charge effect encountered in t
 %
 The results obtained using both MITHRA and ASTRA are depicted and compared against each other.
 %
-The excellent agreement between the results evidences the reliability of the space-charge implementation in MITHRA.
+The agreement between the results evidences the reliability of the space-charge implementation in MITHRA.
 %
-\begin{figure}
+\begin{figure}[H]
 \centering
 $\begin{array}{cc}
 \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig10/Fig10a.pdf} & \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig10/Fig10b.pdf} \\

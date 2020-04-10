@@ -102,7 +102,7 @@ namespace MITHRA
 
     /* Now, depending on the undulator type determine the maximum and minimum gamma of the bunch
      * travelling through the undulator.								*/
-    Double gmin = 1.0e100, gmax = -1.0e100, g;
+    Double gmin = gamma, gmax = gamma, g = gamma;
     for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
       {
 	if ( iter->type_ == STATIC )
@@ -203,13 +203,15 @@ namespace MITHRA
 	/* Boosting the position is done considering that the start of simulation is at t = 0.		*/
 	zeta[i] 					 = gamma_ * ( 1.0 - bunch_.bunchInit_[i].betaVector_[2] * beta_ );
 	for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	  bunch_.bunchInit_[i].position_[ia][2]	/= zeta[i];
-	bunch_.bunchInit_[i].sigmaPosition_[2] 	/= zeta[i];
-	bunch_.bunchInit_[i].longTrun_ 		/= zeta[i];
+	  bunch_.bunchInit_[i].position_[ia][2]		/= zeta[i];
+
+	bunch_.bunchInit_[i].sigmaPosition_[2] 		/= zeta[i];
+	bunch_.bunchInit_[i].longTrun_ 			/= zeta[i];
 
 	bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= zeta[i];
 
-	bunch_.bunchInit_[i].lambda_  		 	 = undulator_[0].lu_ / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].betaVector_[2] * zeta[i] );
+	Double lu					 = ( undulator_.size() > 0 ) ? undulator_[0].lu_ : 0.0;
+	bunch_.bunchInit_[i].lambda_  		 	 = lu / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].betaVector_[2] * zeta[i] );
 
 	printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
 
@@ -278,12 +280,15 @@ namespace MITHRA
      * away from the undulator begin ( the default distance is 2 undulator periods for static undulators
      * and 10 undulator periods for optical ones, due to different fring field formats used in the two
      * cases.)												*/
-    Double nl = ( undulator_[0].type_ == STATIC ) ? 2.0 : 10.0;
-    if (undulator_[0].dist_ == 0.0) undulator_[0].dist_ = nl * undulator_[0].lu_;
-    else if (undulator_[0].dist_ < nl * undulator_[0].lu_)
-      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: the undulator is set very close to the bunch, the results may be inaccurate.") );
-    dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmax + undulator_[0].dist_ / gamma_ );
-    printmessage(std::string(__FILE__), __LINE__, std::string("Initial distance from bunch head to undulator is ") + stringify(undulator_[0].dist_) );
+    if ( undulator_.size() > 0 )
+      {
+	Double nl = ( undulator_[0].type_ == STATIC ) ? 2.0 : 10.0;
+	if (undulator_[0].dist_ == 0.0) undulator_[0].dist_ = nl * undulator_[0].lu_;
+	else if (undulator_[0].dist_ < nl * undulator_[0].lu_)
+	  printmessage(std::string(__FILE__), __LINE__, std::string("Warning: the undulator is set very close to the bunch, the results may be inaccurate.") );
+	dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmax + undulator_[0].dist_ / gamma_ );
+	printmessage(std::string(__FILE__), __LINE__, std::string("Initial distance from bunch head to undulator is ") + stringify(undulator_[0].dist_) );
+      }
 
     /* The same shift in time should also be done for the seed field.					*/
     seed_.dt_		= dt_;
@@ -1013,12 +1018,14 @@ namespace MITHRA
 		ubp.nt++;
 	      }
 	  }
-	else
+	else if ( undulator_.size() > 0 )
 	  {
 	    /* Update the emission vector flag based on the particle position in lab frame.		*/
 	    ubp.lz 	= gamma_ * ( iter->rnp[2] + beta_ * c0_ * ( timeBunch_ + dt_ ) );
 	    iter->e 	= ( ubp.lz > - undulator_[0].dist_ ) ? 1.0 : 0.0;
 	  }
+	else
+	  iter->e	= 1.0;
 
 	/* Update the velocity of the particle according to the calculated electric and magnetic field.	*/
 

@@ -20,6 +20,7 @@ MESH
   bunch-time-step				= 1.6
   mesh-truncation-order				= 2
   space-charge					= true
+  solver					= NSFD
 }
  
 BUNCH

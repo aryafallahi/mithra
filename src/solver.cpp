@@ -102,7 +102,7 @@ namespace MITHRA
 
     /* Now, depending on the undulator type determine the maximum and minimum gamma of the bunch
      * travelling through the undulator.								*/
-    Double gmin = gamma, gmax = gamma, g = gamma;
+    Double gmin = 1.0e100, gmax = -1.0e100, g = 0.0;
     for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
       {
 	if ( iter->type_ == STATIC )

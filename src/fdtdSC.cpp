@@ -32,9 +32,6 @@ namespace MITHRA
     std::vector<Double>*		ft;
     std::list<Charge>::iterator 	iter;
 
-    /* Transfer the whole quantities to the electron rest frame.					*/
-    lorentzBoost();
-
     /* Before starting with the simulation the matrix for the field values and the coordinates should
      * be initialized. This is done based on the given mesh length and the mesh resolution in the mesh
      * structure.											*/

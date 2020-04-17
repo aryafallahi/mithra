@@ -87,8 +87,17 @@ namespace MITHRA
    * ellipsoid with dimensions given by sigmaPosition_ and center given by the position vector. The
    * particles have uniform energy distribution centered at initialEnergy_ with variances determined by
    * sigmaGammaBeta_.                                                         				*/
-  void Bunch::initializeEllipsoid (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
+  void Bunch::initializeEllipsoidLab (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
   {
+    /* Correct the number of particles if it is not a multiple of four.					*/
+    if ( bunchInit.numberOfParticles_ % 4 != 0 )
+      {
+	unsigned int n = bunchInit.numberOfParticles_ % 4;
+	bunchInit.numberOfParticles_ += 4 - n;
+	printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The number of particles in the bunch is not a multiple of four. ") +
+		     std::string("It is corrected to ") +  stringify(bunchInit.numberOfParticles_) );
+      }
+
     /* Save the initially given number of particles.							*/
     unsigned int	Np = bunchInit.numberOfParticles_, i, Np0 = chargeVector.size();
 
@@ -118,34 +127,24 @@ namespace MITHRA
 	  if ( bunchInit.shotNoise_ )
 	    {
 	      /* Obtain the number of beamlet.								*/
-	      bmi = int( ( charge.rnp[2] - zmin ) / ( bunchInit.lambda_ / 2.0 ) );
+	      bmi = int( ( charge.rnp[2] - zmin ) / bunchInit.lambda_ );
 
 	      /* Obtain the phase and amplitude of the modulation.					*/
 	      bFi = bF * sqrt( - 2.0 * log( halton( 8 , bmi ) ) );
 
-	      q.rnp[2]  = charge.rnp[2] - ( bunchInit.lambda_ / 2.0 ) / 4 * ii;
+	      q.rnp[2]  = charge.rnp[2] - bunchInit.lambda_ / 4 * ii;
 
-	      q.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bFi * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * q.rnp[2] + 2.0 * PI * halton( 9 , bmi ) );
+	      q.rnp[2] -= bunchInit.lambda_ / PI * bFi * sin( 2.0 * PI / bunchInit.lambda_ * q.rnp[2] + 2.0 * PI * halton( 9 , bmi ) );
 	    }
 	  else if ( bunchInit.lambda_ != 0.0)
 	    {
-	      q.rnp[2]  = charge.rnp[2] - ( bunchInit.lambda_ / 2.0 ) / 4 * ii;
+	      q.rnp[2]  = charge.rnp[2] - bunchInit.lambda_ / 4 * ii;
 
-	      q.rnp[2] -= bunchInit.lambda_ / ( 2.0 * PI ) * bunchInit.bF_ * sin( 2.0 * PI / ( bunchInit.lambda_ / 2.0 ) * q.rnp[2] + bunchInit.bFP_ * PI / 180.0 );
+	      q.rnp[2] -= bunchInit.lambda_ / PI * bunchInit.bF_ * sin( 2.0 * PI / bunchInit.lambda_ * q.rnp[2] + bunchInit.bFP_ * PI / 180.0 );
 	    }
 
-	  /* Before add the bunch to the global charge vector, a correction on the position of the bunch
-	   * should be made. This correction assures that the bunch properties are valid at the entrance
-	   * of the undulator.										*/
-	  g	    = sqrt( 1.0 + charge.gbnp.norm2() );
-	  q.rnp[0] -= ( charge.gbnp[0] / g - bunchInit.betaVector_[0] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
-	  q.rnp[1] -= ( charge.gbnp[1] / g - bunchInit.betaVector_[1] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
-	  q.rnp[2] -= ( charge.gbnp[2] / g - bunchInit.betaVector_[2] ) * ( zu_ - charge.rnp[2] ) / ( bunchInit.betaVector_[2] + beta_ );
-
-	  /* Insert this charge to the charge list if and only if it resides in the processor's
-	   * portion.                                                                               	*/
-	  if ( ( q.rnp[2] < zp[1] || rank == size - 1 ) && ( q.rnp[2] >= zp[0] || rank == 0 ) )
-	    chargeVector.push_back(q);
+	  /* Set this charge into the charge vector.							*/
+	  chargeVector.push_back(q);
 	}
     };
 
@@ -167,9 +166,9 @@ namespace MITHRA
 	  }
 
 	if ( bunchInit.distribution_ == "uniform" )
-	  for ( ; i < unsigned( Np / 4 * ( 1.0 + bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
+	  for ( ; i < unsigned( Np / 4 * ( 1.0 + 2.0 * bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
 	    {
-	      t0  = bunchInit.lambda_ * sqrt( - 2.0 * log( halton( 2, i + Np0 ) ) ) * sin( 2.0 * PI * halton( 3, i + Np0 ) );
+	      t0  = 2.0 * bunchInit.lambda_ * sqrt( - 2.0 * log( halton( 2, i + Np0 ) ) ) * sin( 2.0 * PI * halton( 3, i + Np0 ) );
 	      t0 += ( t0 < 0.0 ) ? ( - bunchInit.sigmaPosition_[2] ) : ( bunchInit.sigmaPosition_[2] );
 
 	      zmin = std::min(   t0 , zmin );
@@ -178,7 +177,7 @@ namespace MITHRA
 	zmin = zmin + bunchInit.position_[ia][2];
 
 	/* Obtain the average number of electrons per FEL beamlet.					*/
-	Ne = bunchInit.cloudCharge_ * ( bunchInit.lambda_ / 2.0 ) / ( 2.0 * bunchInit.sigmaPosition_[2] );
+	Ne = bunchInit.cloudCharge_ * bunchInit.lambda_ / ( 2.0 * bunchInit.sigmaPosition_[2] );
 
 	/* Set the bunching factor level for the shot noise depending on the given values.		*/
 	bF = ( bunchInit.bF_ == 0.0 ) ? 1.0 / sqrt(Ne) : bunchInit.bF_;
@@ -187,9 +186,9 @@ namespace MITHRA
       }
 
     /* Determine the properties of each charge point and add them to the charge vector.               	*/
-    for (i = 0; i < Np / 4; i++)
+    for (i = rank; i < Np / 4; i += size)
       {
-	/* Determine the transverse coordinate.							*/
+	/* Determine the transverse coordinate.								*/
 	r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * cos( 2.0 * PI * halton(1, i + Np0) );
 	r[1] = bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * sin( 2.0 * PI * halton(1, i + Np0) );
 
@@ -226,13 +225,13 @@ namespace MITHRA
     /* If the longitudinal type of the bunch is uniform a tapered part needs to be added to remove the
      * CSE from the tail of the bunch.									*/
     if ( bunchInit.distribution_ == "uniform" )
-      for ( ; i < unsigned( Np / 4 * ( 1.0 + bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
+      for ( ; i < unsigned( Np / 4 * ( 1.0 + 2.0 * bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i += size)
 	{
 	  r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * cos( 2.0 * PI * halton(1, i + Np0) );
 	  r[1] = bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * sin( 2.0 * PI * halton(1, i + Np0) );
 
 	  /* Determine the longitudinal coordinate.							*/
-	  r[2] = bunchInit.lambda_ * sqrt( - 2.0 * log( halton(2, i + Np0) ) ) * sin( 2.0 * PI * halton(3, i + Np0) );
+	  r[2] = 2.0 * bunchInit.lambda_ * sqrt( - 2.0 * log( halton(2, i + Np0) ) ) * sin( 2.0 * PI * halton(3, i + Np0) );
 	  r[2] += ( r[2] < 0.0 ) ? ( - bunchInit.sigmaPosition_[2] ) : ( bunchInit.sigmaPosition_[2] );
 
 	  /* Determine the transverse momentum.								*/

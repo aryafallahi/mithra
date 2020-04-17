@@ -29,8 +29,17 @@ namespace MITHRA
 	    std::vector<ExtField>& 		extField,
 	    std::vector<FreeElectronLaser>& 	FEL);
 
-    /* Boost all the given parameters into the electron rest frame.					*/
-    void 		lorentzBoost			();
+    /* Using the parsed data, set the required parameters for simulation.				*/
+    void 		setSimulationParameters 	();
+
+    /* Boost the mesh into the electron rest frame.							*/
+    void 		lorentzBoostMesh		();
+
+    /* Boost particles into the electron rest frame.							*/
+    void 		lorentzBoostBunch 		();
+
+    /* Distribute particles in their respective processor, depending on their longituinal coordinate.	*/
+    void 		distributeParticles 		(std::list<Charge>& chargeVector);
 
     /* Initialize the matrix for the field values and the coordinates.					*/
     void 		initialize			();

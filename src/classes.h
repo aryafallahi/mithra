@@ -71,6 +71,13 @@ namespace MITHRA
      * sigmaGammaBeta_.                                                         			*/
     void initializeEllipsoid (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia);
 
+    /* Initialize a bunch with an ellipsoid type in the lab frame. This bunch produces a number of
+     * charges equal to the numberOfParticles_ with the total charge equal to the cloudCharge_ which are
+     * distributed in an ellipsoid with dimensions given by sigmaPosition_ and center given by the
+     * position vector. The particles have uniform energy distribution centered at initialEnergy_ with
+     * variances determined by sigmaGammaBeta_.                                                         */
+    void initializeEllipsoidLab (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia);
+
     /* Initialize a bunch with a 3D-crystal type. This bunch produces a number of charges equal
      * to the numberOfParticles_ with the total charge equal to the cloudCharge_ which are arranged in a
      * 3D crystal. The number of particles in each direction is given by numbers_. Therefore,

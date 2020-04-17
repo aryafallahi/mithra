@@ -144,11 +144,7 @@ namespace MITHRA
 		  else if (parameterName(*iter) == "distribution") 		bunchInit.distribution_		= stringValue(*iter);
 		  else if (parameterName(*iter) == "charge")            	bunchInit.cloudCharge_		= doubleValue(*iter);
 		  else if (parameterName(*iter) == "number-of-particles")       bunchInit.numberOfParticles_    = intValue(*iter);
-		  else if (parameterName(*iter) == "gamma")
-		    {
-		      bunchInit.initialGamma_ 	= doubleValue(*iter);
-		      bunchInit.initialBeta_ 	= sqrt( 1.0 - 1.0 / ( bunchInit.initialGamma_ * bunchInit.initialGamma_ ) );
-		    }
+		  else if (parameterName(*iter) == "gamma")		      	bunchInit.initialGamma_ 	= doubleValue(*iter);
 		  else if (parameterName(*iter) == "direction")
 		    {
 		      std::vector<Double> direction 	= vectorDoubleValue(*iter);

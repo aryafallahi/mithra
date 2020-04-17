@@ -40,7 +40,7 @@ namespace MITHRA
     time_  	   =  0.0;
     timem1_	   = -mesh_.timeStep_;
     nTime_ 	   =  0;
-    nTimeBunch_  =  0;
+    nTimeBunch_    =  0;
 
     /* Initialize the value of MPI variables.								*/
     MPI_Comm_rank(MPI_COMM_WORLD,&rank_);
@@ -53,12 +53,12 @@ namespace MITHRA
   }
 
   /******************************************************************************************************
-   * Boost all the given parameters into the electron rest frame.
+   * Using the parsed data, set the required parameters for simulation.
    ******************************************************************************************************/
 
-  void Solver::lorentzBoost ()
+  void Solver::setSimulationParameters ()
   {
-    printmessage(std::string(__FILE__), __LINE__, std::string("::: Boosting the given parameters into the electron rest frame ") );
+    printmessage(std::string(__FILE__), __LINE__, std::string("::: Boosting the given mesh parameters into the electron rest frame ") );
 
     /****************************************************************************************************/
 
@@ -148,6 +148,39 @@ namespace MITHRA
 
     /****************************************************************************************************/
 
+    /* Set the modulation wavelength for each bunch using the given gamma of the bunch. 		*/
+    for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
+      {
+	/* First determine the beta vector of the bunch.						*/
+	bunch_.bunchInit_[i].initialBeta_	= sqrt( 1.0 - 1.0 / pow( bunch_.bunchInit_[i].initialGamma_ , 2 ) );
+	bunch_.bunchInit_[i].betaVector_.mv( bunch_.bunchInit_[i].initialBeta_, bunch_.bunchInit_[i].initialDirection_);
+
+	/* Calculate the modulation wavelength of the bunch for the initial bunching factor or the shot
+	 * noise implementation.									*/
+	Double lu				= ( undulator_.size() > 0 ) ? undulator_[0].lu_ : 0.0;
+	bunch_.bunchInit_[i].lambda_		= lu / ( 2.0 * gamma_ * gamma_ ) * bunch_.bunchInit_[i].betaVector_[2] / beta_;
+
+	printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
+      }
+
+    printmessage(std::string(__FILE__), __LINE__, std::string("The given mesh parameters are boosted into the electron rest frame :::") );
+
+    /****************************************************************************************************/
+
+    /* The Lorentz boost parameters should also be transfered to the seed class in order to correctly
+     * compute the fields within the computational domain.						*/
+    seed_.beta_    	= beta_;
+    seed_.gamma_   	= gamma_;
+  }
+
+  /******************************************************************************************************
+   * Boost the mesh into the electron rest frame.
+   ******************************************************************************************************/
+
+  void Solver::lorentzBoostMesh ()
+  {
+    /****************************************************************************************************/
+
     /* Boost the mesh data into the electron rest frame.						*/
     mesh_.meshLength_[2] 	*= gamma_;
     mesh_.meshResolution_[2] 	*= gamma_;
@@ -180,46 +213,27 @@ namespace MITHRA
 	mesh_.timeStep_		 = 1.0 / ( c0_ * sqrt( 1.0 / pow(mesh_.meshResolution_[0], 2.0) + 1.0 / pow(mesh_.meshResolution_[1], 2.0) + 1.0 / pow(mesh_.meshResolution_[2], 2.0) ) );
 	printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the field update is set to " + stringify(mesh_.timeStep_ * gamma_) ) );
       }
+  }
 
+  /******************************************************************************************************
+   * Boost particles into the electron rest frame.
+   ******************************************************************************************************/
+
+  void Solver::lorentzBoostBunch ()
+  {
     /****************************************************************************************************/
 
     /* Set the bunch update time step if it is given, otherwise set it according to the MITHRA rules.	*/
-    bunch_.timeStep_		/= gamma_;
+    bunch_.timeStep_			/= gamma_;
 
     /* Adjust the given bunch time step according to the given field time step.				*/
-    bunch_.timeStep_ = mesh_.timeStep_ / ceil(mesh_.timeStep_ / bunch_.timeStep_);
-    nUpdateBunch_    = mesh_.timeStep_ / bunch_.timeStep_;
+    bunch_.timeStep_ 			 = mesh_.timeStep_ / ceil(mesh_.timeStep_ / bunch_.timeStep_);
+    nUpdateBunch_    			 = mesh_.timeStep_ / bunch_.timeStep_;
     printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the bunch update is set to " + stringify(bunch_.timeStep_ * gamma_) ) );
 
     /****************************************************************************************************/
 
-    /* Boost the bunch parameters into the electron rest frame.						*/
-    std::vector<Double> zeta ( bunch_.bunchInit_.size(), 0.0 );
-    for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
-      {
-	/* First determine the beta vector of the bunch.						*/
-	bunch_.bunchInit_[i].betaVector_.mv( bunch_.bunchInit_[i].initialBeta_, bunch_.bunchInit_[i].initialDirection_);
-
-	/* Boosting the position is done considering that the start of simulation is at t = 0.		*/
-	zeta[i] 					 = gamma_ * ( 1.0 - bunch_.bunchInit_[i].betaVector_[2] * beta_ );
-	for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	  bunch_.bunchInit_[i].position_[ia][2]		/= zeta[i];
-
-	bunch_.bunchInit_[i].sigmaPosition_[2] 		/= zeta[i];
-	bunch_.bunchInit_[i].longTrun_ 			/= zeta[i];
-
-	bunch_.bunchInit_[i].sigmaGammaBeta_[2] 	*= zeta[i];
-
-	Double lu					 = ( undulator_.size() > 0 ) ? undulator_[0].lu_ : 0.0;
-	bunch_.bunchInit_[i].lambda_  		 	 = lu / ( gamma_ * gamma_ * beta_ / bunch_.bunchInit_[i].betaVector_[2] * zeta[i] );
-
-	printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
-
-	bunch_.bunchInit_[i].initialGamma_ 		*= zeta[i];
-	bunch_.bunchInit_[i].betaVector_[0] 	 	/= zeta[i];
-	bunch_.bunchInit_[i].betaVector_[1] 	 	/= zeta[i];
-	bunch_.bunchInit_[i].betaVector_[2] 	 	 = ( bunch_.bunchInit_[i].betaVector_[2] - beta_ ) / ( 1.0 - bunch_.bunchInit_[i].betaVector_[2] * beta_ );
-      }
+    /* Boost the bunch sampling parameters into the electron rest frame.				*/
     bunch_.rhythm_			/= gamma_;
     bunch_.bunchVTKRhythm_		/= gamma_;
     for (unsigned int i = 0; i < bunch_.bunchProfileTime_.size(); i++)
@@ -228,49 +242,23 @@ namespace MITHRA
 
     /****************************************************************************************************/
 
-    /* The beginning of undulators are set automatically for static ones. Here, the array of undulators
-     * are first sorted according to their begin point and then the position of the bunch and undulator
-     * begin is set.											*/
-    Double 		zmax = -1.0e100;
-    unsigned int 	imax = 0;
-    for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
-      {
-	/* Correct the number of particles if it is not a multiple of four.				*/
-	if ( bunch_.bunchInit_[i].numberOfParticles_ % 4 != 0 )
-	  {
-	    unsigned int n = bunch_.bunchInit_[i].numberOfParticles_ % 4;
-	    bunch_.bunchInit_[i].numberOfParticles_ += 4 - n;
-	    printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The number of particles in the bunch is not a multiple of four. ") +
-			 std::string("It is corrected to ") +  stringify(bunch_.bunchInit_[i].numberOfParticles_) );
-	  }
+    /* Boost the coordinates of the macro-particles into the bunch rest frame. During the boosting, the
+     * maximum value of the z-coordinate is important, since it needs to be used in the shift that will
+     * be introduced to the bunch.									*/
 
-	for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	  if ( zmax < bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_ )
-	    {
-	      zmax = bunch_.bunchInit_[i].position_[ia][2] + bunch_.bunchInit_[i].longTrun_;
-	      imax = ia;
-	    }
-      }
-
-    /* The bunch expands by the factor 1/zeta. However, the mesh size expands by the factor gamma. This
-     * difference is caused by the change in bunch gamma factor after it enters the undulator. The
-     * problem here is the inconsistencies that it introduces to the simulation. To solve such problems,
-     * the trick is to shift the bunch positions so that the front of the bunch stays in the mesh and
-     * before the undulator. After the bunch enters the undulator, the length will be automatically
-     * corrected and the inconsistencies are removed.							*/
-    for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
+    Double zmaxL = -1.0e100, zmaxG;
+    for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
       {
-	for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	  bunch_.bunchInit_[i].position_[ia][2] -= zmax * ( 1.0 - zeta[imax] * gamma_ );
+	Double g  	= std::sqrt(1.0 + iterQ->gbnp.norm2());
+	Double bz 	= iterQ->gbnp[2] / g;
+	iterQ->rnp[2]  *= gamma_;
+	iterQ->gbnp[2] 	= gamma_ * g * ( bz - beta_ );
+
+	zmaxL 		= std::max( zmaxL , iterQ->rnp[2] );
       }
-    zmax -= zmax * ( 1.0 - zeta[imax] * gamma_ );
+    MPI_Allreduce(&zmaxL, &zmaxG, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
 
     /****************************************************************************************************/
-
-    /* The Lorentz boost parameters should also be transfered to the seed class in order to correctly
-     * compute the fields within the computational domain.						*/
-    seed_.beta_    	= beta_;
-    seed_.gamma_   	= gamma_;
 
     /* Here, we define the shift in time such that the bunch end is at the begin of fringing field
      * section. For optical undulator such a separation should be considered in the input parameters
@@ -286,7 +274,7 @@ namespace MITHRA
 	if (undulator_[0].dist_ == 0.0) undulator_[0].dist_ = nl * undulator_[0].lu_;
 	else if (undulator_[0].dist_ < nl * undulator_[0].lu_)
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Warning: the undulator is set very close to the bunch, the results may be inaccurate.") );
-	dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmax + undulator_[0].dist_ / gamma_ );
+	dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmaxG + undulator_[0].dist_ / gamma_ );
 	printmessage(std::string(__FILE__), __LINE__, std::string("Initial distance from bunch head to undulator is ") + stringify(undulator_[0].dist_) );
       }
 
@@ -299,10 +287,89 @@ namespace MITHRA
      * In MITHRA, we assume that the particle move on a straight line before reaching the start point.
      * This forces the bunch properties to be as given at the start point of the undulator. The start
      * point is here the undulator entrance minus the undulator distance.				*/
-    bunch_.zu_ 		= zmax;
+    bunch_.zu_ 		= zmaxG;
     bunch_.beta_ 	= beta_;
 
-    printmessage(std::string(__FILE__), __LINE__, std::string("The given parameters are boosted into the electron rest frame :::") );
+    /****************************************************************************************************/
+
+    for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
+      {
+	Double g	= std::sqrt(1.0 + iterQ->gbnp.norm2());
+	iterQ->rnp[0]  += iterQ->gbnp[0] / g * ( iterQ->rnp[2] - bunch_.zu_ ) * beta_;
+	iterQ->rnp[1]  += iterQ->gbnp[1] / g * ( iterQ->rnp[2] - bunch_.zu_ ) * beta_;
+	iterQ->rnp[2]  += iterQ->gbnp[2] / g * ( iterQ->rnp[2] - bunch_.zu_ ) * beta_;
+      }
+
+    /* Distribute particles in their respective processor, depending on their longituinal coordinate.	*/
+    distributeParticles(chargeVectorn_);
+
+    /* Print the total number of macro-particles for the user.						*/
+    unsigned int NqL = chargeVectorn_.size(), NqG = 0;
+    MPI_Reduce(&NqL,&NqG,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
+    printmessage(std::string(__FILE__), __LINE__, std::string("The total number of macro-particles is equal to ") + stringify(NqG) + std::string(" .") );
+
+    /* Initialize the total number of charges.								*/
+    Nc_ = chargeVectorn_.size();
+
+    /* Initialize the end and begin of the charge vector iterator.					*/
+    iterQB_ = chargeVectorn_.begin();
+    iterQE_ = chargeVectorn_.end();
+  }
+
+  /******************************************************************************************************
+   * Distribute particles in their respective processor, depending on their longituinal coordinate.
+   ******************************************************************************************************/
+
+  void Solver::distributeParticles (std::list<Charge>& chargeVector)
+  {
+    /* Note that this function only redistributes q, rnp, gbnp, but NOT rnm and gbnm.			*/
+    std::vector<Double> sendCV;
+    std::list<Charge>::iterator it = chargeVector.begin();
+    while(it != chargeVector.end())
+      {
+	if ( ( it->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( it->rnp[2] >= zp_[0] || rank_ == 0 ) )
+	  it++;
+	else
+	  {
+	    sendCV.push_back(it->q);
+	    sendCV.push_back(it->rnp[0]);
+	    sendCV.push_back(it->rnp[1]);
+	    sendCV.push_back(it->rnp[2]);
+	    sendCV.push_back(it->gbnp[0]);
+	    sendCV.push_back(it->gbnp[1]);
+	    sendCV.push_back(it->gbnp[2]);
+	    it = chargeVector.erase(it);
+	  }
+      }
+
+    /* Send the charges that were erased from the charge vector.					*/
+    int sizeSend = sendCV.size();
+    int *counts = new int [size_], *disps = new int [size_];
+    MPI_Allgather( &sizeSend, 1, MPI_INT, counts, 1, MPI_INT, MPI_COMM_WORLD );
+    for (int i = 0; i < size_; i++)
+      disps[i] = (i > 0) ? (disps[i-1] + counts[i-1]) : 0;
+    std::vector<Double> recvCV (disps[size_-1] + counts[size_-1], 0);
+    MPI_Allgatherv(&sendCV[0], sizeSend, MPI_DOUBLE, &recvCV[0], counts, disps, MPI_DOUBLE, MPI_COMM_WORLD);
+
+    /* And now replace all the charges in the charge vector of the corresponding processor.  		*/
+    unsigned i = 0;
+    Charge charge;
+    while (i < recvCV.size() )
+      {
+	if ( (recvCV[i+3] < zp_[1] || rank_ == size_ - 1) && (recvCV[i+3] >= zp_[0] || rank_ == 0) )
+	  {
+	    charge.q 		= recvCV[i++];
+	    charge.rnp[0] 	= recvCV[i++];
+	    charge.rnp[1] 	= recvCV[i++];
+	    charge.rnp[2] 	= recvCV[i++];
+	    charge.gbnp[0] 	= recvCV[i++];
+	    charge.gbnp[1] 	= recvCV[i++];
+	    charge.gbnp[2] 	= recvCV[i++];
+	    chargeVector.push_back(charge);
+	  }
+	else
+	  i += 7;
+      }
   }
 
   /******************************************************************************************************
@@ -311,8 +378,23 @@ namespace MITHRA
 
   void Solver::initialize ()
   {
+    /* Using the parsed data, set the required parameters for simulation.				*/
+    setSimulationParameters();
+
+    /* As the first step, initialize the given bunch according to to the parameters given in the
+     * datainput file.											*/
+    initializeBunch();
+    timeBunch_ = time_;
+
+    /* Transfer the whole quantities to the electron rest frame.					*/
+    lorentzBoostMesh();
+
     /* Initialize the spatial and temporal mesh of the problem.						*/
     initializeMesh();
+
+    /* Transfer the bunch to the lab frame and adapt the bunch for the FEL simulation, i.e. add the shot
+     * noise, distribute the mirrored macro-particles, and add the bunch tail.				*/
+    lorentzBoostBunch();
 
     /* Initialize the update data for the field.							*/
     initializeField();
@@ -325,11 +407,6 @@ namespace MITHRA
 
     /* If profiling is enabled initialize the required data for profiling the field and saving it.	*/
     if (seed_.profile_)				initializeSeedProfile();
-
-    /* We initialize the bunch at the beginning of the simulation. The previous feature for initializing
-     * in the middle of the simulation is removed.							*/
-    initializeBunch();
-    timeBunch_ = time_;
 
     /* Initialize the data needed for updating the bunches.						*/
     initializeBunchUpdate();
@@ -429,7 +506,7 @@ namespace MITHRA
 	    r_[m][1] = ymin_ + j         * mesh_.meshResolution_[1];
 	    r_[m][2] = zmin_ + (k + k0_) * mesh_.meshResolution_[2];
 
-	    if 	( k == 0 ) 		zp_[0] = r_[m][2];
+	    if 		( k == 0 ) 		zp_[0] = r_[m][2];
 	    else if 	( k == np_ - 2 ) 	zp_[1] = r_[m][2];
 	  }
 
@@ -900,7 +977,7 @@ namespace MITHRA
 	else if ( bunch_.bunchInit_[i].bunchType_ == "ellipsoid" )
 	  {
 	    for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	      bunch_.initializeEllipsoid(	bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
+	      bunch_.initializeEllipsoidLab(	bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
 	  }
 	else if ( bunch_.bunchInit_[i].bunchType_ == "3D-crystal" )
 	  {
@@ -916,18 +993,6 @@ namespace MITHRA
 	/* Add the bunch distribution to the global charge vector.					*/
 	chargeVectorn_.splice(chargeVectorn_.end(),qv);
       }
-
-    /* Print the total number of macro-particles for the user.						*/
-    unsigned int NqL = chargeVectorn_.size(), NqG = 0;
-    MPI_Reduce(&NqL,&NqG,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
-    printmessage(std::string(__FILE__), __LINE__, std::string("The total number of macro-particles is equal to ") + stringify(NqG) + std::string(" .") );
-
-    /* Initialize the total number of charges.								*/
-    Nc_ = chargeVectorn_.size();
-
-    /* Initialize the end and begin of the charge vector iterator.					*/
-    iterQB_ = chargeVectorn_.begin();
-    iterQE_ = chargeVectorn_.end();
 
     printmessage(std::string(__FILE__), __LINE__, std::string("The bunch is initialized and the charge vector is prepared. ]]]") );
   }
@@ -1158,7 +1223,7 @@ namespace MITHRA
     MPI_Reduce(&ubp.nt, &ub_.nt,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
     if ( rank_ == 0 && ub_.nt > 0 )
       printmessage(std::string(__FILE__), __LINE__, std::string("Warning: " + stringify(ub_.nt) +
-	" particles have transverse dimensions that are larger than the computational domain size.") );
+								" particles have transverse dimensions that are larger than the computational domain size.") );
   }
 
   /******************************************************************************************************
@@ -1297,7 +1362,7 @@ namespace MITHRA
 	    gamma = sqrt( 1.0 + iter->gbnp.norm2() );
 	    beta  = iter->gbnp[2] / gamma;
 	    *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
-            				    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
+            						    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	  }
       }
     *vb_.file << 0.0 << " " << 0.0 << " " << 0.0						<< std::endl;
@@ -1368,7 +1433,7 @@ namespace MITHRA
 	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
 	  {
 	    /* Loop over the particles and print the data of each particle into the file.		*/
-	    //*pb_.file << iter->q  	        << "\t";
+	    *pb_.file << iter->q  	<< "\t";
 	    *pb_.file << iter->rnp[0]  	<< "\t";
 	    *pb_.file << iter->rnp[1]  	<< "\t";
 	    *pb_.file << iter->rnp[2]  	<< "\t";
@@ -1937,50 +2002,50 @@ namespace MITHRA
     printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the screen to measure bunch profile.") );
     for ( unsigned int jf = 0; jf < FEL_.size(); jf++)
       {
-        /* Initialize if and only if screens have been enabled.		                            	*/
-        if (!FEL_[jf].screenProfile_.sampling_) continue;
+	/* Initialize if and only if screens have been enabled.		                            	*/
+	if (!FEL_[jf].screenProfile_.sampling_) continue;
 
-        if (!(isabsolute(FEL_[jf].screenProfile_.basename_))) FEL_[jf].screenProfile_.basename_ = FEL_[jf].screenProfile_.directory_ + FEL_[jf].screenProfile_.basename_;
+	if (!(isabsolute(FEL_[jf].screenProfile_.basename_))) FEL_[jf].screenProfile_.basename_ = FEL_[jf].screenProfile_.directory_ + FEL_[jf].screenProfile_.basename_;
 
-        /* According to the given rhythm add to the position vector.					*/
-        Double	z = 0.0;
-        while ( z < ( undulator_.end()->rb_ + undulator_.end()->length_ * undulator_.end()->lu_ ) )
-          {
-            FEL_[jf].screenProfile_.pos_.push_back(z);
-            z += FEL_[jf].screenProfile_.rhythm_;
-          }
+	/* According to the given rhythm add to the position vector.					*/
+	Double	z = 0.0;
+	while ( z < ( undulator_.end()->rb_ + undulator_.end()->length_ * undulator_.end()->lu_ ) )
+	  {
+	    FEL_[jf].screenProfile_.pos_.push_back(z);
+	    z += FEL_[jf].screenProfile_.rhythm_;
+	  }
 
-        /*  resize vectors storing filenames                   */
-        scrp_[jf].fileNames.resize((FEL_[jf].screenProfile_.pos_).size());
-        scrp_[jf].files.resize((FEL_[jf].screenProfile_.pos_).size());
+	/*  resize vectors storing filenames                   */
+	scrp_[jf].fileNames.resize((FEL_[jf].screenProfile_.pos_).size());
+	scrp_[jf].files.resize((FEL_[jf].screenProfile_.pos_).size());
 
-        /* If the directory of the baseFilename does not exist create this directory.			*/
-        createDirectory(FEL_[jf].screenProfile_.basename_, rank_);
+	/* If the directory of the baseFilename does not exist create this directory.			*/
+	createDirectory(FEL_[jf].screenProfile_.basename_, rank_);
 
-        /* Order screens                          							*/
-        std::sort(FEL_[jf].screenProfile_.pos_.begin(), FEL_[jf].screenProfile_.pos_.end());
+	/* Order screens                          							*/
+	std::sort(FEL_[jf].screenProfile_.pos_.begin(), FEL_[jf].screenProfile_.pos_.end());
 
-        MPI_Barrier(MPI_COMM_WORLD);
+	MPI_Barrier(MPI_COMM_WORLD);
 
-        /* Open files for each screen and write its position in first line.                    	       	*/
-        for ( unsigned int i = 0; i < (FEL_[jf].screenProfile_.pos_).size(); i++ ){
-          printmessage(std::string(__FILE__), __LINE__, std::string("Screen ") + stringify(i) + std::string(" is at distance ") + stringify(FEL_[jf].screenProfile_.pos_[i]) + std::string(" from the undulator beginning.") );
-          scrp_[jf].fileNames[i] = FEL_[jf].screenProfile_.basename_ + "-p" + stringify(rank_) + "-screen" + stringify(i) + TXT_FILE_SUFFIX;
-          scrp_[jf].files[i] = new std::ofstream(scrp_[jf].fileNames[i].c_str(),std::ios::trunc);
-          (*scrp_[jf].files[i]).setf(std::ios::scientific);
-          (*scrp_[jf].files[i]).precision(15);
-          (*scrp_[jf].files[i]).width(40);
-          //*scrp_[jf].files[i] << "Screen distance from the beginning of the undulator = " << stringify(FEL_[jf].screenProfile_.pos_[i]) << std::endl;
-        }
+	/* Open files for each screen and write its position in first line.                    	       	*/
+	for ( unsigned int i = 0; i < (FEL_[jf].screenProfile_.pos_).size(); i++ ){
+	    printmessage(std::string(__FILE__), __LINE__, std::string("Screen ") + stringify(i) + std::string(" is at distance ") + stringify(FEL_[jf].screenProfile_.pos_[i]) + std::string(" from the undulator beginning.") );
+	    scrp_[jf].fileNames[i] = FEL_[jf].screenProfile_.basename_ + "-p" + stringify(rank_) + "-screen" + stringify(i) + TXT_FILE_SUFFIX;
+	    scrp_[jf].files[i] = new std::ofstream(scrp_[jf].fileNames[i].c_str(),std::ios::trunc);
+	    (*scrp_[jf].files[i]).setf(std::ios::scientific);
+	    (*scrp_[jf].files[i]).precision(15);
+	    (*scrp_[jf].files[i]).width(40);
+	    //*scrp_[jf].files[i] << "Screen distance from the beginning of the undulator = " << stringify(FEL_[jf].screenProfile_.pos_[i]) << std::endl;
+	}
 
-        /* Return an error if the screen sampling is activated but no screen is given.	       		*/
-        if ( FEL_[jf].screenProfile_.pos_.size() == 0 )
-          {
-            printmessage(std::string(__FILE__), __LINE__, std::string("No position is set for the screen although the screen sampling is activated !!!") );
-            exit(1);
-          }
+	/* Return an error if the screen sampling is activated but no screen is given.	       		*/
+	if ( FEL_[jf].screenProfile_.pos_.size() == 0 )
+	  {
+	    printmessage(std::string(__FILE__), __LINE__, std::string("No position is set for the screen although the screen sampling is activated !!!") );
+	    exit(1);
+	  }
 
-        printmessage(std::string(__FILE__), __LINE__, std::string(" The screen profiling data is initialized. :::") );
+	printmessage(std::string(__FILE__), __LINE__, std::string(" The screen profiling data is initialized. :::") );
       }
   }
 
@@ -1992,47 +2057,47 @@ namespace MITHRA
   {
     for ( unsigned jf = 0; jf < FEL_.size(); jf++)
       {
-        /* Continued past this function if screen profile sampling is not enabled.			*/
-        if (!FEL_[jf].screenProfile_.sampling_) continue;
+	/* Continued past this function if screen profile sampling is not enabled.			*/
+	if (!FEL_[jf].screenProfile_.sampling_) continue;
 
-        /* Iterate through all the screens.								*/
-        for (unsigned i = 0; i < (FEL_[jf].screenProfile_.pos_).size(); i++ )
-          {
-            Double lzScreen = FEL_[jf].screenProfile_.pos_[i];
-            for (std::list<Charge>::iterator iter = iterQB_; iter != iterQE_; iter++)
-              {
-                /* Only look at particles which belong to the domain of this processor.			*/
-                if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
-                  {
-                    Double lzm = gamma_ * ( iter->rnm[2] + beta_ * c0_ * ( timeBunch_- mesh_.timeStep_ + dt_ ) );
-                    if ( lzm >= lzScreen )	continue;
+	/* Iterate through all the screens.								*/
+	for (unsigned i = 0; i < (FEL_[jf].screenProfile_.pos_).size(); i++ )
+	  {
+	    Double lzScreen = FEL_[jf].screenProfile_.pos_[i];
+	    for (std::list<Charge>::iterator iter = iterQB_; iter != iterQE_; iter++)
+	      {
+		/* Only look at particles which belong to the domain of this processor.			*/
+		if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+		  {
+		    Double lzm = gamma_ * ( iter->rnm[2] + beta_ * c0_ * ( timeBunch_- mesh_.timeStep_ + dt_ ) );
+		    if ( lzm >= lzScreen )	continue;
 
-                    Double lzp = gamma_ * ( iter->rnp[2] + beta_ * c0_ * ( timeBunch_ + dt_) );
-                    if ( lzp <  lzScreen )	continue;
+		    Double lzp = gamma_ * ( iter->rnp[2] + beta_ * c0_ * ( timeBunch_ + dt_) );
+		    if ( lzp <  lzScreen )	continue;
 
-                    /* Interpolate quantities and write them in file.					*/
-                    // *scrp_[jf].files[i] << iter->q  	        << "\t";
-                    *scrp_[jf].files[i] << interp( lzm, lzp, iter->rnm[0], iter->rnp[0], lzScreen ) << "\t";
-                    *scrp_[jf].files[i] << interp( lzm, lzp, iter->rnm[1], iter->rnp[1], lzScreen ) << "\t";
-                    Double tm  = gamma_ * ( timeBunch_ + dt_ - mesh_.timeStep_	+ beta_ / c0_ * iter->rnm[2] );
-                    Double tp  = gamma_ * ( timeBunch_ + dt_	  		+ beta_ / c0_ * iter->rnp[2] );
-                    *scrp_[jf].files[i] << interp( lzm, lzp, tm, tp, lzScreen ) << "\t";
+		    /* Interpolate quantities and write them in file.					*/
+		    // *scrp_[jf].files[i] << iter->q  	        << "\t";
+		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->rnm[0], iter->rnp[0], lzScreen ) << "\t";
+		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->rnm[1], iter->rnp[1], lzScreen ) << "\t";
+		    Double tm  = gamma_ * ( timeBunch_ + dt_ - mesh_.timeStep_	+ beta_ / c0_ * iter->rnm[2] );
+		    Double tp  = gamma_ * ( timeBunch_ + dt_	  		+ beta_ / c0_ * iter->rnp[2] );
+		    *scrp_[jf].files[i] << interp( lzm, lzp, tm, tp, lzScreen ) << "\t";
 
-                    /* Use different positions since momenta are found at (time - 1/2*bunchTimeStep).	*/
-                    Double gm = sqrt( 1 + pow(iter->gbnm[0], 2) + pow(iter->gbnm[1], 2) + pow(iter->gbnm[2], 2) );
-                    lzm -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnm[2] / gm + beta_ );
-                    Double gp = sqrt( 1 + pow(iter->gbnp[0], 2) + pow(iter->gbnp[1], 2) + pow(iter->gbnp[2], 2) );
-                    lzp -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnp[2] / gp + beta_ );
-                    Double gbzm = gamma_ * ( iter->gbnm[2] + beta_ * gm );
-                    Double gbzp = gamma_ * ( iter->gbnp[2] + beta_ * gp );
+		    /* Use different positions since momenta are found at (time - 1/2*bunchTimeStep).	*/
+		    Double gm = sqrt( 1 + pow(iter->gbnm[0], 2) + pow(iter->gbnm[1], 2) + pow(iter->gbnm[2], 2) );
+		    lzm -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnm[2] / gm + beta_ );
+		    Double gp = sqrt( 1 + pow(iter->gbnp[0], 2) + pow(iter->gbnp[1], 2) + pow(iter->gbnp[2], 2) );
+		    lzp -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnp[2] / gp + beta_ );
+		    Double gbzm = gamma_ * ( iter->gbnm[2] + beta_ * gm );
+		    Double gbzp = gamma_ * ( iter->gbnp[2] + beta_ * gp );
 
-                    /* Write the momentum data into the file.						*/
-                    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[0], iter->gbnp[0], lzScreen ) << "\t";
-                    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[1], iter->gbnp[1], lzScreen ) << "\t";
-                    *scrp_[jf].files[i] << interp( lzm, lzp, gbzm, gbzp, lzScreen ) << std::endl;
-                  }
-              }
-          }
+		    /* Write the momentum data into the file.						*/
+		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[0], iter->gbnp[0], lzScreen ) << "\t";
+		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[1], iter->gbnp[1], lzScreen ) << "\t";
+		    *scrp_[jf].files[i] << interp( lzm, lzp, gbzm, gbzp, lzScreen ) << std::endl;
+		  }
+	      }
+	  }
       }
   }
 

@@ -143,7 +143,7 @@ namespace MITHRA
 	  }
 
 	/* Lorentz boost the power-visualization sampling rhythm to the electron rest frame.		*/
-	FEL_[jf].vtkPower_.rhythm_		/= gamma_;
+	FEL_[jf].vtkPower_.rhythm_	/= gamma_;
 
 	/* Perform the Lorentz boost for the sampling data.						*/
 	FEL_[jf].vtkPower_.z_ 		*= gamma_;

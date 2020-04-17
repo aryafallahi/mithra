@@ -87,7 +87,7 @@ namespace MITHRA
    * ellipsoid with dimensions given by sigmaPosition_ and center given by the position vector. The
    * particles have uniform energy distribution centered at initialEnergy_ with variances determined by
    * sigmaGammaBeta_.                                                         				*/
-  void Bunch::initializeEllipsoidLab (BunchInitialize bunchInit, ChargeVector & chargeVector, Double (zp) [2], int rank, int size, int ia)
+  void Bunch::initializeEllipsoid (BunchInitialize bunchInit, ChargeVector & chargeVector, int rank, int size, int ia)
   {
     /* Correct the number of particles if it is not a multiple of four.					*/
     if ( bunchInit.numberOfParticles_ % 4 != 0 )

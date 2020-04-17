@@ -977,7 +977,7 @@ namespace MITHRA
 	else if ( bunch_.bunchInit_[i].bunchType_ == "ellipsoid" )
 	  {
 	    for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
-	      bunch_.initializeEllipsoidLab(	bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
+	      bunch_.initializeEllipsoid( bunch_.bunchInit_[i], qv, rank_, size_, ia);
 	  }
 	else if ( bunch_.bunchInit_[i].bunchType_ == "3D-crystal" )
 	  {

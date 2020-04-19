@@ -98,7 +98,11 @@ namespace MITHRA
     /* Calculate the average gamma of the input bunches.						*/
     Double gamma = 0.0;
     for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
-      gamma += bunch_.bunchInit_[i].initialGamma_ / bunch_.bunchInit_.size();
+      {
+        if ( bunch_.bunchInit_[i].bunchType_ == "file" )
+          computeFileGamma(bunch_.bunchInit_[i]);
+        gamma += bunch_.bunchInit_[i].initialGamma_ / bunch_.bunchInit_.size();
+      }
 
     /* Now, depending on the undulator type determine the maximum and minimum gamma of the bunch
      * travelling through the undulator.								*/
@@ -371,6 +375,45 @@ namespace MITHRA
 	  i += 7;
       }
   }
+
+  /******************************************************************************************************
+   * Get the average gamma and average direction of a bunch read in from a file.
+  ******************************************************************************************************/
+  void Solver::computeFileGamma 		(BunchInitialize & bunchInit)
+    {
+      /* Declare the required parameters for saving the average values.                	*/
+      Double ignore;
+      FieldVector<Double> gb (0.0);
+      bunchInit.initialGamma_ = 0.0;
+      bunchInit.initialDirection_ = 0.0;
+      
+      /* Read the file and sum up the momenta gbnp to get their average. */
+      std::ifstream myfile ( bunchInit.fileName_.c_str() );
+
+      while (myfile.good())
+        {
+          /* Ignore the first three values in each line belonging to the particle postiion. */
+          myfile >> ignore;
+          myfile >> ignore;
+          myfile >> ignore;
+          
+          myfile >> gb[0];
+          myfile >> gb[1];
+          myfile >> gb[2];
+
+          bunchInit.initialGamma_ += std::sqrt( 1 + gb.norm2() );
+          bunchInit.initialDirection_ += gb;
+        }
+
+      bunchInit.initialGamma_ /= bunchInit.numberOfParticles_;
+      Double dirNorm = bunchInit.initialDirection_.norm();
+      bunchInit.initialDirection_ /= dirNorm;
+
+      printmessage(std::string(__FILE__), __LINE__, std::string("Computed average gamma from file is " + stringify( bunchInit.initialGamma_ ) ) );
+      printmessage(std::string(__FILE__), __LINE__, std::string("Computed average direction from file is " + stringify( bunchInit.initialDirection_ ) ) );
+      
+      
+    }
 
   /******************************************************************************************************
    * Initialize the matrix for the field values and the coordinates.
@@ -967,6 +1010,13 @@ namespace MITHRA
       {
 	/* Clear the temprary charge vector.								*/
 	qv.clear();
+    
+    if ( bunch_.bunchInit_[i].position_.size() == 0 )
+	  {
+        bunch_.bunchInit_[i].position_.push_back(*new FieldVector<Double>);
+	    printmessage(std::string(__FILE__), __LINE__, std::string("No bunch position was given, using default " + stringify(bunch_.bunchInit_[i].position_[0]) ) );
+	  }      
+
 
 	/* Initialize the bunch in the code.								*/
 	if 	  ( bunch_.bunchInit_[i].bunchType_ == "manual" )

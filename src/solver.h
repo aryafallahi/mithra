@@ -41,6 +41,9 @@ namespace MITHRA
     /* Distribute particles in their respective processor, depending on their longituinal coordinate.	*/
     void 		distributeParticles 		(std::list<Charge>& chargeVector);
 
+    /* Get the average gamma and average direction of a bunch read in from a file.					*/
+    void 		computeFileGamma 		(BunchInitialize & bunchInit);
+
     /* Initialize the matrix for the field values and the coordinates.					*/
     void 		initialize			();
 

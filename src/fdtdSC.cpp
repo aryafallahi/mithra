@@ -87,7 +87,7 @@ namespace MITHRA
 	 * positions. THIS IS VERY IMPORTANT AND SHOULD NOT BE CHANGED IN THE FUTURE.			*/
 
 	/* Update the position and velocity parameters.							*/
-	for (iter = iterQB_; iter != iterQE_; iter++)
+	for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
 	  {
 	    iter->rnm  = iter->rnp;
 	    iter->gbnm = iter->gbnp;
@@ -402,10 +402,6 @@ namespace MITHRA
 	else
 	  ++it;
       }
-
-    /* Initialize the end and begin of the charge vector iterator.                                    	*/
-    iterQB_ = chargeVectorn_.begin();
-    iterQE_ = chargeVectorn_.end();
   }
 
   /******************************************************************************************************

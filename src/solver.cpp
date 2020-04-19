@@ -310,10 +310,6 @@ namespace MITHRA
 
     /* Initialize the total number of charges.								*/
     Nc_ = chargeVectorn_.size();
-
-    /* Initialize the end and begin of the charge vector iterator.					*/
-    iterQB_ = chargeVectorn_.begin();
-    iterQE_ = chargeVectorn_.end();
   }
 
   /******************************************************************************************************
@@ -1004,7 +1000,6 @@ namespace MITHRA
   void Solver::bunchUpdate ()
   {
     /* First define a parameter for the processor number.						*/
-    std::list<Charge>::iterator	iter;
     UpdateBunchParallel	        ubp;
     MPI_Status                  status;
     int                         msgtag1 = 1, msgtag2 = 2;
@@ -1015,7 +1010,7 @@ namespace MITHRA
     /* Loop over the charge points in the bunch, extract the real field values of the seed at their point,
      * superpose with the undulator field and eventually accelerate the particles within the field.	*/
 
-    for (iter = iterQB_; iter != iterQE_; ++iter )
+    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); ++iter )
       {
 	/* If the particle does not belong to this processor continue the loop over particles         	*/
 	if ( !( ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) ) ) continue;
@@ -1133,6 +1128,7 @@ namespace MITHRA
 	    ubp.qSB.push_back( iter->gbnm[1] );
 	    ubp.qSB.push_back( iter->gbnm[2] );
 	    ubp.qSB.push_back( iter->e 	     );
+	    chargeVectorn_.erase(iter);
 	  }
 	else if ( iter->rnp[2] >= zp_[1] && rank_ != size_ - 1 )
 	  {
@@ -1150,6 +1146,7 @@ namespace MITHRA
 	    ubp.qSF.push_back( iter->gbnm[1] );
 	    ubp.qSF.push_back( iter->gbnm[2] );
 	    ubp.qSF.push_back( iter->e 	     );
+	    chargeVectorn_.erase(iter);
 	  }
       }
 
@@ -1232,9 +1229,6 @@ namespace MITHRA
 
   void Solver::bunchSample ()
   {
-    /* First define a iterator.                        							*/
-    std::list<Charge>::iterator       iter;
-
     /* First, we need to evaluate the charge cloud properties and for that the corresponding data should
      * be initialized.                                                                     		*/
     sb_.q   = 0.0;
@@ -1245,7 +1239,7 @@ namespace MITHRA
 
     /* Now, we perform an addition of all the charges. Since the point charges are equal, we do not need
      * to do weighted additions.                                            				*/
-    for (iter = iterQB_; iter != iterQE_; iter++)
+    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
 	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
 	  {
@@ -1301,7 +1295,6 @@ namespace MITHRA
   void Solver::bunchVisualize ()
   {
     /* First define a parameters.                         						*/
-    std::list<Charge>::iterator       iter;
     Double                            gamma, beta;
 
     /* The old files if existing should be deleted.                                               	*/
@@ -1313,7 +1306,7 @@ namespace MITHRA
 
     /* Store the number of particles in the simulation.							*/
     vb_.N = 0;
-    for (iter = iterQB_; iter != iterQE_; iter++)
+    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
 	vb_.N++;
 
@@ -1328,7 +1321,7 @@ namespace MITHRA
     *vb_.file << "<Points>"                                                             	<< std::endl;
     *vb_.file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">" 	<< std::endl;
 
-    for (iter = iterQB_; iter != iterQE_; iter++)
+    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
 	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
 	  *vb_.file << iter->rnp[0] << " " << iter->rnp[1] << " " << iter->rnp[2] 		<< std::endl;
@@ -1355,7 +1348,7 @@ namespace MITHRA
     *vb_.file << "<PointData Vectors = \"charge\">"                                    		<< std::endl;
     *vb_.file << "<DataArray type=\"Float64\" Name=\"charge\" NumberOfComponents=\"3\" format=\"ascii\">"
 	<< std::endl;
-    for (iter = iterQB_; iter != iterQE_; iter++)
+    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
 	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
 	  {
@@ -1417,9 +1410,6 @@ namespace MITHRA
 
   void Solver::bunchProfile ()
   {
-    /* First define a iterator.										*/
-    std::list<Charge>::iterator       iter;
-
     /* The old files if existing should be deleted.                                           		*/
     pb_.fileName = bunch_.bunchProfileBasename_ + "-p" + stringify(rank_) + "-" + stringify(nTime_) + TXT_FILE_SUFFIX;
     pb_.file = new std::ofstream(pb_.fileName.c_str(),std::ios::trunc);
@@ -1428,7 +1418,7 @@ namespace MITHRA
     (*pb_.file).precision(15);
     (*pb_.file).width(40);
 
-    for (iter = iterQB_; iter != iterQE_; iter++)
+    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
 	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
 	  {
@@ -2064,7 +2054,7 @@ namespace MITHRA
 	for (unsigned i = 0; i < (FEL_[jf].screenProfile_.pos_).size(); i++ )
 	  {
 	    Double lzScreen = FEL_[jf].screenProfile_.pos_[i];
-	    for (std::list<Charge>::iterator iter = iterQB_; iter != iterQE_; iter++)
+	    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
 	      {
 		/* Only look at particles which belong to the domain of this processor.			*/
 		if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )

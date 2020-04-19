@@ -166,10 +166,6 @@ namespace MITHRA
     /* total number of charges in the simulation.							*/
     unsigned int							Nc_;
 
-    /* Iterators to the begin and end of the charge vector.						*/
-    std::list<Charge>::iterator					        iterQB_;
-    std::list<Charge>::iterator					        iterQE_;
-
     /* Number of nodes along z in the specific processor and the index of the first column.		*/
     int									np_, k0_;
 

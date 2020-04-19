@@ -1015,6 +1015,9 @@ namespace MITHRA
 	/* If the particle does not belong to this processor continue the loop over particles         	*/
 	if ( !( ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) ) ) continue;
 
+	/* By default the charge stays in the computational domain after update.			*/
+	ubp.dq = false;
+
 	/* Get the boolean flag determining if the particle resides in the computational domain.      	*/
 	ubp.b1x = ( iter->rnp[0] < xmax_ - ub_.dx && iter->rnp[0] > xmin_ + ub_.dx );
 	ubp.b1y = ( iter->rnp[1] < ymax_ - ub_.dy && iter->rnp[1] > ymin_ + ub_.dy );
@@ -1128,7 +1131,7 @@ namespace MITHRA
 	    ubp.qSB.push_back( iter->gbnm[1] );
 	    ubp.qSB.push_back( iter->gbnm[2] );
 	    ubp.qSB.push_back( iter->e 	     );
-	    chargeVectorn_.erase(iter);
+	    ubp.dq = true;
 	  }
 	else if ( iter->rnp[2] >= zp_[1] && rank_ != size_ - 1 )
 	  {
@@ -1146,8 +1149,11 @@ namespace MITHRA
 	    ubp.qSF.push_back( iter->gbnm[1] );
 	    ubp.qSF.push_back( iter->gbnm[2] );
 	    ubp.qSF.push_back( iter->e 	     );
-	    chargeVectorn_.erase(iter);
+	    ubp.dq = true;
 	  }
+
+	/* Delete the charge if it leaves the computational domain.					*/
+	if (ubp.dq) chargeVectorn_.erase(iter);
       }
 
     /* Now communicate the charges which propagate throughout the borders to other processors.		*/

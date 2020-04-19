@@ -253,6 +253,7 @@ namespace MITHRA
     bool                                b1x, b1y, b1z;
     int					nt;
     std::vector<Double>                 qSB, qSF, qRB, qRF;
+    bool				dq;
 
     FieldVector<Double>			et, bt;
     Double				dxr, dyr, dzr;

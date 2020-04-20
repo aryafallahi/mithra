@@ -1357,7 +1357,7 @@ namespace MITHRA
 	    gamma = sqrt( 1.0 + iter->gbnp.norm2() );
 	    beta  = iter->gbnp[2] / gamma;
 	    *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
-            							<< " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
+            							    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	  }
       }
     *vb_.file << 0.0 << " " << 0.0 << " " << 0.0						<< std::endl;
@@ -2000,11 +2000,14 @@ namespace MITHRA
 	if (!(isabsolute(FEL_[jf].screenProfile_.basename_))) FEL_[jf].screenProfile_.basename_ = FEL_[jf].screenProfile_.directory_ + FEL_[jf].screenProfile_.basename_;
 
 	/* According to the given rhythm add to the position vector.					*/
-	Double	z = 0.0;
-	while ( z < ( undulator_.end()->rb_ + undulator_.end()->length_ * undulator_.end()->lu_ ) )
+	if ( FEL_[jf].screenProfile_.rhythm_ != 0.0 )
 	  {
-	    FEL_[jf].screenProfile_.pos_.push_back(z);
-	    z += FEL_[jf].screenProfile_.rhythm_;
+	    Double z = 0.0;
+	    while ( z < ( undulator_.end()->rb_ + undulator_.end()->length_ * undulator_.end()->lu_ ) )
+	      {
+		FEL_[jf].screenProfile_.pos_.push_back(z);
+		z += FEL_[jf].screenProfile_.rhythm_;
+	      }
 	  }
 
 	/*  resize vectors storing filenames                   */
@@ -2020,15 +2023,15 @@ namespace MITHRA
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	/* Open files for each screen and write its position in first line.                    	       	*/
-	for ( unsigned int i = 0; i < (FEL_[jf].screenProfile_.pos_).size(); i++ ){
+	for ( unsigned int i = 0; i < (FEL_[jf].screenProfile_.pos_).size(); i++ )
+	  {
 	    printmessage(std::string(__FILE__), __LINE__, std::string("Screen ") + stringify(i) + std::string(" is at distance ") + stringify(FEL_[jf].screenProfile_.pos_[i]) + std::string(" from the undulator beginning.") );
 	    scrp_[jf].fileNames[i] = FEL_[jf].screenProfile_.basename_ + "-p" + stringify(rank_) + "-screen" + stringify(i) + TXT_FILE_SUFFIX;
 	    scrp_[jf].files[i] = new std::ofstream(scrp_[jf].fileNames[i].c_str(),std::ios::trunc);
 	    (*scrp_[jf].files[i]).setf(std::ios::scientific);
 	    (*scrp_[jf].files[i]).precision(15);
 	    (*scrp_[jf].files[i]).width(40);
-	    //*scrp_[jf].files[i] << "Screen distance from the beginning of the undulator = " << stringify(FEL_[jf].screenProfile_.pos_[i]) << std::endl;
-	}
+	  }
 
 	/* Return an error if the screen sampling is activated but no screen is given.	       		*/
 	if ( FEL_[jf].screenProfile_.pos_.size() == 0 )

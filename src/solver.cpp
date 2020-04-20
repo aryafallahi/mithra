@@ -1009,8 +1009,8 @@ namespace MITHRA
 
     /* Loop over the charge points in the bunch, extract the real field values of the seed at their point,
      * superpose with the undulator field and eventually accelerate the particles within the field.	*/
-
-    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); ++iter )
+    auto iter = chargeVectorn_.begin();
+    while ( iter != chargeVectorn_.end() )
       {
 	/* If the particle does not belong to this processor continue the loop over particles         	*/
 	if ( !( ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) ) ) continue;
@@ -1153,7 +1153,10 @@ namespace MITHRA
 	  }
 
 	/* Delete the charge if it leaves the computational domain.					*/
-	if (ubp.dq) chargeVectorn_.erase(iter);
+	if (ubp.dq)
+	  chargeVectorn_.erase(iter);
+	else
+	  ++iter;
       }
 
     /* Now communicate the charges which propagate throughout the borders to other processors.		*/

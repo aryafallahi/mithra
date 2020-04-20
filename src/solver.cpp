@@ -3,6 +3,7 @@
  ********************************************************************************************************/
 
 #include <algorithm>
+#include <list>
 
 #include "solver.h"
 
@@ -1009,18 +1010,11 @@ namespace MITHRA
 
     /* Loop over the charge points in the bunch, extract the real field values of the seed at their point,
      * superpose with the undulator field and eventually accelerate the particles within the field.	*/
-    auto iter = chargeVectorn_.begin();
-    while ( iter != chargeVectorn_.end() )
+
+    for ( auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++ )
       {
 	/* If the particle does not belong to this processor continue the loop over particles         	*/
-	if ( !( ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) ) )
-	  {
-	    ++iter;
-	    continue;
-	  }
-
-	/* By default the charge stays in the computational domain after update.			*/
-	ubp.dq = false;
+	if ( !( ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) ) ) continue;
 
 	/* Get the boolean flag determining if the particle resides in the computational domain.      	*/
 	ubp.b1x = ( iter->rnp[0] < xmax_ - ub_.dx && iter->rnp[0] > xmin_ + ub_.dx );
@@ -1135,7 +1129,6 @@ namespace MITHRA
 	    ubp.qSB.push_back( iter->gbnm[1] );
 	    ubp.qSB.push_back( iter->gbnm[2] );
 	    ubp.qSB.push_back( iter->e 	     );
-	    ubp.dq = true;
 	  }
 	else if ( iter->rnp[2] >= zp_[1] && rank_ != size_ - 1 )
 	  {
@@ -1153,15 +1146,11 @@ namespace MITHRA
 	    ubp.qSF.push_back( iter->gbnm[1] );
 	    ubp.qSF.push_back( iter->gbnm[2] );
 	    ubp.qSF.push_back( iter->e 	     );
-	    ubp.dq = true;
 	  }
-
-	/* Delete the charge if it leaves the computational domain.					*/
-	if (ubp.dq)
-	  chargeVectorn_.erase(iter);
-	else
-	  ++iter;
       }
+
+    /* Remove the charges that are detected to leave the computational domain of the processor.		*/
+    chargeVectorn_.remove_if( [&] (Charge q) { return ( ( q.rnp[2] < zp_[0] && rank_ != 0 ) || ( q.rnp[2] >= zp_[1] && rank_ != size_ - 1 ) ); } );
 
     /* Now communicate the charges which propagate throughout the borders to other processors.		*/
     if (rank_ != 0)
@@ -1368,7 +1357,7 @@ namespace MITHRA
 	    gamma = sqrt( 1.0 + iter->gbnp.norm2() );
 	    beta  = iter->gbnp[2] / gamma;
 	    *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
-            						    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
+            							<< " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	  }
       }
     *vb_.file << 0.0 << " " << 0.0 << " " << 0.0						<< std::endl;

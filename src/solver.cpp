@@ -2000,7 +2000,7 @@ namespace MITHRA
 	if (!(isabsolute(FEL_[jf].screenProfile_.basename_))) FEL_[jf].screenProfile_.basename_ = FEL_[jf].screenProfile_.directory_ + FEL_[jf].screenProfile_.basename_;
 
 	/* According to the given rhythm add to the position vector.					*/
-	if ( FEL_[jf].screenProfile_.rhythm_ != 0.0 )
+	if ( FEL_[jf].screenProfile_.rhythm_ > 0.0 )
 	  {
 	    Double z = 0.0;
 	    while ( z < ( undulator_.end()->rb_ + undulator_.end()->length_ * undulator_.end()->lu_ ) )

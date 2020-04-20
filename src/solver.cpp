@@ -1013,7 +1013,11 @@ namespace MITHRA
     while ( iter != chargeVectorn_.end() )
       {
 	/* If the particle does not belong to this processor continue the loop over particles         	*/
-	if ( !( ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) ) ) continue;
+	if ( !( ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) ) )
+	  {
+	    ++iter;
+	    continue;
+	  }
 
 	/* By default the charge stays in the computational domain after update.			*/
 	ubp.dq = false;

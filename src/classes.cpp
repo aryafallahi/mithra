@@ -326,10 +326,7 @@ namespace MITHRA
 
     /* Declare the required parameters for the initialization of charge vectors.                	*/
     Charge                    charge;
-    FieldVector<Double>	gb (0.0);
-    FieldVector<Double>	r  (0.0);
-    FieldVector<Double> 	gbm (0.0);
-    gbm.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
+    int saveRank = 0;
 
     /* Clear the charge vector for adding the charges.							*/
     chargeVector.clear();
@@ -337,27 +334,25 @@ namespace MITHRA
     /* Read the file and fill the position and electric field vectors according to the saved values.	*/
     std::ifstream myfile ( bunchInit.fileName_.c_str() );
 
+    charge.q  = bunchInit.cloudCharge_ / bunchInit.numberOfParticles_;
+        
     while (myfile.good())
       {
-	charge.q  = bunchInit.cloudCharge_ / bunchInit.numberOfParticles_;
 
-	myfile >> r[0];
-	myfile >> r[1];
-	myfile >> r[2];
+	myfile >> charge.rnp[0];
+	myfile >> charge.rnp[1];
+	myfile >> charge.rnp[2];
 
-	myfile >> gb[0];
-	myfile >> gb[1];
-	myfile >> gb[2];
+	myfile >> charge.gbnp[0];
+	myfile >> charge.gbnp[1];
+	myfile >> charge.gbnp[2];
 
-	charge.rnp   = bunchInit.position_[ia];
-	charge.rnp  += r;
+    charge.rnp += bunchInit.position_[ia];
 
-	charge.gbnp  = gbm;
-	charge.gbnp += gb;
-
-	/* Insert this charge to the charge list if and only if it resides in the processor's portion.	*/
-	if ( ( charge.rnp[2] < zp[1] || rank == size - 1 ) && ( charge.rnp[2] >= zp[0] || rank == 0 ) )
+	/* Insert this charge to the charge list only in one processor.										*/
+    if (saveRank == rank)
 	  chargeVector.push_back(charge);
+    saveRank = ( saveRank == size - 1 ) ? 0 : saveRank + 1;
 
 	if ( fabs(charge.rnp[0]) > bunchInit.tranTrun_ || fabs(charge.rnp[1]) > bunchInit.tranTrun_ )
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The particle coordinate is out of the truncation bunch. "
@@ -371,7 +366,7 @@ namespace MITHRA
     /* Check the size of the charge vector with the number of particles.                            	*/
     if ( bunchInit.numberOfParticles_ != NqG && rank == 0 )
       {
-	printmessage(std::string(__FILE__), __LINE__, std::string("The number of the particles and the file size do not match !!!") );
+        printmessage(std::string(__FILE__), __LINE__, std::string("The number of the particles and the file size do not match !!! The file contains " + stringify(NqG) + " particles.") );
 	exit(1);
       }
   }

@@ -1149,9 +1149,6 @@ namespace MITHRA
 	  }
       }
 
-    /* Remove the charges that are detected to leave the computational domain of the processor.		*/
-    chargeVectorn_.remove_if( [&] (Charge q) { return ( ( q.rnp[2] < zp_[0] && rank_ != 0 ) || ( q.rnp[2] >= zp_[1] && rank_ != size_ - 1 ) ); } );
-
     /* Now communicate the charges which propagate throughout the borders to other processors.		*/
     if (rank_ != 0)
       MPI_Send(&ubp.qSB[0],ubp.qSB.size(),MPI_DOUBLE,rank_-1,msgtag1,MPI_COMM_WORLD);

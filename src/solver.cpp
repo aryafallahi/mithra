@@ -326,7 +326,7 @@ namespace MITHRA
     zG /= NqG;
     bzG /= NqG;
     
-    Double shift = bzG * (zmaxG + undulator_[0].dist_ / gamma_ - zG) / (bzG + beta_);
+    Double shift = bzG * (zmaxG + undulator_[0].dist_ / gamma_ - zG) / (bzG + beta_) + zG;
     zmaxG -= shift;
     bunch_.zu_ = zmaxG;
 	dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmaxG + undulator_[0].dist_ / gamma_ );

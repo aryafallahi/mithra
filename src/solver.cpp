@@ -322,7 +322,7 @@ namespace MITHRA
     MPI_Allreduce(&zL, &zG, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     MPI_Allreduce(&bzL, &bzG, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     unsigned int NqL = chargeVectorn_.size(), NqG = 0;
-    MPI_Reduce(&NqL,&NqG,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
+    MPI_Allreduce(&NqL, &NqG, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
     zG /= NqG;
     bzG /= NqG;
     

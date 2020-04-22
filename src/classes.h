@@ -40,6 +40,9 @@ namespace MITHRA
     /* Boolean flag returning the status of space charge assumption.					*/
     bool			spaceCharge_;
 
+    /* Boolean that determines whether to shift the bunch in the initial setup.					*/
+    bool			optimizePosition_;
+
     /* Solver type that will be used to update the field values.					*/
     SolverType			solver_;
 

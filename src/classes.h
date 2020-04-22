@@ -525,14 +525,7 @@ namespace MITHRA
       /* Store the rhythm in position for saving the bunch profile.					*/
       Double					rhythm_;
 
-      ScreenProfile ()
-      {
-	pos_.clear();
-	sampling_  = false;
-	rhythm_    = 0.0;
-	directory_ = "";
-	basename_  = "";
-      }
+      ScreenProfile ();
     };
 
     /* Define the variables containing the required structure for profiling the bunch in the lab frame.	*/

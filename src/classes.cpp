@@ -25,7 +25,7 @@ namespace MITHRA
     else if 	( spaceCharge_ == false )
       printmessage(std::string(__FILE__), __LINE__, std::string(" Space-charge = false "));
     if 	( optimizePosition_ == true )
-      printmessage(std::string(__FILE__), __LINE__, std::string("Optimize initial bunch position = true "));
+      printmessage(std::string(__FILE__), __LINE__, std::string(" Optimize initial bunch position = true "));
     if 	( solver_ == NSFD )
       printmessage(std::string(__FILE__), __LINE__, std::string(" Solver = Non-standard finite-difference "));
     else if 	( solver_ == FD )

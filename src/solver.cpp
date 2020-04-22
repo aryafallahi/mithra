@@ -335,6 +335,7 @@ namespace MITHRA
       {
         iterQ->rnp[2] -= shift;
       }
+    printmessage(std::string(__FILE__), __LINE__, std::string("The bunch center is shifted back by ") + stringify(shift) + std::string(" .") );
       }
 
     /* Distribute particles in their respective processor, depending on their longituinal coordinate.	*/

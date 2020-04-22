@@ -1103,7 +1103,7 @@ namespace MITHRA
     sampling_          	= false;
     directory_    	= "./";
     basename_     	= "";
-    rhythm_			= 0.0;
+    rhythm_		= 0.0;
     pos_.clear();
   }
 }

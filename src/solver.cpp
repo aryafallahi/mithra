@@ -235,7 +235,10 @@ namespace MITHRA
     bunch_.timeStep_			/= gamma_;
 
     /* Adjust the given bunch time step according to the given field time step.				*/
-    bunch_.timeStep_ 			 = mesh_.timeStep_ / ceil(mesh_.timeStep_ / bunch_.timeStep_);
+    if (bunch_.timeStep_ == 0)
+      bunch_.timeStep_ 			= mesh_.timeStep_ ;
+    else
+      bunch_.timeStep_ 			 = mesh_.timeStep_ / ceil(mesh_.timeStep_ / bunch_.timeStep_);
     nUpdateBunch_    			 = mesh_.timeStep_ / bunch_.timeStep_;
     printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the bunch update is set to " + stringify(bunch_.timeStep_ * gamma_) ) );
 

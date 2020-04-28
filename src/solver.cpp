@@ -32,6 +32,7 @@ namespace MITHRA
     fnm1_ = new std::vector<Double> ();
 
     r_.clear();
+    chargeVectorn_.clear();
 
     /* Reset the number of nodes to zero.								*/
     N0_ = N1_ = N2_ = 0;
@@ -102,6 +103,8 @@ namespace MITHRA
       {
         if ( bunch_.bunchInit_[i].bunchType_ == "file" )
           computeFileGamma(bunch_.bunchInit_[i]);
+        if ( bunch_.bunchInit_[i].bunchType_ == "other" )
+          	printmessage(std::string(__FILE__), __LINE__, std::string("Bunch mean gamma and direction are given by an external program. " ) );
         gamma += bunch_.bunchInit_[i].initialGamma_ / bunch_.bunchInit_.size();
       }
 
@@ -232,7 +235,10 @@ namespace MITHRA
     bunch_.timeStep_			/= gamma_;
 
     /* Adjust the given bunch time step according to the given field time step.				*/
-    bunch_.timeStep_ 			 = mesh_.timeStep_ / ceil(mesh_.timeStep_ / bunch_.timeStep_);
+    if (bunch_.timeStep_ == 0)
+      bunch_.timeStep_ 			= mesh_.timeStep_ ;
+    else
+      bunch_.timeStep_ 			 = mesh_.timeStep_ / ceil(mesh_.timeStep_ / bunch_.timeStep_);
     nUpdateBunch_    			 = mesh_.timeStep_ / bunch_.timeStep_;
     printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the bunch update is set to " + stringify(bunch_.timeStep_ * gamma_) ) );
 
@@ -1032,8 +1038,7 @@ namespace MITHRA
   {
     printmessage(std::string(__FILE__), __LINE__, std::string("[[[ Initializing the bunch and prepare the charge vector ") );
 
-    /* Clear the global charge vector and define a temporary one.					*/
-    chargeVectorn_.clear();
+    /* Define a temporary charge vector.					*/
     std::list<Charge> qv;
 
     for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
@@ -1069,6 +1074,8 @@ namespace MITHRA
 	    for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
 	      bunch_.initializeFile(		bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
 	  }
+    else if ( bunch_.bunchInit_[i].bunchType_ == "other" )
+      printmessage(std::string(__FILE__), __LINE__, std::string("The charge vector has been filled in by an external program. ") );
 
 	/* Add the bunch distribution to the global charge vector.					*/
 	chargeVectorn_.splice(chargeVectorn_.end(),qv);

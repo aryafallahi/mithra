@@ -1596,7 +1596,7 @@ namespace MITHRA
 
 		ubp.sz = exp( - pow( ub_.ku *  ubp.t0 , 2 ) / 2.0 );
 
-		if ( iter != undulator_.end() )
+		if ( iter+1 != undulator_.end() )
 		  {
 		    ubp.i  = iter - undulator_.begin() + 1;
 		    ubp.r0 = undulator_[ubp.i].rb_ - iter->rb_ - iter->length_ * iter->lu_;

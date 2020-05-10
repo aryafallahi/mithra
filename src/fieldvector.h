@@ -110,7 +110,7 @@ namespace MITHRA
     };
 
     template <class T>
-    void operator= (FieldVector<T>& y)
+    void operator= (FieldVector<T> y)
     {
       a[0] = y[0];
       a[1] = y[1];
@@ -118,7 +118,7 @@ namespace MITHRA
     }
 
     template <class T>
-    void operator= (std::vector<T>& y)
+    void operator= (std::vector<T> y)
     {
       if (y.size() != 3)
 	{

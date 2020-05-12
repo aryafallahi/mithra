@@ -110,7 +110,7 @@ namespace MITHRA
     };
 
     template <class T>
-    void operator= (FieldVector<T>& y)
+    void operator= (const FieldVector<T>& y)
     {
       a[0] = y[0];
       a[1] = y[1];

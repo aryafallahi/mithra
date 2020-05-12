@@ -317,10 +317,10 @@ To simulate the considered FEL configuration, the job file presented in \ref{job
 	$\begin{array}{cc}
 	\includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig6/Fig6a.pdf} & \includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig6/Fig6b.pdf} \\
 	(a) & (b) \\
-	\includegraphics[height=3.0in]{./MITHRA_EXAMPLES/Fig6/Fig6c.pdf} & \includegraphics[height=3.0in]{./MITHRA_EXAMPLES/Fig6/Fig6d.pdf} \\
-	(c) & (d) \\
+	\multicolumn{2}{c}{\includegraphics[height=1.35in]{./MITHRA_EXAMPLES/Fig6/Fig6c.pdf}} \\
+	\multicolumn{2}{c}{(c)} \\
 	\end{array}$
-	\caption{(a) The total radiated power measured at 80\,{\textmu}m distance from the bunch center in terms of the traveled undulator length and (b) the bunch profile in the rest frame at 12\,m from the undulator begin. (c) Bunch profile and (d) microbunch profiles of the electron beam with and without space-charge considerations are compared. }
+	\caption{(a) The total radiated power measured at 80\,{\textmu}m distance from the bunch center in terms of the traveled undulator length and (b) the bunch profile in the rest frame at 12\,m from the undulator begin. (c) Bunch profile and microbunch profiles of the electron beam with and without space-charge considerations are compared. }
 	\label{power-example2}
 \end{figure}
 
@@ -342,7 +342,7 @@ By visualizing the bunch in the laboratory frame, one can explore the origin of 
 %
 Fig.\,\ref{power-example2}c and \ref{power-example2}d illustrate this comparison.
 %
-As observed from these figures, the total bunch profile in both cases are similar, whereas the microbunches in the simulation without space-charge are slightly denser than the case with space-charge consideration.
+As observed from these figures, the total bunch profile in both cases are similar, whereas the microbunches in the simulation with space-charge are slightly denser than the case without space-charge consideration.
 
 \section{Example 3: Optical Undulator}
 
@@ -556,7 +556,7 @@ $\begin{array}{cc}
 		Gain length (1D) & 0.92\,m \\ \hline
 		FEL parameter & 0.0015 \\ \hline
 		Cooperation length & 19.3 nm \\ \hline
-		Initial bunching factor & $0.0033$ \\ \hline
+		Shot-noise & true \\ \hline
 	\end{tabular}
 	}	
 \end{table}
@@ -565,106 +565,7 @@ In the fifth example, simulation of a problem with parameter sets corresponding 
 %
 The parameters considered in this example are tabulated in table \ref{example5}.
 %
-To simulate the described FEL, the following job file needs to be parsed in MITHRA.
-%
-\begin{snugshade}
-\begin{Verbatim}[fontsize=\small, tabsize = 4]
-MESH
-{
-  length-scale                     = MICROMETER
-  time-scale                       = PICOSECOND
-  mesh-lengths                     = ( 3200,  3200.0,    350.0)
-  mesh-resolution                  = ( 100.0,  100.0,      0.5)
-  mesh-center                      = ( 0.0,      0.0,      0.0)
-  total-time                       = 30000
-  bunch-time-step                  = 1.6
-  bunch-time-start                 = 0.0
-  mesh-truncation-order            = 2
-  space-charge                     = true
-}
-
-BUNCH
-{
-  bunch-initialization
-  {
-    type                           = ellipsoid
-    distribution                   = gaussian
-    charge                         = 1.846e8
-    number-of-particles            = 262144
-    gamma                          = 100.41
-    direction                      = (    0.0,     0.0,       1.0)
-    position                       = (    0.0,     0.0,       0.0)
-    sigma-position                 = (  260.0,   260.0,     50.25)
-    sigma-momentum                 = ( 1.0e-8,  1.0e-8, 100.41e-4)
-    transverse-truncation          = 1040.0
-    longitudinal-truncation        = 150.0
-    bunching-factor                = 0.01
-  }
-
-  bunch-sampling
-  {
-    sample                         = true
-    directory                      = ./
-    base-name                      = bunch-sampling/bunchSC
-    rhythm                         = 8
-  }
-}
-MESH
-{
-  length-scale                     = MICROMETER
-  time-scale                       = PICOSECOND
-  mesh-lengths                     = ( 400.0, 400.0,   1.5   )
-  mesh-resolution                  = ( 4.0,     4.0,   3.0e-5 )
-  mesh-center                      = ( 0.0,     0.0,   0.0    )
-  total-time                       = 250000
-  bunch-time-step                  = 1.6
-  bunch-time-start                 = 0.0
-  mesh-truncation-order            = 2
-  space-charge                     = true
-}
-
-BUNCH
-{
-  bunch-initialization
-  {
-    type                           = ellipsoid
-    distribution                   = uniform
-    charge                         = 1.25e8
-    number-of-particles            = 33554432
-    gamma                          = 13089
-    direction                      = ( 0.0,     0.0,  1.0)
-    position                       = ( 0.0,     0.0,  0.0)
-    sigma-position                 = ( 30.0,   30.0,  0.4)
-    sigma-momentum                 = ( 0.007, 0.007, 13089e-3)
-    transverse-truncation          = 180.0
-    longitudinal-truncation        = 0.43
-    bunching-factor                = 0.0033
-  }
-}
-
-UNDULATOR
-{
-  undulator-type                   = static
-  undulator-parameter              = 3.5
-  period                           = 3.0e4
-  length                           = 2500
-  polarization-angle               = 0.0
-}
-
-FEL-OUTPUT
-{
-  radiation-power
-  {
-    sample                         = true
-    type                           = at-point
-    directory                      = ./
-    base-name                      = power-sampling/power
-    distance-from-bunch            = 0.45
-    normalized-frequency           = 1.00
-  }
-}
-\end{Verbatim}
-\end{snugshade}
+To simulate the described FEL, the job file of \ref{job_file_6} needs to be parsed in MITHRA.
 
 \subsection{Simulation Results}
 
@@ -684,15 +585,9 @@ A rough estimate of the Coulomb field leads to 1 V/m electric field, which in 10
 %
 This value being ten times larger than the radiation wavelength confirms the strong effect of space-charge forces.
 %
-In the beginning of the radiation, some artifacts are observed for the calculation with space-charge effect.
-%
-These artifacts are emerging because of the unrealistic modeling of fringing fields at the entrance of the undulator, which leads to nonzero magnetic field divergence.
-%
-To correct for such effects, numerical distribution of the fringing fields should be taken into account.
-%
 \begin{figure}
 	\centering
 	\includegraphics[height=2.5in]{./MITHRA_EXAMPLES/Fig11/Fig11.pdf} \\
-    \caption{Total radiated power measured at 30\,nm distance from the bunch center in terms of the traveled undulator length for the hard X-ray FEL source as the third example.}
+    \caption{Total radiated power measured at 450\,{\textmu}m distance from the bunch center in terms of the traveled undulator length for the hard X-ray FEL source as the third example.}
 	\label{power-example5}
 \end{figure}

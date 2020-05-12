@@ -24,19 +24,19 @@ namespace MITHRA
 	if      (*iter == "MESH")		this->readMesh		( iter );
 
 	/* Parse the materials parameters.                                                         	*/
-	else if (*iter == "BUNCH")            this->readBunch		( iter );
+	else if (*iter == "BUNCH")            	this->readBunch		( iter );
 
 	/* Parse the surfaces parameters.                                                         	*/
 	else if (*iter == "FIELD")        	this->readField		( iter );
 
 	/* Parse the undulator parameters.                                                        	*/
-	else if (*iter == "UNDULATOR")        this->readUndulator	( iter );
+	else if (*iter == "UNDULATOR")        	this->readUndulator	( iter );
 
-	/* Parse the external field parameters.                                                       */
-	else if (*iter == "EXTERNAL-FIELD")   this->readExtField      ( iter );
+	/* Parse the external field parameters.                                                       	*/
+	else if (*iter == "EXTERNAL-FIELD")   	this->readExtField      ( iter );
 
 	/* Parse the FEL output parameters.                                                        	*/
-	else if (*iter == "FEL-OUTPUT")       this->readFEL		( iter );
+	else if (*iter == "FEL-OUTPUT")       	this->readFEL		( iter );
 
 	else { std::cout << (*iter) << " is not a defined group." << std::endl; exit(1); }
 
@@ -141,10 +141,10 @@ namespace MITHRA
 	    do
 	      {
 		if      (parameterName(*iter) == "type")              	bunchInit.bunchType_		= stringValue(*iter);
-		else if (parameterName(*iter) == "distribution") 		bunchInit.distribution_		= stringValue(*iter);
+		else if (parameterName(*iter) == "distribution") 	bunchInit.distribution_		= stringValue(*iter);
 		else if (parameterName(*iter) == "charge")            	bunchInit.cloudCharge_		= doubleValue(*iter);
-		else if (parameterName(*iter) == "number-of-particles")       bunchInit.numberOfParticles_    = intValue(*iter);
-		else if (parameterName(*iter) == "gamma")		      	bunchInit.initialGamma_ 	= doubleValue(*iter);
+		else if (parameterName(*iter) == "number-of-particles") bunchInit.numberOfParticles_    = intValue(*iter);
+		else if (parameterName(*iter) == "gamma")		bunchInit.initialGamma_ 	= doubleValue(*iter);
 		else if (parameterName(*iter) == "direction")
 		  {
 		    std::vector<Double> direction 	= vectorDoubleValue(*iter);
@@ -178,9 +178,9 @@ namespace MITHRA
 		  }
 		else if (parameterName(*iter) == "transverse-truncation")     	bunchInit.tranTrun_		= doubleValue(*iter);
 		else if (parameterName(*iter) == "longitudinal-truncation")   	bunchInit.longTrun_		= doubleValue(*iter);
-		else if (parameterName(*iter) == "file-name")              		bunchInit.fileName_		= stringValue(*iter);
-		else if (parameterName(*iter) == "bunching-factor")			bunchInit.bF_			= doubleValue(*iter);
-		else if (parameterName(*iter) == "bunching-factor-phase")		bunchInit.bFP_			= doubleValue(*iter);
+		else if (parameterName(*iter) == "file-name")              	bunchInit.fileName_		= stringValue(*iter);
+		else if (parameterName(*iter) == "bunching-factor")		bunchInit.bF_			= doubleValue(*iter);
+		else if (parameterName(*iter) == "bunching-factor-phase")	bunchInit.bFP_			= doubleValue(*iter);
 		else if (parameterName(*iter) == "shot-noise")			bunchInit.shotNoise_		= boolValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in bunch-initialization group." << std::endl; exit(1); }
 		++iter;
@@ -199,10 +199,10 @@ namespace MITHRA
 	    else ++iter;
 	    do
 	      {
-		if 	  (parameterName(*iter) == "sample") 		bunch_.sampling_	= boolValue(*iter);
-		else if (parameterName(*iter) == "directory")         bunch_.directory_	= stringValue(*iter);
-		else if (parameterName(*iter) == "base-name")         bunch_.basename_	= stringValue(*iter);
-		else if (parameterName(*iter) == "rhythm")            bunch_.rhythm_   	= doubleValue(*iter);
+		if 	  (parameterName(*iter) == "sample") 	bunch_.sampling_	= boolValue(*iter);
+		else if (parameterName(*iter) == "directory")	bunch_.directory_	= stringValue(*iter);
+		else if (parameterName(*iter) == "base-name")	bunch_.basename_	= stringValue(*iter);
+		else if (parameterName(*iter) == "rhythm")	bunch_.rhythm_   	= doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the bunch-sampling group." << std::endl; exit(1); }
 		++iter;
 	      }
@@ -218,7 +218,7 @@ namespace MITHRA
 	    do
 	      {
 		if      (parameterName(*iter) == "sample")    	bunch_.bunchVTK_                = boolValue(*iter);
-		else if (parameterName(*iter) == "directory")         bunch_.bunchVTKDirectory_	= stringValue(*iter);
+		else if (parameterName(*iter) == "directory")	bunch_.bunchVTKDirectory_	= stringValue(*iter);
 		else if (parameterName(*iter) == "base-name") 	bunch_.bunchVTKBasename_        = stringValue(*iter);
 		else if (parameterName(*iter) == "rhythm")    	bunch_.bunchVTKRhythm_          = doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the bunch-visualization group." << std::endl; exit(1); }
@@ -234,11 +234,11 @@ namespace MITHRA
 	    else ++iter;
 	    do
 	      {
-		if      (parameterName(*iter) == "sample")    bunch_.bunchProfile_            = boolValue(*iter);
-		else if (parameterName(*iter) == "directory") bunch_.bunchProfileDirectory_	= stringValue(*iter);
-		else if (parameterName(*iter) == "base-name") bunch_.bunchProfileBasename_    = stringValue(*iter);
-		else if (parameterName(*iter) == "time")      (bunch_.bunchProfileTime_).push_back(doubleValue(*iter));
-		else if (parameterName(*iter) == "rhythm")    bunch_.bunchProfileRhythm_      = doubleValue(*iter);
+		if      (parameterName(*iter) == "sample")    	bunch_.bunchProfile_            = boolValue(*iter);
+		else if (parameterName(*iter) == "directory") 	bunch_.bunchProfileDirectory_	= stringValue(*iter);
+		else if (parameterName(*iter) == "base-name") 	bunch_.bunchProfileBasename_    = stringValue(*iter);
+		else if (parameterName(*iter) == "time")      	(bunch_.bunchProfileTime_).push_back(doubleValue(*iter));
+		else if (parameterName(*iter) == "rhythm")    	bunch_.bunchProfileRhythm_      = doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the bunch-profile group." << std::endl; exit(1); }
 		++iter;
 	      }
@@ -274,18 +274,18 @@ namespace MITHRA
 
 	    do
 	      {
-		if      (parameterName(*iter) == "type")                              type            = stringValue(*iter);
-		else if (parameterName(*iter) == "position")                          position        = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "direction")                      	direction    	= vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "polarization")                      polarization    = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "strength-parameter")                amplitude       = doubleValue(*iter);
-		else if (parameterName(*iter) == "radius-parallel")          		radius[0]       = doubleValue(*iter);
-		else if (parameterName(*iter) == "radius-perpendicular")     		radius[1]       = doubleValue(*iter);
-		else if (parameterName(*iter) == "signal-type")                       signalType      = stringValue(*iter);
-		else if (parameterName(*iter) == "offset")                            offset          = doubleValue(*iter);
-		else if (parameterName(*iter) == "pulse-length")                      pulseLength     = doubleValue(*iter);
-		else if (parameterName(*iter) == "wavelength")                        wavelength      = doubleValue(*iter);
-		else if (parameterName(*iter) == "CEP")                               cep             = doubleValue(*iter);
+		if      (parameterName(*iter) == "type")                        type            = stringValue(*iter);
+		else if (parameterName(*iter) == "position")                    position        = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "direction")			direction    	= vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "polarization")                polarization    = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "strength-parameter")          amplitude       = doubleValue(*iter);
+		else if (parameterName(*iter) == "radius-parallel")          	radius[0]       = doubleValue(*iter);
+		else if (parameterName(*iter) == "radius-perpendicular")     	radius[1]       = doubleValue(*iter);
+		else if (parameterName(*iter) == "signal-type")                 signalType      = stringValue(*iter);
+		else if (parameterName(*iter) == "offset")                      offset          = doubleValue(*iter);
+		else if (parameterName(*iter) == "pulse-length")                pulseLength     = doubleValue(*iter);
+		else if (parameterName(*iter) == "wavelength")                  wavelength      = doubleValue(*iter);
+		else if (parameterName(*iter) == "CEP")                         cep             = doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in seed-initialization group." << std::endl; exit(1); }
 		++iter;
 	      }

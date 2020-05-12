@@ -75,7 +75,7 @@ The mesh and update parameters of the solver are defined through the following t
 	%
 	\item {\tt \em \small total-time} is the total computation time in the scale given by the time scale. This is indeed the time it takes for the electron bunch to travel through the considered undulator length.
 	%
-	\item {\tt \em \small bunch-time-step} is the time step for updating the macro-particles' coordinates in the PIC solver.
+	\item {\tt \em \small bunch-time-step} is the time step for updating the macro-particles' coordinates in the PIC solver. The default value is the value calculated from the mesh using the stability condition.
 	%
 	\item {\tt \em \small mesh-truncation-order} is the truncation order of the absorbing boundary condition in the computational domain. This parameter can be either 1 or 2, representing the first order and second order absorbing boundary condition.
 	%

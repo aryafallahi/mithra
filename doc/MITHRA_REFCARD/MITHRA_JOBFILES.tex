@@ -403,4 +403,69 @@ BUNCH
 \end{Verbatim}
 \end{snugshade}
 
+\section{Example 5: Short Pulse Hard X-ray Source}
+\label{job_file_6}
+
+\begin{snugshade}
+\begin{Verbatim}[fontsize=\footnotesize, tabsize=4, fontfamily=courier, fontseries=b, commandchars=\\\{\}, obeytabs]
+MESH
+\{
+	length-scale					= MICROMETER
+	time-scale						= PICOSECOND
+	mesh-lengths					= ( 400.0,  400.0,  1.5)
+	mesh-resolution					= ( 4.0,  4.0,  3.0e-5)
+	mesh-center						= ( 0.0,      0.0,      0.0)
+	total-time						= 300000
+	bunch-time-step					= 1.6
+	mesh-truncation-order			= 2
+	space-charge					= false
+	solver							= NSFD
+\}
+
+BUNCH
+\{
+	bunch-initialization
+	\{
+		type						= ellipsoid
+		distribution				= uniform
+		charge						= 1.25e8
+		number-of-particles			= 8388608
+		gamma						= 13089
+		direction					= (    0.0,     0.0,       1.0)
+		position					= (    0.0,     0.0,       0.0)
+		sigma-position				= (  30.0,   30.0,     0.4)
+		sigma-momentum				= ( 0.007,  0.007, 13089e-3)
+		transverse-truncation		= 180.0
+		longitudinal-truncation		= 0.43
+		bunching-factor				= 0.0
+		shot-noise					= true
+	\}
+\}
+
+UNDULATOR
+\{
+	static-undulator
+	\{
+		undulator-parameter			= 3.5
+		period						= 3.0e4
+		length						= 2500
+		polarization-angle			= 0.0
+	\}
+\}
+
+FEL-OUTPUT
+\{
+	radiation-power
+	\{
+		sample						= true
+		type						= at-point
+		directory					= ./
+		base-name					= power-sampling/power
+		plane-position				= 0.45
+		normalized-frequency		= 1.00
+	\}
+\}
+\end{Verbatim}
+\end{snugshade}
+
 \end{appendices}

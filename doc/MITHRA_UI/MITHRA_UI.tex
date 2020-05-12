@@ -75,13 +75,17 @@ The mesh and update parameters of the solver are defined through the following t
 	%
 	\item {\tt \em \small total-time} is the total computation time in the scale given by the time scale. This is indeed the time it takes for the electron bunch to travel through the considered undulator length.
 	%
-	\item {\tt \em \small bunch-time-step} is the time step for updating the macro-particles' coordinates in the PIC solver.
+	\item {\tt \em \small total-distance} is the total traveled distance by the bunch. Once this parameter is set, the given {\tt \em \small total-time} will be ignored and the computation will be continued as long as the last particle in the bunch passes through a point that resides on the given distance from the coordinate origin.
+	%
+	\item {\tt \em \small bunch-time-step} is the time step for updating the macro-particles' coordinates in the PIC solver. The default value is the value calculated from the mesh using the stability condition.
 	%
 	\item {\tt \em \small mesh-truncation-order} is the truncation order of the absorbing boundary condition in the computational domain. This parameter can be either 1 or 2, representing the first order and second order absorbing boundary condition.
 	%
 	\item {\tt \em \small space-charge} is a boolean flag determining if the space-charge effect should be considered or not. If this flag is false, the scalar potential $\phi$ is zero throughout the calculation. Otherwise, the scalar potential is calculated using the corresponding Helmholtz equation.
 	%
 	\item {\tt \em \small solver} determines if the non-standard finite-difference (NSFD) algorithm should be used to remove the effects of numerical dispersion or the simulation should be done with a simple finite-difference (FD) algorithm. Default is the non-standard finite-difference.
+	%
+	\item {\tt \em \small optimize-bunch-position} is a boolean flag that tells the solver to automatically shift the bunch so that it resides in the middle of the computational domain after passing through the undulator entrance. This parameter is by default set to false.
 \end{itemize}
 
 The format of the {\tt \em \small MESH} group is:
@@ -97,10 +101,12 @@ MESH
 	mesh-resolution		 		= < ( real, real, real ) >
 	mesh-center				 	= < ( real, real, real ) >
 	total-time					= < real >
+	total-distance				= < real >
 	bunch-time-step		 		= < real >
 	mesh-truncation-order 		= < 1 | 2 >
 	space-charge  				= < true | false >
 	solver						= < NSFD | FD >
+	optimize-bunch-position		= < true | false >
 \}
 \end{Verbatim}
 %%
@@ -120,6 +126,7 @@ MESH
 	mesh-truncation-order		 = 2
 	space-charge				 = false
 	solver						 = NSFD
+	optimize-bunch-position		 = false
 \}
 \end{Verbatim}
 \end{snugshade}

@@ -29,10 +29,12 @@ MESH
 	mesh-resolution		 			= < ( real, real, real ) >
 	mesh-center				 			= < ( real, real, real ) >
 	total-time								= < real >
+	total-distance						= < real >
 	bunch-time-step		 			= < real >
 	mesh-truncation-order 		= < 1 | 2 >
 	space-charge  						= < true | false >
 	solver										= < NSFD | FD >
+	optimize-bunch-position	 = < true | false >
 \}
 
 BUNCH
@@ -168,6 +170,7 @@ UNDULATOR
 		length  								= < int >
 		polarization-angle  		= < real >
 		offset  								= < real >
+		distance-to-bunch-head  = < real >
 	\textcolor{red}{\}}
 
 \textcolor{red}{static-undulator-array}
@@ -179,6 +182,7 @@ UNDULATOR
 		gap  									 = < real >
 		number  								= < int >
 		tapering-parameter  		= < real >
+		distance-to-bunch-head  = < real >
 	\textcolor{red}{\}}
 
 	\textcolor{red}{optical-undulator}
@@ -199,6 +203,7 @@ UNDULATOR
 		pulse-length  					= < real >
 		wavelength  						= < real >
 		CEP  									 = < real >
+		distance-to-bunch-head  = < real >
 	\textcolor{red}{\}}
 \}
 

@@ -49,12 +49,12 @@ namespace MITHRA
       return this->a[n];
     };
     
-    ElementType norm2()
+    ElementType norm2() const
     {
       return ( a[0]*a[0] + a[1]*a[1] + a[2]*a[2] );
     };
 
-    ElementType norm()
+    ElementType norm() const
     {
       return ( sqrt( this->norm2() ) );
     };

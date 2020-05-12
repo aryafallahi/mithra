@@ -39,11 +39,16 @@ namespace MITHRA
       a[2] = x;
     }
 
-    ElementType& operator [] (unsigned int n)
+    const ElementType& operator [] (unsigned int n) const
     {
       return this->a[n];
     };
 
+    ElementType& operator [] (unsigned int n)
+    {
+      return this->a[n];
+    };
+    
     ElementType norm2()
     {
       return ( a[0]*a[0] + a[1]*a[1] + a[2]*a[2] );
@@ -55,7 +60,7 @@ namespace MITHRA
     };
 
     template <class T1, class T2>
-    void mv(T1 y, FieldVector<T2>& x)
+    void mv(T1 y, const FieldVector<T2>& x)
     {
       a[0] = y * x[0];
       a[1] = y * x[1];
@@ -63,7 +68,7 @@ namespace MITHRA
     }
 
     template <class T1, class T2>
-    void pmv(T1 y, FieldVector<T2>& x)
+    void pmv(T1 y, const FieldVector<T2>& x)
     {
       a[0] += y * x[0];
       a[1] += y * x[1];
@@ -71,7 +76,7 @@ namespace MITHRA
     }
 
     template <class T1, class T2>
-    void mmv(T1 y, FieldVector<T2>& x)
+    void mmv(T1 y, const FieldVector<T2>& x)
     {
       a[0] -= y * x[0];
       a[1] -= y * x[1];
@@ -79,7 +84,7 @@ namespace MITHRA
     }
 
     template <class T1, class T2>
-    void dv(T1 y, FieldVector<T2>& x)
+    void dv(T1 y, const FieldVector<T2>& x)
     {
       a[0] = x[0] / y;
       a[1] = x[1] / y;
@@ -87,7 +92,7 @@ namespace MITHRA
     }
 
     template <class T1, class T2>
-    void pdv(T1 y, FieldVector<T2>& x)
+    void pdv(T1 y, const FieldVector<T2>& x)
     {
       a[0] += x[0] / y;
       a[1] += x[1] / y;
@@ -95,7 +100,7 @@ namespace MITHRA
     }
 
     template <class T1, class T2>
-    void mdv(T1 y, FieldVector<T2>& x)
+    void mdv(T1 y, const FieldVector<T2>& x)
     {
       a[0] -= x[0] / y;
       a[1] -= x[1] / y;
@@ -167,7 +172,7 @@ namespace MITHRA
   }
 
   template <class T1, class T2>
-  void operator+= (FieldVector<T1>& x, FieldVector<T2>& y)
+  void operator+= (FieldVector<T1>& x, const FieldVector<T2>& y)
   {
     x[0] += y[0];
     x[1] += y[1];
@@ -175,7 +180,7 @@ namespace MITHRA
   }
 
   template <class T1, class T2>
-  void operator-= (FieldVector<T1>& x, FieldVector<T2>& y)
+  void operator-= (FieldVector<T1>& x, const FieldVector<T2>& y)
   {
     x[0] -= y[0];
     x[1] -= y[1];
@@ -183,13 +188,13 @@ namespace MITHRA
   }
 
   template <class T1, class T2>
-  T1 operator* (FieldVector<T1>& x, FieldVector<T2>& y)
+  T1 operator* (const FieldVector<T1>& x, const FieldVector<T2>& y)
   {
     return ( x[0]*y[0] + x[1]*y[1] + x[2]*y[2] );
   }
 
   template <class T1, class T2>
-  FieldVector<T1> cross (FieldVector<T1>& x, FieldVector<T2>& y)
+  FieldVector<T1> cross (const FieldVector<T1>& x, const FieldVector<T2>& y)
   {
     FieldVector<T1> z (0.0);
     z[0] = x[1] * y[2] - x[2] * y[1];
@@ -199,7 +204,7 @@ namespace MITHRA
   }
 
   template <class T>
-  inline void operator<< (std::ostringstream &in, FieldVector<T>& y)
+  inline void operator<< (std::ostringstream &in, const FieldVector<T>& y)
   {
     in << "(" << y[0] << "," << y[1] << "," << y[2] << ")" ;
   }

@@ -1,15 +1,16 @@
 # mithra
-MITHRA is a full-wave numerical solver for free -electron lasers.
+MITHRA is a full-wave numerical solver for free-electron lasers.
 
 Compiling options used for gcc 7.4.0:
-`make` or `make full` (to delete all object files before compilation)
+- `make` or `make full` to compile binary
+- `make install` to compile library and header directory
 
 ********************************************************************************************************
 MITHRA-2.0 (Completely Numerical Calculation of Free Electron Laser Radiation)
 Version 2.0, copyright 2019, Arya Fallahi
 ********************************************************************************************************
  
-darius.cpp: Main program file
+mithra.cpp: Main program file
 
 stdinclude: Set of different standard functions and constants used in the code.
 

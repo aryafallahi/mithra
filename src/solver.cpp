@@ -236,7 +236,7 @@ namespace MITHRA
 
     /* Adjust the given bunch time step according to the given field time step.				*/
     if (bunch_.timeStep_ == 0)
-      bunch_.timeStep_ 			= mesh_.timeStep_ ;
+      bunch_.timeStep_ 			 = mesh_.timeStep_ ;
     else
       bunch_.timeStep_ 			 = mesh_.timeStep_ / ceil(mesh_.timeStep_ / bunch_.timeStep_);
     nUpdateBunch_    			 = mesh_.timeStep_ / bunch_.timeStep_;
@@ -314,35 +314,37 @@ namespace MITHRA
     
     /****************************************************************************************************/
 
-    /* The bunch needs to be shifted such that it is centered in the computational domain when it 
-     * enters the undulator. For this the bunch mean z-coordinate and beta_z are required.	*/
+    /* The bunch needs to be shifted such that it is centered in the computational domain when it enters
+     * the undulator. For this the bunch mean z-coordinate and beta_z are required.			*/
     if (( mesh_.optimizePosition_ ) && ( undulator_.size() > 0 ))
       {
-    Double zL = 0.0, zG;
-    Double bzL = 0.0, bzG;
-    for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
-      {
-	zL += iterQ->rnp[2];
-	bzL += iterQ->gbnp[2] / std::sqrt( 1 + iterQ->gbnp.norm2() );
+	Double zL  = 0.0, zG;
+	Double bzL = 0.0, bzG;
+	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
+	  {
+	    zL += iterQ->rnp[2];
+	    bzL += iterQ->gbnp[2] / std::sqrt( 1 + iterQ->gbnp.norm2() );
+	  }
+	MPI_Allreduce(&zL, &zG, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	MPI_Allreduce(&bzL, &bzG, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	unsigned int NqL = chargeVectorn_.size(), NqG = 0;
+	MPI_Allreduce(&NqL, &NqG, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+	zG /= NqG;
+	bzG /= NqG;
+
+	Double shift 	 = bzG * (zmaxG + undulator_[0].dist_ / gamma_ - zG) / (bzG + beta_) + zG;
+	zmaxG 		-= shift;
+	bunch_.zu_ 	 = zmaxG;
+	dt_ 		 = - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmaxG + undulator_[0].dist_ / gamma_ );
+	seed_.dt_ = dt_;
+
+	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
+	  iterQ->rnp[2] -= shift;
+
+	printmessage(std::string(__FILE__), __LINE__, std::string("The bunch center is shifted back by ") + stringify(shift) + std::string(" .") );
       }
-    MPI_Allreduce(&zL, &zG, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    MPI_Allreduce(&bzL, &bzG, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    unsigned int NqL = chargeVectorn_.size(), NqG = 0;
-    MPI_Allreduce(&NqL, &NqG, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
-    zG /= NqG;
-    bzG /= NqG;
-    
-    Double shift = bzG * (zmaxG + undulator_[0].dist_ / gamma_ - zG) / (bzG + beta_) + zG;
-    zmaxG -= shift;
-    bunch_.zu_ = zmaxG;
-	dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmaxG + undulator_[0].dist_ / gamma_ );
-    seed_.dt_ = dt_;
-    for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
-      {
-        iterQ->rnp[2] -= shift;
-      }
-    printmessage(std::string(__FILE__), __LINE__, std::string("The bunch center is shifted back by ") + stringify(shift) + std::string(" .") );
-      }
+
+    /****************************************************************************************************/
 
     /* Distribute particles in their respective processor, depending on their longituinal coordinate.	*/
     distributeParticles(chargeVectorn_);
@@ -354,6 +356,26 @@ namespace MITHRA
 
     /* Initialize the total number of charges.								*/
     Nc_ = chargeVectorn_.size();
+
+    /****************************************************************************************************/
+
+    /* If the value of the total travel distance for the simulation is nonzero, correct the total time
+     * factor in the simulation.									*/
+    if ( mesh_.totalDist_ > 0.0 )
+      {
+	/* Obtain the minimum value of the z in the bunch coordinates.					*/
+	Double zminL = 1.0e100, zminG;
+	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
+	  zminL = std::min( zminL , iterQ->rnp[2] );
+	MPI_Allreduce(&zminL, &zminG, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+
+	/* Now find the time that a particle with average speed needs to travel from zmin to the final
+	 * undulator point.										*/
+	mesh_.totalTime_ = ( mesh_.totalDist_ / gamma_ - zminG ) / ( beta_ * c0_ ) - dt_;
+
+	/* Multiply the obtained total time by a safety factor.						*/
+	mesh_.totalTime_ *= 1.01;
+      }
   }
 
   /******************************************************************************************************
@@ -1048,7 +1070,7 @@ namespace MITHRA
     
     if ( bunch_.bunchInit_[i].position_.size() == 0 )
 	  {
-        bunch_.bunchInit_[i].position_.push_back(*new FieldVector<Double>);
+        bunch_.bunchInit_[i].position_.push_back( FieldVector<Double>(0.0) );
 	    printmessage(std::string(__FILE__), __LINE__, std::string("No bunch position was given, using default " + stringify(bunch_.bunchInit_[i].position_[0]) ) );
 	  }      
 
@@ -1596,7 +1618,7 @@ namespace MITHRA
 
 		ubp.sz = exp( - pow( ub_.ku *  ubp.t0 , 2 ) / 2.0 );
 
-		if ( iter != undulator_.end() )
+		if ( iter+1 != undulator_.end() )
 		  {
 		    ubp.i  = iter - undulator_.begin() + 1;
 		    ubp.r0 = undulator_[ubp.i].rb_ - iter->rb_ - iter->length_ * iter->lu_;

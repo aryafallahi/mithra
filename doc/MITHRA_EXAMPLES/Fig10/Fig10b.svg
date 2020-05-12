@@ -9,13 +9,13 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    inkscape:version="1.0beta2 (2b71d25, 2019-12-03)"
    sodipodi:docname="Fig10b.svg"
-   id="svg1055"
+   id="svg1131"
    version="1.1"
-   height="467"
-   width="666"
+   height="400"
+   width="566"
    style="fill-opacity:1; color-rendering:auto; color-interpolation:auto; text-rendering:auto; stroke:black; stroke-linecap:square; stroke-miterlimit:10; shape-rendering:auto; stroke-opacity:1; fill:black; stroke-dasharray:none; font-weight:normal; stroke-width:1; font-family:'Dialog'; font-style:normal; stroke-linejoin:miter; font-size:12px; stroke-dashoffset:0; image-rendering:auto;">
   <metadata
-     id="metadata1059">
+     id="metadata1135">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -26,17 +26,17 @@
     </rdf:RDF>
   </metadata>
   <sodipodi:namedview
-     inkscape:current-layer="svg1055"
+     inkscape:current-layer="svg1131"
      inkscape:window-maximized="1"
-     inkscape:window-y="23"
+     inkscape:window-y="203"
      inkscape:window-x="0"
-     inkscape:cy="233.5"
-     inkscape:cx="333"
-     inkscape:zoom="1.4389722"
+     inkscape:cy="200"
+     inkscape:cx="283"
+     inkscape:zoom="1.590106"
      showgrid="false"
-     id="namedview1057"
-     inkscape:window-height="1107"
-     inkscape:window-width="2048"
+     id="namedview1133"
+     inkscape:window-height="855"
+     inkscape:window-width="1440"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0"
      guidetolerance="10"
@@ -55,7 +55,7 @@
          clipPathUnits="userSpaceOnUse"
          id="clipPath1">
         <path
-           d="M0 0 L666 0 L666 467 L0 467 L0 0 Z"
+           d="M0 0 L566 0 L566 400 L0 400 L0 0 Z"
            id="path834" />
       </clipPath>
       <font
@@ -77,567 +77,802 @@
            d="M13.2 34.9 Q13.2 37.5 13.25 40.65 Q13.3 43.8 13.75 46.95 Q14.2 50.1 15.05 53.1 Q15.9 56.1 17.55 58.35 Q19.2 60.6 21.7 62 Q24.2 63.4 27.8 63.4 Q31.4 63.4 33.9 62 Q36.4 60.6 38.05 58.35 Q39.7 56.1 40.55 53.1 Q41.4 50.1 41.85 46.95 Q42.3 43.8 42.35 40.65 Q42.4 37.5 42.4 34.9 Q42.4 30.9 42.15 25.95 Q41.9 21 40.55 16.65 Q39.2 12.3 36.2 9.3 Q33.2 6.3 27.8 6.3 Q22.4 6.3 19.4 9.3 Q16.4 12.3 15.05 16.65 Q13.7 21 13.45 25.95 Q13.2 30.9 13.2 34.9 ZM4.2 34.8 Q4.2 30.9 4.4 26.7 Q4.6 22.5 5.4 18.5 Q6.2 14.5 7.7 10.95 Q9.2 7.4 11.8 4.7 Q14.4 2 18.35 0.45 Q22.3 -1.1 27.8 -1.1 Q33.4 -1.1 37.3 0.45 Q41.2 2 43.8 4.7 Q46.4 7.4 47.9 10.95 Q49.4 14.5 50.2 18.5 Q51 22.5 51.2 26.7 Q51.4 30.9 51.4 34.8 Q51.4 38.7 51.2 42.9 Q51 47.1 50.2 51.1 Q49.4 55.1 47.9 58.7 Q46.4 62.3 43.8 65 Q41.2 67.7 37.25 69.3 Q33.3 70.9 27.8 70.9 Q22.3 70.9 18.35 69.3 Q14.4 67.7 11.8 65 Q9.2 62.3 7.7 58.7 Q6.2 55.1 5.4 51.1 Q4.6 47.1 4.4 42.9 Q4.2 38.7 4.2 34.8 Z"
            id="glyph841" />
         <glyph
-           unicode="2"
-           horiz-adv-x="55.6"
-           d="M4.4 45.8 L12.9 45.8 Q12.8 49 13.55 52.15 Q14.3 55.3 16 57.8 Q17.7 60.3 20.35 61.85 Q23 63.4 26.7 63.4 Q29.5 63.4 32 62.5 Q34.5 61.6 36.35 59.9 Q38.2 58.2 39.3 55.85 Q40.4 53.5 40.4 50.6 Q40.4 46.9 39.25 44.1 Q38.1 41.3 35.85 38.9 Q33.6 36.5 30.2 34.15 Q26.8 31.8 22.3 29 Q18.6 26.8 15.2 24.3 Q11.8 21.8 9.1 18.5 Q6.4 15.2 4.65 10.75 Q2.9 6.3 2.4 0 L48.7 0 L48.7 7.5 L12.3 7.5 Q12.9 10.8 14.85 13.35 Q16.8 15.9 19.55 18.1 Q22.3 20.3 25.6 22.25 Q28.9 24.2 32.2 26.2 Q35.5 28.3 38.6 30.6 Q41.7 32.9 44.1 35.75 Q46.5 38.6 47.95 42.2 Q49.4 45.8 49.4 50.5 Q49.4 55.5 47.65 59.3 Q45.9 63.1 42.9 65.65 Q39.9 68.2 35.85 69.55 Q31.8 70.9 27.2 70.9 Q21.6 70.9 17.2 69 Q12.8 67.1 9.85 63.75 Q6.9 60.4 5.5 55.8 Q4.1 51.2 4.4 45.8 Z"
-           id="glyph843" />
-        <glyph
-           unicode="4"
-           horiz-adv-x="55.6"
-           d="M33.9 24.1 L10.1 24.1 L33.7 58.8 L33.9 58.8 ZM41.9 24.1 L41.9 70.9 L35.1 70.9 L2.8 24.8 L2.8 16.6 L33.9 16.6 L33.9 0 L41.9 0 L41.9 16.6 L51.5 16.6 L51.5 24.1 Z"
-           id="glyph845" />
-        <glyph
-           unicode="6"
-           horiz-adv-x="55.6"
-           d="M41.4 52.8 L49.9 52.8 Q49.1 61.6 43.9 66.25 Q38.7 70.9 29.9 70.9 Q22.3 70.9 17.3 67.7 Q12.3 64.5 9.3 59.2 Q6.3 53.9 5.05 47.05 Q3.8 40.2 3.8 32.9 Q3.8 27.3 4.65 21.3 Q5.5 15.3 8.1 10.3 Q10.7 5.3 15.5 2.1 Q20.3 -1.1 28.2 -1.1 Q34.9 -1.1 39.45 1.15 Q44 3.4 46.75 6.85 Q49.5 10.3 50.7 14.5 Q51.9 18.7 51.9 22.6 Q51.9 27.5 50.4 31.7 Q48.9 35.9 46.15 39 Q43.4 42.1 39.35 43.85 Q35.3 45.6 30.2 45.6 Q24.4 45.6 19.95 43.4 Q15.5 41.2 12.5 36.3 L12.3 36.5 Q12.4 40.6 13.1 45.3 Q13.8 50 15.65 54.05 Q17.5 58.1 20.8 60.75 Q24.1 63.4 29.5 63.4 Q34.6 63.4 37.7 60.5 Q40.8 57.6 41.4 52.8 ZM28.6 38.1 Q32.2 38.1 34.9 36.8 Q37.6 35.5 39.4 33.35 Q41.2 31.2 42.05 28.25 Q42.9 25.3 42.9 22 Q42.9 18.9 41.95 16.05 Q41 13.2 39.2 11 Q37.4 8.8 34.75 7.55 Q32.1 6.3 28.6 6.3 Q25.1 6.3 22.35 7.55 Q19.6 8.8 17.75 10.9 Q15.9 13 14.9 15.9 Q13.9 18.8 13.9 22.1 Q13.9 25.4 14.85 28.35 Q15.8 31.3 17.7 33.45 Q19.6 35.6 22.3 36.85 Q25 38.1 28.6 38.1 Z"
-           id="glyph847" />
-        <glyph
-           unicode="8"
-           horiz-adv-x="55.6"
-           d="M15.5 52.5 Q15.5 55.2 16.5 57.2 Q17.5 59.2 19.15 60.6 Q20.8 62 23.1 62.7 Q25.4 63.4 27.9 63.4 Q33.1 63.4 36.45 60.65 Q39.8 57.9 39.8 52.5 Q39.8 47.1 36.5 44.1 Q33.2 41.1 28.1 41.1 Q25.5 41.1 23.2 41.8 Q20.9 42.5 19.2 43.9 Q17.5 45.3 16.5 47.45 Q15.5 49.6 15.5 52.5 ZM6.5 52.8 Q6.5 48 9.2 43.95 Q11.9 39.9 16.4 38.1 Q10.4 36 7.2 31.35 Q4 26.7 4 20.4 Q4 15 5.85 10.95 Q7.7 6.9 10.95 4.2 Q14.2 1.5 18.6 0.2 Q23 -1.1 28.1 -1.1 Q33 -1.1 37.3 0.3 Q41.6 1.7 44.75 4.45 Q47.9 7.2 49.75 11.2 Q51.6 15.2 51.6 20.4 Q51.6 27 48.5 31.55 Q45.4 36.1 39 38.1 Q43.5 40.1 46.15 44.05 Q48.8 48 48.8 52.8 Q48.8 56.2 47.6 59.45 Q46.4 62.7 43.85 65.25 Q41.3 67.8 37.2 69.35 Q33.1 70.9 27.3 70.9 Q23.2 70.9 19.45 69.7 Q15.7 68.5 12.8 66.2 Q9.9 63.9 8.2 60.55 Q6.5 57.2 6.5 52.8 ZM13 20 Q13 23.1 14.15 25.6 Q15.3 28.1 17.35 29.9 Q19.4 31.7 22.15 32.65 Q24.9 33.6 28 33.6 Q31 33.6 33.65 32.55 Q36.3 31.5 38.3 29.7 Q40.3 27.9 41.45 25.45 Q42.6 23 42.6 20.1 Q42.6 17.1 41.55 14.6 Q40.5 12.1 38.55 10.25 Q36.6 8.4 33.95 7.35 Q31.3 6.3 28.1 6.3 Q21.5 6.3 17.25 9.95 Q13 13.6 13 20 Z"
-           id="glyph849" />
-        <glyph
-           unicode=")"
-           horiz-adv-x="25.9"
-           d="M-0.9 -19.7 L5.5 -19.7 Q13.3 -9.4 17.25 2.55 Q21.2 14.5 21.2 26.3 Q21.2 32.9 20.1 38.9 Q19 44.9 16.95 50.65 Q14.9 56.4 12 61.95 Q9.1 67.5 5.5 73.1 L-0.9 73.1 Q6.1 61.6 9.15 50.25 Q12.2 38.9 12.2 26.3 Q12.2 14.1 9.2 2.85 Q6.2 -8.4 -0.9 -19.7 Z"
-           id="glyph851" />
-        <glyph
-           unicode="m"
-           horiz-adv-x="85.3"
-           d="M6.4 51.7 L6.4 0 L14.9 0 L14.9 32.2 Q14.9 33.7 15.65 35.95 Q16.4 38.2 18.05 40.3 Q19.7 42.4 22.35 43.9 Q25 45.4 28.7 45.4 Q31.6 45.4 33.45 44.55 Q35.3 43.7 36.4 42.15 Q37.5 40.6 37.95 38.5 Q38.4 36.4 38.4 33.9 L38.4 0 L46.9 0 L46.9 32.2 Q46.9 38.2 50.5 41.8 Q54.1 45.4 60.4 45.4 Q63.5 45.4 65.45 44.5 Q67.4 43.6 68.5 42.05 Q69.6 40.5 70 38.4 Q70.4 36.3 70.4 33.9 L70.4 0 L78.9 0 L78.9 37.9 Q78.9 41.9 77.65 44.75 Q76.4 47.6 74.15 49.4 Q71.9 51.2 68.75 52.05 Q65.6 52.9 61.7 52.9 Q56.6 52.9 52.35 50.6 Q48.1 48.3 45.5 44.1 Q43.9 48.9 40 50.9 Q36.1 52.9 31.3 52.9 Q20.4 52.9 14.6 44.1 L14.4 44.1 L14.4 51.7 Z"
-           id="glyph853" />
-        <glyph
-           unicode="("
-           horiz-adv-x="25.9"
-           d="M20.4 -19.7 L26.9 -19.7 Q19.8 -8.2 16.75 3.1 Q13.7 14.4 13.7 27 Q13.7 39.3 16.7 50.5 Q19.7 61.7 26.9 73.1 L20.4 73.1 Q12.6 62.8 8.65 50.8 Q4.7 38.8 4.7 27 Q4.7 20.4 5.8 14.4 Q6.9 8.4 8.95 2.7 Q11 -3 13.9 -8.55 Q16.8 -14.1 20.4 -19.7 Z"
-           id="glyph855" />
-        <glyph
-           unicode=" "
-           horiz-adv-x="27.8"
-           d=""
-           id="glyph857" />
-        <glyph
-           unicode="z"
-           horiz-adv-x="48.0"
-           d="M2.2 6.5 L2.2 0 L45.8 0 L45.8 7.5 L12.8 7.5 L44.4 45.9 L44.4 51.7 L4.2 51.7 L4.2 44.2 L33.4 44.2 Z"
-           id="glyph859" />
-        <glyph
            unicode="1"
            horiz-adv-x="55.6"
            d="M35.6 0 L35.6 70.9 L29.1 70.9 Q28.4 66.9 26.5 64.3 Q24.6 61.7 21.85 60.2 Q19.1 58.7 15.7 58.15 Q12.3 57.6 8.7 57.6 L8.7 50.8 L27.1 50.8 L27.1 0 Z"
-           id="glyph861" />
+           id="glyph843" />
         <glyph
-           unicode="."
-           horiz-adv-x="27.8"
-           d="M8.3 11.1 L8.3 0 L19.4 0 L19.4 11.1 Z"
-           id="glyph863" />
+           unicode="2"
+           horiz-adv-x="55.6"
+           d="M4.4 45.8 L12.9 45.8 Q12.8 49 13.55 52.15 Q14.3 55.3 16 57.8 Q17.7 60.3 20.35 61.85 Q23 63.4 26.7 63.4 Q29.5 63.4 32 62.5 Q34.5 61.6 36.35 59.9 Q38.2 58.2 39.3 55.85 Q40.4 53.5 40.4 50.6 Q40.4 46.9 39.25 44.1 Q38.1 41.3 35.85 38.9 Q33.6 36.5 30.2 34.15 Q26.8 31.8 22.3 29 Q18.6 26.8 15.2 24.3 Q11.8 21.8 9.1 18.5 Q6.4 15.2 4.65 10.75 Q2.9 6.3 2.4 0 L48.7 0 L48.7 7.5 L12.3 7.5 Q12.9 10.8 14.85 13.35 Q16.8 15.9 19.55 18.1 Q22.3 20.3 25.6 22.25 Q28.9 24.2 32.2 26.2 Q35.5 28.3 38.6 30.6 Q41.7 32.9 44.1 35.75 Q46.5 38.6 47.95 42.2 Q49.4 45.8 49.4 50.5 Q49.4 55.5 47.65 59.3 Q45.9 63.1 42.9 65.65 Q39.9 68.2 35.85 69.55 Q31.8 70.9 27.2 70.9 Q21.6 70.9 17.2 69 Q12.8 67.1 9.85 63.75 Q6.9 60.4 5.5 55.8 Q4.1 51.2 4.4 45.8 Z"
+           id="glyph845" />
         <glyph
            unicode="3"
            horiz-adv-x="55.6"
            d="M21.8 40.5 L21.8 33.3 Q24.2 33.6 26.9 33.6 Q30.1 33.6 32.85 32.75 Q35.6 31.9 37.6 30.15 Q39.6 28.4 40.8 25.85 Q42 23.3 42 20 Q42 16.8 40.75 14.25 Q39.5 11.7 37.4 9.95 Q35.3 8.2 32.5 7.25 Q29.7 6.3 26.6 6.3 Q19.3 6.3 15.5 10.65 Q11.7 15 11.5 21.9 L3 21.9 Q2.9 16.4 4.55 12.1 Q6.2 7.8 9.3 4.85 Q12.4 1.9 16.8 0.4 Q21.2 -1.1 26.6 -1.1 Q31.6 -1.1 36.05 0.25 Q40.5 1.6 43.8 4.3 Q47.1 7 49.05 11.05 Q51 15.1 51 20.4 Q51 26.8 47.85 31.5 Q44.7 36.2 38.2 37.6 L38.2 37.8 Q42.4 39.7 45.2 43.4 Q48 47.1 48 51.9 Q48 56.8 46.35 60.4 Q44.7 64 41.8 66.3 Q38.9 68.6 34.95 69.75 Q31 70.9 26.4 70.9 Q21.1 70.9 17.05 69.2 Q13 67.5 10.3 64.5 Q7.6 61.5 6.15 57.3 Q4.7 53.1 4.5 48 L13 48 Q13 51.1 13.8 53.9 Q14.6 56.7 16.25 58.8 Q17.9 60.9 20.45 62.15 Q23 63.4 26.4 63.4 Q31.8 63.4 35.4 60.55 Q39 57.7 39 52 Q39 49.2 37.9 47 Q36.8 44.8 34.95 43.35 Q33.1 41.9 30.65 41.15 Q28.2 40.4 25.5 40.4 L23.7 40.4 Q23.2 40.4 22.7 40.4 Q22.3 40.4 21.8 40.5 Z"
-           id="glyph865" />
+           id="glyph847" />
+        <glyph
+           unicode="4"
+           horiz-adv-x="55.6"
+           d="M33.9 24.1 L10.1 24.1 L33.7 58.8 L33.9 58.8 ZM41.9 24.1 L41.9 70.9 L35.1 70.9 L2.8 24.8 L2.8 16.6 L33.9 16.6 L33.9 0 L41.9 0 L41.9 16.6 L51.5 16.6 L51.5 24.1 Z"
+           id="glyph849" />
         <glyph
            unicode="5"
            horiz-adv-x="55.6"
            d="M47 62.2 L47 69.7 L12 69.7 L5.4 32.9 L12.7 32.5 Q15.2 35.5 18.45 37.35 Q21.7 39.2 25.9 39.2 Q29.5 39.2 32.45 38 Q35.4 36.8 37.5 34.65 Q39.6 32.5 40.75 29.55 Q41.9 26.6 41.9 23.1 Q41.9 18.9 40.7 15.75 Q39.5 12.6 37.45 10.5 Q35.4 8.4 32.65 7.35 Q29.9 6.3 26.9 6.3 Q23.7 6.3 21.05 7.25 Q18.4 8.2 16.45 9.95 Q14.5 11.7 13.35 14.05 Q12.2 16.4 12 19.1 L3.5 19.1 Q3.6 14.3 5.4 10.5 Q7.2 6.7 10.3 4.15 Q13.4 1.6 17.45 0.25 Q21.5 -1.1 26.1 -1.1 Q32.3 -1.1 36.95 0.85 Q41.6 2.8 44.7 6.1 Q47.8 9.4 49.35 13.65 Q50.9 17.9 50.9 22.4 Q50.9 28.5 49.1 33.05 Q47.3 37.6 44.2 40.65 Q41.1 43.7 36.9 45.2 Q32.7 46.7 28 46.7 Q24.4 46.7 20.75 45.45 Q17.1 44.2 14.8 41.6 L14.6 41.8 L18.4 62.2 Z"
+           id="glyph851" />
+        <glyph
+           unicode="6"
+           horiz-adv-x="55.6"
+           d="M41.4 52.8 L49.9 52.8 Q49.1 61.6 43.9 66.25 Q38.7 70.9 29.9 70.9 Q22.3 70.9 17.3 67.7 Q12.3 64.5 9.3 59.2 Q6.3 53.9 5.05 47.05 Q3.8 40.2 3.8 32.9 Q3.8 27.3 4.65 21.3 Q5.5 15.3 8.1 10.3 Q10.7 5.3 15.5 2.1 Q20.3 -1.1 28.2 -1.1 Q34.9 -1.1 39.45 1.15 Q44 3.4 46.75 6.85 Q49.5 10.3 50.7 14.5 Q51.9 18.7 51.9 22.6 Q51.9 27.5 50.4 31.7 Q48.9 35.9 46.15 39 Q43.4 42.1 39.35 43.85 Q35.3 45.6 30.2 45.6 Q24.4 45.6 19.95 43.4 Q15.5 41.2 12.5 36.3 L12.3 36.5 Q12.4 40.6 13.1 45.3 Q13.8 50 15.65 54.05 Q17.5 58.1 20.8 60.75 Q24.1 63.4 29.5 63.4 Q34.6 63.4 37.7 60.5 Q40.8 57.6 41.4 52.8 ZM28.6 38.1 Q32.2 38.1 34.9 36.8 Q37.6 35.5 39.4 33.35 Q41.2 31.2 42.05 28.25 Q42.9 25.3 42.9 22 Q42.9 18.9 41.95 16.05 Q41 13.2 39.2 11 Q37.4 8.8 34.75 7.55 Q32.1 6.3 28.6 6.3 Q25.1 6.3 22.35 7.55 Q19.6 8.8 17.75 10.9 Q15.9 13 14.9 15.9 Q13.9 18.8 13.9 22.1 Q13.9 25.4 14.85 28.35 Q15.8 31.3 17.7 33.45 Q19.6 35.6 22.3 36.85 Q25 38.1 28.6 38.1 Z"
+           id="glyph853" />
+        <glyph
+           unicode="7"
+           horiz-adv-x="55.6"
+           d="M50.9 62.4 L50.9 69.7 L5 69.7 L5 61.7 L42.2 61.7 Q36.6 55.8 31.75 48.8 Q26.9 41.8 23.2 33.95 Q19.5 26.1 17.15 17.55 Q14.8 9 14.2 0 L23.7 0 Q24.2 8.3 26.5 17.1 Q28.8 25.9 32.45 34.2 Q36.1 42.5 40.8 49.8 Q45.5 57.1 50.9 62.4 Z"
+           id="glyph855" />
+        <glyph
+           unicode="8"
+           horiz-adv-x="55.6"
+           d="M15.5 52.5 Q15.5 55.2 16.5 57.2 Q17.5 59.2 19.15 60.6 Q20.8 62 23.1 62.7 Q25.4 63.4 27.9 63.4 Q33.1 63.4 36.45 60.65 Q39.8 57.9 39.8 52.5 Q39.8 47.1 36.5 44.1 Q33.2 41.1 28.1 41.1 Q25.5 41.1 23.2 41.8 Q20.9 42.5 19.2 43.9 Q17.5 45.3 16.5 47.45 Q15.5 49.6 15.5 52.5 ZM6.5 52.8 Q6.5 48 9.2 43.95 Q11.9 39.9 16.4 38.1 Q10.4 36 7.2 31.35 Q4 26.7 4 20.4 Q4 15 5.85 10.95 Q7.7 6.9 10.95 4.2 Q14.2 1.5 18.6 0.2 Q23 -1.1 28.1 -1.1 Q33 -1.1 37.3 0.3 Q41.6 1.7 44.75 4.45 Q47.9 7.2 49.75 11.2 Q51.6 15.2 51.6 20.4 Q51.6 27 48.5 31.55 Q45.4 36.1 39 38.1 Q43.5 40.1 46.15 44.05 Q48.8 48 48.8 52.8 Q48.8 56.2 47.6 59.45 Q46.4 62.7 43.85 65.25 Q41.3 67.8 37.2 69.35 Q33.1 70.9 27.3 70.9 Q23.2 70.9 19.45 69.7 Q15.7 68.5 12.8 66.2 Q9.9 63.9 8.2 60.55 Q6.5 57.2 6.5 52.8 ZM13 20 Q13 23.1 14.15 25.6 Q15.3 28.1 17.35 29.9 Q19.4 31.7 22.15 32.65 Q24.9 33.6 28 33.6 Q31 33.6 33.65 32.55 Q36.3 31.5 38.3 29.7 Q40.3 27.9 41.45 25.45 Q42.6 23 42.6 20.1 Q42.6 17.1 41.55 14.6 Q40.5 12.1 38.55 10.25 Q36.6 8.4 33.95 7.35 Q31.3 6.3 28.1 6.3 Q21.5 6.3 17.25 9.95 Q13 13.6 13 20 Z"
+           id="glyph857" />
+        <glyph
+           unicode="9"
+           horiz-adv-x="55.6"
+           d="M13.4 17.1 L4.9 17.1 Q5.7 7.9 11.6 3.4 Q17.5 -1.1 26.4 -1.1 Q39.3 -1.1 45.15 8.75 Q51 18.6 51 37 Q51 47.1 49.05 53.65 Q47.1 60.2 43.8 64 Q40.5 67.8 36.1 69.35 Q31.7 70.9 26.7 70.9 Q21.6 70.9 17.3 69.2 Q13 67.5 9.9 64.45 Q6.8 61.4 5.1 57.15 Q3.4 52.9 3.4 47.8 Q3.4 42.6 4.85 38.2 Q6.3 33.8 9.15 30.7 Q12 27.6 16.2 25.85 Q20.4 24.1 25.8 24.1 Q31 24.1 35.4 26.75 Q39.8 29.4 42.2 33.9 L42.4 33.7 Q42 19.8 38.1 13.05 Q34.2 6.3 26.4 6.3 Q21.3 6.3 17.6 9.1 Q13.9 11.9 13.4 17.1 ZM40.9 47.2 Q40.9 44.1 39.9 41.25 Q38.9 38.4 37 36.25 Q35.1 34.1 32.4 32.85 Q29.7 31.6 26.4 31.6 Q23.3 31.6 20.75 32.85 Q18.2 34.1 16.35 36.2 Q14.5 38.3 13.45 41 Q12.4 43.7 12.4 46.6 Q12.4 49.9 13.15 52.9 Q13.9 55.9 15.55 58.25 Q17.2 60.6 19.85 62 Q22.5 63.4 26.3 63.4 Q29.9 63.4 32.6 62.1 Q35.3 60.8 37.15 58.55 Q39 56.3 39.95 53.4 Q40.9 50.5 40.9 47.2 Z"
+           id="glyph859" />
+        <glyph
+           unicode=")"
+           horiz-adv-x="25.9"
+           d="M-0.9 -19.7 L5.5 -19.7 Q13.3 -9.4 17.25 2.55 Q21.2 14.5 21.2 26.3 Q21.2 32.9 20.1 38.9 Q19 44.9 16.95 50.65 Q14.9 56.4 12 61.95 Q9.1 67.5 5.5 73.1 L-0.9 73.1 Q6.1 61.6 9.15 50.25 Q12.2 38.9 12.2 26.3 Q12.2 14.1 9.2 2.85 Q6.2 -8.4 -0.9 -19.7 Z"
+           id="glyph861" />
+        <glyph
+           unicode="m"
+           horiz-adv-x="85.3"
+           d="M6.4 51.7 L6.4 0 L14.9 0 L14.9 32.2 Q14.9 33.7 15.65 35.95 Q16.4 38.2 18.05 40.3 Q19.7 42.4 22.35 43.9 Q25 45.4 28.7 45.4 Q31.6 45.4 33.45 44.55 Q35.3 43.7 36.4 42.15 Q37.5 40.6 37.95 38.5 Q38.4 36.4 38.4 33.9 L38.4 0 L46.9 0 L46.9 32.2 Q46.9 38.2 50.5 41.8 Q54.1 45.4 60.4 45.4 Q63.5 45.4 65.45 44.5 Q67.4 43.6 68.5 42.05 Q69.6 40.5 70 38.4 Q70.4 36.3 70.4 33.9 L70.4 0 L78.9 0 L78.9 37.9 Q78.9 41.9 77.65 44.75 Q76.4 47.6 74.15 49.4 Q71.9 51.2 68.75 52.05 Q65.6 52.9 61.7 52.9 Q56.6 52.9 52.35 50.6 Q48.1 48.3 45.5 44.1 Q43.9 48.9 40 50.9 Q36.1 52.9 31.3 52.9 Q20.4 52.9 14.6 44.1 L14.4 44.1 L14.4 51.7 Z"
+           id="glyph863" />
+        <glyph
+           unicode="("
+           horiz-adv-x="25.9"
+           d="M20.4 -19.7 L26.9 -19.7 Q19.8 -8.2 16.75 3.1 Q13.7 14.4 13.7 27 Q13.7 39.3 16.7 50.5 Q19.7 61.7 26.9 73.1 L20.4 73.1 Q12.6 62.8 8.65 50.8 Q4.7 38.8 4.7 27 Q4.7 20.4 5.8 14.4 Q6.9 8.4 8.95 2.7 Q11 -3 13.9 -8.55 Q16.8 -14.1 20.4 -19.7 Z"
+           id="glyph865" />
+        <glyph
+           unicode=" "
+           horiz-adv-x="27.8"
+           d=""
            id="glyph867" />
+        <glyph
+           unicode="z"
+           horiz-adv-x="48.0"
+           d="M2.2 6.5 L2.2 0 L45.8 0 L45.8 7.5 L12.8 7.5 L44.4 45.9 L44.4 51.7 L4.2 51.7 L4.2 44.2 L33.4 44.2 Z"
+           id="glyph869" />
+        <glyph
+           unicode="."
+           horiz-adv-x="27.8"
+           d="M8.3 11.1 L8.3 0 L19.4 0 L19.4 11.1 Z"
+           id="glyph871" />
         <glyph
            unicode="'"
            horiz-adv-x="27.8"
            d="M10.5 71.4 L10.5 45.6 L17.3 45.6 L17.3 71.4 Z"
-           id="glyph869" />
+           id="glyph873" />
         <glyph
            unicode="x"
            horiz-adv-x="51.8"
            d="M20.3 27.2 L0.9 0 L11.2 0 L25.6 21.4 L40 0 L50.9 0 L30.9 27.9 L48.7 51.7 L38.5 51.7 L25.6 33.6 L13.2 51.7 L2.3 51.7 Z"
-           id="glyph871" />
+           id="glyph875" />
         <glyph
            unicode="s"
            horiz-adv-x="50.0"
            d="M11.6 16.3 L3.1 16.3 Q3.3 11.5 5.1 8.15 Q6.9 4.8 9.9 2.75 Q12.9 0.7 16.8 -0.2 Q20.7 -1.1 25 -1.1 Q28.9 -1.1 32.85 -0.35 Q36.8 0.4 39.95 2.3 Q43.1 4.2 45.05 7.3 Q47 10.4 47 15.1 Q47 18.8 45.55 21.3 Q44.1 23.8 41.75 25.45 Q39.4 27.1 36.35 28.1 Q33.3 29.1 30.1 29.8 Q27.1 30.5 24.1 31.15 Q21.1 31.8 18.7 32.75 Q16.3 33.7 14.75 35.15 Q13.2 36.6 13.2 38.8 Q13.2 40.8 14.2 42.05 Q15.2 43.3 16.8 44.05 Q18.4 44.8 20.35 45.1 Q22.3 45.4 24.2 45.4 Q26.3 45.4 28.35 44.95 Q30.4 44.5 32.1 43.5 Q33.8 42.5 34.9 40.85 Q36 39.2 36.2 36.7 L44.7 36.7 Q44.4 41.4 42.7 44.55 Q41 47.7 38.15 49.55 Q35.3 51.4 31.6 52.15 Q27.9 52.9 23.5 52.9 Q20.1 52.9 16.65 52.05 Q13.2 51.2 10.45 49.45 Q7.7 47.7 5.95 44.9 Q4.2 42.1 4.2 38.2 Q4.2 33.2 6.7 30.4 Q9.2 27.6 12.95 26.05 Q16.7 24.5 21.1 23.65 Q25.5 22.8 29.25 21.75 Q33 20.7 35.5 19 Q38 17.3 38 14 Q38 11.6 36.8 10.05 Q35.6 8.5 33.75 7.7 Q31.9 6.9 29.7 6.6 Q27.5 6.3 25.5 6.3 Q22.9 6.3 20.45 6.8 Q18 7.3 16.05 8.45 Q14.1 9.6 12.9 11.55 Q11.7 13.5 11.6 16.3 Z"
-           id="glyph873" />
+           id="glyph877" />
         <glyph
            unicode="r"
            horiz-adv-x="33.3"
            d="M6.1 51.7 L6.1 0 L14.6 0 L14.6 23 Q14.6 28 15.6 31.85 Q16.6 35.7 18.8 38.4 Q21 41.1 24.6 42.5 Q28.2 43.9 33.3 43.9 L33.3 52.9 Q26.4 53.1 21.9 50.1 Q17.4 47.1 14.3 40.8 L14.1 40.8 L14.1 51.7 Z"
-           id="glyph875" />
+           id="glyph879" />
         <glyph
            unicode="d"
            horiz-adv-x="59.3"
            d="M12.6 25.4 Q12.6 29.2 13.4 32.8 Q14.2 36.4 16 39.2 Q17.8 42 20.8 43.7 Q23.8 45.4 28.1 45.4 Q32.5 45.4 35.6 43.75 Q38.7 42.1 40.65 39.4 Q42.6 36.7 43.5 33.15 Q44.4 29.6 44.4 25.8 Q44.4 22.2 43.55 18.7 Q42.7 15.2 40.8 12.45 Q38.9 9.7 35.9 8 Q32.9 6.3 28.6 6.3 Q24.5 6.3 21.45 7.9 Q18.4 9.5 16.45 12.2 Q14.5 14.9 13.55 18.35 Q12.6 21.8 12.6 25.4 ZM52.6 0 L52.6 71.4 L44.1 71.4 L44.1 44.8 L43.9 44.8 Q42.5 47.1 40.45 48.65 Q38.4 50.2 36.1 51.15 Q33.8 52.1 31.5 52.5 Q29.2 52.9 27.2 52.9 Q21.3 52.9 16.85 50.75 Q12.4 48.6 9.45 44.95 Q6.5 41.3 5.05 36.4 Q3.6 31.5 3.6 26 Q3.6 20.5 5.1 15.6 Q6.6 10.7 9.55 7 Q12.5 3.3 16.95 1.1 Q21.4 -1.1 27.4 -1.1 Q32.8 -1.1 37.3 0.8 Q41.8 2.7 43.9 7 L44.1 7 L44.1 0 Z"
-           id="glyph877" />
+           id="glyph881" />
         <glyph
            unicode="a"
            horiz-adv-x="53.7"
            d="M52.2 0.2 Q50 -1.1 46.1 -1.1 Q42.8 -1.1 40.85 0.75 Q38.9 2.6 38.9 6.8 Q35.4 2.6 30.75 0.75 Q26.1 -1.1 20.7 -1.1 Q17.2 -1.1 14.05 -0.3 Q10.9 0.5 8.6 2.2 Q6.3 3.9 4.95 6.65 Q3.6 9.4 3.6 13.3 Q3.6 17.7 5.1 20.5 Q6.6 23.3 9.05 25.05 Q11.5 26.8 14.65 27.7 Q17.8 28.6 21.1 29.2 Q24.6 29.9 27.75 30.25 Q30.9 30.6 33.3 31.25 Q35.7 31.9 37.1 33.15 Q38.5 34.4 38.5 36.8 Q38.5 39.6 37.45 41.3 Q36.4 43 34.75 43.9 Q33.1 44.8 31.05 45.1 Q29 45.4 27 45.4 Q21.6 45.4 18 43.35 Q14.4 41.3 14.1 35.6 L5.6 35.6 Q5.8 40.4 7.6 43.7 Q9.4 47 12.4 49.05 Q15.4 51.1 19.25 52 Q23.1 52.9 27.5 52.9 Q31 52.9 34.45 52.4 Q37.9 51.9 40.7 50.35 Q43.5 48.8 45.2 46 Q46.9 43.2 46.9 38.7 L46.9 12.1 Q46.9 9.1 47.25 7.7 Q47.6 6.3 49.6 6.3 Q50.7 6.3 52.2 6.8 ZM38.4 26.7 Q36.8 25.5 34.2 24.95 Q31.6 24.4 28.75 24.05 Q25.9 23.7 23 23.25 Q20.1 22.8 17.8 21.8 Q15.5 20.8 14.05 18.95 Q12.6 17.1 12.6 13.9 Q12.6 11.8 13.45 10.35 Q14.3 8.9 15.65 8 Q17 7.1 18.8 6.7 Q20.6 6.3 22.6 6.3 Q26.8 6.3 29.8 7.45 Q32.8 8.6 34.7 10.35 Q36.6 12.1 37.5 14.15 Q38.4 16.2 38.4 18 Z"
-           id="glyph879" />
+           id="glyph883" />
         <glyph
            unicode="A"
            horiz-adv-x="64.8"
            d="M20.1 29.5 L32.2 62.8 L32.4 62.8 L44.3 29.5 ZM27.2 71.4 L-0.6 0 L9.1 0 L17.1 21.5 L47.3 21.5 L55.1 0 L65.6 0 L37.7 71.4 Z"
-           id="glyph881" />
+           id="glyph885" />
         <glyph
            unicode="R"
            horiz-adv-x="68.5"
            d="M7.8 71.4 L7.8 0 L17.3 0 L17.3 30.5 L40.5 30.5 Q44 30.5 46.1 29.45 Q48.2 28.4 49.5 26.65 Q50.8 24.9 51.4 22.55 Q52 20.2 52.4 17.6 Q52.9 15 53 12.3 Q53.1 9.6 53.2 7.25 Q53.3 4.9 53.65 3 Q54 1.1 55 0 L65.6 0 Q64.1 1.8 63.35 4.15 Q62.6 6.5 62.2 9.1 Q61.8 11.7 61.7 14.4 Q61.6 17.1 61.4 19.7 Q61.1 22.3 60.55 24.7 Q60 27.1 58.85 29.05 Q57.7 31 55.75 32.4 Q53.8 33.8 50.7 34.4 L50.7 34.6 Q57.2 36.4 60.15 41.3 Q63.1 46.2 63.1 52.7 Q63.1 61.4 57.35 66.4 Q51.6 71.4 41.4 71.4 ZM37.1 38.5 L17.3 38.5 L17.3 63.4 L40.9 63.4 Q47.6 63.4 50.6 60 Q53.6 56.6 53.6 51.2 Q53.6 47.3 52.25 44.85 Q50.9 42.4 48.65 40.95 Q46.4 39.5 43.4 39 Q40.4 38.5 37.1 38.5 Z"
-           id="glyph883" />
+           id="glyph887" />
         <glyph
            unicode="H"
            horiz-adv-x="72.2"
            d="M7.8 71.4 L7.8 0 L17.3 0 L17.3 32.7 L54.9 32.7 L54.9 0 L64.4 0 L64.4 71.4 L54.9 71.4 L54.9 40.7 L17.3 40.7 L17.3 71.4 Z"
-           id="glyph885" />
+           id="glyph889" />
         <glyph
            unicode="T"
            horiz-adv-x="57.4"
            d="M24 63.4 L24 0 L33.5 0 L33.5 63.4 L57.3 63.4 L57.3 71.4 L0.2 71.4 L0.2 63.4 Z"
-           id="glyph887" />
+           id="glyph891" />
         <glyph
            unicode="I"
            horiz-adv-x="25.9"
            d="M8.2 71.4 L8.2 0 L17.7 0 L17.7 71.4 Z"
-           id="glyph889" />
+           id="glyph893" />
         <glyph
            unicode="M"
            horiz-adv-x="87.1"
            d="M8 71.4 L8 0 L17 0 L17 59.4 L17.2 59.4 L39.5 0 L47.6 0 L69.9 59.4 L70.1 59.4 L70.1 0 L79.1 0 L79.1 71.4 L66.1 71.4 L43.5 11.4 L21 71.4 Z"
-           id="glyph891" />
+           id="glyph895" />
         <glyph
            unicode="S"
            horiz-adv-x="64.8"
            d="M49.1 50.5 L58.1 50.5 Q57.9 56.4 55.85 60.65 Q53.8 64.9 50.25 67.7 Q46.7 70.5 42 71.8 Q37.3 73.1 31.8 73.1 Q26.9 73.1 22.25 71.85 Q17.6 70.6 13.95 68.05 Q10.3 65.5 8.1 61.55 Q5.9 57.6 5.9 52.2 Q5.9 47.3 7.85 44.05 Q9.8 40.8 13.05 38.75 Q16.3 36.7 20.4 35.45 Q24.5 34.2 28.75 33.25 Q33 32.3 37.1 31.4 Q41.2 30.5 44.45 29.05 Q47.7 27.6 49.65 25.3 Q51.6 23 51.6 19.3 Q51.6 15.4 50 12.9 Q48.4 10.4 45.8 8.95 Q43.2 7.5 39.95 6.9 Q36.7 6.3 33.5 6.3 Q29.5 6.3 25.7 7.3 Q21.9 8.3 19.05 10.4 Q16.2 12.5 14.45 15.75 Q12.7 19 12.7 23.5 L3.7 23.5 Q3.7 17 6.05 12.25 Q8.4 7.5 12.45 4.45 Q16.5 1.4 21.85 -0.1 Q27.2 -1.6 33.2 -1.6 Q38.1 -1.6 43.05 -0.45 Q48 0.7 52 3.25 Q56 5.8 58.55 9.85 Q61.1 13.9 61.1 19.6 Q61.1 24.9 59.15 28.4 Q57.2 31.9 53.95 34.2 Q50.7 36.5 46.6 37.85 Q42.5 39.2 38.25 40.2 Q34 41.2 29.9 42.05 Q25.8 42.9 22.55 44.2 Q19.3 45.5 17.35 47.55 Q15.4 49.6 15.4 52.9 Q15.4 56.4 16.75 58.75 Q18.1 61.1 20.35 62.5 Q22.6 63.9 25.5 64.5 Q28.4 65.1 31.4 65.1 Q38.8 65.1 43.55 61.65 Q48.3 58.2 49.1 50.5 Z"
-           id="glyph893" />
+           id="glyph897" />
       </font>
     </defs>
   </defs>
   <g
      style="color-interpolation:linearRGB;fill:#262626;stroke:#262626;stroke-width:0.5;stroke-linejoin:round;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g931">
+     id="g955">
     <line
-       y2="410"
+       y2="354"
        style="fill:none"
-       x1="86.5"
-       x2="602.5"
-       y1="410"
-       id="line907" />
-    <line
-       y2="35"
-       style="fill:none"
-       x1="86.5"
-       x2="602.5"
-       y1="35"
-       id="line909" />
-    <line
-       y2="404.84"
-       style="fill:none"
-       x1="86.5"
-       x2="86.5"
-       y1="410"
+       x1="77.5"
+       x2="512"
+       y1="354"
        id="line911" />
     <line
-       y2="404.84"
+       y2="30"
        style="fill:none"
-       x1="201.1667"
-       x2="201.1667"
-       y1="410"
+       x1="77.5"
+       x2="512"
+       y1="30"
        id="line913" />
     <line
-       y2="404.84"
+       y2="349.655"
        style="fill:none"
-       x1="315.83331"
-       x2="315.83331"
-       y1="410"
+       x1="77.5"
+       x2="77.5"
+       y1="354"
        id="line915" />
     <line
-       y2="404.84"
+       y2="349.655"
        style="fill:none"
-       x1="430.5"
-       x2="430.5"
-       y1="410"
+       x1="125.7778"
+       x2="125.7778"
+       y1="354"
        id="line917" />
     <line
-       y2="404.84"
+       y2="349.655"
        style="fill:none"
-       x1="545.16669"
-       x2="545.16669"
-       y1="410"
+       x1="174.0556"
+       x2="174.0556"
+       y1="354"
        id="line919" />
     <line
-       y2="40.16"
+       y2="349.655"
        style="fill:none"
-       x1="86.5"
-       x2="86.5"
-       y1="35"
+       x1="222.3333"
+       x2="222.3333"
+       y1="354"
        id="line921" />
     <line
-       y2="40.16"
+       y2="349.655"
        style="fill:none"
-       x1="201.1667"
-       x2="201.1667"
-       y1="35"
+       x1="270.61111"
+       x2="270.61111"
+       y1="354"
        id="line923" />
     <line
-       y2="40.16"
+       y2="349.655"
        style="fill:none"
-       x1="315.83331"
-       x2="315.83331"
-       y1="35"
+       x1="318.88889"
+       x2="318.88889"
+       y1="354"
        id="line925" />
     <line
-       y2="40.16"
+       y2="349.655"
        style="fill:none"
-       x1="430.5"
-       x2="430.5"
-       y1="35"
+       x1="367.16669"
+       x2="367.16669"
+       y1="354"
        id="line927" />
     <line
-       y2="40.16"
+       y2="349.655"
        style="fill:none"
-       x1="545.16669"
-       x2="545.16669"
-       y1="35"
+       x1="415.44449"
+       x2="415.44449"
+       y1="354"
        id="line929" />
+    <line
+       y2="349.655"
+       style="fill:none"
+       x1="463.7222"
+       x2="463.7222"
+       y1="354"
+       id="line931" />
+    <line
+       y2="349.655"
+       style="fill:none"
+       x1="512"
+       x2="512"
+       y1="354"
+       id="line933" />
+    <line
+       y2="34.345001"
+       style="fill:none"
+       x1="77.5"
+       x2="77.5"
+       y1="30"
+       id="line935" />
+    <line
+       y2="34.345001"
+       style="fill:none"
+       x1="125.7778"
+       x2="125.7778"
+       y1="30"
+       id="line937" />
+    <line
+       y2="34.345001"
+       style="fill:none"
+       x1="174.0556"
+       x2="174.0556"
+       y1="30"
+       id="line939" />
+    <line
+       y2="34.345001"
+       style="fill:none"
+       x1="222.3333"
+       x2="222.3333"
+       y1="30"
+       id="line941" />
+    <line
+       y2="34.345001"
+       style="fill:none"
+       x1="270.61111"
+       x2="270.61111"
+       y1="30"
+       id="line943" />
+    <line
+       y2="34.345001"
+       style="fill:none"
+       x1="318.88889"
+       x2="318.88889"
+       y1="30"
+       id="line945" />
+    <line
+       y2="34.345001"
+       style="fill:none"
+       x1="367.16669"
+       x2="367.16669"
+       y1="30"
+       id="line947" />
+    <line
+       y2="34.345001"
+       style="fill:none"
+       x1="415.44449"
+       x2="415.44449"
+       y1="30"
+       id="line949" />
+    <line
+       y2="34.345001"
+       style="fill:none"
+       x1="463.7222"
+       x2="463.7222"
+       y1="30"
+       id="line951" />
+    <line
+       y2="34.345001"
+       style="fill:none"
+       x1="512"
+       x2="512"
+       y1="30"
+       id="line953" />
   </g>
   <g
-     transform="translate(86.5,416)"
-     style="font-size:20px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g935">
+     transform="translate(77.5,359.2)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g959">
     <text
-       x="-6"
+       x="-4.5"
        xml:space="preserve"
-       y="20"
+       y="16"
        style="stroke:none"
-       id="text933">0</text>
+       id="text957">0</text>
   </g>
   <g
-     transform="translate(201.1667,416)"
-     style="font-size:20px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g939">
+     transform="translate(125.7778,359.2)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g963">
     <text
-       x="-6"
+       x="-4.5"
        xml:space="preserve"
-       y="20"
+       y="16"
        style="stroke:none"
-       id="text937">2</text>
+       id="text961">1</text>
   </g>
   <g
-     transform="translate(315.8333,416)"
-     style="font-size:20px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g943">
+     transform="translate(174.0556,359.2)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g967">
     <text
-       x="-6"
+       x="-4.5"
        xml:space="preserve"
-       y="20"
+       y="16"
        style="stroke:none"
-       id="text941">4</text>
+       id="text965">2</text>
   </g>
   <g
-     transform="translate(430.5,416)"
-     style="font-size:20px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g947">
+     transform="translate(222.3333,359.2)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g971">
     <text
-       x="-6"
+       x="-4.5"
        xml:space="preserve"
-       y="20"
+       y="16"
        style="stroke:none"
-       id="text945">6</text>
+       id="text969">3</text>
   </g>
   <g
-     transform="translate(545.1667,416)"
-     style="font-size:20px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g951">
+     transform="translate(270.6111,359.2)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g975">
     <text
-       x="-6"
+       x="-4.5"
        xml:space="preserve"
-       y="20"
+       y="16"
        style="stroke:none"
-       id="text949">8</text>
+       id="text973">4</text>
   </g>
   <g
-     transform="translate(344.5002,441)"
-     style="font-size:22px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g955">
+     transform="translate(318.8889,359.2)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g979">
     <text
-       x="-23.5"
+       x="-4.5"
        xml:space="preserve"
-       y="21"
+       y="16"
        style="stroke:none"
-       id="text953">z (m)</text>
+       id="text977">5</text>
+  </g>
+  <g
+     transform="translate(367.1667,359.2)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g983">
+    <text
+       x="-4.5"
+       xml:space="preserve"
+       y="16"
+       style="stroke:none"
+       id="text981">6</text>
+  </g>
+  <g
+     transform="translate(415.4445,359.2)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g987">
+    <text
+       x="-4.5"
+       xml:space="preserve"
+       y="16"
+       style="stroke:none"
+       id="text985">7</text>
+  </g>
+  <g
+     transform="translate(463.7222,359.2)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g991">
+    <text
+       x="-4.5"
+       xml:space="preserve"
+       y="16"
+       style="stroke:none"
+       id="text989">8</text>
+  </g>
+  <g
+     transform="translate(512,359.2)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g995">
+    <text
+       x="-4.5"
+       xml:space="preserve"
+       y="16"
+       style="stroke:none"
+       id="text993">9</text>
+  </g>
+  <g
+     transform="translate(294.7502,379.2)"
+     style="font-size:17.6px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g999">
+    <text
+       x="-19"
+       xml:space="preserve"
+       y="17"
+       style="stroke:none"
+       id="text997">z (m)</text>
   </g>
   <g
      style="color-interpolation:linearRGB;fill:#262626;stroke:#262626;stroke-width:0.5;stroke-linejoin:round;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g985">
+     id="g1045">
     <line
-       y2="35"
+       y2="30"
        style="fill:none"
-       x1="86.5"
-       x2="86.5"
-       y1="410"
-       id="line957" />
+       x1="77.5"
+       x2="77.5"
+       y1="354"
+       id="line1001" />
     <line
-       y2="35"
+       y2="30"
        style="fill:none"
-       x1="602.5"
-       x2="602.5"
-       y1="410"
-       id="line959" />
+       x1="512"
+       x2="512"
+       y1="354"
+       id="line1003" />
     <line
-       y2="410"
+       y2="354"
        style="fill:none"
-       x1="86.5"
-       x2="91.660004"
-       y1="410"
-       id="line961" />
+       x1="77.5"
+       x2="81.845001"
+       y1="354"
+       id="line1005" />
     <line
-       y2="335"
+       y2="318"
        style="fill:none"
-       x1="86.5"
-       x2="91.660004"
-       y1="335"
-       id="line963" />
+       x1="77.5"
+       x2="81.845001"
+       y1="318"
+       id="line1007" />
     <line
-       y2="260"
+       y2="282"
        style="fill:none"
-       x1="86.5"
-       x2="91.660004"
-       y1="260"
-       id="line965" />
+       x1="77.5"
+       x2="81.845001"
+       y1="282"
+       id="line1009" />
     <line
-       y2="185"
+       y2="246"
        style="fill:none"
-       x1="86.5"
-       x2="91.660004"
-       y1="185"
-       id="line967" />
+       x1="77.5"
+       x2="81.845001"
+       y1="246"
+       id="line1011" />
     <line
-       y2="110"
+       y2="210"
        style="fill:none"
-       x1="86.5"
-       x2="91.660004"
-       y1="110"
-       id="line969" />
+       x1="77.5"
+       x2="81.845001"
+       y1="210"
+       id="line1013" />
     <line
-       y2="35"
+       y2="174"
        style="fill:none"
-       x1="86.5"
-       x2="91.660004"
-       y1="35"
-       id="line971" />
+       x1="77.5"
+       x2="81.845001"
+       y1="174"
+       id="line1015" />
     <line
-       y2="410"
+       y2="138"
        style="fill:none"
-       x1="602.5"
-       x2="597.34003"
-       y1="410"
-       id="line973" />
+       x1="77.5"
+       x2="81.845001"
+       y1="138"
+       id="line1017" />
     <line
-       y2="335"
+       y2="102"
        style="fill:none"
-       x1="602.5"
-       x2="597.34003"
-       y1="335"
-       id="line975" />
+       x1="77.5"
+       x2="81.845001"
+       y1="102"
+       id="line1019" />
     <line
-       y2="260"
+       y2="66"
        style="fill:none"
-       x1="602.5"
-       x2="597.34003"
-       y1="260"
-       id="line977" />
+       x1="77.5"
+       x2="81.845001"
+       y1="66"
+       id="line1021" />
     <line
-       y2="185"
+       y2="30"
        style="fill:none"
-       x1="602.5"
-       x2="597.34003"
-       y1="185"
-       id="line979" />
+       x1="77.5"
+       x2="81.845001"
+       y1="30"
+       id="line1023" />
     <line
-       y2="110"
+       y2="354"
        style="fill:none"
-       x1="602.5"
-       x2="597.34003"
-       y1="110"
-       id="line981" />
+       x1="512"
+       x2="507.655"
+       y1="354"
+       id="line1025" />
     <line
-       y2="35"
+       y2="318"
        style="fill:none"
-       x1="602.5"
-       x2="597.34003"
-       y1="35"
-       id="line983" />
+       x1="512"
+       x2="507.655"
+       y1="318"
+       id="line1027" />
+    <line
+       y2="282"
+       style="fill:none"
+       x1="512"
+       x2="507.655"
+       y1="282"
+       id="line1029" />
+    <line
+       y2="246"
+       style="fill:none"
+       x1="512"
+       x2="507.655"
+       y1="246"
+       id="line1031" />
+    <line
+       y2="210"
+       style="fill:none"
+       x1="512"
+       x2="507.655"
+       y1="210"
+       id="line1033" />
+    <line
+       y2="174"
+       style="fill:none"
+       x1="512"
+       x2="507.655"
+       y1="174"
+       id="line1035" />
+    <line
+       y2="138"
+       style="fill:none"
+       x1="512"
+       x2="507.655"
+       y1="138"
+       id="line1037" />
+    <line
+       y2="102"
+       style="fill:none"
+       x1="512"
+       x2="507.655"
+       y1="102"
+       id="line1039" />
+    <line
+       y2="66"
+       style="fill:none"
+       x1="512"
+       x2="507.655"
+       y1="66"
+       id="line1041" />
+    <line
+       y2="30"
+       style="fill:none"
+       x1="512"
+       x2="507.655"
+       y1="30"
+       id="line1043" />
   </g>
   <g
-     transform="translate(80.5,410)"
-     style="font-size:20px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g989">
+     transform="translate(72.3,354)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g1049">
     <text
-       x="-12"
+       x="-9"
        xml:space="preserve"
-       y="7.5"
+       y="6"
        style="stroke:none"
-       id="text987">0</text>
+       id="text1047">0</text>
   </g>
   <g
-     transform="translate(80.5,335)"
-     style="font-size:20px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g993">
+     transform="translate(72.3,318)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g1053">
     <text
-       x="-39"
+       x="-41"
        xml:space="preserve"
-       y="7.5"
+       y="6"
        style="stroke:none"
-       id="text991">0.01</text>
+       id="text1051">0.005</text>
   </g>
   <g
-     transform="translate(80.5,260)"
-     style="font-size:20px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g997">
+     transform="translate(72.3,282)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g1057">
     <text
-       x="-39"
+       x="-32"
        xml:space="preserve"
-       y="7.5"
+       y="6"
        style="stroke:none"
-       id="text995">0.02</text>
+       id="text1055">0.01</text>
   </g>
   <g
-     transform="translate(80.5,185)"
-     style="font-size:20px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g1001">
+     transform="translate(72.3,246)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g1061">
     <text
-       x="-39"
+       x="-41"
        xml:space="preserve"
-       y="7.5"
+       y="6"
        style="stroke:none"
-       id="text999">0.03</text>
+       id="text1059">0.015</text>
   </g>
   <g
-     transform="translate(80.5,110)"
-     style="font-size:20px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g1005">
+     transform="translate(72.3,210)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g1065">
     <text
-       x="-39"
+       x="-32"
        xml:space="preserve"
-       y="7.5"
+       y="6"
        style="stroke:none"
-       id="text1003">0.04</text>
+       id="text1063">0.02</text>
   </g>
   <g
-     transform="translate(80.5,35)"
-     style="font-size:20px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g1009">
+     transform="translate(72.3,174)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g1069">
     <text
-       x="-39"
+       x="-41"
        xml:space="preserve"
-       y="7.5"
+       y="6"
        style="stroke:none"
-       id="text1007">0.05</text>
+       id="text1067">0.025</text>
   </g>
   <g
-     transform="rotate(-90,152.5,128.5)"
-     style="font-size:22px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g1013">
+     transform="translate(72.3,138)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g1073">
     <text
-       x="0"
+       x="-32"
        xml:space="preserve"
-       y="0"
+       y="6"
        style="stroke:none"
-       id="text1011">x'</text>
+       id="text1071">0.03</text>
   </g>
   <g
-     transform="rotate(-90,149,114)"
+     transform="translate(72.3,102)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g1077">
+    <text
+       x="-41"
+       xml:space="preserve"
+       y="6"
+       style="stroke:none"
+       id="text1075">0.035</text>
+  </g>
+  <g
+     transform="translate(72.3,66)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g1081">
+    <text
+       x="-32"
+       xml:space="preserve"
+       y="6"
+       style="stroke:none"
+       id="text1079">0.04</text>
+  </g>
+  <g
+     transform="translate(72.3,30)"
+     style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g1085">
+    <text
+       x="-41"
+       xml:space="preserve"
+       y="6"
+       style="stroke:none"
+       id="text1083">0.045</text>
+  </g>
+  <g
+     transform="rotate(-90,128,111)"
      style="font-size:17.6px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g1017">
+     id="g1089">
     <text
        x="0"
        xml:space="preserve"
        y="0"
        style="stroke:none"
-       id="text1015">rms</text>
+       id="text1087">x'</text>
   </g>
   <g
-     transform="rotate(-90,128.5,104.5)"
-     style="font-size:22px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g1021">
+     transform="rotate(-90,124.5,99.5)"
+     style="font-size:14.08px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g1093">
     <text
        x="0"
        xml:space="preserve"
        y="0"
        style="stroke:none"
-       id="text1019"> (mrad)</text>
+       id="text1091">rms</text>
+  </g>
+  <g
+     transform="rotate(-90,108.5,91.5)"
+     style="font-size:17.6px;font-family:'Helvetica Neue';color-interpolation:linearRGB;fill:#262626;stroke:#262626;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
+     id="g1097">
+    <text
+       x="0"
+       xml:space="preserve"
+       y="0"
+       style="stroke:none"
+       id="text1095"> (mrad)</text>
   </g>
   <g
      style="color-interpolation:linearRGB;fill:#0072bd;stroke:#0072bd;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g1027">
+     id="g1103">
     <path
-       d="m 87.0784,410 0.2893,-0.0103 0.2892,-0.0291 0.2892,-0.0554 0.2892,-0.0871 0.2893,-0.1216 0.2892,-0.1563 0.2892,-0.1895 0.2892,-0.219 0.2892,-0.2441 0.2893,-0.2639 0.2892,-0.2786 0.2892,-0.2883 0.2892,-0.2939 0.2893,-0.2957 0.2892,-0.2949 0.2892,-0.2921 0.2892,-0.2881 0.2892,-0.2833 0.2893,-0.2783 0.2892,-0.2735 0.2892,-0.2687 0.2892,-0.2646 0.2893,-0.2609 0.2892,-0.2576 0.2892,-0.2548 0.2892,-0.2523 0.2892,-0.2503 0.2893,-0.2485 0.2892,-0.247 0.2892,-0.2456 0.2892,-0.2445 0.2893,-0.2434 0.2892,-0.2425 0.2892,-0.2417 0.2892,-0.241 0.2892,-0.2404 0.2893,-0.2397 0.2892,-0.2392 0.2892,-0.2387 0.2892,-0.2383 0.2893,-0.2379 0.2892,-0.2375 0.2892,-0.2371 0.2892,-0.2369 0.2892,-0.2365 0.2893,-0.2363 0.2892,-0.2361 0.2892,-0.2358 0.2892,-0.2356 0.2893,-0.2354 0.2892,-0.2351 0.2892,-0.2349 0.2892,-0.2347 0.2892,-0.2344 0.2893,-0.2342 0.2892,-0.2339 0.2892,-0.2336 0.2892,-0.2334 0.2893,-0.2332 0.2892,-0.233 0.2892,-0.2329 0.2892,-0.2328 0.2892,-0.2327 0.2893,-0.2328 0.2892,-0.2329 0.2892,-0.2329 0.2892,-0.2331 0.2893,-0.2331 0.2892,-0.2333 0.2892,-0.2334 0.2892,-0.2334 0.2892,-0.2334 0.2893,-0.2333 0.2892,-0.2333 0.2892,-0.2331 0.2892,-0.233 0.2893,-0.2329 0.2892,-0.2327 0.2892,-0.2326 0.2892,-0.2324 0.2892,-0.2323 0.2893,-0.2323 0.2892,-0.2321 0.2892,-0.2321 0.2892,-0.2319 0.2893,-0.232 0.2892,-0.2318 0.2892,-0.2319 0.2892,-0.2317 0.2892,-0.2317 0.2893,-0.2317 0.2892,-0.2316 0.2892,-0.2316 0.2892,-0.2315 0.2893,-0.2315 0.2892,-0.2314 0.2892,-0.2314 0.2892,-0.2314 0.2892,-0.2312 0.2893,-0.2313 0.2892,-0.2312 0.2892,-0.2312 0.2892,-0.2311 0.2893,-0.2311 0.2892,-0.231 0.2892,-0.2309 0.2892,-0.2309 0.2892,-0.2309 0.2893,-0.2308 0.2892,-0.2308 0.2892,-0.2307 0.2892,-0.2306 0.2893,-0.2307 0.2892,-0.2305 0.2892,-0.2306 0.2892,-0.2304 0.2892,-0.2304 0.2893,-0.2304 0.2892,-0.2304 0.2892,-0.2303 0.2892,-0.2302 0.2893,-0.2303 0.2892,-0.2301 0.2892,-0.2302 0.2892,-0.23 0.2892,-0.2301 0.2893,-0.23 0.2892,-0.23 0.2892,-0.2299 0.2892,-0.2298 0.2893,-0.2299 0.2892,-0.2298 0.2892,-0.2298 0.2892,-0.2297 0.2892,-0.2297 0.2893,-0.2297 0.2892,-0.2296 0.2892,-0.2296 0.2892,-0.2296 0.2893,-0.2295 0.2892,-0.2295 0.2892,-0.2294 0.2892,-0.2294 0.2892,-0.2294 0.2893,-0.2293 0.2892,-0.2293 0.2892,-0.2293 0.2892,-0.2292 0.2893,-0.2292 0.2892,-0.2292 0.2892,-0.2291 0.2892,-0.2291 0.2893,-0.229 0.2892,-0.2291 0.2892,-0.2289 0.2892,-0.229 0.2892,-0.2289 0.2893,-0.2289 0.2892,-0.2288 0.2892,-0.2289 0.2892,-0.2288 0.2892,-0.2287 0.2893,-0.2287 0.2892,-0.2287 0.2892,-0.2287 0.2892,-0.2286 0.2893,-0.2286 0.2892,-0.2285 0.2892,-0.2286 0.2892,-0.2284 0.2892,-0.2285 0.2893,-0.2284 0.2892,-0.2284 0.2892,-0.2283 0.2892,-0.2283 0.2893,-0.2283 0.2892,-0.2283 0.2892,-0.2282 0.2892,-0.2282 0.2892,-0.2281 0.2893,-0.2281 0.2892,-0.2281 0.2892,-0.228 0.2892,-0.2281 0.2893,-0.2279 0.2892,-0.228 0.2892,-0.2279 0.2892,-0.2279 0.2892,-0.2278 0.2893,-0.2279 0.2892,-0.2277 0.2892,-0.2278 0.2892,-0.2277 0.2893,-0.2277 0.2892,-0.2276 0.2892,-0.2276 0.2892,-0.2276 0.2893,-0.2276 0.2892,-0.2275 0.2892,-0.2274 0.2892,-0.2275 0.2892,-0.2274 0.2893,-0.2274 0.2892,-0.2273 0.2892,-0.2274 0.2892,-0.2272 0.2892,-0.2273 0.2893,-0.2272 0.2892,-0.2272 0.2892,-0.2271 0.2892,-0.2272 0.2893,-0.227 0.2892,-0.2271 0.2892,-0.227 0.2892,-0.227 0.2892,-0.2269 0.2893,-0.2269 0.2892,-0.2269 0.2892,-0.2269 0.2892,-0.2268 0.2893,-0.2267 0.2892,-0.2268 0.2892,-0.2266 0.2892,-0.2267 0.2892,-0.2266 0.2893,-0.2266 0.2892,-0.2266 0.2892,-0.2265 0.2892,-0.2265 0.2893,-0.2265 0.2892,-0.2264 0.2892,-0.2264 0.2892,-0.2264 0.2893,-0.2263 0.2892,-0.2263 0.2892,-0.2262 0.2892,-0.2262 0.2892,-0.2262 0.2893,-0.2262 0.2892,-0.2261 0.2892,-0.2261 0.2892,-0.226 0.2893,-0.226 0.2892,-0.2259 0.2892,-0.226 0.2892,-0.2258 0.2892,-0.2259 0.2893,-0.2258 0.2892,-0.2258 0.2892,-0.2257 0.2892,-0.2258 0.2892,-0.2256 0.2893,-0.2257 0.2892,-0.2256 0.2892,-0.2255 0.2892,-0.2255 0.2893,-0.2255 0.2892,-0.2254 0.2892,-0.2254 0.2892,-0.2254 0.2892,-0.2254 0.2893,-0.2252 0.2892,-0.2253 0.2892,-0.2252 0.2892,-0.2251 0.2893,-0.2252 0.2892,-0.2251 0.2892,-0.225 0.2892,-0.225 0.2892,-0.225 0.2893,-0.2249 0.2892,-0.2249 0.2892,-0.2249 0.2892,-0.2248 0.2893,-0.2247 0.2892,-0.2248 0.2892,-0.2247 0.2892,-0.2247 0.2893,-0.2246 0.2892,-0.2246 0.2892,-0.2245 0.2892,-0.2245 0.2892,-0.2245 0.2893,-0.2244 0.2892,-0.2244 0.2892,-0.2244 0.2892,-0.2243 0.2893,-0.2243 0.2892,-0.2242 0.2892,-0.2242 0.2892,-0.2241 0.2892,-0.2241 0.2893,-0.2241 0.2892,-0.224 0.2892,-0.224 0.2892,-0.2239 0.2892,-0.2239 0.2893,-0.2239 0.2892,-0.2238 0.2892,-0.2237 0.2892,-0.2237 0.2893,-0.2237 0.2892,-0.2236 0.2892,-0.2236 0.2892,-0.2235 0.2893,-0.2235 0.2892,-0.2234 0.2892,-0.2234 0.2892,-0.2234 0.2892,-0.2233 0.2893,-0.2232 0.2892,-0.2233 0.2892,-0.2231 0.2892,-0.2232 0.2892,-0.2231 0.2893,-0.223 0.2892,-0.223 0.2892,-0.2229 0.2892,-0.2229 0.2893,-0.2229 0.2892,-0.2228 0.2892,-0.2227 0.2892,-0.2227 0.2893,-0.2227 0.2892,-0.2225 0.2892,-0.2226 0.2892,-0.2225 0.2892,-0.2224 0.2893,-0.2224 0.2892,-0.2224 0.2892,-0.2222 0.2892,-0.2223 0.2893,-0.2222 0.2892,-0.2221 0.2892,-0.2222 0.2892,-0.222 0.2892,-0.222 0.2893,-0.2219 0.2892,-0.2219 0.2892,-0.2219 0.2892,-0.2218 0.2892,-0.2217 0.2893,-0.2217 0.2892,-0.2217 0.2892,-0.2216 0.2892,-0.2216 0.2893,-0.2215 0.2892,-0.2215 0.2892,-0.2214 0.2892,-0.2214 0.2892,-0.2214 0.2893,-0.2213 0.2892,-0.2212 0.2892,-0.2212 0.2892,-0.2211 0.2893,-0.2211 0.2892,-0.221 0.2892,-0.221 0.2892,-0.2209 0.2893,-0.2209 0.2892,-0.2208 0.2892,-0.2208 0.2892,-0.2207 0.2892,-0.2206 0.2893,-0.2206 0.2892,-0.2206 0.2892,-0.2205 0.2892,-0.2204 0.2893,-0.2204 0.2892,-0.2204 0.2892,-0.2203 0.2892,-0.2202 0.2892,-0.2202 0.2893,-0.2201 0.2892,-0.2201 0.2892,-0.22 0.2892,-0.2199 0.2892,-0.2199 0.2893,-0.2199 0.2892,-0.2198 0.2892,-0.2198 0.2892,-0.2196 0.2893,-0.2197 0.2892,-0.2196 0.2892,-0.2195 0.2892,-0.2194 0.2892,-0.2195 0.2893,-0.2193 0.2892,-0.2193 0.2892,-0.2193 0.2892,-0.2191 0.2893,-0.2192 0.2892,-0.2191 0.2892,-0.219 0.2892,-0.219 0.2893,-0.2189 0.2892,-0.2189 0.2892,-0.2188 0.2892,-0.2187 0.2892,-0.2187 0.2893,-0.2186 0.2892,-0.2186 0.2892,-0.2185 0.2892,-0.2185 0.2893,-0.2184 0.2892,-0.2184 0.2892,-0.2182 0.2892,-0.2182 0.2892,-0.2182 0.2893,-0.2181 0.2892,-0.218 0.2892,-0.218 0.2892,-0.2179 0.2893,-0.2178 0.2892,-0.2178 0.2892,-0.2178 0.2892,-0.2177 0.2892,-0.2176 0.2893,-0.2176 0.2892,-0.2175 0.2892,-0.2175 0.2892,-0.2174 0.2893,-0.2173 0.2892,-0.2173 0.2892,-0.2172 0.2892,-0.2172 0.2892,-0.2171 0.2893,-0.217 0.2892,-0.217 0.2892,-0.2169 0.2892,-0.2168 0.2893,-0.2168 0.2892,-0.2168 0.2892,-0.2167 0.2892,-0.2166 0.2892,-0.2166 0.2893,-0.2165 0.2892,-0.2165 0.2892,-0.2164 0.2892,-0.2163 0.2892,-0.2162 0.2893,-0.2162 0.2892,-0.2162 0.2892,-0.216 0.2892,-0.216 0.2893,-0.216 0.2892,-0.2158 0.2892,-0.2159 0.2892,-0.2157 0.2892,-0.2157 0.2893,-0.2156 0.2892,-0.2156 0.2892,-0.2155 0.2892,-0.2155 0.2893,-0.2153 0.2892,-0.2154 0.2892,-0.2152 0.2892,-0.2152 0.2893,-0.2152 0.2892,-0.215 0.2892,-0.2151 0.2892,-0.2149 0.2892,-0.2149 0.2893,-0.2148 0.2892,-0.2147 0.2892,-0.2147 0.2892,-0.2146 0.2892,-0.2146 0.2893,-0.2144 0.2892,-0.2145 0.2892,-0.2143 0.2892,-0.2143 0.2893,-0.2142 0.2892,-0.2142 0.2892,-0.2141 0.2892,-0.214 0.2892,-0.214 0.2893,-0.2139 0.2892,-0.2138 0.2892,-0.2138 0.2892,-0.2137 0.2893,-0.2136 0.2892,-0.2136 0.2892,-0.2135 0.2892,-0.2134 0.2893,-0.2134 0.2892,-0.2133 0.2892,-0.2133 0.2892,-0.2132 0.2892,-0.2131 0.2893,-0.213 0.2892,-0.213 0.2892,-0.2129 0.2892,-0.2129 0.2893,-0.2127 0.2892,-0.2127 0.2892,-0.2127 0.2892,-0.2125 0.2892,-0.2125 0.2893,-0.2124 0.2892,-0.2124 0.2892,-0.2122 0.2892,-0.2123 0.2893,-0.2121 0.2892,-0.2121 0.2892,-0.212 0.2892,-0.2119 0.2892,-0.2119 0.2893,-0.2118 0.2892,-0.2118 0.2892,-0.2117 0.2892,-0.2116 0.2892,-0.2116 0.2893,-0.2115 0.2892,-0.2114 0.2892,-0.2114 0.2892,-0.2112 0.2893,-0.2113 0.2892,-0.2111 0.2892,-0.2111 0.2892,-0.211 0.2893,-0.2109 0.2892,-0.2108 0.2892,-0.2108 0.2892,-0.2108 0.2893,-0.2106 0.2892,-0.2106 0.2892,-0.2105 0.2892,-0.2104 0.2892,-0.2103 0.2893,-0.2103 0.2892,-0.2102 0.2892,-0.2102 0.2892,-0.21 0.2892,-0.21 0.2893,-0.21 0.2892,-0.2098 0.2892,-0.2098 0.2892,-0.2097 0.2893,-0.2097 0.2892,-0.2096 0.2892,-0.2095 0.2892,-0.2094 0.2892,-0.2093 0.2893,-0.2093 0.2892,-0.2093 0.2892,-0.2091 0.2892,-0.2091 0.2893,-0.209 0.2892,-0.2089 0.2892,-0.2089 0.2892,-0.2088 0.2892,-0.2087 0.2893,-0.2086 0.2892,-0.2086 0.2892,-0.2085 0.2892,-0.2084 0.2893,-0.2083 0.2892,-0.2083 0.2892,-0.2082 0.2892,-0.2081 0.2892,-0.208 0.2893,-0.208 0.2892,-0.2079 0.2892,-0.2078 0.2892,-0.2077 0.2892,-0.2077 0.2893,-0.2076 0.2892,-0.2076 0.2892,-0.2074 0.2892,-0.2075 0.2893,-0.2073 0.2892,-0.2072 0.2892,-0.2072 0.2892,-0.2071 0.2892,-0.2071 0.2893,-0.2069 0.2892,-0.2069 0.2892,-0.2068 0.2892,-0.2067 0.2893,-0.2066 0.2892,-0.2066 0.2892,-0.2065 0.2892,-0.2064 0.2893,-0.2063 0.2892,-0.2063 0.2892,-0.2062 0.2892,-0.2061 0.2893,-0.2061 0.2892,-0.206 0.2892,-0.2059 0.2892,-0.2058 0.2892,-0.2058 0.2893,-0.2056 0.2892,-0.2056 0.2892,-0.2056 0.2892,-0.2054 0.2893,-0.2054 0.2892,-0.2054 0.2892,-0.2052 0.2892,-0.2052 0.2892,-0.2051 0.2893,-0.205 0.2892,-0.2049 0.2892,-0.2049 0.2892,-0.2048 0.2893,-0.2047 0.2892,-0.2047 0.2892,-0.2046 0.2892,-0.2045 0.2892,-0.2044 0.2893,-0.2043 0.2892,-0.2043 0.2892,-0.2042 0.2892,-0.2041 0.2892,-0.204 0.2893,-0.204 0.2892,-0.2039 0.2892,-0.2038 0.2892,-0.2038 0.2893,-0.2037 0.2892,-0.2035 0.2892,-0.2036 0.2892,-0.2034 0.2892,-0.2034 0.2893,-0.2032 0.2892,-0.2032 0.2892,-0.2032 0.2892,-0.203 0.2893,-0.2029 0.2892,-0.2029 0.2892,-0.2028 0.2892,-0.2027 0.2892,-0.2026 0.2893,-0.2026 0.2892,-0.2025 0.2892,-0.2024 0.2892,-0.2023 0.2892,-0.2023 0.2893,-0.2022 0.2892,-0.2021 0.2892,-0.202 0.2892,-0.2019 0.2893,-0.2019 0.2892,-0.2018 0.2892,-0.2017 0.2892,-0.2017 0.2892,-0.2015 0.2893,-0.2015 0.2892,-0.2014 0.2892,-0.2012 0.2892,-0.2013 0.2893,-0.2012 0.2892,-0.201 0.2892,-0.201 0.2892,-0.201 0.2892,-0.2008 0.2893,-0.2008 0.2892,-0.2006 0.2892,-0.2006 0.2892,-0.2006 0.2892,-0.2004 0.2893,-0.2004 0.2892,-0.2003 0.2892,-0.2002 0.2892,-0.2002 0.2893,-0.2 0.2892,-0.2 0.2892,-0.1999 0.2892,-0.1999 0.2893,-0.1997 0.2892,-0.1997 0.2892,-0.1996 0.2892,-0.1996 0.2893,-0.1994 0.2892,-0.1993 0.2892,-0.1993 0.2892,-0.1992 0.2893,-0.1991 0.2892,-0.199 0.2892,-0.1989 0.2892,-0.1989 0.2892,-0.1988 0.2893,-0.1987 0.2892,-0.1986 0.2892,-0.1986 0.2892,-0.1984 0.2893,-0.1984 0.2892,-0.1983 0.2892,-0.1983 0.2892,-0.1981 0.2892,-0.1981 0.2893,-0.198 0.2892,-0.1979 0.2892,-0.1979 0.2892,-0.1978 0.2893,-0.1977 0.2892,-0.1976 0.2892,-0.1975 0.2892,-0.1974 0.2892,-0.1974 0.2893,-0.1973 0.2892,-0.1972 0.2892,-0.1971 0.2892,-0.1971 0.2892,-0.1969 0.2893,-0.1969 0.2892,-0.1968 0.2892,-0.1967 0.2892,-0.1966 0.2893,-0.1966 0.2892,-0.1964 0.2892,-0.1964 0.2892,-0.1963 0.2892,-0.1962 0.2893,-0.1962 0.2892,-0.196 0.2892,-0.196 0.2892,-0.1959 0.2893,-0.1958 0.2892,-0.1958 0.2892,-0.1956 0.2892,-0.1956 0.2892,-0.1955 0.2893,-0.1954 0.2892,-0.1953 0.2892,-0.1953 0.2892,-0.1951 0.2892,-0.1951 0.2893,-0.195 0.2892,-0.1949 0.2892,-0.1948 0.2892,-0.1948 0.2893,-0.1947 0.2892,-0.1946 0.2892,-0.1945 0.2892,-0.1944 0.2893,-0.1944 0.2892,-0.1943 0.2892,-0.1942 0.2892,-0.1941 0.2893,-0.194 0.2892,-0.194 0.2892,-0.1939 0.2892,-0.1938 0.2892,-0.1937 0.2893,-0.1936 0.2892,-0.1936 0.2892,-0.1934 0.2892,-0.1934 0.2892,-0.1933 0.2893,-0.1932 0.2892,-0.1931 0.2892,-0.193 0.2892,-0.193 0.2892,-0.1929 0.2893,-0.1928 0.2892,-0.1927 0.2892,-0.1926 0.2892,-0.1925 0.2893,-0.1925 0.2892,-0.1923 0.2892,-0.1923 0.2892,-0.1922 0.2893,-0.1921 0.2892,-0.1921 0.2892,-0.1919 0.2892,-0.1919 0.2892,-0.1918 0.2893,-0.1917 0.2892,-0.1916 0.2892,-0.1915 0.2892,-0.1915 0.2893,-0.1914 0.2892,-0.1913 0.2892,-0.1912 0.2892,-0.1911 0.2893,-0.191 0.2892,-0.1909 0.2892,-0.1909 0.2892,-0.1908 0.2892,-0.1906 0.2893,-0.1906 0.2892,-0.1906 0.2892,-0.1904 0.2892,-0.1904 0.2893,-0.1903 0.2892,-0.1901 0.2892,-0.1902 0.2892,-0.19 0.2892,-0.1899 0.2893,-0.1899 0.2892,-0.1898 0.2892,-0.1897 0.2892,-0.1896 0.2892,-0.1895 0.2893,-0.1895 0.2892,-0.1893 0.2892,-0.1893 0.2892,-0.1892 0.2893,-0.1891 0.2892,-0.1891 0.2892,-0.1889 0.2892,-0.1889 0.2892,-0.1888 0.2893,-0.1887 0.2892,-0.1886 0.2892,-0.1885 0.2892,-0.1884 0.2892,-0.1884 0.2893,-0.1883 0.2892,-0.1882 0.2892,-0.1881 0.2892,-0.188 0.2893,-0.1879 0.2892,-0.1879 0.2892,-0.1877 0.2892,-0.1877 0.2893,-0.1876 0.2892,-0.1875 0.2892,-0.1875 0.2892,-0.1873 0.2893,-0.1872 0.2892,-0.1872 0.2892,-0.1871 0.2892,-0.187 0.2893,-0.1869 0.2892,-0.1869 0.2892,-0.1868 0.2892,-0.1866 0.2892,-0.1866 0.2893,-0.1866 0.2892,-0.1864 0.2892,-0.1864 0.2892,-0.1862 0.2893,-0.1862 0.2892,-0.1861 0.2892,-0.1861 0.2892,-0.1859 0.2892,-0.1859 0.2893,-0.1857 0.2892,-0.1857 0.2892,-0.1856 0.2892,-0.1856 0.2893,-0.1854 0.2892,-0.1854 0.2892,-0.1852 0.2892,-0.1852 0.2892,-0.1851 0.2893,-0.185 0.2892,-0.185 0.2892,-0.1848 0.2892,-0.1848 0.2892,-0.1847 0.2893,-0.1846 0.2892,-0.1845 0.2892,-0.1844 0.2892,-0.1844 0.2893,-0.1842 0.2892,-0.1842 0.2892,-0.1841 0.2892,-0.184 0.2892,-0.1839 0.2893,-0.1838 0.2892,-0.1838 0.2892,-0.1837 0.2892,-0.1836 0.2893,-0.1835 0.2892,-0.1834 0.2892,-0.1833 0.2892,-0.1833 0.2892,-0.1832 0.2893,-0.1831 0.2892,-0.183 0.2892,-0.1829 0.2892,-0.1828 0.2892,-0.1828 0.2893,-0.1827 0.2892,-0.1825 0.2892,-0.1826 0.2892,-0.1824 0.2893,-0.1823 0.2892,-0.1823 0.2892,-0.1822 0.2892,-0.1821 0.2892,-0.182 0.2893,-0.1819 0.2892,-0.1818 0.2892,-0.1818 0.2892,-0.1816 0.2893,-0.1816 0.2892,-0.1814 0.2892,-0.1814 0.2892,-0.1813 0.2892,-0.1812 0.2893,-0.1812 0.2892,-0.181 0.2892,-0.181 0.2892,-0.1808 0.2892,-0.1808 0.2893,-0.1807 0.2892,-0.1807 0.2892,-0.1805 0.2892,-0.1805 0.2893,-0.1803 0.2892,-0.1803 0.2892,-0.1802 0.2892,-0.1801 0.2892,-0.18 0.2893,-0.1799 0.2892,-0.1798 0.2892,-0.1798 0.2892,-0.1797 0.2893,-0.1795 0.2892,-0.1795 0.2892,-0.1794 0.2892,-0.1794 0.2892,-0.1792 0.2893,-0.1792 0.2892,-0.1791 0.2892,-0.179 0.2892,-0.179 0.2892,-0.1788 0.2893,-0.1788 0.2892,-0.1787 0.2892,-0.1786 0.2892,-0.1785 0.2893,-0.1784 0.2892,-0.1783 0.2892,-0.1783 0.2892,-0.1782 0.2893,-0.1781 0.2892,-0.178 0.2892,-0.178 0.2892,-0.1778 0.2893,-0.1778 0.2892,-0.1777 0.2892,-0.1777 0.2892,-0.1775 0.2892,-0.1774 0.2893,-0.1774 0.2892,-0.1773 0.2892,-0.1772 0.2892,-0.1771 0.2893,-0.177 0.2892,-0.177 0.2892,-0.1768 0.2892,-0.1768 0.2893,-0.1767 0.2892,-0.1766 0.2892,-0.1766 0.2892,-0.1765 0.2892,-0.1763 0.2893,-0.1763 0.2892,-0.1763 0.2892,-0.1761 0.2892,-0.176 0.2893,-0.176 0.2892,-0.1759 0.2892,-0.1757 0.2892,-0.1758 0.2892,-0.1756 0.2893,-0.1755 0.2892,-0.1755 0.2892,-0.1753 0.2892,-0.1753 0.2892,-0.1753 0.2893,-0.1751 0.2892,-0.175 0.2892,-0.175 0.2892,-0.1749 0.2893,-0.1748 0.2892,-0.1747 0.2892,-0.1746 0.2892,-0.1746 0.2892,-0.1745 0.2893,-0.1743 0.2892,-0.1743 0.2892,-0.1742 0.2892,-0.1741 0.2893,-0.174 0.2892,-0.174 0.2892,-0.1738 0.2892,-0.1738 0.2892,-0.1737 0.2893,-0.1736 0.2892,-0.1735 0.2892,-0.1735 0.2892,-0.1734 0.2892,-0.1733 0.2893,-0.1732 0.2892,-0.1731 0.2892,-0.1731 0.2892,-0.1729 0.2893,-0.1729 0.2892,-0.1728 0.2892,-0.1727 0.2892,-0.1727 0.2893,-0.1725 0.2892,-0.1725 0.2892,-0.1724 0.2892,-0.1722 0.2892,-0.1722 0.2893,-0.1722 0.2892,-0.172 0.2892,-0.1719 0.2892,-0.1719 0.2893,-0.1718 0.2892,-0.1717 0.2892,-0.1716 0.2892,-0.1715 0.2893,-0.1715 0.2892,-0.1714 0.2892,-0.1713 0.2892,-0.1712 0.2893,-0.1711 0.2892,-0.1711 0.2892,-0.171 0.2892,-0.1709 0.2892,-0.1708 0.2893,-0.1707 0.2892,-0.1707 0.2892,-0.1705 0.2892,-0.1705 0.2892,-0.1704 0.2893,-0.1704 0.2892,-0.1702 0.2892,-0.1701 0.2892,-0.1701 0.2893,-0.17 0.2892,-0.1699 0.2892,-0.1698 0.2892,-0.1698 0.2892,-0.1696 0.2893,-0.1696 0.2892,-0.1695 0.2892,-0.1694 0.2892,-0.1693 0.2893,-0.1693 0.2892,-0.1691 0.2892,-0.1691 0.2892,-0.169 0.2892,-0.1689 0.2893,-0.1688 0.2892,-0.1688 0.2892,-0.1687 0.2892,-0.1686 0.2892,-0.1685 0.2893,-0.1684 0.2892,-0.1684 0.2892,-0.1683 0.2892,-0.1682 0.2893,-0.1681 0.2892,-0.168 0.2892,-0.168 0.2892,-0.1679 0.2892,-0.1677 0.2893,-0.1678 0.2892,-0.1676 0.2892,-0.1675 0.2892,-0.1675 0.2893,-0.1673 0.2892,-0.1673 0.2892,-0.1672 0.2892,-0.1671 0.2892,-0.1671 0.2893,-0.1669 0.2892,-0.1669 0.2892,-0.1668 0.2892,-0.1667 0.2893,-0.1666 0.2892,-0.1666 0.2892,-0.1665 0.2892,-0.1663 0.2893,-0.1663 0.2892,-0.1663 0.2892,-0.1661 0.2892,-0.1661 0.2893,-0.166 0.2892,-0.1659 0.2892,-0.1658 0.2892,-0.1658 0.2893,-0.1656 0.2892,-0.1656 0.2892,-0.1655 0.2892,-0.1654 0.2892,-0.1653 0.2893,-0.1653 0.2892,-0.1651 0.2892,-0.1651 0.2892,-0.165 0.2892,-0.165 0.2893,-0.1648 0.2892,-0.1648 0.2892,-0.1647 0.2892,-0.1645 0.2893,-0.1646 0.2892,-0.1644 0.2892,-0.1643 0.2892,-0.1643 0.2892,-0.1642 0.2893,-0.1641 0.2892,-0.164 0.2892,-0.164 0.2892,-0.1638 0.2893,-0.1638 0.2892,-0.1637 0.2892,-0.1636 0.2892,-0.1635 0.2892,-0.1635 0.2893,-0.1633 0.2892,-0.1633 0.2892,-0.1632 0.2892,-0.1632 0.2892,-0.1631 0.2893,-0.1629 0.2892,-0.1629 0.2892,-0.1629 0.2892,-0.1627 0.2893,-0.1627 0.2892,-0.1626 0.2892,-0.1625 0.2892,-0.1624 0.2892,-0.1624 0.2893,-0.1622 0.2892,-0.1622 0.2892,-0.1622 0.2892,-0.162 0.2893,-0.1619 0.2892,-0.1619 0.2892,-0.1618 0.2892,-0.1617 0.2892,-0.1617 0.2893,-0.1615 0.2892,-0.1615 0.2892,-0.1614 0.2892,-0.1613 0.2892,-0.1613 0.2893,-0.1611 0.2892,-0.1611 0.2892,-0.161 0.2892,-0.1609 0.2893,-0.1608 0.2892,-0.1608 0.2892,-0.1607 0.2892,-0.1606 0.2892,-0.1605 0.2893,-0.1604 0.2892,-0.1604 0.2892,-0.1603 0.2892,-0.1601 0.2893,-0.1602 0.2892,-0.16 0.2892,-0.1599 0.2892,-0.1599 0.2892,-0.1598 0.2893,-0.1598 0.2892,-0.1596 0.2892,-0.1596 0.2892,-0.1595 0.2892,-0.1594 0.2893,-0.1593 0.2892,-0.1593 0.2892,-0.1592 0.2892,-0.1591 0.2893,-0.159 0.2892,-0.159 0.2892,-0.1588 0.2892,-0.1589 0.2892,-0.1586 0.2893,-0.1587 0.2892,-0.1585 0.2892,-0.1585 0.2892,-0.1584 0.2893,-0.1583 0.2892,-0.1582 0.2892,-0.1582 0.2892,-0.1581 0.2892,-0.158 0.2893,-0.1579 0.2892,-0.1578 0.2892,-0.1577 0.2892,-0.1577 0.2893,-0.1576 0.2892,-0.1575 0.2892,-0.1575 0.2892,-0.1574 0.2893,-0.1572 0.2892,-0.1573 0.2892,-0.1571 0.2892,-0.157 0.2893,-0.157 0.2892,-0.1569 0.2892,-0.1569 0.2892,-0.1567 0.2892,-0.1567 0.2893,-0.1566 0.2892,-0.1565 0.2892,-0.1564 0.2892,-0.1564 0.2893,-0.1563 0.2892,-0.1562 0.2892,-0.1561 0.2892,-0.1561 0.2892,-0.1559 0.2893,-0.1559 0.2892,-0.1558 0.2892,-0.1558 0.2892,-0.1556 0.2893,-0.1556 0.2892,-0.1555 0.2892,-0.1554 0.2892,-0.1553 0.2892,-0.1552 0.2893,-0.1553 0.2892,-0.155 0.2892,-0.1551 0.2892,-0.1549 0.2893,-0.1549 0.2892,-0.1548 0.2892,-0.1547 0.2892,-0.1547 0.2892,-0.1545 0.2893,-0.1545 0.2892,-0.1544 0.2892,-0.1544 0.2892,-0.1542 0.2892,-0.1542 0.2893,-0.1541 0.2892,-0.1541 0.2892,-0.1539 0.2892,-0.1538 0.2893,-0.1538 0.2892,-0.1537 0.2892,-0.1536 0.2892,-0.1536 0.2892,-0.1535 0.2893,-0.1534 0.2892,-0.1533 0.2892,-0.1532 0.2892,-0.1532 0.2892,-0.1531 0.2893,-0.153 0.2892,-0.1529 0.2892,-0.1529 0.2892,-0.1527 0.2893,-0.1527 0.2892,-0.1527 0.2892,-0.1525 0.2892,-0.1525 0.2893,-0.1524 0.2892,-0.1523 0.2892,-0.1523 0.2892,-0.1521 0.2893,-0.1521 0.2892,-0.152 0.2892,-0.152 0.2892,-0.1519 0.2892,-0.1518 0.2893,-0.1517 0.2892,-0.1516 0.2892,-0.1515 0.2892,-0.1515 0.2893,-0.1514 0.2892,-0.1513 0.2892,-0.1513 0.2892,-0.1511 0.2893,-0.1511 0.2892,-0.151 0.2892,-0.151 0.2892,-0.1508 0.2892,-0.1508 0.2893,-0.1507 0.2892,-0.1507 0.2892,-0.1505 0.2892,-0.1505 0.2893,-0.1504 0.2892,-0.1504 0.2892,-0.1502 0.2892,-0.1502 0.2892,-0.1502 0.2893,-0.15 0.2892,-0.15 0.2892,-0.1499 0.2892,-0.1498 0.2892,-0.1497 0.2893,-0.1497 0.2892,-0.1495 0.2892,-0.1496 0.2892,-0.1494 0.2893,-0.1494 0.2892,-0.1492 0.2892,-0.1493 0.2892,-0.1491 0.2892,-0.1491 0.2893,-0.149 0.2892,-0.1489 0.2892,-0.1489 0.2892,-0.1487 0.2893,-0.1487 0.2892,-0.1487 0.2892,-0.1485 0.2892,-0.1485 0.2892,-0.1484 0.2893,-0.1483 0.2892,-0.1483 0.2892,-0.1482 0.2892,-0.1481 0.2892,-0.148 0.2893,-0.1479 0.2892,-0.1479 0.2892,-0.1478 0.2892,-0.1477 0.2893,-0.1476 0.2892,-0.1476 0.2892,-0.1475 0.2892,-0.1474 0.2893,-0.1473 0.2892,-0.1473 0.2892,-0.1473 0.2892,-0.1471 0.2892,-0.1471 0.2893,-0.147 0.2892,-0.1469 0.2892,-0.1468 0.2892,-0.1468 0.2893,-0.1467 0.2892,-0.1466 0.2892,-0.1465 0.2892,-0.1465 0.2893,-0.1464 0.2892,-0.1463 0.2892,-0.1462 0.2892,-0.1462 0.2893,-0.1461 0.2892,-0.146 0.2892,-0.1459 0.2892,-0.1459 0.2892,-0.1458 0.2893,-0.1457 0.2892,-0.1456 0.2892,-0.1456 0.2892,-0.1455 0.2893,-0.1454 0.2892,-0.1454 0.2892,-0.1453 0.2892,-0.1452 0.2892,-0.1451 0.2893,-0.1451 0.2892,-0.145 0.2892,-0.1449 0.2892,-0.1449 0.2892,-0.1447 0.2893,-0.1447 0.2892,-0.1447 0.2892,-0.1446 0.2892,-0.1445 0.2893,-0.1444 0.2892,-0.1443 0.2892,-0.1443 0.2892,-0.1442 0.2892,-0.1441 0.2893,-0.144 0.2892,-0.144 0.2892,-0.1439 0.2892,-0.1438 0.2893,-0.1438 0.2892,-0.1436 0.2892,-0.1436 0.2892,-0.1436 0.2892,-0.1435 0.2893,-0.1433 0.2892,-0.1433 0.2892,-0.1433 0.2892,-0.1432 0.2892,-0.1431 0.2893,-0.143 0.2892,-0.1429 0.2892,-0.1429 0.2892,-0.1428 0.2893,-0.1428 0.2892,-0.1426 0.2892,-0.1426 0.2892,-0.1426 0.2892,-0.1424 0.2893,-0.1424 0.2892,-0.1423 0.2892,-0.1423 0.2892,-0.1422 0.2893,-0.1421 0.2892,-0.142 0.2892,-0.142 0.2892,-0.1419 0.2892,-0.1418 0.2893,-0.1418 0.2892,-0.1416 0.2892,-0.1416 0.2892,-0.1416 0.2892,-0.1414 0.2893,-0.1414 0.2892,-0.1413 0.2892,-0.1413 0.2892,-0.1411 0.2893,-0.1411 0.2892,-0.1411 0.2892,-0.1409 0.2892,-0.1409 0.2892,-0.1408 0.2893,-0.1407 0.2892,-0.1406 0.2892,-0.1406 0.2892,-0.1406 0.2893,-0.1404 0.2892,-0.1404 0.2892,-0.1402 0.2892,-0.1403 0.2892,-0.1401 0.2893,-0.1401 0.2892,-0.14 0.2892,-0.1399 0.2892,-0.1399 0.2892,-0.1398 0.2893,-0.1398 0.2892,-0.1396 0.2892,-0.1396 0.2892,-0.1395 0.2893,-0.1395 0.2892,-0.1394 0.2892,-0.1393 0.2892,-0.1393 0.2892,-0.1391 0.2893,-0.1391 0.2892,-0.1391 0.2892,-0.1389 0.2892,-0.1389 0.2893,-0.1388 0.2892,-0.1388 0.2892,-0.1387 0.2892,-0.1386 0.2893,-0.1385 0.2892,-0.1385 0.2892,-0.1384 0.2892,-0.1383 0.2893,-0.1382 0.2892,-0.1382 0.2892,-0.1381 0.2892,-0.1381 0.2893,-0.1379 0.2892,-0.1379 0.2892,-0.1379 0.2892,-0.1377 0.2892,-0.1377 0.2893,-0.1376 0.2892,-0.1376 0.2892,-0.1375 0.2892,-0.1374 0.2893,-0.1373 0.2892,-0.1373 0.2892,-0.1372 0.2892,-0.1371 0.2892,-0.1371 0.2893,-0.137 0.2892,-0.1369 0.2892,-0.1369 0.2892,-0.1368 0.2892,-0.1367 0.2893,-0.1366 0.2892,-0.1367 0.2892,-0.1365 0.2893,-0.1364 0.2892,-0.1364 0.2892,-0.1363 0.2892,-0.1363 0.2892,-0.1362 0.2893,-0.136 0.2892,-0.1361 0.2892,-0.136 0.2893,-0.1359 0.2891,-0.1358 0.2893,-0.1358 0.2892,-0.1357 0.2892,-0.1357 0.2893,-0.1356 0.2891,-0.1355 0.2893,-0.1354 0.2892,-0.1354 0.2892,-0.1353 0.2893,-0.1352 0.2891,-0.1352 0.2893,-0.1351 0.2892,-0.135 0.2892,-0.135 0.2893,-0.1349 0.2892,-0.1348 0.2892,-0.1348 0.2892,-0.1346 0.2892,-0.1347 0.2893,-0.1345 0.2892,-0.1345 0.2892,-0.1344 0.2892,-0.1344 0.2892,-0.1343 0.2893,-0.1341 0.2892,-0.1342 0.2892,-0.1341 0.2893,-0.134 0.2891,-0.1339 0.2893,-0.1339 0.2892,-0.1338 0.2892,-0.1337 0.2893,-0.1337 0.2891,-0.1336 0.2893,-0.1336 0.2892,-0.1334 0.2892,-0.1334 0.2893,-0.1333 0.2892,-0.1333 0.2892,-0.1332 0.2892,-0.1331 0.2892,-0.1331 0.2893,-0.133 0.2892,-0.1329 0.2892,-0.1329 0.2892,-0.1328 0.2892,-0.1327 0.2893,-0.1327 0.2892,-0.1326 0.2892,-0.1326 0.2893,-0.1325 0.2891,-0.1324 0.2893,-0.1323 0.2892,-0.1323 0.2892,-0.1322 0.2893,-0.1322 0.2891,-0.1321 0.2893,-0.132 0.2892,-0.132 0.2892,-0.1318 0.2893,-0.1318 0.2892,-0.1318 0.2892,-0.1317 0.2892,-0.1316 0.2892,-0.1315 0.2893,-0.1315 0.2892,-0.1314 0.2892,-0.1314 0.2892,-0.1312 0.2892,-0.1313 0.2893,-0.1311 0.2892,-0.1311 0.2892,-0.131 0.2893,-0.131 0.2892,-0.1309 0.2892,-0.1308 0.2892,-0.1308 0.2892,-0.1307 0.2893,-0.1306 0.2892,-0.1306 0.2892,-0.1305 0.2892,-0.1304 0.2892,-0.1304 0.2893,-0.1303 0.2892,-0.1303 0.2892,-0.1302 0.2892,-0.1301 0.2893,-0.13 0.2892,-0.13 0.2892,-0.1299 0.2892,-0.1299 0.2892,-0.1298 0.2893,-0.1297 0.2892,-0.1296 0.2892,-0.1296 0.2893,-0.1295 0.2892,-0.1295 0.2892,-0.1294 0.2892,-0.1293 0.2892,-0.1293 0.2893,-0.1292 0.2892,-0.1291 0.2892,-0.1291 0.2892,-0.129 0.2892,-0.129 0.2893,-0.1289 0.2892,-0.1288 0.2892,-0.1287 0.2893,-0.1287 0.2891,-0.1286 0.2893,-0.1286 0.2892,-0.1285 0.2892,-0.1285 0.2893,-0.1283 0.2892,-0.1283 0.2892,-0.1282 0.2892,-0.1282 0.2892,-0.1281 0.2893,-0.1281 0.2892,-0.128 0.2892,-0.1279 0.2892,-0.1278 0.2892,-0.1278 0.2893,-0.1277 0.2892,-0.1277 0.2892,-0.1276 0.2893,-0.1275 0.2892,-0.1275 0.2892,-0.1274 0.2892,-0.1273 0.2892,-0.1273 0.2893,-0.1272 0.2892,-0.1271 0.2892,-0.1271 0.2892,-0.127 0.2893,-0.1269 0.2892,-0.1269 0.2892,-0.1269 0.2892,-0.1267 0.2892,-0.1267 0.2893,-0.1267 0.2892,-0.1265 0.2892,-0.1265 0.2892,-0.1265 0.2892,-0.1264 0.2893,-0.1263 0.2892,-0.1262 0.2892,-0.1262 0.2893,-0.1262 0.2892,-0.1261 0.2892,-0.126 0.2892,-0.1259 0.2892,-0.1259 0.2893,-0.1258 0.2892,-0.1258 0.2892,-0.1257 0.2892,-0.1256 0.2892,-0.1256 0.2893,-0.1255 0.2892,-0.1254 0.2892,-0.1254 0.2893,-0.1254 0.2891,-0.1252 0.2893,-0.1252 0.2892,-0.1252 0.2892,-0.125 0.2893,-0.1251 0.2891,-0.1249 0.2893,-0.1249 0.2892,-0.1248 0.2892,-0.1247 0.2893,-0.1247 0.2892,-0.1247 0.2892,-0.1245 0.2892,-0.1245 0.2892,-0.1245 0.2893,-0.1244 0.2892,-0.1243 0.2892,-0.1242 0.2892,-0.1243 0.2892,-0.1241 0.2893,-0.1241 0.2892,-0.124 0.2892,-0.1239 0.2893,-0.1239 0.2891,-0.1238 0.2893,-0.1238 0.2892,-0.1237 0.2892,-0.1236 0.2893,-0.1236 0.2892,-0.1236 0.2892,-0.1234 0.2892,-0.1234 0.2892,-0.1233 0.2893,-0.1233 0.2892,-0.1232 0.2892,-0.1232 0.2892,-0.1231 0.2893,-0.123 0.2892,-0.1229 0.2892,-0.123 0.2892,-0.1228 0.2892,-0.1228 0.2893,-0.1227 0.2892,-0.1227 0.2892,-0.1226 0.2892,-0.1226 0.2893,-0.1225 0.2892,-0.1224 0.2892,-0.1224 0.2892,-0.1223 0.2893,-0.1222 0.2892,-0.1222 0.2892,-0.1221 0.2892,-0.1221 0.2892,-0.122 0.2893,-0.1219 0.2892,-0.1219 0.2892,-0.1218 0.2893,-0.1218 0.2891,-0.1217 0.2893,-0.1216 0.2892,-0.1216 0.2892,-0.1215 0.2893,-0.1215 0.2891,-0.1214 0.2893,-0.1214 0.2892,-0.1212 0.2892,-0.1213 0.2893,-0.1212 0.2892,-0.121 0.2892,-0.1211 0.2892,-0.121 0.2892,-0.1209 0.2893,-0.1209 0.2892,-0.1208 0.2892,-0.1208 0.2893,-0.1207 0.2891,-0.1206 0.2893,-0.1206 0.2892,-0.1205 0.2892,-0.1204 0.2893,-0.1204 0.2891,-0.1204 0.2893,-0.1203 0.2892,-0.1202 0.2892,-0.1202 0.2893,-0.1201 0.2891,-0.12 0.2893,-0.12 0.2892,-0.1199 0.2892,-0.1199 0.2893,-0.1198 0.2892,-0.1198 0.2892,-0.1196 0.2892,-0.1197 0.2892,-0.1195 0.2893,-0.1196 0.2892,-0.1194 0.2892,-0.1194 0.2892,-0.1193 0.2892,-0.1193 0.2893,-0.1192 0.2892,-0.1192 0.2892,-0.1191 0.2893,-0.119 0.2891,-0.119 0.2893,-0.119 0.2892,-0.1188 0.2892,-0.1189 0.2893,-0.1187 0.2891,-0.1187 0.2893,-0.1187 0.2892,-0.1185 0.2892,-0.1185 0.2893,-0.1185 0.2892,-0.1184 0.2892,-0.1184 0.2892,-0.1183 0.2892,-0.1182 0.2893,-0.1182 0.2892,-0.1181 0.2892,-0.1181 0.2892,-0.118 0.2892,-0.1179 0.2893,-0.1179 0.2892,-0.1179 0.2892,-0.1178 0.2893,-0.1177 0.2891,-0.1177 0.2893,-0.1176 0.2892,-0.1175 0.2892,-0.1175 0.2892,-0.1175 0.2892,-0.1173 0.2893,-0.1174 0.2892,-0.1173 0.2892,-0.1172 0.2893,-0.1171 0.2892,-0.1171 0.2892,-0.1171 0.2892,-0.117 0.2892,-0.1169 0.2893,-0.1169"
+       d="m 77.9871,354 0.2435,-0.01 0.2436,-0.0279 0.2435,-0.0533 0.2435,-0.0836 0.2436,-0.1166 0.2435,-0.1502 0.2436,-0.1818 0.2435,-0.2103 0.2435,-0.2343 0.2436,-0.2534 0.2435,-0.2674 0.2436,-0.2768 0.2435,-0.2821 0.2436,-0.2839 0.2435,-0.2831 0.2435,-0.2804 0.2436,-0.2765 0.2435,-0.272 0.2436,-0.2672 0.2435,-0.2625 0.2435,-0.2581 0.2436,-0.254 0.2435,-0.2504 0.2436,-0.2473 0.2435,-0.2446 0.2435,-0.2423 0.2436,-0.2403 0.2435,-0.2385 0.2436,-0.2371 0.2435,-0.2358 0.2435,-0.2347 0.2436,-0.2336 0.2435,-0.2329 0.2436,-0.232 0.2435,-0.2314 0.2436,-0.2307 0.2435,-0.2301 0.2435,-0.2297 0.2436,-0.2292 0.2435,-0.2287 0.2436,-0.2284 0.2435,-0.228 0.2435,-0.2276 0.2436,-0.2274 0.2435,-0.2271 0.2436,-0.2269 0.2435,-0.2266 0.2435,-0.2264 0.2436,-0.2261 0.2435,-0.226 0.2436,-0.2257 0.2435,-0.2255 0.2435,-0.2253 0.2436,-0.2251 0.2435,-0.2247 0.2436,-0.2246 0.2435,-0.2243 0.2435,-0.2241 0.2436,-0.2238 0.2435,-0.2237 0.2436,-0.2236 0.2435,-0.2234 0.2436,-0.2235 0.2435,-0.2234 0.2435,-0.2236 0.2436,-0.2236 0.2435,-0.2237 0.2436,-0.2239 0.2435,-0.2239 0.2435,-0.2241 0.2436,-0.224 0.2435,-0.2241 0.2436,-0.224 0.2435,-0.2239 0.2435,-0.2238 0.2436,-0.2237 0.2435,-0.2236 0.2436,-0.2234 0.2435,-0.2233 0.2435,-0.2231 0.2436,-0.223 0.2435,-0.223 0.2436,-0.2228 0.2435,-0.2228 0.2435,-0.2227 0.2436,-0.2226 0.2435,-0.2226 0.2436,-0.2226 0.2435,-0.2225 0.2436,-0.2224 0.2435,-0.2224 0.2435,-0.2224 0.2436,-0.2222 0.2435,-0.2223 0.2436,-0.2222 0.2435,-0.2222 0.2435,-0.2221 0.2436,-0.2221 0.2435,-0.2221 0.2436,-0.222 0.2435,-0.222 0.2435,-0.2219 0.2436,-0.2218 0.2435,-0.2219 0.2436,-0.2218 0.2435,-0.2217 0.2436,-0.2216 0.2435,-0.2217 0.2435,-0.2215 0.2436,-0.2216 0.2435,-0.2215 0.2435,-0.2214 0.2436,-0.2214 0.2435,-0.2213 0.2436,-0.2213 0.2435,-0.2213 0.2436,-0.2212 0.2435,-0.2212 0.2435,-0.2211 0.2436,-0.2211 0.2435,-0.221 0.2436,-0.221 0.2435,-0.221 0.2435,-0.2209 0.2436,-0.2209 0.2435,-0.2209 0.2436,-0.2208 0.2435,-0.2207 0.2435,-0.2207 0.2436,-0.2207 0.2435,-0.2207 0.2436,-0.2206 0.2435,-0.2206 0.2436,-0.2205 0.2435,-0.2205 0.2435,-0.2205 0.2436,-0.2205 0.2435,-0.2204 0.2436,-0.2203 0.2435,-0.2204 0.2435,-0.2203 0.2436,-0.2203 0.2435,-0.2202 0.2436,-0.2202 0.2435,-0.2201 0.2435,-0.2202 0.2436,-0.2201 0.2435,-0.22 0.2436,-0.22 0.2435,-0.22 0.2435,-0.22 0.2436,-0.2199 0.2435,-0.2199 0.2436,-0.2199 0.2435,-0.2198 0.2435,-0.2198 0.2436,-0.2198 0.2435,-0.2197 0.2436,-0.2197 0.2435,-0.2196 0.2436,-0.2197 0.2435,-0.2196 0.2435,-0.2196 0.2436,-0.2195 0.2435,-0.2195 0.2436,-0.2195 0.2435,-0.2194 0.2435,-0.2194 0.2436,-0.2194 0.2435,-0.2194 0.2436,-0.2193 0.2435,-0.2193 0.2435,-0.2192 0.2436,-0.2192 0.2435,-0.2192 0.2436,-0.2191 0.2435,-0.2191 0.2435,-0.2191 0.2436,-0.2191 0.2435,-0.219 0.2436,-0.219 0.2435,-0.219 0.2436,-0.2189 0.2435,-0.2189 0.2435,-0.2188 0.2436,-0.2189 0.2435,-0.2188 0.2436,-0.2187 0.2435,-0.2188 0.2435,-0.2187 0.2436,-0.2186 0.2435,-0.2187 0.2436,-0.2186 0.2435,-0.2186 0.2435,-0.2185 0.2436,-0.2185 0.2435,-0.2185 0.2436,-0.2184 0.2435,-0.2184 0.2436,-0.2184 0.2435,-0.2184 0.2435,-0.2183 0.2436,-0.2183 0.2435,-0.2182 0.2435,-0.2183 0.2436,-0.2182 0.2435,-0.2181 0.2436,-0.2181 0.2435,-0.2181 0.2435,-0.2181 0.2436,-0.218 0.2435,-0.218 0.2436,-0.218 0.2435,-0.2179 0.2436,-0.2179 0.2435,-0.2179 0.2435,-0.2178 0.2436,-0.2178 0.2435,-0.2178 0.2436,-0.2177 0.2435,-0.2177 0.2435,-0.2177 0.2436,-0.2176 0.2435,-0.2176 0.2436,-0.2176 0.2435,-0.2175 0.2435,-0.2175 0.2436,-0.2175 0.2435,-0.2174 0.2436,-0.2174 0.2435,-0.2174 0.2436,-0.2173 0.2435,-0.2173 0.2435,-0.2173 0.2436,-0.2172 0.2435,-0.2172 0.2436,-0.2172 0.2435,-0.2171 0.2435,-0.2171 0.2436,-0.2171 0.2435,-0.217 0.2436,-0.217 0.2435,-0.217 0.2435,-0.2169 0.2436,-0.2169 0.2435,-0.2168 0.2436,-0.2168 0.2435,-0.2168 0.2435,-0.2168 0.2436,-0.2167 0.2435,-0.2167 0.2436,-0.2166 0.2435,-0.2167 0.2436,-0.2165 0.2435,-0.2166 0.2435,-0.2164 0.2436,-0.2165 0.2435,-0.2164 0.2435,-0.2164 0.2436,-0.2163 0.2435,-0.2164 0.2436,-0.2162 0.2435,-0.2163 0.2436,-0.2162 0.2435,-0.2161 0.2435,-0.2162 0.2436,-0.216 0.2435,-0.2161 0.2436,-0.216 0.2435,-0.216 0.2435,-0.2159 0.2436,-0.2159 0.2435,-0.2159 0.2436,-0.2158 0.2435,-0.2158 0.2435,-0.2157 0.2436,-0.2157 0.2435,-0.2157 0.2436,-0.2156 0.2435,-0.2156 0.2436,-0.2156 0.2435,-0.2155 0.2435,-0.2155 0.2436,-0.2155 0.2435,-0.2154 0.2436,-0.2154 0.2435,-0.2153 0.2435,-0.2153 0.2436,-0.2153 0.2435,-0.2152 0.2436,-0.2152 0.2435,-0.2151 0.2435,-0.2151 0.2436,-0.2151 0.2435,-0.215 0.2436,-0.215 0.2435,-0.2149 0.2435,-0.2149 0.2436,-0.2149 0.2435,-0.2148 0.2436,-0.2147 0.2435,-0.2147 0.2436,-0.2147 0.2435,-0.2146 0.2435,-0.2146 0.2436,-0.2146 0.2435,-0.2145 0.2436,-0.2144 0.2435,-0.2144 0.2435,-0.2144 0.2436,-0.2143 0.2435,-0.2143 0.2436,-0.2143 0.2435,-0.2142 0.2435,-0.2142 0.2436,-0.2141 0.2435,-0.214 0.2436,-0.2141 0.2435,-0.214 0.2436,-0.2139 0.2435,-0.2139 0.2435,-0.2138 0.2436,-0.2138 0.2435,-0.2137 0.2435,-0.2137 0.2436,-0.2136 0.2435,-0.2136 0.2436,-0.2136 0.2435,-0.2135 0.2435,-0.2134 0.2436,-0.2134 0.2435,-0.2134 0.2436,-0.2133 0.2435,-0.2133 0.2436,-0.2132 0.2435,-0.2132 0.2435,-0.2131 0.2436,-0.2131 0.2435,-0.213 0.2436,-0.2129 0.2435,-0.213 0.2435,-0.2128 0.2436,-0.2129 0.2435,-0.2128 0.2436,-0.2127 0.2435,-0.2128 0.2435,-0.2126 0.2436,-0.2126 0.2435,-0.2126 0.2436,-0.2126 0.2435,-0.2125 0.2435,-0.2124 0.2436,-0.2124 0.2435,-0.2123 0.2436,-0.2123 0.2435,-0.2122 0.2436,-0.2122 0.2435,-0.2121 0.2435,-0.2121 0.2436,-0.212 0.2435,-0.212 0.2436,-0.212 0.2435,-0.2118 0.2435,-0.2119 0.2436,-0.2118 0.2435,-0.2117 0.2436,-0.2117 0.2435,-0.2116 0.2436,-0.2116 0.2435,-0.2115 0.2435,-0.2115 0.2436,-0.2114 0.2435,-0.2114 0.2436,-0.2113 0.2435,-0.2113 0.2435,-0.2112 0.2436,-0.2112 0.2435,-0.2111 0.2435,-0.211 0.2436,-0.2111 0.2435,-0.2109 0.2436,-0.2109 0.2435,-0.2108 0.2436,-0.2109 0.2435,-0.2107 0.2435,-0.2107 0.2436,-0.2106 0.2435,-0.2106 0.2436,-0.2105 0.2435,-0.2105 0.2435,-0.2104 0.2436,-0.2104 0.2435,-0.2103 0.2436,-0.2103 0.2435,-0.2102 0.2435,-0.2102 0.2436,-0.2101 0.2435,-0.21 0.2436,-0.21 0.2435,-0.21 0.2435,-0.2099 0.2436,-0.2098 0.2435,-0.2098 0.2436,-0.2097 0.2435,-0.2097 0.2436,-0.2096 0.2435,-0.2095 0.2435,-0.2095 0.2436,-0.2094 0.2435,-0.2094 0.2436,-0.2093 0.2435,-0.2093 0.2435,-0.2091 0.2436,-0.2092 0.2435,-0.2091 0.2436,-0.209 0.2435,-0.209 0.2435,-0.2089 0.2436,-0.2089 0.2435,-0.2088 0.2436,-0.2088 0.2435,-0.2087 0.2436,-0.2087 0.2435,-0.2085 0.2435,-0.2086 0.2436,-0.2084 0.2435,-0.2084 0.2435,-0.2084 0.2436,-0.2083 0.2435,-0.2082 0.2436,-0.2082 0.2435,-0.2081 0.2435,-0.2081 0.2436,-0.208 0.2435,-0.208 0.2436,-0.2079 0.2435,-0.2079 0.2436,-0.2078 0.2435,-0.2077 0.2436,-0.2077 0.2435,-0.2076 0.2435,-0.2075 0.2436,-0.2075 0.2435,-0.2074 0.2435,-0.2074 0.2436,-0.2073 0.2435,-0.2072 0.2436,-0.2072 0.2435,-0.2071 0.2435,-0.2071 0.2436,-0.207 0.2435,-0.207 0.2436,-0.2069 0.2435,-0.2068 0.2436,-0.2067 0.2435,-0.2068 0.2435,-0.2066 0.2436,-0.2066 0.2435,-0.2065 0.2436,-0.2065 0.2435,-0.2064 0.2435,-0.2063 0.2436,-0.2063 0.2435,-0.2062 0.2436,-0.2062 0.2435,-0.2061 0.2435,-0.206 0.2436,-0.206 0.2435,-0.2059 0.2436,-0.2059 0.2435,-0.2057 0.2436,-0.2058 0.2435,-0.2056 0.2435,-0.2056 0.2436,-0.2055 0.2435,-0.2055 0.2436,-0.2054 0.2435,-0.2053 0.2435,-0.2053 0.2436,-0.2052 0.2435,-0.2052 0.2436,-0.2051 0.2435,-0.205 0.2435,-0.205 0.2436,-0.2049 0.2435,-0.2048 0.2436,-0.2048 0.2435,-0.2047 0.2435,-0.2047 0.2436,-0.2046 0.2435,-0.2045 0.2436,-0.2045 0.2435,-0.2043 0.2435,-0.2044 0.2436,-0.2042 0.2435,-0.2042 0.2436,-0.2042 0.2435,-0.204 0.2435,-0.204 0.2436,-0.2039 0.2435,-0.2039 0.2436,-0.2038 0.2435,-0.2037 0.2436,-0.2036 0.2435,-0.2036 0.2435,-0.2036 0.2436,-0.2034 0.2435,-0.2034 0.2436,-0.2034 0.2435,-0.2033 0.2435,-0.2032 0.2436,-0.2032 0.2435,-0.2031 0.2436,-0.203 0.2435,-0.203 0.2435,-0.2029 0.2436,-0.2028 0.2435,-0.2028 0.2436,-0.2027 0.2435,-0.2026 0.2435,-0.2026 0.2436,-0.2024 0.2435,-0.2025 0.2436,-0.2023 0.2435,-0.2023 0.2436,-0.2022 0.2435,-0.2022 0.2435,-0.202 0.2436,-0.2021 0.2435,-0.2019 0.2436,-0.2019 0.2435,-0.2018 0.2435,-0.2017 0.2436,-0.2017 0.2435,-0.2016 0.2436,-0.2015 0.2435,-0.2015 0.2435,-0.2014 0.2436,-0.2013 0.2435,-0.2012 0.2436,-0.2012 0.2435,-0.2012 0.2436,-0.201 0.2435,-0.201 0.2435,-0.2009 0.2436,-0.2009 0.2435,-0.2008 0.2435,-0.2007 0.2436,-0.2006 0.2435,-0.2006 0.2436,-0.2005 0.2435,-0.2004 0.2435,-0.2004 0.2436,-0.2003 0.2435,-0.2002 0.2436,-0.2002 0.2435,-0.2 0.2436,-0.2 0.2435,-0.2 0.2435,-0.1998 0.2436,-0.1998 0.2435,-0.1997 0.2436,-0.1997 0.2435,-0.1995 0.2435,-0.1996 0.2436,-0.1994 0.2435,-0.1994 0.2436,-0.1992 0.2435,-0.1993 0.2436,-0.1992 0.2435,-0.1991 0.2435,-0.199 0.2436,-0.199 0.2435,-0.1989 0.2436,-0.1988 0.2435,-0.1988 0.2435,-0.1986 0.2436,-0.1986 0.2435,-0.1985 0.2436,-0.1985 0.2435,-0.1984 0.2435,-0.1983 0.2436,-0.1982 0.2435,-0.1981 0.2436,-0.1981 0.2435,-0.1981 0.2435,-0.1979 0.2436,-0.1979 0.2435,-0.1978 0.2436,-0.1978 0.2435,-0.1976 0.2435,-0.1976 0.2436,-0.1975 0.2435,-0.1975 0.2436,-0.1974 0.2435,-0.1973 0.2436,-0.1972 0.2435,-0.1972 0.2435,-0.1971 0.2436,-0.197 0.2435,-0.197 0.2436,-0.1969 0.2435,-0.1968 0.2435,-0.1968 0.2436,-0.1967 0.2435,-0.1966 0.2436,-0.1965 0.2435,-0.1965 0.2435,-0.1963 0.2436,-0.1964 0.2435,-0.1962 0.2436,-0.1962 0.2435,-0.1961 0.2435,-0.196 0.2436,-0.196 0.2435,-0.1958 0.2436,-0.1959 0.2435,-0.1957 0.2435,-0.1957 0.2436,-0.1956 0.2435,-0.1955 0.2436,-0.1955 0.2435,-0.1953 0.2435,-0.1953 0.2436,-0.1953 0.2435,-0.1951 0.2436,-0.1951 0.2435,-0.195 0.2436,-0.1949 0.2435,-0.1948 0.2435,-0.1947 0.2436,-0.1947 0.2435,-0.1946 0.2436,-0.1945 0.2435,-0.1945 0.2435,-0.1944 0.2436,-0.1943 0.2435,-0.1942 0.2436,-0.1942 0.2435,-0.1941 0.2435,-0.194 0.2436,-0.194 0.2435,-0.1939 0.2436,-0.1938 0.2435,-0.1937 0.2436,-0.1936 0.2435,-0.1936 0.2435,-0.1935 0.2436,-0.1934 0.2435,-0.1933 0.2436,-0.1933 0.2435,-0.1931 0.2435,-0.1931 0.2436,-0.1931 0.2435,-0.1929 0.2436,-0.1929 0.2435,-0.1928 0.2435,-0.1928 0.2436,-0.1926 0.2435,-0.1926 0.2436,-0.1925 0.2435,-0.1925 0.2436,-0.1923 0.2435,-0.1923 0.2435,-0.1922 0.2436,-0.1921 0.2435,-0.1921 0.2435,-0.192 0.2436,-0.1919 0.2435,-0.1919 0.2436,-0.1917 0.2435,-0.1917 0.2436,-0.1917 0.2435,-0.1915 0.2435,-0.1915 0.2436,-0.1913 0.2435,-0.1913 0.2436,-0.1913 0.2435,-0.1911 0.2435,-0.1911 0.2436,-0.1909 0.2435,-0.1909 0.2436,-0.1909 0.2435,-0.1907 0.2435,-0.1907 0.2436,-0.1906 0.2435,-0.1905 0.2436,-0.1905 0.2435,-0.1904 0.2435,-0.1903 0.2436,-0.1902 0.2435,-0.1902 0.2436,-0.1901 0.2435,-0.19 0.2436,-0.1899 0.2435,-0.1899 0.2435,-0.1897 0.2436,-0.1897 0.2435,-0.1897 0.2436,-0.1895 0.2435,-0.1895 0.2435,-0.1894 0.2436,-0.1893 0.2435,-0.1892 0.2436,-0.1892 0.2435,-0.1891 0.2435,-0.189 0.2436,-0.1889 0.2435,-0.1888 0.2436,-0.1888 0.2435,-0.1887 0.2435,-0.1886 0.2436,-0.1885 0.2435,-0.1885 0.2436,-0.1883 0.2435,-0.1883 0.2436,-0.1883 0.2435,-0.1881 0.2435,-0.1881 0.2436,-0.188 0.2435,-0.1879 0.2435,-0.1878 0.2436,-0.1877 0.2435,-0.1877 0.2436,-0.1876 0.2435,-0.1875 0.2435,-0.1874 0.2436,-0.1874 0.2435,-0.1873 0.2436,-0.1872 0.2435,-0.1871 0.2436,-0.187 0.2435,-0.187 0.2435,-0.1869 0.2436,-0.1868 0.2435,-0.1867 0.2436,-0.1867 0.2435,-0.1866 0.2435,-0.1865 0.2436,-0.1864 0.2435,-0.1864 0.2436,-0.1863 0.2435,-0.1862 0.2436,-0.1861 0.2435,-0.186 0.2435,-0.186 0.2436,-0.1859 0.2435,-0.1858 0.2436,-0.1857 0.2435,-0.1856 0.2435,-0.1856 0.2436,-0.1855 0.2435,-0.1854 0.2436,-0.1853 0.2435,-0.1852 0.2435,-0.1852 0.2436,-0.185 0.2435,-0.185 0.2436,-0.1849 0.2435,-0.1849 0.2436,-0.1847 0.2435,-0.1847 0.2435,-0.1846 0.2436,-0.1845 0.2435,-0.1845 0.2435,-0.1843 0.2436,-0.1843 0.2435,-0.1842 0.2436,-0.1841 0.2435,-0.184 0.2435,-0.184 0.2436,-0.1839 0.2435,-0.1838 0.2436,-0.1837 0.2435,-0.1836 0.2436,-0.1836 0.2435,-0.1834 0.2436,-0.1834 0.2435,-0.1833 0.2435,-0.1832 0.2436,-0.1832 0.2435,-0.183 0.2435,-0.183 0.2436,-0.1829 0.2435,-0.1828 0.2436,-0.1828 0.2435,-0.1827 0.2435,-0.1825 0.2436,-0.1825 0.2435,-0.1825 0.2436,-0.1823 0.2435,-0.1823 0.2435,-0.1822 0.2436,-0.1821 0.2435,-0.182 0.2436,-0.182 0.2435,-0.1819 0.2436,-0.1817 0.2435,-0.1817 0.2435,-0.1817 0.2436,-0.1815 0.2435,-0.1815 0.2436,-0.1814 0.2435,-0.1813 0.2435,-0.1812 0.2436,-0.1812 0.2435,-0.1811 0.2436,-0.1809 0.2435,-0.1809 0.2435,-0.1809 0.2436,-0.1807 0.2435,-0.1807 0.2435,-0.1805 0.2436,-0.1806 0.2436,-0.1804 0.2435,-0.1803 0.2435,-0.1803 0.2436,-0.1801 0.2435,-0.1801 0.2436,-0.18 0.2435,-0.18 0.2435,-0.1798 0.2436,-0.1798 0.2435,-0.1797 0.2436,-0.1796 0.2435,-0.1795 0.2436,-0.1794 0.2435,-0.1794 0.2435,-0.1793 0.2435,-0.1792 0.2436,-0.1792 0.2435,-0.179 0.2436,-0.179 0.2435,-0.1789 0.2436,-0.1788 0.2435,-0.1788 0.2435,-0.1786 0.2436,-0.1786 0.2435,-0.1785 0.2436,-0.1785 0.2435,-0.1783 0.2436,-0.1783 0.2435,-0.1782 0.2436,-0.1781 0.2435,-0.178 0.2435,-0.1779 0.2435,-0.1779 0.2436,-0.1777 0.2435,-0.1777 0.2436,-0.1777 0.2435,-0.1775 0.2436,-0.1774 0.2435,-0.1774 0.2435,-0.1773 0.2436,-0.1772 0.2435,-0.1772 0.2436,-0.177 0.2435,-0.177 0.2435,-0.1769 0.2436,-0.1768 0.2435,-0.1767 0.2436,-0.1767 0.2435,-0.1765 0.2435,-0.1765 0.2436,-0.1764 0.2435,-0.1764 0.2436,-0.1762 0.2435,-0.1762 0.2436,-0.1761 0.2435,-0.176 0.2435,-0.1759 0.2436,-0.1759 0.2435,-0.1757 0.2436,-0.1757 0.2435,-0.1756 0.2435,-0.1755 0.2436,-0.1755 0.2435,-0.1753 0.2435,-0.1753 0.2436,-0.1752 0.2435,-0.1752 0.2436,-0.175 0.2435,-0.175 0.2436,-0.1749 0.2435,-0.1748 0.2436,-0.1747 0.2435,-0.1747 0.2435,-0.1745 0.2436,-0.1745 0.2435,-0.1744 0.2436,-0.1743 0.2435,-0.1742 0.2435,-0.1741 0.2436,-0.174 0.2435,-0.174 0.2435,-0.1739 0.2436,-0.1738 0.2435,-0.1737 0.2436,-0.1736 0.2435,-0.1736 0.2436,-0.1735 0.2435,-0.1734 0.2435,-0.1733 0.2436,-0.1733 0.2435,-0.1731 0.2435,-0.1731 0.2436,-0.1729 0.2436,-0.1729 0.2435,-0.1729 0.2435,-0.1727 0.2436,-0.1726 0.2435,-0.1726 0.2435,-0.1724 0.2436,-0.1724 0.2435,-0.1723 0.2436,-0.1723 0.2435,-0.1722 0.2436,-0.172 0.2435,-0.1721 0.2435,-0.1719 0.2436,-0.1718 0.2435,-0.1718 0.2435,-0.1717 0.2436,-0.1717 0.2435,-0.1715 0.2436,-0.1714 0.2435,-0.1714 0.2436,-0.1713 0.2435,-0.1712 0.2435,-0.1711 0.2436,-0.1711 0.2435,-0.1709 0.2436,-0.171 0.2435,-0.1708 0.2436,-0.1707 0.2435,-0.1707 0.2435,-0.1706 0.2436,-0.1705 0.2435,-0.1705 0.2435,-0.1703 0.2436,-0.1703 0.2435,-0.1702 0.2436,-0.1701 0.2435,-0.17 0.2435,-0.17 0.2436,-0.1698 0.2435,-0.1698 0.2436,-0.1697 0.2435,-0.1697 0.2436,-0.1695 0.2435,-0.1695 0.2435,-0.1694 0.2436,-0.1694 0.2435,-0.1692 0.2436,-0.1692 0.2435,-0.1691 0.2436,-0.169 0.2435,-0.1689 0.2435,-0.1688 0.2436,-0.1688 0.2435,-0.1687 0.2435,-0.1685 0.2436,-0.1686 0.2435,-0.1684 0.2436,-0.1684 0.2435,-0.1682 0.2436,-0.1682 0.2435,-0.1682 0.2435,-0.168 0.2436,-0.168 0.2435,-0.1679 0.2435,-0.1678 0.2436,-0.1677 0.2436,-0.1677 0.2435,-0.1675 0.2435,-0.1675 0.2436,-0.1674 0.2435,-0.1673 0.2435,-0.1672 0.2436,-0.1672 0.2435,-0.1671 0.2436,-0.1669 0.2435,-0.1669 0.2436,-0.1669 0.2435,-0.1667 0.2435,-0.1667 0.2436,-0.1666 0.2435,-0.1665 0.2435,-0.1664 0.2436,-0.1664 0.2435,-0.1663 0.2436,-0.1662 0.2435,-0.1661 0.2436,-0.1661 0.2435,-0.166 0.2435,-0.1658 0.2436,-0.1658 0.2435,-0.1658 0.2436,-0.1656 0.2435,-0.1656 0.2436,-0.1655 0.2435,-0.1654 0.2435,-0.1653 0.2436,-0.1652 0.2435,-0.1651 0.2435,-0.1651 0.2436,-0.165 0.2435,-0.1649 0.2436,-0.1648 0.2435,-0.1648 0.2435,-0.1646 0.2436,-0.1647 0.2435,-0.1645 0.2436,-0.1644 0.2435,-0.1644 0.2436,-0.1643 0.2435,-0.1642 0.2435,-0.1642 0.2436,-0.164 0.2435,-0.164 0.2436,-0.1639 0.2435,-0.1638 0.2435,-0.1638 0.2436,-0.1637 0.2435,-0.1635 0.2436,-0.1636 0.2435,-0.1634 0.2435,-0.1633 0.2436,-0.1633 0.2435,-0.1632 0.2436,-0.1631 0.2435,-0.163 0.2436,-0.163 0.2435,-0.1628 0.2435,-0.1628 0.2435,-0.1627 0.2436,-0.1627 0.2436,-0.1625 0.2435,-0.1625 0.2435,-0.1624 0.2436,-0.1623 0.2435,-0.1622 0.2436,-0.1622 0.2435,-0.1621 0.2435,-0.162 0.2436,-0.1619 0.2435,-0.1619 0.2436,-0.1618 0.2435,-0.1617 0.2436,-0.1616 0.2435,-0.1615 0.2435,-0.1615 0.2435,-0.1614 0.2436,-0.1613 0.2435,-0.1612 0.2436,-0.1612 0.2435,-0.1611 0.2436,-0.161 0.2435,-0.1609 0.2436,-0.1608 0.2435,-0.1608 0.2435,-0.1607 0.2436,-0.1606 0.2435,-0.1605 0.2436,-0.1604 0.2435,-0.1603 0.2436,-0.1603 0.2435,-0.1602 0.2435,-0.1601 0.2435,-0.1601 0.2436,-0.1599 0.2435,-0.1599 0.2436,-0.1598 0.2435,-0.1598 0.2436,-0.1596 0.2435,-0.1596 0.2435,-0.1595 0.2436,-0.1594 0.2435,-0.1594 0.2436,-0.1593 0.2435,-0.1592 0.2435,-0.1591 0.2436,-0.159 0.2435,-0.159 0.2436,-0.1589 0.2435,-0.1587 0.2435,-0.1588 0.2436,-0.1586 0.2435,-0.1585 0.2436,-0.1585 0.2435,-0.1584 0.2436,-0.1584 0.2435,-0.1582 0.2435,-0.1582 0.2436,-0.1581 0.2435,-0.158 0.2436,-0.1579 0.2435,-0.1579 0.2435,-0.1578 0.2436,-0.1576 0.2435,-0.1577 0.2435,-0.1575 0.2436,-0.1575 0.2436,-0.1574 0.2435,-0.1572 0.2435,-0.1573 0.2436,-0.1571 0.2435,-0.1571 0.2436,-0.157 0.2435,-0.1569 0.2435,-0.1568 0.2436,-0.1568 0.2435,-0.1567 0.2436,-0.1566 0.2435,-0.1565 0.2435,-0.1565 0.2436,-0.1564 0.2435,-0.1563 0.2435,-0.1562 0.2436,-0.1562 0.2435,-0.1561 0.2436,-0.156 0.2435,-0.1559 0.2436,-0.1559 0.2435,-0.1558 0.2436,-0.1557 0.2435,-0.1556 0.2435,-0.1555 0.2436,-0.1555 0.2435,-0.1554 0.2436,-0.1553 0.2435,-0.1553 0.2435,-0.1552 0.2436,-0.1551 0.2435,-0.155 0.2435,-0.1549 0.2436,-0.1549 0.2435,-0.1548 0.2436,-0.1547 0.2435,-0.1546 0.2436,-0.1546 0.2435,-0.1544 0.2435,-0.1544 0.2436,-0.1544 0.2435,-0.1542 0.2436,-0.1542 0.2435,-0.1541 0.2435,-0.154 0.2436,-0.154 0.2435,-0.1538 0.2436,-0.1538 0.2435,-0.1537 0.2435,-0.1537 0.2436,-0.1535 0.2435,-0.1535 0.2436,-0.1534 0.2435,-0.1534 0.2436,-0.1532 0.2435,-0.1532 0.2435,-0.1531 0.2436,-0.153 0.2435,-0.153 0.2436,-0.1529 0.2435,-0.1528 0.2435,-0.1528 0.2436,-0.1527 0.2435,-0.1526 0.2435,-0.1525 0.2436,-0.1524 0.2435,-0.1524 0.2436,-0.1523 0.2435,-0.1522 0.2436,-0.1521 0.2435,-0.1521 0.2435,-0.1519 0.2436,-0.1519 0.2435,-0.1519 0.2436,-0.1517 0.2435,-0.1517 0.2436,-0.1516 0.2435,-0.1515 0.2435,-0.1514 0.2436,-0.1514 0.2435,-0.1513 0.2435,-0.1512 0.2436,-0.1512 0.2435,-0.1511 0.2436,-0.1509 0.2435,-0.151 0.2436,-0.1508 0.2435,-0.1508 0.2436,-0.1507 0.2435,-0.1506 0.2435,-0.1506 0.2435,-0.1504 0.2436,-0.1504 0.2436,-0.1504 0.2435,-0.1502 0.2435,-0.1502 0.2436,-0.1501 0.2435,-0.15 0.2435,-0.15 0.2436,-0.1499 0.2435,-0.1498 0.2436,-0.1497 0.2435,-0.1497 0.2436,-0.1496 0.2435,-0.1495 0.2435,-0.1494 0.2436,-0.1493 0.2435,-0.1493 0.2435,-0.1492 0.2436,-0.1491 0.2435,-0.1491 0.2436,-0.1489 0.2435,-0.1489 0.2436,-0.1489 0.2435,-0.1487 0.2435,-0.1487 0.2436,-0.1486 0.2435,-0.1485 0.2436,-0.1485 0.2435,-0.1484 0.2436,-0.1483 0.2435,-0.1482 0.2435,-0.1482 0.2436,-0.1481 0.2435,-0.148 0.2435,-0.1479 0.2436,-0.1479 0.2435,-0.1478 0.2436,-0.1477 0.2435,-0.1476 0.2435,-0.1476 0.2436,-0.1474 0.2435,-0.1475 0.2436,-0.1473 0.2435,-0.1472 0.2436,-0.1472 0.2435,-0.1471 0.2435,-0.1471 0.2436,-0.1469 0.2435,-0.1469 0.2436,-0.1468 0.2435,-0.1468 0.2435,-0.1466 0.2436,-0.1466 0.2435,-0.1466 0.2436,-0.1464 0.2435,-0.1464 0.2435,-0.1463 0.2436,-0.1462 0.2435,-0.1462 0.2436,-0.1461 0.2435,-0.146 0.2436,-0.1459 0.2435,-0.1459 0.2435,-0.1458 0.2435,-0.1457 0.2436,-0.1456 0.2435,-0.1456 0.2436,-0.1455 0.2435,-0.1454 0.2436,-0.1453 0.2435,-0.1453 0.2436,-0.1452 0.2435,-0.1451 0.2435,-0.1451 0.2436,-0.1449 0.2435,-0.1449 0.2436,-0.1449 0.2435,-0.1447 0.2436,-0.1447 0.2435,-0.1446 0.2435,-0.1445 0.2436,-0.1445 0.2435,-0.1444 0.2435,-0.1443 0.2436,-0.1443 0.2435,-0.1442 0.2436,-0.1441 0.2435,-0.144 0.2436,-0.144 0.2435,-0.1439 0.2435,-0.1438 0.2436,-0.1438 0.2435,-0.1437 0.2435,-0.1435 0.2436,-0.1436 0.2436,-0.1434 0.2435,-0.1434 0.2435,-0.1433 0.2436,-0.1433 0.2435,-0.1432 0.2435,-0.1431 0.2436,-0.143 0.2435,-0.143 0.2436,-0.1429 0.2435,-0.1428 0.2435,-0.1428 0.2436,-0.1426 0.2435,-0.1427 0.2436,-0.1425 0.2435,-0.1425 0.2435,-0.1424 0.2436,-0.1423 0.2435,-0.1422 0.2436,-0.1422 0.2435,-0.1421 0.2436,-0.142 0.2435,-0.142 0.2435,-0.1418 0.2436,-0.1419 0.2435,-0.1417 0.2436,-0.1417 0.2435,-0.1415 0.2435,-0.1416 0.2436,-0.1414 0.2435,-0.1414 0.2436,-0.1414 0.2435,-0.1412 0.2435,-0.1412 0.2436,-0.1411 0.2435,-0.141 0.2435,-0.141 0.2436,-0.1409 0.2435,-0.1408 0.2436,-0.1407 0.2435,-0.1407 0.2436,-0.1406 0.2435,-0.1406 0.2436,-0.1404 0.2435,-0.1404 0.2435,-0.1403 0.2436,-0.1403 0.2435,-0.1401 0.2436,-0.1402 0.2435,-0.14 0.2436,-0.14 0.2435,-0.1398 0.2435,-0.1399 0.2435,-0.1397 0.2436,-0.1397 0.2435,-0.1396 0.2436,-0.1395 0.2435,-0.1395 0.2436,-0.1394 0.2435,-0.1393 0.2436,-0.1393 0.2435,-0.1392 0.2435,-0.1391 0.2436,-0.1391 0.2435,-0.139 0.2435,-0.1389 0.2436,-0.1389 0.2436,-0.1387 0.2435,-0.1388 0.2435,-0.1386 0.2435,-0.1386 0.2436,-0.1385 0.2435,-0.1384 0.2436,-0.1383 0.2435,-0.1383 0.2436,-0.1382 0.2435,-0.1382 0.2435,-0.1381 0.2436,-0.138 0.2435,-0.1379 0.2436,-0.1378 0.2435,-0.1378 0.2435,-0.1378 0.2436,-0.1376 0.2435,-0.1376 0.2436,-0.1375 0.2435,-0.1374 0.2435,-0.1374 0.2436,-0.1373 0.2435,-0.1373 0.2436,-0.1371 0.2435,-0.1371 0.2436,-0.1371 0.2435,-0.1369 0.2435,-0.1369 0.2436,-0.1368 0.2435,-0.1368 0.2436,-0.1367 0.2435,-0.1366 0.2435,-0.1366 0.2436,-0.1365 0.2435,-0.1364 0.2435,-0.1364 0.2436,-0.1363 0.2435,-0.1362 0.2436,-0.1361 0.2435,-0.1361 0.2436,-0.136 0.2435,-0.1359 0.2436,-0.1359 0.2435,-0.1358 0.2435,-0.1358 0.2436,-0.1356 0.2435,-0.1356 0.2436,-0.1355 0.2435,-0.1355 0.2435,-0.1354 0.2436,-0.1353 0.2435,-0.1352 0.2435,-0.1352 0.2436,-0.1351 0.2435,-0.135 0.2436,-0.135 0.2435,-0.1348 0.2436,-0.1349 0.2435,-0.1347 0.2436,-0.1347 0.2435,-0.1346 0.2435,-0.1345 0.2435,-0.1345 0.2436,-0.1344 0.2435,-0.1344 0.2436,-0.1343 0.2435,-0.1342 0.2436,-0.1341 0.2435,-0.1341 0.2435,-0.134 0.2436,-0.1339 0.2435,-0.1339 0.2436,-0.1339 0.2435,-0.1337 0.2436,-0.1337 0.2435,-0.1336 0.2435,-0.1335 0.2436,-0.1335 0.2435,-0.1334 0.2435,-0.1333 0.2436,-0.1333 0.2435,-0.1332 0.2436,-0.1331 0.2435,-0.1331 0.2436,-0.133 0.2435,-0.1329 0.2435,-0.1329 0.2436,-0.1328 0.2435,-0.1327 0.2436,-0.1326 0.2435,-0.1326 0.2435,-0.1325 0.2436,-0.1325 0.2435,-0.1324 0.2436,-0.1323 0.2435,-0.1322 0.2435,-0.1322 0.2436,-0.1321 0.2435,-0.1321 0.2436,-0.1319 0.2435,-0.132 0.2435,-0.1318 0.2436,-0.1318 0.2435,-0.1317 0.2436,-0.1317 0.2435,-0.1315 0.2436,-0.1316 0.2435,-0.1314 0.2435,-0.1314 0.2436,-0.1313 0.2435,-0.1313 0.2436,-0.1312 0.2435,-0.1311 0.2436,-0.131 0.2435,-0.131 0.2435,-0.131 0.2436,-0.1308 0.2435,-0.1308 0.2435,-0.1308 0.2436,-0.1306 0.2435,-0.1306 0.2436,-0.1306 0.2435,-0.1305 0.2436,-0.1304 0.2435,-0.1303 0.2435,-0.1303 0.2436,-0.1302 0.2435,-0.1302 0.2435,-0.1301 0.2436,-0.13 0.2435,-0.13 0.2436,-0.1298 0.2435,-0.1298 0.2436,-0.1298 0.2435,-0.1297 0.2435,-0.1296 0.2436,-0.1296 0.2435,-0.1295 0.2436,-0.1294 0.2435,-0.1294 0.2436,-0.1293 0.2435,-0.1292 0.2435,-0.1292 0.2436,-0.1291 0.2435,-0.1291 0.2435,-0.1289 0.2436,-0.129 0.2435,-0.1288 0.2436,-0.1288 0.2435,-0.1287 0.2436,-0.1286 0.2435,-0.1286 0.2435,-0.1285 0.2436,-0.1285 0.2435,-0.1284 0.2436,-0.1283 0.2435,-0.1283 0.2436,-0.1282 0.2435,-0.1281 0.2435,-0.128 0.2436,-0.128 0.2435,-0.1279 0.2435,-0.1279 0.2436,-0.1278 0.2435,-0.1277 0.2436,-0.1277 0.2435,-0.1276 0.2435,-0.1276 0.2436,-0.1275 0.2435,-0.1274 0.2436,-0.1274 0.2435,-0.1273 0.2436,-0.1273 0.2435,-0.1272 0.2435,-0.1271 0.2436,-0.127 0.2435,-0.127 0.2436,-0.1269 0.2435,-0.1269 0.2435,-0.1268 0.2436,-0.1268 0.2435,-0.1266 0.2436,-0.1266 0.2435,-0.1266 0.2435,-0.1265 0.2436,-0.1264 0.2435,-0.1263 0.2436,-0.1263 0.2435,-0.1262 0.2436,-0.1262 0.2435,-0.1261 0.2435,-0.126 0.2436,-0.126 0.2435,-0.1259 0.2435,-0.1258 0.2436,-0.1258 0.2435,-0.1257 0.2436,-0.1257 0.2435,-0.1256 0.2436,-0.1255 0.2435,-0.1255 0.2435,-0.1254 0.2436,-0.1253 0.2435,-0.1253 0.2436,-0.1253 0.2435,-0.1251 0.2436,-0.1251 0.2435,-0.1251 0.2435,-0.125 0.2435,-0.1249 0.2436,-0.1248 0.2435,-0.1248 0.2436,-0.1247 0.2435,-0.1247 0.2436,-0.1246 0.2435,-0.1245 0.2436,-0.1244 0.2435,-0.1244 0.2435,-0.1244 0.2436,-0.1243 0.2435,-0.1242 0.2435,-0.1242 0.2436,-0.1241 0.2436,-0.124 0.2435,-0.124 0.2435,-0.1239 0.2435,-0.1238 0.2436,-0.1238 0.2435,-0.1238 0.2436,-0.1236 0.2435,-0.1236 0.2436,-0.1236 0.2435,-0.1234 0.2435,-0.1235 0.2436,-0.1233 0.2435,-0.1233 0.2436,-0.1233 0.2435,-0.1231 0.2435,-0.1231 0.2436,-0.1231 0.2435,-0.123 0.2436,-0.1229 0.2435,-0.1228 0.2435,-0.1229 0.2436,-0.1227 0.2435,-0.1227 0.2436,-0.1226 0.2435,-0.1225 0.2435,-0.1225 0.2436,-0.1224 0.2435,-0.1224 0.2436,-0.1223 0.2435,-0.1222 0.2435,-0.1222 0.2436,-0.1221 0.2436,-0.1221 0.2435,-0.122 0.2435,-0.1219 0.2436,-0.1219 0.2435,-0.1218 0.2435,-0.1218 0.2436,-0.1216 0.2435,-0.1217 0.2436,-0.1215 0.2435,-0.1215 0.2436,-0.1215 0.2435,-0.1214 0.2435,-0.1213 0.2436,-0.1213 0.2435,-0.1212 0.2436,-0.1211 0.2435,-0.1211 0.2435,-0.1211 0.2436,-0.1209 0.2435,-0.1209 0.2435,-0.1209 0.2436,-0.1208 0.2435,-0.1207 0.2436,-0.1207 0.2435,-0.1206 0.2436,-0.1205 0.2435,-0.1205 0.2435,-0.1204 0.2436,-0.1204 0.2435,-0.1204 0.2435,-0.1202 0.2436,-0.1202 0.2435,-0.1201 0.2436,-0.1201 0.2436,-0.12 0.2435,-0.12 0.2435,-0.1198 0.2436,-0.1199 0.2435,-0.1197 0.2435,-0.1197 0.2436,-0.1197 0.2435,-0.1196 0.2436,-0.1195 0.2435,-0.1194 0.2435,-0.1195 0.2436,-0.1193 0.2435,-0.1193 0.2436,-0.1192 0.2435,-0.1192 0.2435,-0.1191 0.2436,-0.1191 0.2435,-0.1189 0.2436,-0.119 0.2435,-0.1189 0.2435,-0.1188 0.2436,-0.1187 0.2435,-0.1187 0.2436,-0.1187 0.2435,-0.1185 0.2435,-0.1185 0.2436,-0.1185 0.2435,-0.1184 0.2436,-0.1184 0.2435,-0.1182 0.2435,-0.1183 0.2436,-0.1181 0.2436,-0.1181 0.2435,-0.1181 0.2435,-0.118 0.2436,-0.1179 0.2435,-0.1179 0.2435,-0.1178 0.2436,-0.1178 0.2435,-0.1177 0.2435,-0.1176 0.2436,-0.1176 0.2436,-0.1176 0.2435,-0.1174 0.2435,-0.1174 0.2436,-0.1174 0.2435,-0.1173 0.2436,-0.1172 0.2435,-0.1172 0.2435,-0.1171 0.2436,-0.1171 0.2435,-0.117 0.2435,-0.117 0.2436,-0.1169 0.2435,-0.1168 0.2436,-0.1168 0.2435,-0.1167 0.2436,-0.1166 0.2435,-0.1167 0.2435,-0.1165 0.2436,-0.1165 0.2435,-0.1164 0.2435,-0.1164 0.2436,-0.1163 0.2435,-0.1163 0.2436,-0.1162 0.2436,-0.1162 0.2435,-0.1161 0.2435,-0.116 0.2435,-0.116 0.2436,-0.1159 0.2435,-0.1159 0.2436,-0.1158 0.2435,-0.1157 0.2436,-0.1157 0.2435,-0.1157 0.2435,-0.1155 0.2435,-0.1156 0.2436,-0.1154 0.2436,-0.1155 0.2435,-0.1153 0.2435,-0.1153 0.2436,-0.1153 0.2435,-0.1152 0.2436,-0.1151 0.2435,-0.1151 0.2435,-0.115 0.2436,-0.1149 0.2435,-0.1149 0.2436,-0.1149 0.2435,-0.1148 0.2435,-0.1147 0.2436,-0.1147 0.2435,-0.1146 0.2436,-0.1145 0.2435,-0.1145 0.2435,-0.1145 0.2436,-0.1144 0.2435,-0.1143 0.2436,-0.1143 0.2435,-0.1143 0.2436,-0.1141 0.2435,-0.1141 0.2435,-0.1141 0.2436,-0.114 0.2435,-0.114 0.2435,-0.1139 0.2436,-0.1138 0.2436,-0.1138 0.2435,-0.1137 0.2435,-0.1137 0.2435,-0.1136 0.2436,-0.1136 0.2436,-0.1135 0.2435,-0.1134 0.2435,-0.1134 0.2436,-0.1134 0.2435,-0.1133 0.2435,-0.1132 0.2436,-0.1132 0.2435,-0.1131 0.2436,-0.1131 0.2435,-0.113 0.2436,-0.1129 0.2435,-0.1129 0.2435,-0.1129 0.2436,-0.1128 0.2435,-0.1128 0.2435,-0.1126 0.2436,-0.1127 0.2435,-0.1126 0.2436,-0.1125 0.2435,-0.1125 0.2436,-0.1124 0.2435,-0.1124 0.2435,-0.1123 0.2436,-0.1122 0.2435,-0.1122"
        style="fill:none;fill-rule:evenodd"
-       id="path1023"
+       id="path1099"
        inkscape:connector-curvature="0" />
     <path
-       d="m 86.5,410 0.516,-0.4192 0.5156,-0.4188 0.5157,-0.4188 0.5156,-0.4189 0.5156,-0.4188 0.5156,-0.4188 0.5156,-0.4188 0.5156,-0.4189 0.5157,-0.4187 0.5156,-0.4188 0.5156,-0.4187 0.5158,-0.4188 0.5154,-0.4187 0.5154,-0.4186 0.516,-0.4188 0.5212,-0.4233 0.5154,-0.4186 0.516,-0.4188 0.5155,-0.4184 0.5154,-0.4186 0.516,-0.4184 0.5154,-0.4185 0.5154,-0.4186 0.516,-0.4184 0.5155,-0.4186 0.5154,-0.4184 0.516,-0.4185 0.5154,-0.4186 0.5154,-0.4184 0.516,-0.4186 0.5212,-0.423 0.5154,-0.4184 0.516,-0.4185 0.5155,-0.4178 0.5154,-0.4185 0.516,-0.4185 0.5154,-0.4178 0.5154,-0.4184 0.516,-0.4178 0.5155,-0.4185 0.5154,-0.4177 0.516,-0.4178 0.5154,-0.4177 0.5154,-0.4178 0.516,-0.4185 0.5212,-0.4223 0.5154,-0.4177 0.516,-0.417 0.5155,-0.4177 0.5154,-0.4178 0.516,-0.417 0.5154,-0.4177 0.5154,-0.4171 0.516,-0.4177 0.5155,-0.417 0.5154,-0.417 0.516,-0.417 0.5154,-0.417 0.5154,-0.417 0.516,-0.417 0.5212,-0.4215 0.5154,-0.417 0.516,-0.4163 0.5155,-0.417 0.5154,-0.4162 0.516,-0.417 0.5154,-0.4163 0.5154,-0.4162 0.516,-0.4163 0.5155,-0.4162 0.5154,-0.4162 0.516,-0.4163 0.5154,-0.4155 0.5154,-0.4163 0.516,-0.4155 0.5212,-0.4207 0.5154,-0.4155 0.516,-0.4155 0.5155,-0.4155 0.5154,-0.4148 0.516,-0.4155 0.5154,-0.4154 0.5154,-0.4148 0.516,-0.4147 0.5155,-0.4155 0.5154,-0.4148 0.516,-0.4147 0.5154,-0.414 0.5154,-0.4148 0.516,-0.4147 0.5212,-0.4186 0.5154,-0.414 0.516,-0.4147 0.5155,-0.414 0.5154,-0.414 0.516,-0.414 0.5154,-0.414 0.5154,-0.414 0.516,-0.4132 0.5155,-0.414 0.5154,-0.4133 0.516,-0.4133 0.5154,-0.4132 0.5154,-0.4133 0.516,-0.4132 0.5212,-0.417 0.5154,-0.4125 0.516,-0.4133 0.5155,-0.4117 0.5154,-0.4125 0.516,-0.4125 0.5177,-0.4118 0.516,-0.4117 0.5103,-0.4117 0.516,-0.4118 0.516,-0.4117 0.516,-0.411 0.516,-0.4118 0.516,-0.411 0.516,-0.4102 0.5217,-0.4155 0.516,-0.4111 0.516,-0.4102 0.516,-0.4103 0.516,-0.4102 0.516,-0.4102 0.516,-0.4103 0.516,-0.4102 0.5103,-0.4096 0.516,-0.4094 0.516,-0.4096 0.516,-0.4094 0.516,-0.4088 0.516,-0.4095 0.516,-0.4088 0.5217,-0.4132 0.516,-0.4088 0.516,-0.4087 0.516,-0.408 0.516,-0.4087 0.516,-0.408 0.516,-0.4081 0.516,-0.4079 0.5103,-0.4073 0.516,-0.408 0.516,-0.4073 0.516,-0.4072 0.516,-0.4072 0.516,-0.4073 0.516,-0.4065 0.5217,-0.4118 0.516,-0.4065 0.516,-0.4064 0.516,-0.4065 0.516,-0.4065 0.516,-0.4058 0.516,-0.4065 0.516,-0.4058 0.5103,-0.4057 0.516,-0.4057 0.516,-0.405 0.516,-0.4058 0.516,-0.405 0.516,-0.405 0.516,-0.405 0.5217,-0.4095 0.516,-0.405 0.516,-0.4043 0.516,-0.4042 0.516,-0.4043 0.516,-0.4035 0.516,-0.4042 0.516,-0.4035 0.5103,-0.4035 0.516,-0.4035 0.516,-0.4027 0.516,-0.4028 0.516,-0.4028 0.516,-0.4027 0.516,-0.4027 0.5217,-0.4066 0.516,-0.4042 0.516,-0.3975 0.516,-0.405 0.516,-0.3975 0.516,-0.405 0.516,-0.3975 0.516,-0.405 0.5103,-0.3975 0.516,-0.405 0.516,-0.3975 0.516,-0.3975 0.516,-0.405 0.516,-0.3975 0.516,-0.3975 0.5217,-0.405 0.516,-0.3975 0.516,-0.3975 0.516,-0.405 0.516,-0.3975 0.516,-0.3975 0.516,-0.3975 0.516,-0.3975 0.5103,-0.3975 0.516,-0.3975 0.516,-0.3975 0.516,-0.3975 0.516,-0.3975 0.516,-0.3975 0.516,-0.3975 0.5217,-0.3975 0.516,-0.3975 0.516,-0.3975 0.516,-0.39 0.516,-0.3975 0.516,-0.3975 0.516,-0.39 0.516,-0.3975 0.5103,-0.3975 0.516,-0.39 0.516,-0.3975 0.516,-0.39 0.516,-0.3975 0.516,-0.39 0.516,-0.3975 0.5217,-0.3975 0.516,-0.39 0.516,-0.39 0.516,-0.3975 0.516,-0.39 0.516,-0.39 0.516,-0.39 0.516,-0.3975 0.5103,-0.39 0.516,-0.39 0.516,-0.39 0.516,-0.39 0.516,-0.39 0.516,-0.39 0.516,-0.39 0.5217,-0.3975 0.516,-0.39 0.516,-0.3825 0.516,-0.39 0.516,-0.39 0.516,-0.39 0.516,-0.39 0.516,-0.3825 0.5103,-0.39 0.516,-0.39 0.516,-0.3825 0.516,-0.39 0.516,-0.39 0.516,-0.3825 0.516,-0.39 0.5217,-0.39 0.516,-0.3825 0.516,-0.39 0.516,-0.3825 0.516,-0.3825 0.516,-0.39 0.516,-0.3825 0.516,-0.3825 0.5103,-0.3825 0.516,-0.39 0.516,-0.3825 0.516,-0.3825 0.516,-0.3825 0.516,-0.3825 0.516,-0.3825 0.5217,-0.39 0.516,-0.3825 0.516,-0.375 0.516,-0.3825 0.516,-0.3825 0.516,-0.3825 0.516,-0.3825 0.516,-0.3825 0.5103,-0.375 0.516,-0.3825 0.516,-0.3825 0.516,-0.375 0.516,-0.3825 0.516,-0.3825 0.516,-0.375 0.5217,-0.3825 0.516,-0.3825 0.516,-0.375 0.516,-0.3825 0.516,-0.375 0.516,-0.3825 0.516,-0.375 0.516,-0.375 0.5103,-0.3825 0.516,-0.375 0.516,-0.375 0.516,-0.375 0.516,-0.375 0.516,-0.375 0.516,-0.375 0.5217,-0.3825 0.516,-0.375 0.516,-0.375 0.516,-0.375 0.516,-0.375 0.516,-0.375 0.516,-0.3675 0.516,-0.375 0.5103,-0.375 0.516,-0.375 0.516,-0.3675 0.516,-0.375 0.516,-0.375 0.516,-0.3675 0.516,-0.375 0.5217,-0.375 0.516,-0.3675 0.516,-0.375 0.516,-0.3675 0.516,-0.375 0.516,-0.3675 0.516,-0.3675 0.516,-0.3675 0.5103,-0.375 0.516,-0.3675 0.516,-0.3675 0.516,-0.3675 0.516,-0.3675 0.516,-0.3675 0.516,-0.3675 0.5217,-0.375 0.516,-0.3675 0.516,-0.3675 0.516,-0.3675 0.516,-0.3675 0.516,-0.3675 0.516,-0.36 0.516,-0.3675 0.5103,-0.3675 0.516,-0.3675 0.516,-0.36 0.5159,-0.3675 0.5161,-0.3675 0.516,-0.36 0.516,-0.3675 0.5217,-0.3675 0.516,-0.36 0.516,-0.3675 0.516,-0.36 0.516,-0.3675 0.516,-0.36 0.516,-0.36 0.516,-0.3675 0.5103,-0.36 0.516,-0.36 0.516,-0.36 0.516,-0.3675 0.516,-0.36 0.516,-0.36 0.516,-0.36 0.5217,-0.36 0.516,-0.36 0.516,-0.36 0.516,-0.36 0.516,-0.36 0.516,-0.36 0.516,-0.3525 0.516,-0.36 0.5103,-0.36 0.516,-0.3525 0.516,-0.36 0.516,-0.36 0.516,-0.3525 0.516,-0.36 0.516,-0.3525 0.5217,-0.36 0.516,-0.36 0.516,-0.3525 0.516,-0.3525 0.516,-0.36 0.516,-0.3525 0.516,-0.3525 0.516,-0.3525 0.5103,-0.3525 0.516,-0.36 0.516,-0.3525 0.5159,-0.3525 0.5161,-0.3525 0.516,-0.3525 0.516,-0.345 0.5217,-0.36 0.516,-0.3525 0.516,-0.345 0.516,-0.3525 0.516,-0.3525 0.516,-0.3525 0.516,-0.345 0.516,-0.3525 0.5103,-0.345 0.516,-0.3525 0.516,-0.345 0.516,-0.3525 0.516,-0.345 0.516,-0.3525 0.516,-0.345 0.5217,-0.3525 0.516,-0.345 0.516,-0.3525 0.516,-0.345 0.516,-0.345 0.516,-0.345 0.516,-0.345 0.516,-0.345 0.5103,-0.345 0.516,-0.345 0.516,-0.345 0.516,-0.345 0.516,-0.345 0.516,-0.345 0.516,-0.345 0.5217,-0.345 0.516,-0.345 0.516,-0.3375 0.516,-0.345 0.516,-0.3375 0.516,-0.345 0.516,-0.345 0.516,-0.3375 0.5103,-0.345 0.516,-0.3375 0.516,-0.3375 0.516,-0.345 0.516,-0.3375 0.516,-0.3375 0.516,-0.345 0.5217,-0.3375 0.516,-0.3375 0.516,-0.345 0.516,-0.3375 0.516,-0.3375 0.516,-0.3375 0.516,-0.3375 0.516,-0.3375 0.5103,-0.3375 0.516,-0.3375 0.5159,-0.33 0.5161,-0.3375 0.516,-0.3375 0.516,-0.3375 0.516,-0.33 0.5217,-0.345 0.516,-0.33 0.516,-0.3375 0.516,-0.33 0.516,-0.3375 0.516,-0.33 0.516,-0.3375 0.516,-0.33 0.5103,-0.33 0.516,-0.3375 0.516,-0.33 0.516,-0.33 0.516,-0.33 0.516,-0.3375 0.516,-0.33 0.5217,-0.33 0.516,-0.33 0.516,-0.33 0.516,-0.33 0.516,-0.33 0.516,-0.33 0.516,-0.33 0.516,-0.33 0.5103,-0.33 0.516,-0.33 0.516,-0.3225 0.516,-0.33 0.516,-0.33 0.516,-0.3225 0.516,-0.33 0.5217,-0.33 0.516,-0.3225 0.516,-0.33 0.516,-0.3225 0.516,-0.33 0.516,-0.3225 0.516,-0.33 0.516,-0.3225 0.5103,-0.3225 0.516,-0.33 0.516,-0.3225 0.516,-0.3225 0.516,-0.3225 0.516,-0.3225 0.5159,-0.3225 0.5218,-0.33 0.516,-0.3225 0.516,-0.3225 0.516,-0.3225 0.516,-0.315 0.516,-0.3225 0.516,-0.3225 0.516,-0.3225 0.5103,-0.3225 0.5159,-0.315 0.516,-0.3225 0.5161,-0.315 0.516,-0.3225 0.516,-0.315 0.516,-0.3225 0.5217,-0.3225 0.516,-0.315 0.516,-0.3225 0.516,-0.315 0.516,-0.315 0.516,-0.315 0.516,-0.315 0.516,-0.3225 0.5102,-0.315 0.5161,-0.315 0.516,-0.315 0.516,-0.315 0.516,-0.315 0.516,-0.315 0.516,-0.315 0.5217,-0.315 0.516,-0.315 0.516,-0.315 0.516,-0.3075 0.516,-0.315 0.516,-0.315 0.516,-0.315 0.516,-0.3075 0.5103,-0.315 0.516,-0.3075 0.516,-0.315 0.516,-0.3075 0.516,-0.315 0.516,-0.3075 0.516,-0.3075 0.5217,-0.315 0.516,-0.3075 0.516,-0.3075 0.516,-0.315 0.516,-0.3075 0.516,-0.3075 0.516,-0.3075 0.516,-0.3075 0.5103,-0.3075 0.516,-0.3075 0.516,-0.3075 0.516,-0.3075 0.516,-0.3075 0.516,-0.3 0.516,-0.3075 0.5217,-0.3075 0.516,-0.3075 0.516,-0.3075 0.516,-0.3075 0.516,-0.3 0.516,-0.3075 0.516,-0.3 0.516,-0.3075 0.5103,-0.3 0.516,-0.3075 0.516,-0.3 0.516,-0.3075 0.5159,-0.3 0.5161,-0.3 0.516,-0.3075 0.5217,-0.3 0.516,-0.3075 0.516,-0.3 0.516,-0.3 0.516,-0.3 0.516,-0.3 0.516,-0.3 0.516,-0.3 0.5103,-0.3 0.516,-0.3 0.516,-0.3 0.5159,-0.3 0.5161,-0.2925 0.516,-0.3 0.516,-0.3 0.5217,-0.3 0.516,-0.3 0.516,-0.2925 0.516,-0.3 0.516,-0.2925 0.516,-0.3 0.516,-0.2925 0.516,-0.3 0.5103,-0.2925 0.516,-0.2925 0.516,-0.3 0.516,-0.2925 0.516,-0.2925 0.516,-0.2925 0.516,-0.3 0.5217,-0.2925 0.516,-0.2925 0.516,-0.2925 0.516,-0.2925 0.516,-0.2925 0.516,-0.2925 0.516,-0.2925 0.516,-0.2925 0.5103,-0.2925 0.516,-0.285 0.516,-0.2925 0.516,-0.2925 0.516,-0.285 0.516,-0.2925 0.516,-0.285 0.5217,-0.2925 0.516,-0.2925 0.516,-0.285 0.516,-0.2925 0.516,-0.285 0.516,-0.2925 0.516,-0.285 0.516,-0.285 0.5103,-0.285 0.516,-0.2925 0.516,-0.285 0.516,-0.285 0.516,-0.285 0.516,-0.285 0.5159,-0.285 0.5218,-0.2925 0.516,-0.2775 0.516,-0.285 0.516,-0.285 0.516,-0.285 0.516,-0.285 0.516,-0.285 0.516,-0.2775 0.5103,-0.285 0.516,-0.285 0.516,-0.2775 0.516,-0.285 0.516,-0.285 0.5159,-0.2775 0.5161,-0.285 0.5217,-0.285 0.516,-0.2775 0.516,-0.2775 0.516,-0.285 0.516,-0.2775 0.516,-0.2775 0.516,-0.285 0.516,-0.2775 0.5103,-0.2775 0.5159,-0.2775 0.5161,-0.2775 0.516,-0.285 0.5159,-0.2775 0.5161,-0.2775 0.516,-0.2775 0.5217,-0.2775 0.516,-0.2775 0.516,-0.2775 0.516,-0.2775 0.516,-0.27 0.516,-0.2775 0.516,-0.2775 0.516,-0.2775 0.5102,-0.27 0.5161,-0.2775 0.516,-0.27 0.516,-0.2775 0.516,-0.27 0.516,-0.2775 0.516,-0.27 0.5217,-0.2775 0.516,-0.27 0.516,-0.2775 0.516,-0.27 0.516,-0.27 0.516,-0.2775 0.516,-0.27 0.516,-0.27 0.5103,-0.27 0.516,-0.27 0.516,-0.27 0.516,-0.27 0.516,-0.27 0.516,-0.27 0.516,-0.27 0.5217,-0.2775 0.516,-0.2625 0.516,-0.27 0.516,-0.27 0.516,-0.27 0.516,-0.27 0.516,-0.2625 0.516,-0.27 0.5103,-0.27 0.516,-0.2625 0.516,-0.27 0.516,-0.2625 0.516,-0.27 0.516,-0.2625 0.516,-0.27 0.5217,-0.27 0.516,-0.2625 0.516,-0.27 0.516,-0.2625 0.516,-0.2625 0.516,-0.2625 0.516,-0.27 0.516,-0.2625 0.5103,-0.2625 0.516,-0.2625 0.516,-0.2625 0.5159,-0.2625 0.5161,-0.2625 0.516,-0.2625 0.516,-0.2625 0.5217,-0.27 0.516,-0.2625 0.516,-0.255 0.516,-0.2625 0.516,-0.2625 0.516,-0.2625 0.516,-0.2625 0.516,-0.255 0.5103,-0.2625 0.516,-0.2625 0.5159,-0.255 0.5161,-0.2625 0.516,-0.255 0.516,-0.2625 0.516,-0.255 0.5217,-0.2625 0.516,-0.255 0.516,-0.2625 0.516,-0.255 0.516,-0.255 0.516,-0.2625 0.516,-0.255 0.516,-0.255 0.5103,-0.255 0.5159,-0.2625 0.5161,-0.255 0.516,-0.255 0.516,-0.255 0.516,-0.255 0.516,-0.255 0.5217,-0.255 0.516,-0.255 0.516,-0.255 0.516,-0.255 0.516,-0.255 0.516,-0.255 0.516,-0.2475 0.516,-0.255 0.5103,-0.255 0.516,-0.2475 0.516,-0.255 0.516,-0.255 0.516,-0.2475 0.516,-0.255 0.516,-0.2475 0.5217,-0.255 0.516,-0.255 0.516,-0.2475 0.516,-0.2475 0.516,-0.255 0.516,-0.2475 0.516,-0.2475 0.516,-0.255 0.5103,-0.2475 0.516,-0.2475 0.516,-0.2475 0.516,-0.2475 0.516,-0.255 0.516,-0.2475 0.5159,-0.2475 0.5218,-0.2475 0.516,-0.2475 0.516,-0.2475 0.516,-0.2475 0.516,-0.2475 0.516,-0.2475 0.516,-0.24 0.516,-0.2475 0.5103,-0.2475 0.516,-0.2475 0.516,-0.24 0.516,-0.2475 0.516,-0.2475 0.5159,-0.24 0.5161,-0.2475 0.5217,-0.2475 0.516,-0.24 0.516,-0.2475 0.516,-0.24 0.516,-0.24 0.516,-0.2475 0.516,-0.24 0.516,-0.24 0.5103,-0.2475 0.516,-0.24 0.516,-0.24 0.5159,-0.24 0.5161,-0.2475 0.516,-0.24 0.516,-0.24 0.5217,-0.24 0.516,-0.24 0.516,-0.24 0.516,-0.24 0.516,-0.24 0.516,-0.24 0.516,-0.24 0.516,-0.24 0.5103,-0.2325 0.516,-0.24 0.5159,-0.24 0.5161,-0.24 0.516,-0.2325 0.516,-0.24 0.516,-0.24 0.5217,-0.24 0.516,-0.2325 0.516,-0.24 0.516,-0.2325 0.516,-0.24 0.516,-0.2325 0.516,-0.24 0.516,-0.2325 0.5103,-0.24 0.5159,-0.2325 0.516,-0.2325 0.516,-0.24 0.5161,-0.2325 0.516,-0.2325 0.516,-0.2325 0.5217,-0.24 0.516,-0.2325 0.516,-0.2325 0.516,-0.2325 0.516,-0.2325 0.516,-0.2325 0.516,-0.2325 0.516,-0.2325 0.5102,-0.2325 0.516,-0.2325 0.516,-0.2325 0.5161,-0.2325 0.516,-0.2325 0.516,-0.2325 0.516,-0.2325 0.5217,-0.2325 0.516,-0.225 0.516,-0.2325 0.516,-0.2325 0.516,-0.225 0.516,-0.2325 0.516,-0.2325 0.516,-0.225 0.5102,-0.2325 0.5161,-0.225 0.516,-0.2325 0.516,-0.225 0.516,-0.225 0.516,-0.2325 0.5159,-0.225 0.5218,-0.2325 0.516,-0.225 0.516,-0.225 0.516,-0.2325 0.516,-0.225 0.516,-0.225 0.516,-0.225 0.516,-0.225 0.5103,-0.225 0.516,-0.225 0.516,-0.225 0.516,-0.225 0.516,-0.225 0.516,-0.225 0.516,-0.225 0.5217,-0.2325 0.516,-0.2175 0.516,-0.225 0.516,-0.225 0.516,-0.225 0.516,-0.225 0.516,-0.2175 0.516,-0.225 0.5103,-0.225 0.516,-0.2175 0.516,-0.225 0.516,-0.225 0.5159,-0.2175 0.5161,-0.225 0.516,-0.2175 0.5217,-0.225 0.516,-0.225 0.516,-0.2175 0.516,-0.225 0.516,-0.2175 0.516,-0.2175 0.516,-0.225 0.516,-0.2175 0.5103,-0.2175 0.516,-0.2175 0.516,-0.225 0.5159,-0.2175 0.516,-0.2175 0.516,-0.2175 0.5161,-0.2175 0.5217,-0.2175 0.516,-0.2175 0.516,-0.2175 0.516,-0.2175 0.516,-0.2175 0.516,-0.2175 0.516,-0.2175 0.516,-0.2175 0.5103,-0.2175 0.516,-0.2175 0.516,-0.21 0.516,-0.2175 0.516,-0.2175 0.516,-0.2175 0.516,-0.21 0.5217,-0.2175 0.516,-0.2175 0.516,-0.21 0.516,-0.2175 0.516,-0.2175 0.516,-0.21 0.516,-0.2175 0.516,-0.21 0.5102,-0.21 0.516,-0.2175 0.516,-0.21 0.516,-0.2175 0.5161,-0.21 0.516,-0.21 0.516,-0.2175 0.5217,-0.21 0.516,-0.21 0.516,-0.2175 0.516,-0.21 0.516,-0.21 0.516,-0.21 0.516,-0.21 0.516,-0.21 0.5103,-0.21 0.516,-0.21 0.516,-0.21 0.516,-0.21 0.516,-0.21 0.516,-0.21 0.5159,-0.21 0.5218,-0.21 0.516,-0.21 0.516,-0.21 0.516,-0.21 0.516,-0.21 0.516,-0.2025 0.516,-0.21 0.516,-0.21 0.5102,-0.2025 0.5161,-0.21 0.516,-0.21 0.516,-0.2025 0.516,-0.21 0.5159,-0.2025 0.5161,-0.21 0.5217,-0.21 0.516,-0.2025 0.516,-0.21 0.516,-0.2025 0.516,-0.21 0.516,-0.2025 0.516,-0.2025 0.516,-0.21 0.5103,-0.2025 0.516,-0.2025 0.516,-0.21 0.516,-0.2025 0.5159,-0.2025 0.516,-0.2025 0.516,-0.2025 0.5218,-0.21 0.516,-0.2025 0.516,-0.2025 0.516,-0.2025 0.516,-0.2025 0.516,-0.2025 0.516,-0.2025 0.516,-0.2025 1.032,-0.405"
+       d="m 77.5,354 0.4345,-0.4024 0.4342,-0.402 0.4342,-0.4022 0.4341,-0.402 0.4342,-0.4021 0.4342,-0.4021 0.4342,-0.402 0.4341,-0.4021 0.4342,-0.402 0.4342,-0.4021 0.4342,-0.402 0.4343,-0.402 0.434,-0.4019 0.4341,-0.4019 0.4345,-0.402 0.4388,-0.4064 0.434,-0.4019 0.4345,-0.4019 0.434,-0.4018 0.4341,-0.4018 0.4345,-0.4017 0.434,-0.4018 0.434,-0.4017 0.4345,-0.4018 0.434,-0.4018 0.434,-0.4017 0.4345,-0.4018 0.434,-0.4017 0.4341,-0.4018 0.4345,-0.4018 0.4388,-0.406 0.434,-0.4018 0.4345,-0.4018 0.434,-0.401 0.4341,-0.4018 0.4344,-0.4017 0.4341,-0.401 0.434,-0.4018 0.4345,-0.401 0.434,-0.4018 0.434,-0.4011 0.4345,-0.401 0.434,-0.401 0.4341,-0.4011 0.4345,-0.4017 0.4388,-0.4054 0.434,-0.401 0.4345,-0.4004 0.434,-0.401 0.434,-0.401 0.4346,-0.4003 0.434,-0.4011 0.434,-0.4003 0.4345,-0.4011 0.434,-0.4003 0.434,-0.4003 0.4345,-0.4003 0.434,-0.4003 0.4341,-0.4004 0.4345,-0.4003 0.4388,-0.4046 0.434,-0.4003 0.4345,-0.3996 0.434,-0.4003 0.4341,-0.3997 0.4345,-0.4003 0.434,-0.3996 0.434,-0.3996 0.4345,-0.3996 0.434,-0.3996 0.434,-0.3996 0.4345,-0.3996 0.434,-0.3989 0.4341,-0.3995 0.4345,-0.3989 0.4388,-0.404 0.434,-0.3988 0.4345,-0.3989 0.434,-0.3989 0.4341,-0.3982 0.4345,-0.3988 0.434,-0.3989 0.434,-0.3982 0.4345,-0.3981 0.434,-0.3989 0.434,-0.3982 0.4345,-0.3981 0.434,-0.3975 0.4341,-0.3981 0.4345,-0.3982 0.4388,-0.4018 0.434,-0.3974 0.4345,-0.3982 0.434,-0.3974 0.4341,-0.3974 0.4344,-0.3975 0.4341,-0.3974 0.434,-0.3975 0.4345,-0.3967 0.434,-0.3974 0.434,-0.3968 0.4345,-0.3966 0.434,-0.3968 0.4341,-0.3967 0.4345,-0.3967 0.4388,-0.4003 0.434,-0.396 0.4345,-0.3968 0.434,-0.3953 0.4341,-0.3959 0.4345,-0.396 0.4359,-0.3953 0.4345,-0.3953 0.4297,-0.3953 0.4345,-0.3953 0.4345,-0.3953 0.4345,-0.3945 0.4345,-0.3953 0.4345,-0.3945 0.4345,-0.3939 0.4393,-0.3989 0.4345,-0.3945 0.4345,-0.3939 0.4345,-0.3938 0.4345,-0.3938 0.4345,-0.3939 0.4345,-0.3938 0.4345,-0.3939 0.4297,-0.3931 0.4345,-0.3931 0.4345,-0.3931 0.4345,-0.3931 0.4345,-0.3924 0.4345,-0.3932 0.4345,-0.3924 0.4393,-0.3967 0.4345,-0.3924 0.4345,-0.3924 0.4345,-0.3917 0.4345,-0.3924 0.4345,-0.3916 0.4345,-0.3917 0.4345,-0.3917 0.4297,-0.3909 0.4345,-0.3917 0.4345,-0.391 0.4345,-0.391 0.4345,-0.3909 0.4345,-0.391 0.4345,-0.3902 0.4393,-0.3953 0.4345,-0.3902 0.4345,-0.3903 0.4345,-0.3902 0.4345,-0.3903 0.4345,-0.3895 0.4345,-0.3902 0.4345,-0.3895 0.4297,-0.3896 0.4345,-0.3895 0.4345,-0.3888 0.4345,-0.3895 0.4345,-0.3888 0.4345,-0.3888 0.4345,-0.3888 0.4393,-0.3931 0.4345,-0.3888 0.4345,-0.3881 0.4345,-0.3881 0.4345,-0.3881 0.4345,-0.3873 0.4345,-0.3881 0.4345,-0.3874 0.4297,-0.3873 0.4345,-0.3874 0.4345,-0.3866 0.4345,-0.3867 0.4345,-0.3866 0.4345,-0.3866 0.4345,-0.3867 0.4393,-0.3902 0.4345,-0.3881 0.4345,-0.3816 0.4345,-0.3888 0.4345,-0.3816 0.4345,-0.3888 0.4345,-0.3816 0.4345,-0.3888 0.4297,-0.3816 0.4345,-0.3888 0.4345,-0.3816 0.4345,-0.3816 0.4345,-0.3888 0.4345,-0.3816 0.4345,-0.3816 0.4393,-0.3888 0.4345,-0.3816 0.4345,-0.3816 0.4345,-0.3888 0.4345,-0.3816 0.4345,-0.3816 0.4345,-0.3816 0.4345,-0.3816 0.4297,-0.3816 0.4345,-0.3816 0.4345,-0.3816 0.4345,-0.3816 0.4345,-0.3816 0.4345,-0.3816 0.4345,-0.3816 0.4393,-0.3816 0.4345,-0.3816 0.4345,-0.3816 0.4345,-0.3744 0.4345,-0.3816 0.4345,-0.3816 0.4345,-0.3744 0.4345,-0.3816 0.4297,-0.3816 0.4345,-0.3744 0.4345,-0.3816 0.4345,-0.3744 0.4345,-0.3816 0.4345,-0.3744 0.4345,-0.3816 0.4393,-0.3816 0.4345,-0.3744 0.4345,-0.3744 0.4345,-0.3816 0.4345,-0.3744 0.4345,-0.3744 0.4345,-0.3744 0.4345,-0.3816 0.4297,-0.3744 0.4345,-0.3744 0.4345,-0.3744 0.4345,-0.3744 0.4345,-0.3744 0.4345,-0.3744 0.4345,-0.3744 0.4393,-0.3816 0.4345,-0.3744 0.4345,-0.3672 0.4345,-0.3744 0.4345,-0.3744 0.4345,-0.3744 0.4345,-0.3744 0.4345,-0.3672 0.4297,-0.3744 0.4345,-0.3744 0.4345,-0.3672 0.4345,-0.3744 0.4345,-0.3744 0.4345,-0.3672 0.4345,-0.3744 0.4393,-0.3744 0.4345,-0.3672 0.4345,-0.3744 0.4345,-0.3672 0.4345,-0.3672 0.4345,-0.3744 0.4345,-0.3672 0.4345,-0.3672 0.4297,-0.3672 0.4345,-0.3744 0.4345,-0.3672 0.4345,-0.3672 0.4345,-0.3672 0.4345,-0.3672 0.4345,-0.3672 0.4393,-0.3744 0.4345,-0.3672 0.4345,-0.36 0.4345,-0.3672 0.4345,-0.3672 0.4345,-0.3672 0.4345,-0.3672 0.4345,-0.3672 0.4297,-0.36 0.4345,-0.3672 0.4345,-0.3672 0.4345,-0.36 0.4345,-0.3672 0.4345,-0.3672 0.4345,-0.36 0.4393,-0.3672 0.4345,-0.3672 0.4345,-0.36 0.4345,-0.3672 0.4345,-0.36 0.4345,-0.3672 0.4345,-0.36 0.4345,-0.36 0.4297,-0.3672 0.4345,-0.36 0.4345,-0.36 0.4345,-0.36 0.4345,-0.36 0.4345,-0.36 0.4345,-0.36 0.4393,-0.3672 0.4345,-0.36 0.4345,-0.36 0.4345,-0.36 0.4345,-0.36 0.4345,-0.36 0.4345,-0.3528 0.4345,-0.36 0.4297,-0.36 0.4345,-0.36 0.4345,-0.3528 0.4345,-0.36 0.4345,-0.36 0.4345,-0.3528 0.4345,-0.36 0.4393,-0.36 0.4345,-0.3528 0.4345,-0.36 0.4345,-0.3528 0.4345,-0.36 0.4345,-0.3528 0.4345,-0.3528 0.4345,-0.3528 0.4297,-0.36 0.4345,-0.3528 0.4345,-0.3528 0.4345,-0.3528 0.4345,-0.3528 0.4345,-0.3528 0.4345,-0.3528 0.4393,-0.36 0.4345,-0.3528 0.4345,-0.3528 0.4345,-0.3528 0.4345,-0.3528 0.4345,-0.3528 0.4345,-0.3456 0.4345,-0.3528 0.4297,-0.3528 0.4345,-0.3528 0.4345,-0.3456 0.4345,-0.3528 0.4345,-0.3528 0.4345,-0.3456 0.4345,-0.3528 0.4393,-0.3528 0.4345,-0.3456 0.4345,-0.3528 0.4345,-0.3456 0.4345,-0.3528 0.4345,-0.3456 0.4345,-0.3456 0.4345,-0.3528 0.4297,-0.3456 0.4345,-0.3456 0.4345,-0.3456 0.4345,-0.3528 0.4345,-0.3456 0.4345,-0.3456 0.4345,-0.3456 0.4393,-0.3456 0.4345,-0.3456 0.4345,-0.3456 0.4345,-0.3456 0.4345,-0.3456 0.4345,-0.3456 0.4345,-0.3384 0.4345,-0.3456 0.4297,-0.3456 0.4345,-0.3384 0.4345,-0.3456 0.4345,-0.3456 0.4345,-0.3384 0.4345,-0.3456 0.4345,-0.3384 0.4393,-0.3456 0.4345,-0.3456 0.4345,-0.3384 0.4345,-0.3384 0.4345,-0.3456 0.4345,-0.3384 0.4345,-0.3384 0.4345,-0.3384 0.4297,-0.3384 0.4345,-0.3456 0.4345,-0.3384 0.4345,-0.3384 0.4345,-0.3384 0.4345,-0.3384 0.4345,-0.3312 0.4393,-0.3456 0.4345,-0.3384 0.4345,-0.3312 0.4345,-0.3384 0.4345,-0.3384 0.4345,-0.3384 0.4345,-0.3312 0.4345,-0.3384 0.4297,-0.3312 0.4345,-0.3384 0.4345,-0.3312 0.4345,-0.3384 0.4345,-0.3312 0.4345,-0.3384 0.4345,-0.3312 0.4393,-0.3384 0.4345,-0.3312 0.4345,-0.3384 0.4345,-0.3312 0.4345,-0.3312 0.4345,-0.3312 0.4345,-0.3312 0.4345,-0.3312 0.4297,-0.3312 0.4345,-0.3312 0.4345,-0.3312 0.4345,-0.3312 0.4345,-0.3312 0.4345,-0.3312 0.4345,-0.3312 0.4393,-0.3312 0.4345,-0.3312 0.4345,-0.324 0.4345,-0.3312 0.4345,-0.324 0.4345,-0.3312 0.4345,-0.3312 0.4345,-0.324 0.4297,-0.3312 0.4345,-0.324 0.4345,-0.324 0.4345,-0.3312 0.4345,-0.324 0.4345,-0.324 0.4345,-0.3312 0.4393,-0.324 0.4345,-0.324 0.4345,-0.3312 0.4345,-0.324 0.4345,-0.324 0.4345,-0.324 0.4345,-0.324 0.4345,-0.324 0.4297,-0.324 0.4345,-0.324 0.4345,-0.3168 0.4345,-0.324 0.4345,-0.324 0.4345,-0.324 0.4345,-0.3168 0.4393,-0.3312 0.4345,-0.3168 0.4345,-0.324 0.4345,-0.3168 0.4345,-0.324 0.4345,-0.3168 0.4345,-0.324 0.4345,-0.3168 0.4297,-0.3168 0.4345,-0.324 0.4345,-0.3168 0.4345,-0.3168 0.4345,-0.3168 0.4345,-0.324 0.4345,-0.3168 0.4393,-0.3168 0.4345,-0.3168 0.4345,-0.3168 0.4345,-0.3168 0.4345,-0.3168 0.4345,-0.3168 0.4345,-0.3168 0.4345,-0.3168 0.4297,-0.3168 0.4345,-0.3168 0.4345,-0.3096 0.4345,-0.3168 0.4345,-0.3168 0.4345,-0.3096 0.4345,-0.3168 0.4393,-0.3168 0.4345,-0.3096 0.4345,-0.3168 0.4345,-0.3096 0.4345,-0.3168 0.4345,-0.3096 0.4345,-0.3168 0.4345,-0.3096 0.4297,-0.3096 0.4345,-0.3168 0.4345,-0.3096 0.4345,-0.3096 0.4345,-0.3096 0.4345,-0.3096 0.4345,-0.3096 0.4393,-0.3168 0.4345,-0.3096 0.4345,-0.3096 0.4345,-0.3096 0.4345,-0.3024 0.4345,-0.3096 0.4345,-0.3096 0.4345,-0.3096 0.4297,-0.3096 0.4345,-0.3024 0.4345,-0.3096 0.4345,-0.3024 0.4345,-0.3096 0.4345,-0.3024 0.4345,-0.3096 0.4393,-0.3096 0.4345,-0.3024 0.4345,-0.3096 0.4345,-0.3024 0.4345,-0.3024 0.4345,-0.3024 0.4345,-0.3024 0.4345,-0.3096 0.4297,-0.3024 0.4345,-0.3024 0.4345,-0.3024 0.4345,-0.3024 0.4345,-0.3024 0.4345,-0.3024 0.4345,-0.3024 0.4393,-0.3024 0.4345,-0.3024 0.4345,-0.3024 0.4345,-0.2952 0.4345,-0.3024 0.4345,-0.3024 0.4345,-0.3024 0.4345,-0.2952 0.4297,-0.3024 0.4345,-0.2952 0.4345,-0.3024 0.4345,-0.2952 0.4345,-0.3024 0.4345,-0.2952 0.4345,-0.2952 0.4393,-0.3024 0.4345,-0.2952 0.4345,-0.2952 0.4345,-0.3024 0.4345,-0.2952 0.4345,-0.2952 0.4345,-0.2952 0.4345,-0.2952 0.4297,-0.2952 0.4345,-0.2952 0.4345,-0.2952 0.4345,-0.2952 0.4345,-0.2952 0.4345,-0.288 0.4345,-0.2952 0.4393,-0.2952 0.4345,-0.2952 0.4345,-0.2952 0.4345,-0.2952 0.4345,-0.288 0.4345,-0.2952 0.4345,-0.288 0.4345,-0.2952 0.4297,-0.288 0.4345,-0.2952 0.4345,-0.288 0.4345,-0.2952 0.4345,-0.288 0.4345,-0.288 0.4345,-0.2952 0.4393,-0.288 0.4345,-0.2952 0.4345,-0.288 0.4345,-0.288 0.4345,-0.288 0.4345,-0.288 0.4345,-0.288 0.4345,-0.288 0.4297,-0.288 0.4345,-0.288 0.4345,-0.288 0.4345,-0.288 0.4345,-0.2808 0.4345,-0.288 0.4345,-0.288 0.4393,-0.288 0.4345,-0.288 0.4345,-0.2808 0.4345,-0.288 0.4345,-0.2808 0.4345,-0.288 0.4345,-0.2808 0.4345,-0.288 0.4297,-0.2808 0.4345,-0.2808 0.4345,-0.288 0.4345,-0.2808 0.4345,-0.2808 0.4345,-0.2808 0.4345,-0.288 0.4393,-0.2808 0.4345,-0.2808 0.4345,-0.2808 0.4345,-0.2808 0.4345,-0.2808 0.4345,-0.2808 0.4345,-0.2808 0.4345,-0.2808 0.4297,-0.2808 0.4345,-0.2736 0.4345,-0.2808 0.4345,-0.2808 0.4345,-0.2736 0.4345,-0.2808 0.4345,-0.2736 0.4393,-0.2808 0.4345,-0.2808 0.4345,-0.2736 0.4345,-0.2808 0.4345,-0.2736 0.4345,-0.2808 0.4345,-0.2736 0.4345,-0.2736 0.4297,-0.2736 0.4345,-0.2808 0.4345,-0.2736 0.4345,-0.2736 0.4345,-0.2736 0.4345,-0.2736 0.4345,-0.2736 0.4393,-0.2808 0.4345,-0.2664 0.4345,-0.2736 0.4345,-0.2736 0.4345,-0.2736 0.4345,-0.2736 0.4345,-0.2736 0.4345,-0.2664 0.4297,-0.2736 0.4345,-0.2736 0.4345,-0.2664 0.4345,-0.2736 0.4345,-0.2736 0.4345,-0.2664 0.4345,-0.2736 0.4393,-0.2736 0.4345,-0.2664 0.4345,-0.2664 0.4345,-0.2736 0.4345,-0.2664 0.4345,-0.2664 0.4345,-0.2736 0.4345,-0.2664 0.4297,-0.2664 0.4345,-0.2664 0.4345,-0.2664 0.4345,-0.2736 0.4344,-0.2664 0.4346,-0.2664 0.4345,-0.2664 0.4393,-0.2664 0.4345,-0.2664 0.4345,-0.2664 0.4345,-0.2664 0.4345,-0.2592 0.4345,-0.2664 0.4345,-0.2664 0.4345,-0.2664 0.4297,-0.2592 0.4345,-0.2664 0.4345,-0.2592 0.4345,-0.2664 0.4345,-0.2592 0.4345,-0.2664 0.4345,-0.2592 0.4393,-0.2664 0.4345,-0.2592 0.4345,-0.2664 0.4345,-0.2592 0.4345,-0.2592 0.4345,-0.2664 0.4345,-0.2592 0.4345,-0.2592 0.4297,-0.2592 0.4345,-0.2592 0.4345,-0.2592 0.4345,-0.2592 0.4345,-0.2592 0.4345,-0.2592 0.4345,-0.2592 0.4393,-0.2664 0.4345,-0.252 0.4345,-0.2592 0.4345,-0.2592 0.4345,-0.2592 0.4345,-0.2592 0.4345,-0.252 0.4345,-0.2592 0.4297,-0.2592 0.4345,-0.252 0.4345,-0.2592 0.4345,-0.252 0.4345,-0.2592 0.4345,-0.252 0.4345,-0.2592 0.4393,-0.2592 0.4345,-0.252 0.4345,-0.2592 0.4345,-0.252 0.4345,-0.252 0.4345,-0.252 0.4345,-0.2592 0.4345,-0.252 0.4297,-0.252 0.4345,-0.252 0.4345,-0.252 0.4345,-0.252 0.4345,-0.252 0.4345,-0.252 0.4345,-0.252 0.4393,-0.2592 0.4345,-0.252 0.4345,-0.2448 0.4345,-0.252 0.4345,-0.252 0.4345,-0.252 0.4345,-0.252 0.4345,-0.2448 0.4297,-0.252 0.4345,-0.252 0.4345,-0.2448 0.4345,-0.252 0.4345,-0.2448 0.4345,-0.252 0.4345,-0.2448 0.4393,-0.252 0.4345,-0.2448 0.4345,-0.252 0.4345,-0.2448 0.4345,-0.2448 0.4345,-0.252 0.4345,-0.2448 0.4345,-0.2448 0.4297,-0.2448 0.4345,-0.252 0.4345,-0.2448 0.4345,-0.2448 0.4345,-0.2448 0.4345,-0.2448 0.4345,-0.2448 0.4393,-0.2448 0.4345,-0.2448 0.4345,-0.2448 0.4345,-0.2448 0.4345,-0.2448 0.4345,-0.2448 0.4345,-0.2376 0.4345,-0.2448 0.4297,-0.2448 0.4345,-0.2376 0.4345,-0.2448 0.4345,-0.2448 0.4345,-0.2376 0.4345,-0.2448 0.4345,-0.2376 0.4393,-0.2448 0.4345,-0.2448 0.4345,-0.2376 0.4345,-0.2376 0.4345,-0.2448 0.4345,-0.2376 0.4345,-0.2376 0.4345,-0.2448 0.4297,-0.2376 0.4345,-0.2376 0.4345,-0.2376 0.4345,-0.2376 0.4345,-0.2448 0.4345,-0.2376 0.4345,-0.2376 0.4393,-0.2376 0.4345,-0.2376 0.4345,-0.2376 0.4345,-0.2376 0.4345,-0.2376 0.4345,-0.2376 0.4345,-0.2304 0.4345,-0.2376 0.4297,-0.2376 0.4345,-0.2376 0.4345,-0.2304 0.4345,-0.2376 0.4345,-0.2376 0.4345,-0.2304 0.4345,-0.2376 0.4393,-0.2376 0.4345,-0.2304 0.4345,-0.2376 0.4345,-0.2304 0.4345,-0.2304 0.4345,-0.2376 0.4345,-0.2304 0.4345,-0.2304 0.4297,-0.2376 0.4345,-0.2304 0.4345,-0.2304 0.4345,-0.2304 0.4345,-0.2376 0.4345,-0.2304 0.4345,-0.2304 0.4393,-0.2304 0.4345,-0.2304 0.4345,-0.2304 0.4345,-0.2304 0.4345,-0.2304 0.4345,-0.2304 0.4345,-0.2304 0.4345,-0.2304 0.4297,-0.2232 0.4345,-0.2304 0.4345,-0.2304 0.4345,-0.2304 0.4345,-0.2232 0.4345,-0.2304 0.4345,-0.2304 0.4393,-0.2304 0.4345,-0.2232 0.4345,-0.2304 0.4345,-0.2232 0.4345,-0.2304 0.4345,-0.2232 0.4345,-0.2304 0.4345,-0.2232 0.4297,-0.2304 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.2304 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.2232 0.4393,-0.2304 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.2232 0.4297,-0.2232 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.2232 0.4393,-0.2232 0.4345,-0.216 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.216 0.4345,-0.2232 0.4345,-0.2232 0.4345,-0.216 0.4297,-0.2232 0.4345,-0.216 0.4345,-0.2232 0.4345,-0.216 0.4345,-0.216 0.4345,-0.2232 0.4345,-0.216 0.4393,-0.2232 0.4345,-0.216 0.4345,-0.216 0.4345,-0.2232 0.4345,-0.216 0.4345,-0.216 0.4345,-0.216 0.4345,-0.216 0.4297,-0.216 0.4345,-0.216 0.4345,-0.216 0.4345,-0.216 0.4345,-0.216 0.4345,-0.216 0.4345,-0.216 0.4393,-0.2232 0.4345,-0.2088 0.4345,-0.216 0.4345,-0.216 0.4345,-0.216 0.4345,-0.216 0.4345,-0.2088 0.4345,-0.216 0.4297,-0.216 0.4345,-0.2088 0.4345,-0.216 0.4345,-0.216 0.4344,-0.2088 0.4346,-0.216 0.4345,-0.2088 0.4393,-0.216 0.4345,-0.216 0.4345,-0.2088 0.4345,-0.216 0.4345,-0.2088 0.4345,-0.2088 0.4345,-0.216 0.4345,-0.2088 0.4297,-0.2088 0.4345,-0.2088 0.4345,-0.216 0.4345,-0.2088 0.4345,-0.2088 0.4344,-0.2088 0.4346,-0.2088 0.4393,-0.2088 0.4345,-0.2088 0.4345,-0.2088 0.4345,-0.2088 0.4345,-0.2088 0.4345,-0.2088 0.4345,-0.2088 0.4345,-0.2088 0.4297,-0.2088 0.4345,-0.2088 0.4345,-0.2016 0.4345,-0.2088 0.4345,-0.2088 0.4345,-0.2088 0.4345,-0.2016 0.4393,-0.2088 0.4345,-0.2088 0.4345,-0.2016 0.4345,-0.2088 0.4345,-0.2088 0.4345,-0.2016 0.4345,-0.2088 0.4345,-0.2016 0.4297,-0.2016 0.4345,-0.2088 0.4344,-0.2016 0.4346,-0.2088 0.4345,-0.2016 0.4345,-0.2016 0.4345,-0.2088 0.4393,-0.2016 0.4345,-0.2016 0.4345,-0.2088 0.4345,-0.2016 0.4345,-0.2016 0.4345,-0.2016 0.4345,-0.2016 0.4345,-0.2016 0.4297,-0.2016 0.4345,-0.2016 0.4345,-0.2016 0.4345,-0.2016 0.4345,-0.2016 0.4345,-0.2016 0.4345,-0.2016 0.4393,-0.2016 0.4345,-0.2016 0.4345,-0.2016 0.4345,-0.2016 0.4345,-0.2016 0.4345,-0.1944 0.4345,-0.2016 0.4345,-0.2016 0.4297,-0.1944 0.4345,-0.2016 0.4345,-0.2016 0.4345,-0.1944 0.4345,-0.2016 0.4345,-0.1944 0.4345,-0.2016 0.4393,-0.2016 0.4345,-0.1944 0.4345,-0.2016 0.4345,-0.1944 0.4345,-0.2016 0.4345,-0.1944 0.4345,-0.1944 0.4345,-0.2016 0.4297,-0.1944 0.4345,-0.1944 0.4345,-0.2016 0.4345,-0.1944 0.4345,-0.1944 0.4345,-0.1944 0.4344,-0.1944 0.4394,-0.2016 0.4345,-0.1944 0.4345,-0.1944 0.4345,-0.1944 0.4345,-0.1944 0.4345,-0.1944 0.4345,-0.1944 0.4345,-0.1944 0.869,-0.3888"
        style="fill:none;fill-rule:evenodd;stroke:#d95319"
-       id="path1025"
+       id="path1101"
        inkscape:connector-curvature="0" />
   </g>
   <g
      style="color-interpolation:sRGB;fill:#ffffff;stroke:#ffffff;color-rendering:optimizeSpeed;image-rendering:optimizeSpeed;shape-rendering:crispEdges;text-rendering:optimizeSpeed"
-     id="g1031">
+     id="g1107">
     <path
        style="stroke:none"
-       d="M 200.5,85.5 V 43 h -106 v 42.5 z"
-       id="path1029"
+       d="M 191,80.5 V 38 H 85 v 42.5 z"
+       id="path1105"
        inkscape:connector-curvature="0" />
   </g>
   <g
-     transform="translate(131.5,54.5)"
+     transform="translate(122,49.5)"
      style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g1035">
+     id="g1111">
     <text
        x="0"
        xml:space="preserve"
        y="6"
        style="stroke:none"
-       id="text1033"> MITHRA</text>
+       id="text1109"> MITHRA</text>
   </g>
   <g
      style="color-interpolation:linearRGB;fill:#0072bd;stroke:#0072bd;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g1039">
+     id="g1115">
     <line
-       y2="54.5"
+       y2="49.5"
        style="fill:none"
-       x1="98.5"
-       x2="128.5"
-       y1="54.5"
-       id="line1037" />
+       x1="89"
+       x2="119"
+       y1="49.5"
+       id="line1113" />
   </g>
   <g
-     transform="translate(131.5,74)"
+     transform="translate(122,69)"
      style="font-size:16px;font-family:'Helvetica Neue';color-interpolation:linearRGB;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g1043">
+     id="g1119">
     <text
        x="0"
        xml:space="preserve"
        y="6"
        style="stroke:none"
-       id="text1041"> ASTRA</text>
+       id="text1117"> ASTRA</text>
   </g>
   <g
      style="color-interpolation:linearRGB;fill:#d95319;stroke:#d95319;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g1047">
+     id="g1123">
     <line
-       y2="74"
+       y2="69"
        style="fill:none"
-       x1="98.5"
-       x2="128.5"
-       y1="74"
-       id="line1045" />
+       x1="89"
+       x2="119"
+       y1="69"
+       id="line1121" />
   </g>
   <g
      style="color-interpolation:linearRGB;fill:#262626;stroke:#262626;stroke-width:0.5;stroke-linecap:butt;color-rendering:optimizeQuality;image-rendering:optimizeQuality;text-rendering:geometricPrecision"
-     id="g1051">
+     id="g1127">
     <path
-       d="M 94.5,85.5 V 43 h 106 v 42.5 z"
+       d="M 85,80.5 V 38 h 106 v 42.5 z"
        style="fill:none;fill-rule:evenodd"
-       id="path1049"
+       id="path1125"
        inkscape:connector-curvature="0" />
   </g>
 </svg>

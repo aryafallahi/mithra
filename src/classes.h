@@ -33,6 +33,7 @@ namespace MITHRA
     Double    		        timeScale_;
     Double		        timeStep_;
     Double		        totalTime_;
+    Double		        totalDist_;
 
     /* Truncation order for the finite difference mesh. It can be either one or two.			*/
     unsigned int	        truncationOrder_;

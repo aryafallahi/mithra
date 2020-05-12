@@ -62,6 +62,8 @@ A list of new features and applied changes in version 2.0 released with this man
 	%
 	\item An option named as {\tt \small \em optimize-bunch-position} is added that assures the bunch residing in the middle of the computational domain after passing through the undulator entrance.
 	%
+	\item The job file in the new version accepts a parameter named as {\tt \small \em total-distance}, which tells the solver to run the simulation until the last particle passes a point staying at this distance from the coordinate origin.
+	%
 	\item In the several years of using this code, I never saw a case where bunches should be initialized in the middle of a simulation. Therefore, this option is removed from the code. This means that the parameter {\tt \small \em bunch-time-start} is no more accepted in the job-file.
 	%
 	\item A new group in the job file is added which is named as external-field. Through this group, fields of other devices than the undulator will be added to the simulation. Currently, addition of external electromagnetic waves to the interaction is implemented.

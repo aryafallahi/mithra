@@ -80,6 +80,7 @@ namespace MITHRA
 	    mesh_.meshCenter_ = meshCenter;
 	  }
 	else if (parameterName(*iter) == "total-time")        		mesh_.totalTime_ 	= doubleValue(*iter);
+	else if (parameterName(*iter) == "total-distance")        	mesh_.totalDist_ 	= doubleValue(*iter);
 	else if (parameterName(*iter) == "bunch-time-step")   		bunch_.timeStep_ 	= doubleValue(*iter);
 	else if (parameterName(*iter) == "mesh-truncation-order")
 	  {
@@ -102,7 +103,7 @@ namespace MITHRA
 	    else                                              		mesh_.timeScale_      	= doubleValue(*iter);
 	  }
 	else if (parameterName(*iter) == "space-charge") 		mesh_.spaceCharge_ 	= boolValue(*iter);
-	else if (parameterName(*iter) == "optimize-bunch-position") 	mesh_.optimizePosition_ 	= boolValue(*iter);
+	else if (parameterName(*iter) == "optimize-bunch-position") 	mesh_.optimizePosition_ = boolValue(*iter);
 	else if (parameterName(*iter) == "solver")
 	  {
 	    std::string solver 	= stringValue(*iter);

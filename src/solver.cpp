@@ -236,7 +236,7 @@ namespace MITHRA
 
     /* Adjust the given bunch time step according to the given field time step.				*/
     if (bunch_.timeStep_ == 0)
-      bunch_.timeStep_ 			= mesh_.timeStep_ ;
+      bunch_.timeStep_ 			 = mesh_.timeStep_ ;
     else
       bunch_.timeStep_ 			 = mesh_.timeStep_ / ceil(mesh_.timeStep_ / bunch_.timeStep_);
     nUpdateBunch_    			 = mesh_.timeStep_ / bunch_.timeStep_;
@@ -356,6 +356,26 @@ namespace MITHRA
 
     /* Initialize the total number of charges.								*/
     Nc_ = chargeVectorn_.size();
+
+    /****************************************************************************************************/
+
+    /* If the value of the total travel distance for the simulation is nonzero, correct the total time
+     * factor in the simulation.									*/
+    if ( mesh_.totalDist_ > 0.0 )
+      {
+	/* Obtain the minimum value of the z in the bunch coordinates.					*/
+	Double zminL = 1.0e100, zminG;
+	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
+	  zminL = std::min( zminL , iterQ->rnp[2] );
+	MPI_Allreduce(&zminL, &zminG, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+
+	/* Now find the time that a particle with average speed needs to travel from zmin to the final
+	 * undulator point.										*/
+	mesh_.totalTime_ = ( mesh_.totalDist_ / gamma_ - zminG ) / ( beta_ * c0_ ) - dt_;
+
+	/* Multiply the obtained total time by a safety factor.						*/
+	mesh_.totalTime_ *= 1.01;
+      }
   }
 
   /******************************************************************************************************

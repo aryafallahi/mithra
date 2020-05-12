@@ -39,6 +39,7 @@ namespace MITHRA
     spaceCharge_ 	= false;
     optimizePosition_	= false;
     solver_		= NSFD;
+    totalDist_		= 0.0;
   }
 
   /*** Bunch class **************************************************************************************/

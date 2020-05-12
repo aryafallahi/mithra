@@ -118,7 +118,7 @@ namespace MITHRA
     }
 
     template <class T>
-    void operator= (std::vector<T>& y)
+    void operator= (const std::vector<T>& y)
     {
       if (y.size() != 3)
 	{
@@ -135,7 +135,7 @@ namespace MITHRA
   /* Define the various operators used for the field vector class.					*/
 
   template <class T1, class T2>
-  void operator+= (FieldVector<T1>& x, T2& y)
+  void operator+= (FieldVector<T1>& x, const T2& y)
   {
     x[0] += y;
     x[1] += y;
@@ -143,7 +143,7 @@ namespace MITHRA
   }
 
   template <class T1, class T2>
-  void operator-= (FieldVector<T1>& x, T2& y)
+  void operator-= (FieldVector<T1>& x, const T2& y)
   {
     x[0] -= y;
     x[1] -= y;
@@ -151,7 +151,7 @@ namespace MITHRA
   }
 
   template <class T1, class T2>
-  void operator*= (FieldVector<T1>& x, T2& y)
+  void operator*= (FieldVector<T1>& x, const T2& y)
   {
     x[0] *= y;
     x[1] *= y;
@@ -159,7 +159,7 @@ namespace MITHRA
   }
 
   template <class T1, class T2>
-  void operator/= (FieldVector<T1>& x, T2& y)
+  void operator/= (FieldVector<T1>& x, const T2& y)
   {
     x[0] /= y;
     x[1] /= y;

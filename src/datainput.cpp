@@ -79,8 +79,8 @@ namespace MITHRA
 	    std::vector<Double> meshCenter = vectorDoubleValue(*iter);
 	    mesh_.meshCenter_ = meshCenter;
 	  }
-	else if (parameterName(*iter) == "total-time")        	mesh_.totalTime_ 	= doubleValue(*iter);
-	else if (parameterName(*iter) == "bunch-time-step")   	bunch_.timeStep_ 	= doubleValue(*iter);
+	else if (parameterName(*iter) == "total-time")        		mesh_.totalTime_ 	= doubleValue(*iter);
+	else if (parameterName(*iter) == "bunch-time-step")   		bunch_.timeStep_ 	= doubleValue(*iter);
 	else if (parameterName(*iter) == "mesh-truncation-order")
 	  {
 	    mesh_.truncationOrder_ 	= intValue(*iter);
@@ -92,17 +92,17 @@ namespace MITHRA
 	  }
 	else if (parameterName(*iter) == "time-scale")
 	  {
-	    if          (stringValue(*iter) == "SECOND")      	mesh_.timeScale_      	= 1.0;
-	    else if     (stringValue(*iter) == "MILLISECOND") 	mesh_.timeScale_      	= 1.0e-3;
-	    else if     (stringValue(*iter) == "MICROSECOND") 	mesh_.timeScale_      	= 1.0e-6;
-	    else if     (stringValue(*iter) == "NANOSECOND")  	mesh_.timeScale_      	= 1.0e-9;
-	    else if     (stringValue(*iter) == "PICOSECOND")  	mesh_.timeScale_      	= 1.0e-12;
-	    else if     (stringValue(*iter) == "FEMTOSECOND") 	mesh_.timeScale_      	= 1.0e-15;
-	    else if     (stringValue(*iter) == "ATTOSECOND")  	mesh_.timeScale_      	= 1.0e-18;
-	    else                                              	mesh_.timeScale_      	= doubleValue(*iter);
+	    if          (stringValue(*iter) == "SECOND")      		mesh_.timeScale_      	= 1.0;
+	    else if     (stringValue(*iter) == "MILLISECOND") 		mesh_.timeScale_      	= 1.0e-3;
+	    else if     (stringValue(*iter) == "MICROSECOND") 		mesh_.timeScale_      	= 1.0e-6;
+	    else if     (stringValue(*iter) == "NANOSECOND")  		mesh_.timeScale_      	= 1.0e-9;
+	    else if     (stringValue(*iter) == "PICOSECOND")  		mesh_.timeScale_      	= 1.0e-12;
+	    else if     (stringValue(*iter) == "FEMTOSECOND") 		mesh_.timeScale_      	= 1.0e-15;
+	    else if     (stringValue(*iter) == "ATTOSECOND")  		mesh_.timeScale_      	= 1.0e-18;
+	    else                                              		mesh_.timeScale_      	= doubleValue(*iter);
 	  }
 	else if (parameterName(*iter) == "space-charge") 		mesh_.spaceCharge_ 	= boolValue(*iter);
-    else if (parameterName(*iter) == "optimize-position") 	mesh_.optimizePosition_ 	= boolValue(*iter);
+	else if (parameterName(*iter) == "optimize-bunch-position") 	mesh_.optimizePosition_ 	= boolValue(*iter);
 	else if (parameterName(*iter) == "solver")
 	  {
 	    std::string solver 	= stringValue(*iter);

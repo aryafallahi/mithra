@@ -36,9 +36,9 @@ namespace MITHRA
   /* Initialize the parameters in the mesh initializer.							*/
   void Mesh::initialize ()
   {
-    spaceCharge_ 		= false;
+    spaceCharge_ 	= false;
     optimizePosition_	= false;
-    solver_			= NSFD;
+    solver_		= NSFD;
   }
 
   /*** Bunch class **************************************************************************************/

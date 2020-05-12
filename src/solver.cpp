@@ -314,35 +314,37 @@ namespace MITHRA
     
     /****************************************************************************************************/
 
-    /* The bunch needs to be shifted such that it is centered in the computational domain when it 
-     * enters the undulator. For this the bunch mean z-coordinate and beta_z are required.	*/
+    /* The bunch needs to be shifted such that it is centered in the computational domain when it enters
+     * the undulator. For this the bunch mean z-coordinate and beta_z are required.			*/
     if (( mesh_.optimizePosition_ ) && ( undulator_.size() > 0 ))
       {
-    Double zL = 0.0, zG;
-    Double bzL = 0.0, bzG;
-    for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
-      {
-	zL += iterQ->rnp[2];
-	bzL += iterQ->gbnp[2] / std::sqrt( 1 + iterQ->gbnp.norm2() );
+	Double zL  = 0.0, zG;
+	Double bzL = 0.0, bzG;
+	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
+	  {
+	    zL += iterQ->rnp[2];
+	    bzL += iterQ->gbnp[2] / std::sqrt( 1 + iterQ->gbnp.norm2() );
+	  }
+	MPI_Allreduce(&zL, &zG, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	MPI_Allreduce(&bzL, &bzG, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	unsigned int NqL = chargeVectorn_.size(), NqG = 0;
+	MPI_Allreduce(&NqL, &NqG, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+	zG /= NqG;
+	bzG /= NqG;
+
+	Double shift 	 = bzG * (zmaxG + undulator_[0].dist_ / gamma_ - zG) / (bzG + beta_) + zG;
+	zmaxG 		-= shift;
+	bunch_.zu_ 	 = zmaxG;
+	dt_ 		 = - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmaxG + undulator_[0].dist_ / gamma_ );
+	seed_.dt_ = dt_;
+
+	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
+	  iterQ->rnp[2] -= shift;
+
+	printmessage(std::string(__FILE__), __LINE__, std::string("The bunch center is shifted back by ") + stringify(shift) + std::string(" .") );
       }
-    MPI_Allreduce(&zL, &zG, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    MPI_Allreduce(&bzL, &bzG, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    unsigned int NqL = chargeVectorn_.size(), NqG = 0;
-    MPI_Allreduce(&NqL, &NqG, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
-    zG /= NqG;
-    bzG /= NqG;
-    
-    Double shift = bzG * (zmaxG + undulator_[0].dist_ / gamma_ - zG) / (bzG + beta_) + zG;
-    zmaxG -= shift;
-    bunch_.zu_ = zmaxG;
-	dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmaxG + undulator_[0].dist_ / gamma_ );
-    seed_.dt_ = dt_;
-    for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
-      {
-        iterQ->rnp[2] -= shift;
-      }
-    printmessage(std::string(__FILE__), __LINE__, std::string("The bunch center is shifted back by ") + stringify(shift) + std::string(" .") );
-      }
+
+    /****************************************************************************************************/
 
     /* Distribute particles in their respective processor, depending on their longituinal coordinate.	*/
     distributeParticles(chargeVectorn_);

@@ -551,7 +551,7 @@ $\begin{array}{cc}
 		Normalized emittance & 0.2\,$\mu$m-rad \\	\hline
 		Undulator period & 3.0\,cm \\ \hline
 		Undulator parameter & 3.5 \\ \hline
-		Undulator length & 40\,m \\ \hline
+		Undulator length & 75\,m \\ \hline
 		Radiation wavelength & 0.62\,nm \\ \hline
 		Gain length (1D) & 0.92\,m \\ \hline
 		FEL parameter & 0.0015 \\ \hline
@@ -571,13 +571,17 @@ To simulate the described FEL, the job file of \ref{job_file_6} needs to be pars
 
 Fig.\,\ref{power-example5} shows the computed radiated power in terms of traveled undulator distance with and without consideration of space-charge effects.
 %
-According to the 1D FEL theory, the FEL gain length for this example is around 0.92 m, which predicts saturation after around 18 m of undulator length.
+In this figure, the two cases including start of radiation from shot-noise and an initial bunching factor of 0.001 are compared against each other.
 %
-However, due to 3D effects this saturation length is slightly longer than the predictions of 1D FEL theory.
+It is seen that the initial bunching factor leads to a faster saturation of the radiation.
 %
-Here, saturation length of about 22 m is observed for a space-charge free simulation.
+According to the 1D FEL theory, the FEL gain length for this example is around 0.92\,m, which predicts saturation after around 18\,m of undulator length.
 %
-In addition, the space-charge effect seems to be considerable after 10 m of undulator propagation, which contradicts with the typical assumptions that such effects are negligible for multi-GeV beams.
+However, due to 3D effects this saturation length is longer than the predictions of 1D FEL theory.
+%
+Here, saturation length of about 32\,m is observed for a space-charge free simulation.
+%
+In addition, the space-charge effect seems to be considerable after 10\,m of undulator propagation, which contradicts with the typical assumptions that such effects are negligible for multi-GeV beams.
 %
 This large space-charge effect, not observed in the previous examples, is occurring due to the very short bunch length, which intensifies the Coulomb repulsion forces at the head and tail of the bunch.
 %

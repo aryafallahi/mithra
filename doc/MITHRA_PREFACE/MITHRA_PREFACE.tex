@@ -72,6 +72,8 @@ A list of new features and applied changes in version 2.0 released with this man
 	%
 	\item Possibility to adjust a bunching factor phase in the bunch initialization is added through {\tt \small \em bunching-factor-phase} parameter.
 	%
+	\item The first version of the code was written such that the cumulative parameters of the bunch are first transferred to the moving coordinate system and subsequently the particles are initialized according these parameters. Such a solution works only for simple bunch distributions which are thoroughly determined by their cumulative parameters. A more general approach is to generate the bunch in the laboratory frame and transfer each macro-particle according to the Lorentz transformation into the moving frame. The new version of the code considers such a scheme in the bunch initialization.
+	%
 	\item In the new version, simulation of a Self-Amplified Spontaneous Emission (SASE) FEL is now possible. A new boolean parameter {\tt \small \em shot-noise} is added. When it is set to true, a shot noise is calculated based on real number of electrons and subsequently introduced to the bunch. The implementation algorithm for the shot-noise is also added to the manual.
 	%
 	\item In the previous version, the {\tt \small \em bunch-initialization} subgroup could be repeated to initialize multiple bunches in a single simulation. While this feature is kept in the new version, the {\tt \small \em bunch-initialization} subgroup now accepts arbitrary number of {\tt \small \em position} vectors. As a result, at each position, determined by the position vector, the bunch is initialized. This feature is useful in initializing an array of bunches to be injected into the undulator.

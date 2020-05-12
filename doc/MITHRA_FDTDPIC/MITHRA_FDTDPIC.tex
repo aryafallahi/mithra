@@ -687,50 +687,44 @@ An electron bunch in MITHRA is initialized and characterized by the following pa
 %
 As mentioned previously, the above parameters are entered by the user in the laboratory frame.
 %
-To transform the given values to the bunch rest frame the position related parameters are changed as
+The first version of the code was written such that the cumulative parameters of the bunch are first transferred to the moving coordinate system and subsequently the particles are initialized according these parameters.
+%
+Such a solution works only for simple bunch distributions which are thoroughly determined by their cumulative parameters.
+%
+A more general approach is to generate the bunch in the laboratory frame and transfer each macro-particle according to the Lorentz transformation into the moving frame.
+%
+For this purpose, the following equations are used:
 %
 \begin{equation}
-\begin{array}{cccccc}
-\bar{x}_b = \bar{x}'_b, & \bar{y}_b = \bar{y}'_b, & \bar{z}_b = \displaystyle \frac{\bar{z}'_b}{\gamma_0 (1 - \bar{\beta'}_z \beta_0)} , & \sigma_x = \sigma'_x, & \sigma_y = \sigma'_y, & \sigma_z = \displaystyle \frac{\sigma'_z}{{\gamma_0 (1 - \bar{\beta'}_z \beta_0)}}.
+\begin{array}{lll}
+x = x', & y = y', & z = \gamma_0 z, \\
+\gamma \beta_x = \gamma \beta'_x, &
+\gamma \beta_y = \gamma \beta'_y, &
+\gamma \beta_z = \gamma \beta'_z \left( \gamma \gamma_0 (\beta_z - \beta_0) \right).
 \end{array}
+\label{LorentzTrasnformParticles}
 \end{equation}
-%
-To transfer the momentum related quantities, we assume that the main contribution to the Lorentz factor is the momentum along $z$ direction or the undulator period.
-%
-In other words, $(\overline{\gamma \beta}_x, \overline{\gamma \beta}_y, \overline{\gamma \beta}_z) = \gamma ( \bar{\beta}_x, \bar{\beta}_y, \bar{\beta}_z )$, with $\gamma = 1/\sqrt{1-\bar{\beta}_z^2}$.
-%
-Similarly, the RMS values can also be written as $(\sigma_{\gamma \beta_x}, \sigma_{\gamma \beta_y}, \sigma_{\gamma \beta_z}) = \gamma (\sigma_{\beta_x}, \sigma_{\beta_y}, \sigma_{\beta_z})$.
-%
-Using the relativistic velocity transformation \cite{JacksonClassical}, the transformation equations for the above values are found as follows:
-%
-\begin{align}
-\gamma & = \gamma' \gamma_0 (1 - \bar{\beta'}_z \beta_0), \\
-( \overline{\gamma \beta}_x, \overline{\gamma \beta}_y, \overline{\gamma \beta}_z ) & = ( \overline{\gamma' \beta'}_x, \overline{\gamma' \beta'}_y, \sqrt{\gamma^2-1} ), \\
-(\sigma_{\gamma \beta_x}, \sigma_{\gamma \beta_y}, \sigma_{\gamma \beta_z}) & = ( \sigma'_{\gamma \beta_x}, \sigma'_{\gamma \beta_y}, \sigma'_{\gamma \beta_z} \gamma_0 (1 - \bar{\beta'}_z \beta_0) ). \label{LorentzTransformE}
-\end{align}
-%
-Equations (\ref{LorentzTransformB})-(\ref{LorentzTransformE}) provide a sufficient set of equations to perform the Lorentz boost to the bunch rest frame.
 
-After the macro-particles are initialized in the rest frame of the bunch, a small subtlety needs to be taken into account.
+The above equations transfer macro-particles to certain positions at different times.
 %
-The initialized macro-particles will have the correct position, if and only if all of these particles move with the same momentum.
+However, it is important that during the simulations particles are captured in the moving frame all at the same time.
 %
-However, due to the existing energy spread, the positions of particles change with time.
+Therefore, the position of particles need to be changed to correct the time difference implicitly assumed in equation (\ref{LorentzTrasnformParticles}).
 %
-The transition into bunch rest frame projects particles from different time points in the lab frame.
-%
-In MITHRA, we assume that the given bunch properties are valid at the entrance point of the undulator.
-%
-Therefore, the following shifts on the particles in moving frame should be introduced, such that the particle distribution at the undulator entrance matches with the given parameters:
+This task is done by the adding the following values to the $(x,y,z)$ coordinates of the particles, respectively:
 %
 \begin{align}
-\delta x &= - ( \beta_x - \bar{\beta_x} ) ( z_u - z ) / ( \bar{\beta_z} + \beta_0 ) \\
-\delta y &= - ( \beta_y - \bar{\beta_y} ) ( z_u - z ) / ( \bar{\beta_z} + \beta_0 ) \\
-\delta z &= - ( \beta_z - \bar{\beta_z} ) ( z_u - z ) / ( \bar{\beta_z} + \beta_0 ),
+\delta x &= \gamma \beta_x ( z - z_u) \beta_0 / \gamma \\
+\delta y &= \gamma \beta_y ( z - z_u) \beta_0 / \gamma \\
+\delta z &= \gamma \beta_z ( z - z_u) \beta_0 / \gamma,
 \label{LorentzTransformDeltaR}
 \end{align}
 %
 where $z_u$ is the position of the undulator begin at the bunch initialization instance.
+%
+The above equations consider that at $z = z_u$ no time shift exists.
+%
+By using such a transformation, sophisticated bunch formats can be entered into the simulation software using the bunch type {\tt \small \em file}, where macro-particles are read from a text file.
 
 \subsection{Field Initialization}
 \label{fieldInitialization}

@@ -1050,7 +1050,7 @@ namespace MITHRA
     
     if ( bunch_.bunchInit_[i].position_.size() == 0 )
 	  {
-        bunch_.bunchInit_[i].position_.push_back(*new FieldVector<Double>);
+        bunch_.bunchInit_[i].position_.push_back( FieldVector<Double>(0.0) );
 	    printmessage(std::string(__FILE__), __LINE__, std::string("No bunch position was given, using default " + stringify(bunch_.bunchInit_[i].position_[0]) ) );
 	  }      
 

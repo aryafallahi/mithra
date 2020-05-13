@@ -358,25 +358,6 @@ namespace MITHRA
     /* Initialize the total number of charges.								*/
     Nc_ = chargeVectorn_.size();
 
-    /****************************************************************************************************/
-
-    /* If the value of the total travel distance for the simulation is nonzero, correct the total time
-     * factor in the simulation.									*/
-    if ( mesh_.totalDist_ > 0.0 )
-      {
-	/* Obtain the minimum value of the z in the bunch coordinates.					*/
-	Double zminL = 1.0e100, zminG;
-	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
-	  zminL = std::min( zminL , iterQ->rnp[2] );
-	MPI_Allreduce(&zminL, &zminG, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
-
-	/* Now find the time that a particle with average speed needs to travel from zmin to the final
-	 * undulator point.										*/
-	mesh_.totalTime_ = ( mesh_.totalDist_ / gamma_ - zminG ) / ( beta_ * c0_ ) - dt_;
-
-	/* Multiply the obtained total time by a safety factor.						*/
-	mesh_.totalTime_ *= 1.01;
-      }
   }
 
   /******************************************************************************************************
@@ -1246,6 +1227,12 @@ namespace MITHRA
 			 stringify( (mesh_.totalTime_/time_ - 1) * deltaTime / 60 ) );
 	    p += 1.0;
 	  }
+
+    if (totalDistReached())
+      {
+        printmessage(std::string(__FILE__), __LINE__, std::string("Total distance has been reached.") );
+        break;
+      }
       }
 
     /* Finalize the calculations and the data saving.							*/
@@ -2378,6 +2365,40 @@ namespace MITHRA
   Double Solver::interp( Double x0, Double x1, Double y0, Double y1, Double x )
   {
     return y0 + ( x - x0 ) / ( x1 - x0 ) * ( y1 - y0 );
+  }
+
+  /****************************************************************************************************
+   * Get position of bunch tail.
+   ****************************************************************************************************/
+  Double Solver::getZmin ()
+  {
+    Double zminL = 1.0e100, zminG;
+    
+	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
+	  zminL = std::min( zminL , iterQ->rnp[2] );
+    
+	MPI_Allreduce(&zminL, &zminG, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+    
+    return zminG;
+  }
+
+  /****************************************************************************************************
+   * Get position in lab frame with the origin at the undulator start.
+   ****************************************************************************************************/
+  Double Solver::getLz (Double z)
+  {
+    return gamma_ * ( z + beta_ * c0_ * ( timeBunch_ + dt_ ) );
+  }
+
+  /****************************************************************************************************
+   * Test whether zmin has reached the total distance.
+   ****************************************************************************************************/
+  bool Solver::totalDistReached ()
+  {
+    if (mesh_.totalDist_ > 0.0)
+      return getLz(getZmin()) > mesh_.totalDist_;
+
+    return 0;
   }
 
 }

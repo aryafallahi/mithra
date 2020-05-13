@@ -123,6 +123,17 @@ namespace MITHRA
     /* Define the function for linear interpolation.							*/
     Double	 	interp				(Double x0, Double x1, Double y0, Double y1, Double x);
 
+    /* Get position of bunch tail.												*/
+    Double	 	getZmin				();
+
+    /* Get position in lab frame with the origin at the undulator start.		*/
+    Double	 	getLz				(Double z);
+
+    /* Test whether zmin has reached the total distance.					*/
+    bool	 	totalDistReached		();
+
+
+
     /* Reset the currents to zero.									*/
     virtual void currentReset () = 0;
 

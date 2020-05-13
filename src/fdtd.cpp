@@ -28,7 +28,6 @@ namespace MITHRA
     timeval           			simulationStart, simulationEnd;
     Double 				deltaTime, p = 0.0;
     std::stringstream 			printedMessage;
-    std::vector<FieldVector<Double> >*	at;
     std::list<Charge>::iterator 	iter;
 
     /* Before starting with the simulation the matrix for the field values and the coordinates should
@@ -138,10 +137,7 @@ namespace MITHRA
 	energySample();
 
 	/* Shift the computed fields and the time points for the fields.				*/
-	at    = anm1_;
-	anm1_ = an_;
-	an_   = anp1_;
-	anp1_ = at;
+    fieldShift();
 
 	timem1_ += mesh_.timeStep_;
 	time_   += mesh_.timeStep_;
@@ -939,6 +935,18 @@ namespace MITHRA
 	MPI_Recv(uf_.en+3*(np_-1)*N1N0_,	3*N1N0_,MPI_DOUBLE,rank_+1,msgtag7,MPI_COMM_WORLD,&status);
 	MPI_Recv(uf_.bn+3*(np_-1)*N1N0_,	3*N1N0_,MPI_DOUBLE,rank_+1,msgtag8,MPI_COMM_WORLD,&status);
       }
+  }
+
+  /******************************************************************************************************
+   * Shift computed fields and the time points for the fields.
+   ******************************************************************************************************/
+
+  void FdTd::fieldShift ()
+  {
+    std::vector<FieldVector<Double> >* at = anm1_;
+	anm1_ = an_;
+	an_   = anp1_;
+	anp1_ = at;
   }
 
   /******************************************************************************************************

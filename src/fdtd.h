@@ -38,6 +38,9 @@ namespace MITHRA
     void fieldUpdate ();
 
     /* Evaluate the field of the m'th pixel from the potentials.					*/
+    void fieldShift ();
+
+    /* Evaluate the field of the m'th pixel from the potentials.					*/
     void fieldEvaluate (long int m);
 
     /* Sample the field and save it to the given file.							*/

@@ -363,15 +363,9 @@ namespace MITHRA
      * factor in the simulation.									*/
     if ( mesh_.totalDist_ > 0.0 )
       {
-	/* Obtain the minimum value of the z in the bunch coordinates.					*/
-	Double zminL = 1.0e100, zminG;
-	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
-	  zminL = std::min( zminL , iterQ->rnp[2] );
-	MPI_Allreduce(&zminL, &zminG, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
-
 	/* Now find the time that a particle with average speed needs to travel from zmin to the final
 	 * undulator point.										*/
-	mesh_.totalTime_ = ( mesh_.totalDist_ / gamma_ - zminG ) / ( beta_ * c0_ ) - dt_;
+        mesh_.totalTime_ = ( mesh_.totalDist_ / gamma_ - getZmin() ) / ( beta_ * c0_ ) - dt_;
 
 	/* Multiply the obtained total time by a safety factor.						*/
 	mesh_.totalTime_ *= 1.01;
@@ -1572,7 +1566,7 @@ namespace MITHRA
 	    /* First find the position with respect to the undulator begin point. The equation below
 	     * assumes that the bunch at time zero resides in a distance gamma*rb_ from the first
 	     * undulator.										*/
-	    ubp.lz = gamma_ * ( r[2] + beta_ * c0_ * ( timeBunch_ + dt_ ) ) - iter->rb_;
+        ubp.lz = getLz(r[2]) - iter->rb_;
 	    ubp.ly = r[0] * ub_.ct + r[1] * ub_.st;
 
 	    /* Now, calculate the undulator field according to the obtained position.               	*/
@@ -2232,5 +2226,38 @@ namespace MITHRA
   {
     return y0 + ( x - x0 ) / ( x1 - x0 ) * ( y1 - y0 );
   }
+  
+  /****************************************************************************************************
+   * Get position of bunch tail.
+   ****************************************************************************************************/
+  Double Solver::getZmin ()
+  {
+    Double zminL = 1.0e100, zminG;
 
+	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
+	  zminL = std::min( zminL , iterQ->rnp[2] );
+
+	MPI_Allreduce(&zminL, &zminG, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+
+    return zminG;
+  }
+
+  /****************************************************************************************************
+   * Get position in lab frame with the origin at the undulator start.
+   ****************************************************************************************************/
+  Double Solver::getLz (Double z)
+  {
+    return gamma_ * ( z + beta_ * c0_ * ( timeBunch_ + dt_ ) );
+  }
+
+  /****************************************************************************************************
+   * Test whether zmin has reached the total distance.
+   ****************************************************************************************************/
+  bool Solver::totalDistReached ()
+  {
+    if (mesh_.totalDist_ > 0.0)
+      return getLz(getZmin()) > mesh_.totalDist_;
+
+    return 0;
+  }
 }

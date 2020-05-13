@@ -162,6 +162,11 @@ namespace MITHRA
 			 stringify( (mesh_.totalTime_/time_ - 1) * deltaTime / 60 ) );
 	    p += 1.0;
 	  }
+    if (totalDistReached())
+      {
+        printmessage(std::string(__FILE__), __LINE__, std::string("Total distance has been reached.") );
+        break;
+      }
       }
 
     /* Finalize the calculations and the data saving.							*/

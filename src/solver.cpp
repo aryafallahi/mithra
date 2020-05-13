@@ -464,8 +464,7 @@ namespace MITHRA
         }
 
       bunchInit.initialGamma_ /= bunchInit.numberOfParticles_;
-      Double dirNorm = bunchInit.initialDirection_.norm();
-      bunchInit.initialDirection_ /= dirNorm;
+      bunchInit.initialDirection_ /= bunchInit.initialDirection_.norm();
 
       printmessage(std::string(__FILE__), __LINE__, std::string("Computed average gamma from file is " + stringify( bunchInit.initialGamma_ ) ) );
       printmessage(std::string(__FILE__), __LINE__, std::string("Computed average direction from file is " + stringify( bunchInit.initialDirection_ ) ) );

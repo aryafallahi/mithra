@@ -22,9 +22,6 @@ namespace MITHRA
 	    std::vector<ExtField>& 		extField,
 	    std::vector<FreeElectronLaser>& 	FEL);
 
-    /* The function which is called for solving the fields in time domain.				*/
-    void solve ();
-
     /* Reset the currents to zero.									*/
     void currentReset ();
 

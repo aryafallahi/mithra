@@ -127,7 +127,7 @@ namespace MITHRA
     Double	 	getZmin				();
 
     /* Get position in lab frame with the origin at the undulator start.		*/
-    Double	 	getLz				(Double z);
+    Double	 	getLz				(const Double & z);
 
     /* Test whether zmin has reached the total distance.					*/
     bool	 	totalDistReached		();

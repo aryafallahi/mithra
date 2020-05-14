@@ -2244,7 +2244,7 @@ namespace MITHRA
   /****************************************************************************************************
    * Get position in lab frame with the origin at the undulator start.
    ****************************************************************************************************/
-  Double Solver::getLz (Double z)
+  Double Solver::getLz (const Double & z)
   {
     return gamma_ * ( z + beta_ * c0_ * ( timeBunch_ + dt_ ) );
   }

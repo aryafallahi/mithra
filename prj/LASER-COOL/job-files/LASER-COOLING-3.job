@@ -14,7 +14,7 @@ MESH
   mesh-lengths						= ( 6.0, 6.0, 6.0 ) 
   mesh-resolution					= ( 3.0, 3.0, 0.1 )
   mesh-center						= ( 0.0, 0.0, 1000.0 )
-  total-time						= 2400
+  total-time						= 1600
   bunch-time-step					= 0.1
   mesh-truncation-order					= 2
   space-charge						= false
@@ -58,8 +58,8 @@ EXTERNAL-FIELD
     strength-parameter					= 0.1
     signal-type						= gaussian
     wavelength						= 1.0
-    pulse-length					= 100.0
-    offset						= 400.0
+    pulse-length					= 50.0
+    offset						= 200.0
     CEP							= 0.0
   }
 
@@ -72,8 +72,8 @@ EXTERNAL-FIELD
     strength-parameter                                  = 0.1
     signal-type                                         = gaussian
     wavelength                                          = 1.0
-    pulse-length                                        = 100.0
-    offset                                              = 400.0
+    pulse-length                                        = 50.0
+    offset                                              = 200.0
     CEP                                                 = 0.0
   }
 }

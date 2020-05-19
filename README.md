@@ -2,7 +2,7 @@
 MITHRA is a full-wave numerical solver for free-electron lasers.
 
 Compiling options used for gcc 7.4.0:
-- `make` or `make full` to compile binary
+- `make` to compile binary
 - `make install` to compile library and header directory
 
 ********************************************************************************************************

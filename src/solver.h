@@ -132,8 +132,6 @@ namespace MITHRA
     /* Test whether zmin has reached the total distance.					*/
     bool	 	totalDistReached		();
 
-
-
     /* Reset the currents to zero.									*/
     virtual void currentReset () = 0;
 

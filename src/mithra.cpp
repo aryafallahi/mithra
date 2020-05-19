@@ -86,14 +86,14 @@ int main (int argc, char * (argv) [])
   for (unsigned int i = 0; i < extField.size();  i++) 	extField[i] .show();
 
   /* Initialize the class for the FDTD computations.                                                    */
-  FdTd   fdtd   (mesh, bunch, seed, undulator, extField, FEL);
-  FdTdSC fdtdsc (mesh, bunch, seed, undulator, extField, FEL);
+  Solver *solver;
+  if ( mesh.spaceCharge_ )
+    solver = new FdTdSC (mesh, bunch, seed, undulator, extField, FEL);
+  else
+    solver = new FdTd (mesh, bunch, seed, undulator, extField, FEL);
 
   /* Solve for the fields and the bunch distribution over the specified time.                           */
-  if ( mesh.spaceCharge_ )
-    fdtdsc.solve();
-  else
-    fdtd.solve();
+  solver->solve();
 
   /* Calculate the total simulation time.                                                               */
   gettimeofday(&simulationEnd, NULL);

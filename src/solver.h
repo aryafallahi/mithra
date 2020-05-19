@@ -68,6 +68,9 @@ namespace MITHRA
     /* Initialize the charge vector containing the bunch given by the user.				*/
     void 		initializeBunch			();
 
+    /* The function which is called for solving the fields in time domain.				*/
+    void 		solve					();    
+
     /* Update the fields for one time-step.								*/
     void 		bunchUpdate			();
 
@@ -114,9 +117,6 @@ namespace MITHRA
     /* Finalize the field calculations. 								*/
     void 		finalize			();
 
-    /* Define the virtual function for field evaluation.						*/
-    virtual void 	fieldEvaluate 			(long int m) = 0;
-
     /* Define the boolean function for comparing undulator begins.					*/
     static bool 	undulatorCompare 		(Undulator i, Undulator j);
 
@@ -132,6 +132,48 @@ namespace MITHRA
     /* Test whether zmin has reached the total distance.					*/
     bool	 	totalDistReached		();
 
+    /* Reset the currents to zero.									*/
+    virtual void currentReset () = 0;
+
+    /* Update the currents at cell points for the filed update.						*/
+    virtual void currentUpdate () = 0;
+
+    /* Communicate the currents among different processors.						*/
+    virtual void currentCommunicate () = 0;
+
+    /* Update the fields for one time-step								*/
+    virtual void fieldUpdate () = 0;
+
+    /* Evaluate the field of the m'th pixel from the potentials.					*/
+    virtual void fieldShift () = 0;
+
+    /* Evaluate the field of the m'th pixel from the potentials.					*/
+    virtual void fieldEvaluate (long int m) = 0;
+
+    /* Sample the field and save it to the given file.							*/
+    virtual void fieldSample () = 0;
+
+    /* Visualize the field as vtk files on the whole domain and save them to the file with given name.	*/
+    virtual void fieldVisualizeAllDomain 	(unsigned int ivtk) = 0;
+
+    /* Visualize the field as vtk files in plane and save them to the file with the given name.		*/
+    virtual void fieldVisualizeInPlane 		(unsigned int ivtk) = 0;
+
+    /* Visualize the field as vtk files in a plane normal to x axis and save them to the file with the
+     * given name.											*/
+    virtual void fieldVisualizeInPlaneXNormal 	(unsigned int ivtk) = 0;
+
+    /* Visualize the field as vtk files in a plane normal to y axis and save them to the file with the
+     * given name.											*/
+    virtual void fieldVisualizeInPlaneYNormal 	(unsigned int ivtk) = 0;
+
+    /* Visualize the field as vtk files in a plane normal to z axis and save them to the file with the
+     * given name.											*/
+    virtual void fieldVisualizeInPlaneZNormal 	(unsigned int ivtk) = 0;
+
+    /* Write the total profile of the field into the given file name.					*/
+    virtual void fieldProfile () = 0;
+    
 
     /****************************************************************************************************
      * List of required parameters in the FdTd code.

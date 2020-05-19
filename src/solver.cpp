@@ -1330,8 +1330,7 @@ namespace MITHRA
 	else if ( undulator_.size() > 0 )
 	  {
 	    /* Update the emission vector flag based on the particle position in lab frame.		*/
-	    ubp.lz 	= gamma_ * ( iter->rnp[2] + beta_ * c0_ * ( timeBunch_ + dt_ ) );
-	    iter->e 	= ( ubp.lz > - undulator_[0].dist_ ) ? 1.0 : 0.0;
+	    iter->e 	= ( getLz(iter->rnp[2]) > - undulator_[0].dist_ ) ? 1.0 : 0.0;
 	  }
 	else
 	  iter->e	= 1.0;

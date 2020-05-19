@@ -104,7 +104,7 @@ namespace MITHRA
         if ( bunch_.bunchInit_[i].bunchType_ == "file" )
           computeFileGamma(bunch_.bunchInit_[i]);
         if ( bunch_.bunchInit_[i].bunchType_ == "other" )
-          	printmessage(std::string(__FILE__), __LINE__, std::string("Bunch mean gamma and direction are given by an external program. " ) );
+          printmessage(std::string(__FILE__), __LINE__, std::string("Bunch mean gamma and direction are given by an external program. " ) );
         gamma += bunch_.bunchInit_[i].initialGamma_ / bunch_.bunchInit_.size();
       }
 
@@ -138,7 +138,7 @@ namespace MITHRA
       }
 
     /* Set the gamma of the moving frame equal to the average of the maximum and minimum gamma.		*/
-    gamma_ = ( gmin + gmax ) / 2.0;
+    gamma_ = ( undulator_.size() == 0 ) ? gamma : ( gmin + gmax ) / 2.0;
 
     /****************************************************************************************************/
 
@@ -165,8 +165,10 @@ namespace MITHRA
 
 	/* Calculate the modulation wavelength of the bunch for the initial bunching factor or the shot
 	 * noise implementation.									*/
-	Double lu				= ( undulator_.size() > 0 ) ? undulator_[0].lu_ : 0.0;
-	bunch_.bunchInit_[i].lambda_		= lu / ( 2.0 * gamma_ * gamma_ ) * bunch_.bunchInit_[i].betaVector_[2] / beta_;
+	if ( undulator_.size() > 0 )
+	  bunch_.bunchInit_[i].lambda_		= undulator_[0].lu_ / ( 2.0 * gamma_ * gamma_ ) * bunch_.bunchInit_[i].betaVector_[2] / beta_;
+	else
+	  bunch_.bunchInit_[i].lambda_		= 0.0;
 
 	printmessage(std::string(__FILE__), __LINE__, std::string("Modulation wavelength of the bunch outside the undulator is set to " + stringify( bunch_.bunchInit_[i].lambda_ ) ) );
       }
@@ -218,7 +220,7 @@ namespace MITHRA
     else if ( mesh_.solver_ == FD )
       {
 	/* Based on the dispersion condition, the field time step can be obtained.			*/
-	mesh_.timeStep_		 = 1.0 / ( c0_ * sqrt( 1.0 / pow(mesh_.meshResolution_[0], 2.0) + 1.0 / pow(mesh_.meshResolution_[1], 2.0) + 1.0 / pow(mesh_.meshResolution_[2], 2.0) ) );
+	mesh_.timeStep_		 = 0.98 / ( c0_ * sqrt( 1.0 / pow(mesh_.meshResolution_[0], 2.0) + 1.0 / pow(mesh_.meshResolution_[1], 2.0) + 1.0 / pow(mesh_.meshResolution_[2], 2.0) ) );
 	printmessage(std::string(__FILE__), __LINE__, std::string("Time step for the field update is set to " + stringify(mesh_.timeStep_ * gamma_) ) );
       }
   }

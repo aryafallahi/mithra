@@ -136,6 +136,18 @@ namespace MITHRA
 	    (*(jn+uc_.m+N1N0_+1)    )[2] += uc_.q * 0.5 * uc_.x1 * uc_.y2 * uc_.jcp[2];
 	    (*(jn+uc_.m+N1N0_+N1_+1))[2] += uc_.q * 0.5 * uc_.x2 * uc_.y2 * uc_.jcp[2];
 
+        /* Compute the charge density contribution to each vertex.									*/
+	    uc_.dxp = modf( ( uc_.rp[0] - xmin_ ) / uc_.dx , &uc_.c );
+	    uc_.dyp = modf( ( uc_.rp[1] - ymin_ ) / uc_.dy , &uc_.c );
+	    uc_.dzp = modf( ( uc_.rp[2] - zmin_ ) / uc_.dz , &uc_.c );
+
+	    uc_.x1  = 1.0 - uc_.dxp;
+	    uc_.x2  = uc_.dxp;
+	    uc_.y1  = 1.0 - uc_.dyp;
+	    uc_.y2  = uc_.dyp;
+	    uc_.z1  = 1.0 - uc_.dzp;
+	    uc_.z2  = uc_.dzp;
+        
 	    *(rn+uc_.m)                  += uc_.q * uc_.x1 * uc_.y1 * uc_.z1;
 	    *(rn+uc_.m+N1_)        	   += uc_.q * uc_.x2 * uc_.y1 * uc_.z1;
 	    *(rn+uc_.m+1  )              += uc_.q * uc_.x1 * uc_.y2 * uc_.z1;
@@ -190,15 +202,6 @@ namespace MITHRA
 	    (*(jn+uc_.m+N1N0_+N1_)  )[2] += uc_.q * 0.5 * uc_.x2 * uc_.y1 * uc_.jcm[2];
 	    (*(jn+uc_.m+N1N0_+1)    )[2] += uc_.q * 0.5 * uc_.x1 * uc_.y2 * uc_.jcm[2];
 	    (*(jn+uc_.m+N1N0_+N1_+1))[2] += uc_.q * 0.5 * uc_.x2 * uc_.y2 * uc_.jcm[2];
-
-	    *(rn+uc_.m)                  += uc_.q * uc_.x1 * uc_.y1 * uc_.z1;
-	    *(rn+uc_.m+N1_)              += uc_.q * uc_.x2 * uc_.y1 * uc_.z1;
-	    *(rn+uc_.m+1  )              += uc_.q * uc_.x1 * uc_.y2 * uc_.z1;
-	    *(rn+uc_.m+N1_+1)            += uc_.q * uc_.x2 * uc_.y2 * uc_.z1;
-	    *(rn+uc_.m+N1N0_)            += uc_.q * uc_.x1 * uc_.y1 * uc_.z2;
-	    *(rn+uc_.m+N1N0_+N1_)        += uc_.q * uc_.x2 * uc_.y1 * uc_.z2;
-	    *(rn+uc_.m+N1N0_+1)          += uc_.q * uc_.x1 * uc_.y2 * uc_.z2;
-	    *(rn+uc_.m+N1N0_+N1_+1)      += uc_.q * uc_.x2 * uc_.y2 * uc_.z2;
 	  }
       }
   }

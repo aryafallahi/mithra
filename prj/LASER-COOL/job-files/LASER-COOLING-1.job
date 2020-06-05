@@ -1,6 +1,7 @@
 #  Mithra input file                                                                                                                                          
 #                                                                                                        
-#  physics - model the motion of one particle at the center of a cavity which is modeled by two counter-propagating plane-waves. The radiation of the particle is not considered.
+#  physics - model the motion of one particle at the center of a cavity which is modelled 
+#  by two counter-propagating plane-waves. The radiation of the particle is not considered.
 #                                                                                                 
 #  mpirun -np 4 ../MITHRA ./job-files/LASER-COOLING-1.job
 #  

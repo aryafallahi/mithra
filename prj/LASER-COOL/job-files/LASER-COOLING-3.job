@@ -1,6 +1,7 @@
 #  Mithra input file                                                                                                                                          
 #                                                                                                        
-#  physics - model the motion of a particle cloud in a cavity which is modeled by two counter-propagating plane-waves. The radiation of the particle cloud is not considered.
+#  physics - model the motion of a particle cloud in a cavity which is modelled
+#  by two counter-propagating plane-waves. The radiation of the particle cloud is not considered.
 #                                                                                                 
 #  mpirun -np 4 ../MITHRA ./job-files/LASER-COOLING-3.job
 #  
@@ -14,7 +15,7 @@ MESH
   mesh-lengths						= ( 6.0, 6.0, 6.0 ) 
   mesh-resolution					= ( 3.0, 3.0, 0.1 )
   mesh-center						= ( 0.0, 0.0, 1000.0 )
-  total-time						= 1600
+  total-time						= 2400
   bunch-time-step					= 0.1
   mesh-truncation-order					= 2
   space-charge						= false
@@ -43,7 +44,7 @@ BUNCH
     sample						= true
     directory						= ./
     base-name						= bunch-profile/bunch
-    rhythm						= 0.1
+    rhythm						= 1.0
   }
 }
 
@@ -58,8 +59,8 @@ EXTERNAL-FIELD
     strength-parameter					= 0.1
     signal-type						= gaussian
     wavelength						= 1.0
-    pulse-length					= 50.0
-    offset						= 200.0
+    pulse-length					= 100.0
+    offset						= 400.0
     CEP							= 0.0
   }
 
@@ -72,8 +73,8 @@ EXTERNAL-FIELD
     strength-parameter                                  = 0.1
     signal-type                                         = gaussian
     wavelength                                          = 1.0
-    pulse-length                                        = 50.0
-    offset                                              = 200.0
+    pulse-length                                        = 100.0
+    offset                                              = 400.0
     CEP                                                 = 0.0
   }
 }

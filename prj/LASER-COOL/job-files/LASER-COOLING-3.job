@@ -34,7 +34,7 @@ BUNCH
     direction                                           = ( 0.0,   0.0,   1.0  )
     position                                            = ( 0.0,   0.0,   0.0  )
     sigma-position                                      = ( 0.5,   0.5,   0.5  )
-    sigma-momentum                                      = ( 0.001, 0.001, 0.001)
+    sigma-momentum                                      = ( 0.01,  0.01,  0.01 )
     transverse-truncation                               = 3.0
     longitudinal-truncation                             = 3.0
   }

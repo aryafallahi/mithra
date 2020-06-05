@@ -20,9 +20,12 @@ INC_DIR = include/
 INC_SUBDIR = mithra/
 INCS := $(HDRS:$(SRC_DIR)%.h=$(INC_DIR)$(INC_SUBDIR)%.h)
 
-.PHONY: all install clean
+.PHONY: all clean debug install
 
 all: $(EXEC)
+
+debug: FLAGS += -g
+debug: all
 
 install: all $(LIB) $(INCS)
 

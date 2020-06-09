@@ -1,6 +1,7 @@
 #  Mithra input file                                                                                                                                          
 #                                                                                                        
-#  physics - model the motion of ten particle in a cavity which is modeled by two counter-propagating plane-waves. The radiation of the particle is not considered.
+#  physics - model the motion of ten particle in a cavity which is modelled 
+#  by two counter-propagating plane-waves. The radiation of the particle is not considered.
 #                                                                                                 
 #  mpirun -np 4 ../MITHRA ./job-files/LASER-COOLING-2.job
 #  
@@ -48,7 +49,7 @@ BUNCH
     sample						= true
     directory						= ./
     base-name						= bunch-profile/bunch
-    rhythm						= 0.1
+    rhythm						= 1.0
   }
 }
 

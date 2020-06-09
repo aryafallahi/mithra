@@ -14,11 +14,10 @@ MESH
 {
   length-scale					= MICROMETER
   time-scale					= PICOSECOND
-  mesh-lengths					= ( 400.0, 400.0,   1.5   ) 
+  mesh-lengths					= ( 400.0, 400.0,   1.0   ) 
   mesh-resolution				= ( 4.0,     4.0,   3.0e-5 )
   mesh-center					= ( 0.0,     0.0,   0.0    )
-  total-time					= 350000
-  bunch-time-step				= 1.6
+  total-time					= 300000
   mesh-truncation-order				= 2
   space-charge					= false
   solver					= NSFD
@@ -31,7 +30,7 @@ BUNCH
     type    					= ellipsoid
     distribution				= uniform
     charge					= 1.25e8
-    number-of-particles				= 33554432
+    number-of-particles				= 8388608
     gamma					= 13089
     direction     	    			= ( 0.0,     0.0,  1.0)
     position					= ( 0.0,     0.0,  0.0)
@@ -39,8 +38,8 @@ BUNCH
     sigma-momentum				= ( 0.007, 0.007, 13089e-3)
     transverse-truncation			= 180.0
     longitudinal-truncation                     = 0.43
-    bunching-factor				= 0.0
-    shot-noise					= true
+    bunching-factor				= 0.001
+    shot-noise					= false
   }
 }
 
@@ -62,7 +61,7 @@ FEL-OUTPUT
     sample					= true
     type					= at-point
     directory					= ./
-    base-name					= power-sampling/power-1
+    base-name					= power-sampling/powerB
     plane-position				= 0.45
     normalized-frequency			= 1.00
   }

@@ -1,5 +1,5 @@
 /********************************************************************************************************
- *  solver.cpp : Implementation of the functions for the solver class in the darius code
+ *  solver.cpp : Implementation of the functions for the solver class in the mithra code
  ********************************************************************************************************/
 
 #include <algorithm>
@@ -636,7 +636,7 @@ namespace MITHRA
     uc_.dy = mesh_.meshResolution_[1];
     uc_.dz = mesh_.meshResolution_[2];
     uc_.dv = - m0_ * EC / mesh_.timeStep_ /   ( uc_.dx * uc_.dy * uc_.dz );
-    uc_.rc = - EC / e0_ / 2.0 /               ( uc_.dx * uc_.dy * uc_.dz );
+    uc_.rc = - EC / e0_ /	                  ( uc_.dx * uc_.dy * uc_.dz );
     FieldVector<Double> ZERO_VECTOR (0.0);
     uc_.jt.resize(N1N0_,ZERO_VECTOR);
     if ( mesh_.spaceCharge_ ) uc_.rt.resize(N1N0_,0.0);
@@ -986,8 +986,8 @@ namespace MITHRA
     ub_.dx	= mesh_.meshResolution_[0];
     ub_.dy	= mesh_.meshResolution_[1];
     ub_.dz	= mesh_.meshResolution_[2];
-    ub_.r1    = - EC / ( EM * c0_ ) * bunch_.timeStep_ / 2.0;
-    ub_.r2    = - EC / EM * bunch_.timeStep_ / 2.0;
+    ub_.r1    	= - EC / ( EM * c0_ ) * bunch_.timeStep_ / 2.0;
+    ub_.r2    	= - EC / EM * bunch_.timeStep_ / 2.0;
 
     /* If bunch sampling is enabled, initialize the required data for sampling and saving the bunch.	*/
     if (bunch_.sampling_)

@@ -1,6 +1,9 @@
 /********************************************************************************************************
  MITHRA (Completely Numerical Calculation of Free Electron Laser Radiation)
  Version 2.0, copyright 2019, Arya Fallahi
+ Code developers:
+ - Arya Fallahi ( IT'IS Foundation, Zurich, Switzerland )
+ - Arnau Albe   ( Paul Scherrer Institut (PSI), Villigen, Switzerland )
  ********************************************************************************************************
  mithra.cpp: Main program file
  MPI version should be compiled in the mithra folder using the make file:
@@ -44,7 +47,9 @@ int main (int argc, char * (argv) [])
   printmessage(std::string(__FILE__), __LINE__, std::string(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::") );
   printmessage(std::string(__FILE__), __LINE__, std::string("MITHRA-2.0: Completely Numerical Calculation of Free Electron Laser Radiation)") );
   printmessage(std::string(__FILE__), __LINE__, std::string("Version 2.0, Copyright 2019, Arya Fallahi") );
-  printmessage(std::string(__FILE__), __LINE__, std::string("Written by Arya Fallahi, IT'IS Foundation, Zurich, Switzerland") );
+  printmessage(std::string(__FILE__), __LINE__, std::string("Code develeopers: ") );
+  printmessage(std::string(__FILE__), __LINE__, std::string("- Arya Fallahi ( IT'IS Foundation, Zurich, Switzerland )") );
+  printmessage(std::string(__FILE__), __LINE__, std::string("- Arnau Albe   ( Paul Scherrer Institut (PSI), Villigen, Switzerland )") );
   printmessage(std::string(__FILE__), __LINE__, std::string(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::") );
 
   /* Parse the command line options                                                                     */

@@ -1,0 +1,81 @@
+#  Mithra input file                                                                                                                                          
+#                                                                                                        
+#  physics - model the motion of a exploding particle cloud in a cavity which is modelled
+#  by two counter-propagating plane-waves. The radiation of particles are considered here.
+#                                                                                                 
+#  mpirun -np 4 ../MITHRA ./job-files/LASER-COOLING-5.job
+#  
+#  in the LSF system: 
+#  bsub -n 48 -W 2:00 -J "LASER-COOLING-5" -o mithra.out 'mpirun ../MITHRA ./job-files/LASER-COOLING-5.job'
+
+MESH
+{
+  length-scale						= MICROMETER
+  time-scale						= FEMTOSECOND
+  mesh-lengths						= ( 120.0, 120.0, 120.0 ) 
+  mesh-resolution					= (   0.5,   0.5,   0.5 )
+  mesh-center						= (   0.0,   0.0,   0.0 )
+  total-time						= 24000
+  bunch-time-step					= 1.0
+  mesh-truncation-order					= 2
+  space-charge						= false
+  solver						= FD
+}
+ 
+BUNCH
+{
+  bunch-initialization
+  { 
+    type                                                = ellipsoid
+    distribution                                        = gaussian
+    charge                                              = 1000.0
+    number-of-particles                                 = 1000.0
+    gamma                                               = 1.0
+    direction                                           = ( 0.0,   0.0,   1.0  )
+    position                                            = ( 0.0,   0.0,   0.0  )
+    sigma-position                                      = ( 5.0,   5.0,   5.0  )
+    sigma-momentum                                      = ( 0.01,  0.01,  0.01 )
+    transverse-truncation                               = 30.0
+    longitudinal-truncation                             = 30.0
+  }
+
+  bunch-profile
+  {
+    sample						= true
+    directory						= ./
+    base-name						= bunch-profile/bunch
+    rhythm						= 10.0
+  }
+}
+
+EXTERNAL-FIELD
+{
+  electromagnetic-wave
+  {
+    beam-type						= plane-wave
+    position						= ( 0.0, 0.0, 0.0 )
+    direction						= ( 1.0, 0.0, 0.0 )
+    polarization					= ( 0.0, 0.0, 1.0 )
+    strength-parameter					= 0.1
+    signal-type						= gaussian
+    wavelength						= 10.0
+    pulse-length					= 1000.0
+    offset						= 4000.0
+    CEP							= 0.0
+  }
+
+  electromagnetic-wave
+  {
+    beam-type                                           = plane-wave
+    position                                            = ( 0.0, 0.0, 0.0 )
+    direction                                           = (-1.0, 0.0, 0.0 )
+    polarization                                        = ( 0.0, 0.0, 1.0 )
+    strength-parameter                                  = 0.1
+    signal-type                                         = gaussian
+    wavelength                                          = 10.0
+    pulse-length                                        = 1000.0
+    offset                                              = 4000.0
+    CEP                                                 = 0.0
+  }
+}
+

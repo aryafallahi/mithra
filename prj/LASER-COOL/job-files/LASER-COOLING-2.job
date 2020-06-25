@@ -1,6 +1,6 @@
 #  Mithra input file                                                                                                                                          
 #                                                                                                        
-#  physics - model the motion of ten particle in a cavity which is modelled 
+#  physics - model the motion of eleven particle in a cavity which is modelled 
 #  by two counter-propagating plane-waves. The radiation of the particle is not considered.
 #                                                                                                 
 #  mpirun -np 4 ../MITHRA ./job-files/LASER-COOLING-2.job
@@ -15,8 +15,8 @@ MESH
   mesh-lengths						= ( 6.0, 6.0, 6.0 ) 
   mesh-resolution					= ( 3.0, 3.0, 0.1 )
   mesh-center						= ( 0.0, 0.0, 1000.0 )
-  total-time						= 2400
-  bunch-time-step					= 0.1
+  total-time						= 24000
+  bunch-time-step					= 1.0
   mesh-truncation-order					= 2
   space-charge						= false
   solver						= FD
@@ -31,17 +31,17 @@ BUNCH
     number-of-particles					= 11
     gamma						= 1.0
     direction						= (0.0, 0.0, 1.0)
-    position						= (-0.5001, 0.0, 0.0)
-    position                                            = (-0.4001, 0.0, 0.0)
-    position                                            = (-0.3001, 0.0, 0.0)
-    position						= (-0.2001, 0.0, 0.0)
-    position						= (-0.1001, 0.0, 0.0)
-    position						= ( 0.0001, 0.0, 0.0)
-    position						= ( 0.1001, 0.0, 0.0)
-    position						= ( 0.2001, 0.0, 0.0)
-    position						= ( 0.3001, 0.0, 0.0)
-    position						= ( 0.4001, 0.0, 0.0)
-    position						= ( 0.5001, 0.0, 0.0)
+    position						= (-5.001, 0.0, 0.0)
+    position                                            = (-4.001, 0.0, 0.0)
+    position                                            = (-3.001, 0.0, 0.0)
+    position						= (-2.001, 0.0, 0.0)
+    position						= (-1.001, 0.0, 0.0)
+    position						= ( 0.001, 0.0, 0.0)
+    position						= ( 1.001, 0.0, 0.0)
+    position						= ( 2.001, 0.0, 0.0)
+    position						= ( 3.001, 0.0, 0.0)
+    position						= ( 4.001, 0.0, 0.0)
+    position						= ( 5.001, 0.0, 0.0)
   }
 
   bunch-profile
@@ -63,9 +63,9 @@ EXTERNAL-FIELD
     polarization					= ( 0.0, 0.0, 1.0 )
     strength-parameter					= 0.1
     signal-type						= gaussian
-    wavelength						= 1.0
-    pulse-length					= 100.0
-    offset						= 400.0
+    wavelength						= 10.0
+    pulse-length					= 1000.0
+    offset						= 4000.0
     CEP							= 0.0
   }
 
@@ -77,9 +77,9 @@ EXTERNAL-FIELD
     polarization                                        = ( 0.0, 0.0, 1.0 )
     strength-parameter                                  = 0.1
     signal-type                                         = gaussian
-    wavelength                                          = 1.0
-    pulse-length                                        = 100.0
-    offset                                              = 400.0
+    wavelength                                          = 10.0
+    pulse-length                                        = 1000.0
+    offset                                              = 4000.0
     CEP                                                 = 0.0
   }
 }

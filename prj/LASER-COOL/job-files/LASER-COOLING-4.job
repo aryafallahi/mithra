@@ -1,22 +1,22 @@
 #  Mithra input file                                                                                                                                          
 #                                                                                                        
-#  physics - model the motion of a particle cloud in a cavity which is modelled
-#  by two counter-propagating plane-waves. The radiation of the particle cloud is not considered.
+#  physics - model the motion of a exploding particle cloud in a cavity which is modelled
+#  by two counter-propagating plane-waves.
 #                                                                                                 
-#  mpirun -np 4 ../MITHRA ./job-files/LASER-COOLING-3.job
+#  mpirun -np 4 ../MITHRA ./job-files/LASER-COOLING-4.job
 #  
 #  in the LSF system: 
-#  bsub -n 48 -W 2:00 -J "LASER-COOLING-3" -o mithra.out 'mpirun ../MITHRA ./job-files/LASER-COOLING-3.job'
+#  bsub -n 48 -W 2:00 -J "LASER-COOLING-4" -o mithra.out 'mpirun ../MITHRA ./job-files/LASER-COOLING-4.job'
 
 MESH
 {
   length-scale						= MICROMETER
   time-scale						= FEMTOSECOND
-  mesh-lengths						= ( 6.0, 6.0, 6.0 ) 
-  mesh-resolution					= ( 3.0, 3.0, 0.1 )
+  mesh-lengths						= ( 60.0, 60.0, 60.0 ) 
+  mesh-resolution					= ( 30.0, 30.0, 1.0  )
   mesh-center						= ( 0.0, 0.0, 1000.0 )
-  total-time						= 2400
-  bunch-time-step					= 0.1
+  total-time						= 24000
+  bunch-time-step					= 1.0
   mesh-truncation-order					= 2
   space-charge						= false
   solver						= FD
@@ -33,10 +33,10 @@ BUNCH
     gamma                                               = 1.0
     direction                                           = ( 0.0,   0.0,   1.0  )
     position                                            = ( 0.0,   0.0,   0.0  )
-    sigma-position                                      = ( 0.5,   0.5,   0.5  )
+    sigma-position                                      = ( 5.0,   5.0,   5.0  )
     sigma-momentum                                      = ( 0.01,  0.01,  0.01 )
-    transverse-truncation                               = 3.0
-    longitudinal-truncation                             = 3.0
+    transverse-truncation                               = 30.0
+    longitudinal-truncation                             = 30.0
   }
 
   bunch-profile
@@ -44,7 +44,7 @@ BUNCH
     sample						= true
     directory						= ./
     base-name						= bunch-profile/bunch
-    rhythm						= 1.0
+    rhythm						= 10.0
   }
 }
 
@@ -58,9 +58,9 @@ EXTERNAL-FIELD
     polarization					= ( 0.0, 0.0, 1.0 )
     strength-parameter					= 0.1
     signal-type						= gaussian
-    wavelength						= 1.0
-    pulse-length					= 100.0
-    offset						= 400.0
+    wavelength						= 10.0
+    pulse-length					= 1000.0
+    offset						= 4000.0
     CEP							= 0.0
   }
 
@@ -72,9 +72,9 @@ EXTERNAL-FIELD
     polarization                                        = ( 0.0, 0.0, 1.0 )
     strength-parameter                                  = 0.1
     signal-type                                         = gaussian
-    wavelength                                          = 1.0
-    pulse-length                                        = 100.0
-    offset                                              = 400.0
+    wavelength                                          = 10.0
+    pulse-length                                        = 1000.0
+    offset                                              = 4000.0
     CEP                                                 = 0.0
   }
 }

@@ -15,8 +15,8 @@ MESH
   mesh-lengths						= ( 6.0, 6.0, 6.0 ) 
   mesh-resolution					= ( 3.0, 3.0, 0.1 )
   mesh-center						= ( 0.0, 0.0, 1000.0 )
-  total-time						= 1600
-  bunch-time-step					= 0.1
+  total-time						= 24000
+  bunch-time-step					= 1.0
   mesh-truncation-order					= 2
   space-charge						= false
   solver						= FD
@@ -28,7 +28,7 @@ BUNCH
   {
     type    						= manual
     charge						= 1.0
-    number-of-particles					= 11
+    number-of-particles					= 1
     gamma						= 1.0
     direction						= (0.0, 0.0, 1.0)
     position						= (0.0, 0.0, 0.0)
@@ -39,7 +39,7 @@ BUNCH
     sample						= true
     directory						= ./
     base-name						= bunch-profile/bunch
-    rhythm						= 0.1
+    rhythm						= 1.0
   }
 }
 
@@ -53,9 +53,9 @@ EXTERNAL-FIELD
     polarization					= ( 0.0, 0.0, 1.0 )
     strength-parameter					= 0.1
     signal-type						= gaussian
-    wavelength						= 1.0
-    pulse-length					= 50.0
-    offset						= 200.0
+    wavelength						= 10.0
+    pulse-length					= 1000.0
+    offset						= 4000.0
     CEP							= 0.0
   }
 
@@ -67,9 +67,9 @@ EXTERNAL-FIELD
     polarization                                        = ( 0.0, 0.0, 1.0 )
     strength-parameter                                  = 0.1
     signal-type                                         = gaussian
-    wavelength                                          = 1.0
-    pulse-length                                        = 50.0
-    offset                                              = 200.0
+    wavelength                                          = 10.0
+    pulse-length                                        = 1000.0
+    offset                                              = 4000.0
     CEP                                                 = 0.0
   }
 }

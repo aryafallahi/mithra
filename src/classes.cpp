@@ -115,6 +115,10 @@ namespace MITHRA
     Double		Ne, bF, bFi;
     unsigned int	bmi;
 
+    /* The initialization in group of four particles should only be done if there exists an undulator in
+     * the interaction.											*/
+    unsigned int	ng = ( bunchInit.lambda_ == 0.0 ) ? 1 : 4;
+
     /* Check the bunching factor.                                                                     	*/
     if ( bunchInit.bF_ > 2.0 || bunchInit.bF_ < 0.0 )
       {
@@ -125,7 +129,7 @@ namespace MITHRA
     /* Declare the function for injecting the shot noise.						*/
     auto insertCharge = [&] (Charge q) {
 
-      for ( unsigned int ii = 0; ii < 4; ii++ )
+      for ( unsigned int ii = 0; ii < ng; ii++ )
 	{
 	  /* The random modulation is introduced depending on the shot-noise being activated.		*/
 	  if ( bunchInit.shotNoise_ )
@@ -156,7 +160,7 @@ namespace MITHRA
      * calculate the FEL bucket number.									*/
     if ( bunchInit.shotNoise_ )
       {
-	for (i = 0; i < Np / 4; i++)
+	for (i = 0; i < Np / ng; i++)
 	  {
 	    if ( bunchInit.distribution_ == "uniform" )
 	      zmin = std::min(   ( 2.0 * halton(2, i + Np0) - 1.0 ) * bunchInit.sigmaPosition_[2] , zmin );
@@ -170,7 +174,7 @@ namespace MITHRA
 	  }
 
 	if ( bunchInit.distribution_ == "uniform" )
-	  for ( ; i < unsigned( Np / 4 * ( 1.0 + 2.0 * bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
+	  for ( ; i < unsigned( Np / ng * ( 1.0 + 2.0 * bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
 	    {
 	      t0  = 2.0 * bunchInit.lambda_ * sqrt( - 2.0 * log( halton( 2, i + Np0 ) ) ) * sin( 2.0 * PI * halton( 3, i + Np0 ) );
 	      t0 += ( t0 < 0.0 ) ? ( - bunchInit.sigmaPosition_[2] ) : ( bunchInit.sigmaPosition_[2] );
@@ -190,7 +194,7 @@ namespace MITHRA
       }
 
     /* Determine the properties of each charge point and add them to the charge vector.               	*/
-    for (i = rank; i < Np / 4; i += size)
+    for (i = rank; i < Np / ng; i += size)
       {
 	/* Determine the transverse coordinate.								*/
 	r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * cos( 2.0 * PI * halton(1, i + Np0) );
@@ -229,7 +233,7 @@ namespace MITHRA
     /* If the longitudinal type of the bunch is uniform a tapered part needs to be added to remove the
      * CSE from the tail of the bunch.									*/
     if ( bunchInit.distribution_ == "uniform" )
-      for ( ; i < unsigned( Np / 4 * ( 1.0 + 2.0 * bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i += size)
+      for ( ; i < unsigned( Np / ng * ( 1.0 + 2.0 * bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i += size)
 	{
 	  r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * cos( 2.0 * PI * halton(1, i + Np0) );
 	  r[1] = bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * sin( 2.0 * PI * halton(1, i + Np0) );
@@ -383,7 +387,8 @@ namespace MITHRA
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Type of the bunch initialization = ") + bunchInit_[i].bunchType_ );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Type of the current profile = ") + bunchInit_[i].distribution_ );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Number of macro-particles = ") + stringify(bunchInit_[i].numberOfParticles_) );
-	printmessage(std::string(__FILE__), __LINE__, std::string(" Total charge of the cloud = ") + stringify(bunchInit_[i].cloudCharge_) );
+	printmessage(std::string(__FILE__), __LINE__, std::string(" Total number of electrons in the cloud = ") + stringify(bunchInit_[i].cloudCharge_) );
+    printmessage(std::string(__FILE__), __LINE__, std::string(" Total charge of the cloud = ") + stringify(-bunchInit_[i].cloudCharge_ * EC) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Initial mean gamma of the bunch = ") + stringify(bunchInit_[i].initialGamma_) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Initial mean speed of the bunch = ") + stringify(bunchInit_[i].initialBeta_) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Initial direction of the bunch speed = ") + stringify(bunchInit_[i].initialDirection_) );

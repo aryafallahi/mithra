@@ -366,18 +366,26 @@ namespace MITHRA
      * factor in the simulation.									*/
     if ( mesh_.totalDist_ > 0.0 )
       {
-	/* Obtain the minimum value of the z in the bunch coordinates.					*/
-	Double zminL = 1.0e100, zminG;
-	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
-	  zminL = std::min( zminL , iterQ->rnp[2] );
-	MPI_Allreduce(&zminL, &zminG, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
-
-	/* Now find the time that a particle with average speed needs to travel from zmin to the final
-	 * undulator point.										*/
-	mesh_.totalTime_ = ( mesh_.totalDist_ / gamma_ - zminG ) / ( beta_ * c0_ ) - dt_;
-
-	/* Multiply the obtained total time by a safety factor.						*/
-	mesh_.totalTime_ *= 1.01;
+    /* Define the necessary variables, and get zmin and average beta_z.				*/
+    double Lu = 0.0;
+    for (auto und = undulator_.begin(); und != undulator_.end(); und++)
+      Lu += und->lu_ * und->length_ / gamma_;
+    double zEnd = mesh_.totalDist_ / gamma_;
+    double zMin = 1e100;
+    double bz = 0;
+    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
+      {
+      zMin = std::min(zMin, iter->rnp[2]);
+      bz += iter->gbnp[2] / std::sqrt(1 + iter->gbnp.norm2());
+      }
+    MPI_Allreduce(&zMin, &zMin, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+    MPI_Allreduce(&bz, &bz, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    unsigned int Nq = chargeVectorn_.size();
+    MPI_Allreduce(&Nq, &Nq, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+    bz /= Nq;
+    
+    mesh_.totalTime_ = 1 / (c0_ * (bz + beta_)) * (zEnd - beta_ * c0_ * dt_ - zMin + bz / beta_* Lu);
+    
       }
   }
 

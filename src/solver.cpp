@@ -385,6 +385,7 @@ namespace MITHRA
     bz /= Nq;
     
     mesh_.totalTime_ = 1 / (c0_ * (bz + beta_)) * (zEnd - beta_ * c0_ * dt_ - zMin + bz / beta_* Lu);
+    printmessage(std::string(__FILE__), __LINE__, std::string("The total time to simulate has been set to ") + stringify(mesh_.totalTime_ * gamma_) + std::string(" .") );    
     
       }
   }

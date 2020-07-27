@@ -319,7 +319,7 @@ namespace MITHRA
 
     /* The bunch needs to be shifted such that it is centered in the computational domain when it enters
      * the undulator. For this the bunch mean z-coordinate and beta_z are required.			*/
-    if (( mesh_.optimizePosition_ ) && ( undulator_.size() > 0 ))
+    if ( mesh_.optimizePosition_ && ( undulator_.size() > 0 ))
       {
 	Double zL  = 0.0, zG;
 	Double bzL = 0.0, bzG;
@@ -339,7 +339,7 @@ namespace MITHRA
 	zmaxG 		-= shift;
 	bunch_.zu_ 	 = zmaxG;
 	dt_ 		 = - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmaxG + undulator_[0].dist_ / gamma_ );
-	seed_.dt_ = dt_;
+	seed_.dt_ 	 = dt_;
 
 	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
 	  iterQ->rnp[2] -= shift;
@@ -366,26 +366,26 @@ namespace MITHRA
      * factor in the simulation.									*/
     if ( mesh_.totalDist_ > 0.0 )
       {
-    /* Define the necessary variables, and get zmin and average beta_z.				*/
-    double Lu = 0.0;
-    for (auto und = undulator_.begin(); und != undulator_.end(); und++)
-      Lu += und->lu_ * und->length_ / gamma_;
-    double zEnd = mesh_.totalDist_ / gamma_;
-    double zMin = 1e100;
-    double bz = 0;
-    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
-      {
-      zMin = std::min(zMin, iter->rnp[2]);
-      bz += iter->gbnp[2] / std::sqrt(1 + iter->gbnp.norm2());
-      }
-    MPI_Allreduce(&zMin, &zMin, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
-    MPI_Allreduce(&bz, &bz, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    unsigned int Nq = chargeVectorn_.size();
-    MPI_Allreduce(&Nq, &Nq, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
-    bz /= Nq;
-    
-    mesh_.totalTime_ = 1 / (c0_ * (bz + beta_)) * (zEnd - beta_ * c0_ * dt_ - zMin + bz / beta_* Lu);
-    
+	/* Define the necessary variables, and get zmin and average beta_z.				*/
+	double Lu = 0.0;
+	for (auto und = undulator_.begin(); und != undulator_.end(); und++)
+	  Lu += und->lu_ * und->length_ / gamma_;
+	double zEnd = mesh_.totalDist_ / gamma_;
+	double zMin = 1e100;
+	double bz = 0;
+	for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
+	  {
+	    zMin = std::min(zMin, iter->rnp[2]);
+	    bz += iter->gbnp[2] / std::sqrt(1 + iter->gbnp.norm2());
+	  }
+	MPI_Allreduce(&zMin, &zMin, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+	MPI_Allreduce(&bz, &bz, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	unsigned int Nq = chargeVectorn_.size();
+	MPI_Allreduce(&Nq, &Nq, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+	bz /= Nq;
+
+	mesh_.totalTime_ = 1 / (c0_ * (bz + beta_)) * (zEnd - beta_ * c0_ * dt_ - zMin + bz / beta_* Lu);
+
       }
   }
 
@@ -1684,6 +1684,8 @@ namespace MITHRA
     (*pb_.file).setf(std::ios::scientific);
     (*pb_.file).precision(15);
     (*pb_.file).width(40);
+
+    *pb_.file << time_ * gamma_ << std::endl;
 
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {

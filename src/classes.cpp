@@ -388,7 +388,7 @@ namespace MITHRA
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Type of the current profile = ") + bunchInit_[i].distribution_ );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Number of macro-particles = ") + stringify(bunchInit_[i].numberOfParticles_) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Total number of electrons in the cloud = ") + stringify(bunchInit_[i].cloudCharge_) );
-    printmessage(std::string(__FILE__), __LINE__, std::string(" Total charge of the cloud = ") + stringify(-bunchInit_[i].cloudCharge_ * EC) );
+    printmessage(std::string(__FILE__), __LINE__, std::string(" Total charge of the cloud [Coulombs] = ") + stringify(-bunchInit_[i].cloudCharge_ * EC) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Initial mean gamma of the bunch = ") + stringify(bunchInit_[i].initialGamma_) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Initial mean speed of the bunch = ") + stringify(bunchInit_[i].initialBeta_) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Initial direction of the bunch speed = ") + stringify(bunchInit_[i].initialDirection_) );

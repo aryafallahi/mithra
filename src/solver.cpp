@@ -366,6 +366,7 @@ namespace MITHRA
      * factor in the simulation.									*/
     if ( mesh_.totalDist_ > 0.0 )
       {
+<<<<<<< HEAD
 	/* Define the necessary variables, and get zmin and average beta_z.				*/
 	double Lu = 0.0;
 	for (auto und = undulator_.begin(); und != undulator_.end(); und++)
@@ -386,6 +387,29 @@ namespace MITHRA
 
 	mesh_.totalTime_ = 1 / (c0_ * (bz + beta_)) * (zEnd - beta_ * c0_ * dt_ - zMin + bz / beta_* Lu);
 
+=======
+    /* Define the necessary variables, and get zmin and average beta_z.				*/
+    double Lu = 0.0;
+    for (auto und = undulator_.begin(); und != undulator_.end(); und++)
+      Lu += und->lu_ * und->length_ / gamma_;
+    double zEnd = mesh_.totalDist_ / gamma_;
+    double zMin = 1e100;
+    double bz = 0;
+    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
+      {
+      zMin = std::min(zMin, iter->rnp[2]);
+      bz += iter->gbnp[2] / std::sqrt(1 + iter->gbnp.norm2());
+      }
+    MPI_Allreduce(&zMin, &zMin, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+    MPI_Allreduce(&bz, &bz, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    unsigned int Nq = chargeVectorn_.size();
+    MPI_Allreduce(&Nq, &Nq, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+    bz /= Nq;
+    
+    mesh_.totalTime_ = 1 / (c0_ * (bz + beta_)) * (zEnd - beta_ * c0_ * dt_ - zMin + bz / beta_* Lu);
+    printmessage(std::string(__FILE__), __LINE__, std::string("The total time to simulate has been set to ") + stringify(mesh_.totalTime_ * gamma_) + std::string(" .") );    
+    
+>>>>>>> 4a05a3f27cdde15f610edf948cbe465793af1af2
       }
   }
 

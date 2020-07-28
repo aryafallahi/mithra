@@ -153,5 +153,8 @@ namespace MITHRA
   /* Function creating a set of halton sequence for the random particle generation.			*/
   Double halton (unsigned int i, unsigned int j);
 
+  /* Hello message when initialising mithra.														*/
+  void helloMessage();
+
 }
 #endif

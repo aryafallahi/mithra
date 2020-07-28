@@ -43,14 +43,7 @@ int main (int argc, char * (argv) [])
   timeval simulationStart, simulationEnd;
   gettimeofday(&simulationStart, NULL);
 
-  /* Hello message                                                                                      */
-  printmessage(std::string(__FILE__), __LINE__, std::string(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::") );
-  printmessage(std::string(__FILE__), __LINE__, std::string("MITHRA-2.0: Completely Numerical Calculation of Free Electron Laser Radiation)") );
-  printmessage(std::string(__FILE__), __LINE__, std::string("Version 2.0, Copyright 2019, Arya Fallahi") );
-  printmessage(std::string(__FILE__), __LINE__, std::string("Code develeopers: ") );
-  printmessage(std::string(__FILE__), __LINE__, std::string("- Arya Fallahi ( IT'IS Foundation, Zurich, Switzerland )") );
-  printmessage(std::string(__FILE__), __LINE__, std::string("- Arnau Albe   ( Paul Scherrer Institut (PSI), Villigen, Switzerland )") );
-  printmessage(std::string(__FILE__), __LINE__, std::string(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::") );
+  helloMessage();
 
   /* Parse the command line options                                                                     */
   std::list<std::string> jobFile = read_file(argv[1]);

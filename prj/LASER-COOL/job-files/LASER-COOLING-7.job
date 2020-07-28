@@ -12,7 +12,7 @@ MESH
 {
   length-scale						= MICROMETER
   time-scale						= FEMTOSECOND
-  mesh-lengths						= ( 320.0, 320.0,    10.0   ) 
+  mesh-lengths						= ( 320.0, 320.0,     0.01   ) 
   mesh-resolution					= (  40.0,  40.0,     0.005 )
   mesh-center						= (   0.0,   0.0, 10000.0   )
   total-time						= 24000
@@ -29,7 +29,7 @@ BUNCH
     type                                                = ellipsoid
     distribution                                        = gaussian
     charge                                              = 10000.0
-    number-of-particles                                 = 100000.0
+    number-of-particles                                 = 1000.0
     gamma                                               = 10.0
     direction                                           = ( 0.0,  0.0,  1.0 )
     position                                            = ( 0.0,  0.0,  0.0 )
@@ -43,7 +43,7 @@ BUNCH
   {
     sample						= true
     directory						= ./
-    base-name						= /cluster/scratch/afallahi/bunch-profile/bunch
+    base-name						= bunch-profile/bunch
     rhythm						= 10.0
   }
 }
@@ -58,7 +58,7 @@ EXTERNAL-FIELD
     position						= ( 0.0, 0.0, 4000.0 )
     direction						= ( 1.0, 0.0,    0.0 )
     polarization					= ( 0.0, 0.0,    1.0 )
-    strength-parameter					= 0.1
+    strength-parameter					= 1.0
     signal-type						= gaussian
     wavelength						= 10.0
     pulse-length					= 1000.0
@@ -72,9 +72,9 @@ EXTERNAL-FIELD
     radius-parallel					= 1000.0
     radius-perpendicular				= 1.0e10
     position                                            = ( 0.0, 0.0, 4000.0 )
-    direction                                           = (-1.0, 0.0, 0.0 )
-    polarization                                        = ( 0.0, 0.0, 1.0 )
-    strength-parameter                                  = 0.1
+    direction                                           = (-1.0, 0.0,    0.0 )
+    polarization                                        = ( 0.0, 0.0,    1.0 )
+    strength-parameter                                  = 1.0
     signal-type                                         = gaussian
     wavelength                                          = 10.0
     pulse-length                                        = 1000.0
@@ -82,4 +82,3 @@ EXTERNAL-FIELD
     CEP                                                 = 0.0
   }
 }
-

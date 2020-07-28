@@ -54,7 +54,7 @@ namespace MITHRA
     int p0, p, k, k0, a;
     Double x = 0.0;
 
-    k0 = j;
+    k0 = j + 1;
 
     p = prime[i];
 
@@ -70,5 +70,17 @@ namespace MITHRA
       }
 
     return 1.0 - x;
+  }
+
+  /* Hello message when initialising mithra.														*/
+  void helloMessage()
+  {
+    printmessage(std::string(__FILE__), __LINE__, std::string(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::") );
+    printmessage(std::string(__FILE__), __LINE__, std::string("MITHRA-2.0: Completely Numerical Calculation of Free Electron Laser Radiation)") );
+    printmessage(std::string(__FILE__), __LINE__, std::string("Version 2.0, Copyright 2019, Arya Fallahi") );
+    printmessage(std::string(__FILE__), __LINE__, std::string("Code developers: ") );
+    printmessage(std::string(__FILE__), __LINE__, std::string("- Arya Fallahi ( IT'IS Foundation, Zurich, Switzerland )") );
+    printmessage(std::string(__FILE__), __LINE__, std::string("- Arnau Alba   ( Paul Scherrer Institut (PSI), Villigen, Switzerland )") );
+    printmessage(std::string(__FILE__), __LINE__, std::string(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::") );
   }
 }

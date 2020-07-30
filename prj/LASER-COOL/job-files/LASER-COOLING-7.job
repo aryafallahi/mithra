@@ -54,11 +54,11 @@ EXTERNAL-FIELD
   {
     beam-type						= gaussian-beam
     radius-parallel					= 1000.0
-    radius-perpendicular				= 1.0e10
+    radius-perpendicular				= 50.0
     position						= ( 0.0, 0.0, 4000.0 )
     direction						= ( 1.0, 0.0,    0.0 )
     polarization					= ( 0.0, 0.0,    1.0 )
-    strength-parameter					= 1.0
+    strength-parameter					= 0.5
     signal-type						= gaussian
     wavelength						= 10.0
     pulse-length					= 1000.0
@@ -70,11 +70,43 @@ EXTERNAL-FIELD
   {
     beam-type                                           = gaussian-beam
     radius-parallel					= 1000.0
-    radius-perpendicular				= 1.0e10
+    radius-perpendicular				= 50.0
     position                                            = ( 0.0, 0.0, 4000.0 )
     direction                                           = (-1.0, 0.0,    0.0 )
     polarization                                        = ( 0.0, 0.0,    1.0 )
-    strength-parameter                                  = 1.0
+    strength-parameter                                  = 0.5
+    signal-type                                         = gaussian
+    wavelength                                          = 10.0
+    pulse-length                                        = 1000.0
+    offset                                              = 4000.0
+    CEP                                                 = 0.0
+  }
+
+  electromagnetic-wave
+  {
+    beam-type						= gaussian-beam
+    radius-parallel					= 1000.0
+    radius-perpendicular				= 50.0
+    position						= ( 0.0, 0.0, 4000.0 )
+    direction						= ( 0.0, 1.0,    0.0 )
+    polarization					= ( 0.0, 0.0,    1.0 )
+    strength-parameter					= 0.5
+    signal-type						= gaussian
+    wavelength						= 10.0
+    pulse-length					= 1000.0
+    offset						= 4000.0
+    CEP							= 0.0
+  }
+
+  electromagnetic-wave
+  {
+    beam-type                                           = gaussian-beam
+    radius-parallel					= 1000.0
+    radius-perpendicular				= 50.0
+    position                                            = ( 0.0, 0.0, 4000.0 )
+    direction                                           = ( 0.0,-1.0,    0.0 )
+    polarization                                        = ( 0.0, 0.0,    1.0 )
+    strength-parameter                                  = 0.5
     signal-type                                         = gaussian
     wavelength                                          = 10.0
     pulse-length                                        = 1000.0

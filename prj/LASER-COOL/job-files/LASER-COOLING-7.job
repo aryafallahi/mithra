@@ -12,13 +12,13 @@ MESH
 {
   length-scale						= MICROMETER
   time-scale						= FEMTOSECOND
-  mesh-lengths						= ( 320.0, 320.0,     0.01   ) 
-  mesh-resolution					= (  40.0,  40.0,     0.005 )
-  mesh-center						= (   0.0,   0.0, 10000.0   )
+  mesh-lengths						= ( 320.0, 320.0, 100.0  ) 
+  mesh-resolution					= (   5.0,   5.0,   0.01 )
+  mesh-center						= (   0.0,   0.0,   0.0  )
   total-time						= 24000
   bunch-time-step					= 0.5
   mesh-truncation-order					= 2
-  space-charge						= false
+  space-charge						= true
   solver						= FD
 }
  
@@ -38,12 +38,12 @@ BUNCH
     transverse-truncation                               = 60.0
     longitudinal-truncation                             = 60.0
   }
-
-  bunch-profile
+  
+  bunch-visualization
   {
     sample						= true
     directory						= ./
-    base-name						= bunch-profile/bunch
+    base-name						= bunch-vtk/bunch
     rhythm						= 10.0
   }
 }

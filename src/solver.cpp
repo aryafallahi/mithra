@@ -1687,13 +1687,12 @@ namespace MITHRA
     (*pb_.file).precision(15);
     (*pb_.file).width(40);
 
-    *pb_.file << time_ * gamma_ << std::endl;
-
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
 	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
 	  {
 	    /* Loop over the particles and print the data of each particle into the file.		*/
+	    *pb_.file << time_ * gamma_ << "\t";
 	    *pb_.file << iter->q  	<< "\t";
 	    *pb_.file << iter->rnp[0]  	<< "\t";
 	    *pb_.file << iter->rnp[1]  	<< "\t";

@@ -1,0 +1,66 @@
+#  Mithra input file                                                                                                                                          
+#                                                                                                        
+#  physics - model the motion of a exploding particle cloud in a cavity which is modelled
+#  by two counter-propagating plane-waves. The radiation of particles are considered here.
+#                                                                                                 
+#  mpirun -np 4 ../MITHRA ./job-files/LASER-COOLING-8.job
+#  
+#  in the LSF system: 
+#  bsub -n 48 -W 2:00 -J "LASER-COOLING-8" -o mithra.out 'mpirun ../MITHRA ./job-files/LASER-COOLING-8.job'
+
+MESH
+{
+  length-scale						= MICROMETER
+  time-scale						= FEMTOSECOND
+  mesh-lengths						= ( 320.0, 320.0,   0.05  ) 
+  mesh-resolution					= (  40.0,  40.0,   0.01 )
+  mesh-center						= (   0.0,   0.0,   10000.0  )
+  total-time						= 24000
+  bunch-time-step					= 0.5
+  mesh-truncation-order					= 2
+  space-charge						= flse
+  solver						= FD
+}
+ 
+BUNCH
+{
+  bunch-initialization
+  { 
+    type                                                = ellipsoid
+    distribution                                        = gaussian
+    charge                                              = 10000.0
+    number-of-particles                                 = 8.0
+    gamma                                               = 10.0
+    direction                                           = ( 0.0,  0.0,  1.0 )
+    position                                            = ( 0.0,  0.0,  0.0 )
+    sigma-position                                      = (10.0, 10.0, 10.0 )
+    sigma-momentum                                      = ( 0.1,  0.1,  0.1 )
+    transverse-truncation                               = 60.0
+    longitudinal-truncation                             = 60.0
+  }
+
+  bunch-profile
+  {
+    sample                                              = true
+    directory                                           = ./
+    base-name                                           = bunch-profile/bunch
+    rhythm                                              = 1.0
+  }
+}
+
+UNDULATOR
+{
+  optical-undulator
+  {
+    beam-type                                   	= plane-wave
+    position                                    	= ( 0.0, 0.0, 0.0 )
+    direction                                   	= ( 0.0, 0.0,-1.0 )
+    polarization                                	= ( 0.0, 1.0, 0.0 )
+    strength-parameter                          	= 1.0
+    signal-type                                 	= flat-top
+    wavelength                                  	= 10.0
+    pulse-length                                	= 9000.0
+    offset                                      	= 4500.0
+    CEP                                         	= 0.0
+  }
+}

@@ -12,13 +12,13 @@ MESH
 {
   length-scale						= MICROMETER
   time-scale						= FEMTOSECOND
-  mesh-lengths						= ( 320.0, 320.0, 100.0    ) 
-  mesh-resolution					= (   2.0,   2.0,   0.0025 )
-  mesh-center						= (   0.0,   0.0,   0.0    )
-  total-time						= 24000
+  mesh-lengths						= (   6.0,   6.0,   0.016   ) 
+  mesh-resolution					= (   2.0,   2.0,   0.004   )
+  mesh-center						= (   0.0,   0.0,   10000.0 )
+  total-time						= 48000
   bunch-time-step					= 0.5
   mesh-truncation-order					= 2
-  space-charge						= true
+  space-charge						= false
   solver						= FD
 }
  
@@ -29,7 +29,7 @@ BUNCH
     type                                                = ellipsoid
     distribution                                        = gaussian
     charge                                              = 10000.0
-    number-of-particles                                 = 100000.0
+    number-of-particles                                 = 10000.0
     gamma                                               = 10.0
     direction                                           = ( 0.0,  0.0,  1.0 )
     position                                            = ( 0.0,  0.0,  0.0 )
@@ -37,13 +37,14 @@ BUNCH
     sigma-momentum                                      = ( 0.1,  0.1,  0.1 )
     transverse-truncation                               = 60.0
     longitudinal-truncation                             = 60.0
+    shot-noise						= false
   }
   
   bunch-profile
   {
     sample                                              = true
     directory                                           = ./
-    base-name                                           = /cluster/scratch/afallahi/bunch-profile/bunchSC
+    base-name                                           = bunch-profile/bunch
     rhythm                                              = 50.0
   } 
 }
@@ -53,64 +54,64 @@ EXTERNAL-FIELD
   electromagnetic-wave
   {
     beam-type						= gaussian-beam
-    radius-parallel					= 1000.0
+    radius-parallel					= 1500.0
     radius-perpendicular				= 50.0
-    position						= ( 0.0, 0.0, 4000.0 )
+    position						= ( 0.0, 0.0, 4500.0 )
     direction						= ( 1.0, 0.0,    0.0 )
     polarization					= ( 0.0, 0.0,    1.0 )
-    strength-parameter					= 0.2
+    strength-parameter					= 0.3
     signal-type						= gaussian
     wavelength						= 10.0
-    pulse-length					= 1000.0
-    offset						= 4000.0
+    pulse-length					= 1500.0
+    offset						= 4500.0
     CEP							= 0.0
   }
 
   electromagnetic-wave
   {
     beam-type                                           = gaussian-beam
-    radius-parallel					= 1000.0
+    radius-parallel					= 1500.0
     radius-perpendicular				= 50.0
-    position                                            = ( 0.0, 0.0, 4000.0 )
+    position                                            = ( 0.0, 0.0, 4500.0 )
     direction                                           = (-1.0, 0.0,    0.0 )
     polarization                                        = ( 0.0, 0.0,    1.0 )
-    strength-parameter                                  = 0.2
+    strength-parameter                                  = 0.3
     signal-type                                         = gaussian
     wavelength                                          = 10.0
-    pulse-length                                        = 1000.0
-    offset                                              = 4000.0
+    pulse-length                                        = 1500.0
+    offset                                              = 4500.0
     CEP                                                 = 0.0
   }
 
   electromagnetic-wave
   {
     beam-type						= gaussian-beam
-    radius-parallel					= 1000.0
+    radius-parallel					= 1500.0
     radius-perpendicular				= 50.0
-    position						= ( 0.0, 0.0, 4000.0 )
+    position						= ( 0.0, 0.0, 4500.0 )
     direction						= ( 0.0, 1.0,    0.0 )
     polarization					= ( 0.0, 0.0,    1.0 )
-    strength-parameter					= 0.2
+    strength-parameter					= 0.3
     signal-type						= gaussian
     wavelength						= 10.0
-    pulse-length					= 1000.0
-    offset						= 4000.0
+    pulse-length					= 1500.0
+    offset						= 4500.0
     CEP							= 0.0
   }
 
   electromagnetic-wave
   {
     beam-type                                           = gaussian-beam
-    radius-parallel					= 1000.0
+    radius-parallel					= 1500.0
     radius-perpendicular				= 50.0
-    position                                            = ( 0.0, 0.0, 4000.0 )
+    position                                            = ( 0.0, 0.0, 4500.0 )
     direction                                           = ( 0.0,-1.0,    0.0 )
     polarization                                        = ( 0.0, 0.0,    1.0 )
-    strength-parameter                                  = 0.2
+    strength-parameter                                  = 0.3
     signal-type                                         = gaussian
     wavelength                                          = 10.0
-    pulse-length                                        = 1000.0
-    offset                                              = 4000.0
+    pulse-length                                        = 1500.0
+    offset                                              = 4500.0
     CEP                                                 = 0.0
   }
 }
@@ -119,7 +120,7 @@ FEL-OUTPUT
 {
   bunch-profile-lab-frame
   {
-    sample 						= true
+    sample 						= false
     directory 						= ./
     base-name 						= /cluster/scratch/afallahi/bunch-profile-lab-frame/bunchSC
     position 						= 100.0

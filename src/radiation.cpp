@@ -121,92 +121,6 @@ namespace MITHRA
   }
 
   /******************************************************************************************************
-   * Initialize the data required for visualizing the radiation power at the given position.
-   ******************************************************************************************************/
-
-  void Solver::initializePowerVisualize()
-  {
-    printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the data for FEL radiation power visualization.") );
-
-    /* Loop over the different FEL output parameters and initialize the power calculation if it is
-     * activated.											*/
-    for ( unsigned int jf = 0; jf < FEL_.size(); jf++)
-      {
-	/* Initialize if and only if the sampling of the power is enabled.				*/
-	if (!FEL_[jf].vtkPower_.sampling_) continue;
-
-	/* Return an error if the power visualization rhythm is still zero.				*/
-	if ( FEL_[jf].vtkPower_.rhythm_ == 0 )
-	  {
-	    printmessage(std::string(__FILE__), __LINE__, std::string("The power visualization rhythm of the field is zero although power visualization is activated !!!") );
-	    exit(1);
-	  }
-
-	/* Lorentz boost the power-visualization sampling rhythm to the electron rest frame.		*/
-	FEL_[jf].vtkPower_.rhythm_	/= gamma_;
-
-	/* Perform the Lorentz boost for the sampling data.						*/
-	FEL_[jf].vtkPower_.z_ 		*= gamma_;
-
-	/* Create the filename for saving the visualization data.					*/
-	if (!(isabsolute(FEL_[jf].vtkPower_.basename_)))
-	  FEL_[jf].vtkPower_.basename_ = FEL_[jf].vtkPower_.directory_ + FEL_[jf].vtkPower_.basename_;
-
-	/* If the directory of the baseFilename does not exist create this directory.			*/
-	createDirectory(FEL_[jf].vtkPower_.basename_, rank_);
-
-	/* Set the number of sampling points in each processor.                                       	*/
-	rp_[jf].N  = 1;
-	rp_[jf].Nz = ( FEL_[jf].vtkPower_.z_ < zp_[1] && FEL_[jf].vtkPower_.z_ >= zp_[0] ) ? 1 : 0;
-	rp_[jf].Nl = 1;
-
-	/* Do not continue the loop if Nz is not equal to one.						*/
-	if ( rp_[jf].Nz == 0 ) continue;
-
-	/* Based on the number of points to calculate and the size of the threads, allocate memory for
-	 * saving the powers.										*/
-	rp_[jf].pL.resize(N1_*N0_, 0.0);
-	rp_[jf].pG.clear();
-
-	/* Initialize the file streams to save the data.						*/
-	rp_[jf].file.resize(rp_[jf].Nz);
-	rp_[jf].w.resize(rp_[jf].Nz);
-
-	/* Determine the number of time points needed to calculate the amplitude of each radiation
-	 * harmonic. Here, we use the power inside three radiation cycles to calculate the instantaneous
-	 * power at the selected harmonic.								*/
-	Double dt = undulator_[0].lu_ / FEL_[jf].vtkPower_.lambda_ / ( gamma_ * c0_ );
-	rp_[jf].Nf = unsigned( 3.0 * dt / mesh_.timeStep_ );
-
-	/* Calculate the angular frequency for each wavelength.						*/
-	rp_[jf].w[0] = 2 * PI / dt;
-
-	/* Based on the obtained Nf, resize the vectors for saving the time domain data.		*/
-	rp_[jf].fdt.resize(rp_[jf].Nf, std::vector<std::vector<Double> > (N1_ * N0_, std::vector<Double> (4, 0.0) ) );
-
-	rp_[jf].dt  = mesh_.timeStep_;
-	rp_[jf].dx  = mesh_.meshResolution_[0];
-	rp_[jf].dy  = mesh_.meshResolution_[1];
-	rp_[jf].dz  = mesh_.meshResolution_[2];
-
-	rp_[jf].pc  = 2.0 * rp_[jf].dx * rp_[jf].dy / ( m0_ * rp_[jf].Nf * rp_[jf].Nf ) * pow(mesh_.lengthScale_,2) / pow(mesh_.timeScale_,3);
-
-	/* From the obtained vector of wavelengths set the size of Fourier coefficients and initialize
-	 * the data.											*/
-	rp_[jf].ep.resize(rp_[jf].Nl, std::vector<Complex> (rp_[jf].Nf, Complex (0.0, 0.0) ) );
-	rp_[jf].em.resize(rp_[jf].Nl, std::vector<Complex> (rp_[jf].Nf, Complex (0.0, 0.0) ) );
-	for (unsigned int i = 0; i < rp_[jf].Nl; i++)
-	  for (unsigned int j = 0; j < rp_[jf].Nf; j++)
-	    {
-	      rp_[jf].ep[i][j] = cos( rp_[jf].w[i] * j * mesh_.timeStep_ ) + I * sin( rp_[jf].w[i] * j * mesh_.timeStep_ );
-	      rp_[jf].em[i][j] = cos( rp_[jf].w[i] * j * mesh_.timeStep_ ) - I * sin( rp_[jf].w[i] * j * mesh_.timeStep_ );
-	    }
-      }
-
-    printmessage(std::string(__FILE__), __LINE__, std::string(" The data for FEL radiation power visualization is initialized. :::") );
-  }
-
-  /******************************************************************************************************
    * Sample the radiation power at the given position and save it to the file.
    ******************************************************************************************************/
 
@@ -315,6 +229,92 @@ namespace MITHRA
 	      }
 	  }
       }
+  }
+
+  /******************************************************************************************************
+   * Initialize the data required for visualizing the radiation power at the given position.
+   ******************************************************************************************************/
+
+  void Solver::initializePowerVisualize()
+  {
+    printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the data for FEL radiation power visualization.") );
+
+    /* Loop over the different FEL output parameters and initialize the power calculation if it is
+     * activated.											*/
+    for ( unsigned int jf = 0; jf < FEL_.size(); jf++)
+      {
+	/* Initialize if and only if the sampling of the power is enabled.				*/
+	if (!FEL_[jf].vtkPower_.sampling_) continue;
+
+	/* Return an error if the power visualization rhythm is still zero.				*/
+	if ( FEL_[jf].vtkPower_.rhythm_ == 0 )
+	  {
+	    printmessage(std::string(__FILE__), __LINE__, std::string("The power visualization rhythm of the field is zero although power visualization is activated !!!") );
+	    exit(1);
+	  }
+
+	/* Lorentz boost the power-visualization sampling rhythm to the electron rest frame.		*/
+	FEL_[jf].vtkPower_.rhythm_	/= gamma_;
+
+	/* Perform the Lorentz boost for the sampling data.						*/
+	FEL_[jf].vtkPower_.z_ 		*= gamma_;
+
+	/* Create the filename for saving the visualization data.					*/
+	if (!(isabsolute(FEL_[jf].vtkPower_.basename_)))
+	  FEL_[jf].vtkPower_.basename_ = FEL_[jf].vtkPower_.directory_ + FEL_[jf].vtkPower_.basename_;
+
+	/* If the directory of the baseFilename does not exist create this directory.			*/
+	createDirectory(FEL_[jf].vtkPower_.basename_, rank_);
+
+	/* Set the number of sampling points in each processor.                                       	*/
+	rp_[jf].N  = 1;
+	rp_[jf].Nz = ( FEL_[jf].vtkPower_.z_ < zp_[1] && FEL_[jf].vtkPower_.z_ >= zp_[0] ) ? 1 : 0;
+	rp_[jf].Nl = 1;
+
+	/* Do not continue the loop if Nz is not equal to one.						*/
+	if ( rp_[jf].Nz == 0 ) continue;
+
+	/* Based on the number of points to calculate and the size of the threads, allocate memory for
+	 * saving the powers.										*/
+	rp_[jf].pL.resize(N1_*N0_, 0.0);
+	rp_[jf].pG.clear();
+
+	/* Initialize the file streams to save the data.						*/
+	rp_[jf].file.resize(rp_[jf].Nz);
+	rp_[jf].w.resize(rp_[jf].Nz);
+
+	/* Determine the number of time points needed to calculate the amplitude of each radiation
+	 * harmonic. Here, we use the power inside three radiation cycles to calculate the instantaneous
+	 * power at the selected harmonic.								*/
+	Double dt = undulator_[0].lu_ / FEL_[jf].vtkPower_.lambda_ / ( gamma_ * c0_ );
+	rp_[jf].Nf = unsigned( 3.0 * dt / mesh_.timeStep_ );
+
+	/* Calculate the angular frequency for each wavelength.						*/
+	rp_[jf].w[0] = 2 * PI / dt;
+
+	/* Based on the obtained Nf, resize the vectors for saving the time domain data.		*/
+	rp_[jf].fdt.resize(rp_[jf].Nf, std::vector<std::vector<Double> > (N1_ * N0_, std::vector<Double> (4, 0.0) ) );
+
+	rp_[jf].dt  = mesh_.timeStep_;
+	rp_[jf].dx  = mesh_.meshResolution_[0];
+	rp_[jf].dy  = mesh_.meshResolution_[1];
+	rp_[jf].dz  = mesh_.meshResolution_[2];
+
+	rp_[jf].pc  = 2.0 * rp_[jf].dx * rp_[jf].dy / ( m0_ * rp_[jf].Nf * rp_[jf].Nf ) * pow(mesh_.lengthScale_,2) / pow(mesh_.timeScale_,3);
+
+	/* From the obtained vector of wavelengths set the size of Fourier coefficients and initialize
+	 * the data.											*/
+	rp_[jf].ep.resize(rp_[jf].Nl, std::vector<Complex> (rp_[jf].Nf, Complex (0.0, 0.0) ) );
+	rp_[jf].em.resize(rp_[jf].Nl, std::vector<Complex> (rp_[jf].Nf, Complex (0.0, 0.0) ) );
+	for (unsigned int i = 0; i < rp_[jf].Nl; i++)
+	  for (unsigned int j = 0; j < rp_[jf].Nf; j++)
+	    {
+	      rp_[jf].ep[i][j] = cos( rp_[jf].w[i] * j * mesh_.timeStep_ ) + I * sin( rp_[jf].w[i] * j * mesh_.timeStep_ );
+	      rp_[jf].em[i][j] = cos( rp_[jf].w[i] * j * mesh_.timeStep_ ) - I * sin( rp_[jf].w[i] * j * mesh_.timeStep_ );
+	    }
+      }
+
+    printmessage(std::string(__FILE__), __LINE__, std::string(" The data for FEL radiation power visualization is initialized. :::") );
   }
 
   /******************************************************************************************************

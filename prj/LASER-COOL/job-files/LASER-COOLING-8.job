@@ -1,0 +1,147 @@
+#  Mithra input file                                                                                                                                          
+#                                                                                                        
+#  physics - model the motion of a exploding particle cloud in a cavity which is modelled
+#  by two counter-propagating plane-waves. The radiation of particles are considered here.
+#                                                                                                 
+#  mpirun -np 4 ../MITHRA ./job-files/LASER-COOLING-8.job
+#  
+#  in the LSF system: 
+#  bsub -n 48 -W 2:00 -J "LASER-COOLING-8" -o mithra.out 'mpirun ../MITHRA ./job-files/LASER-COOLING-8.job'
+
+MESH
+{
+  length-scale						= MICROMETER
+  time-scale						= FEMTOSECOND
+  mesh-lengths						= ( 160.0, 160.0, 100.0    ) 
+  mesh-resolution					= (   2.0,   2.0,   0.004  )
+  mesh-center						= (   0.0,   0.0,   0.0    )
+  total-time						= 24000
+  bunch-time-step					= 0.5
+  mesh-truncation-order					= 2
+  space-charge						= true
+  solver						= FD
+}
+ 
+BUNCH
+{
+  bunch-initialization
+  { 
+    type                                                = ellipsoid
+    distribution                                        = gaussian
+    charge                                              = 10000.0
+    number-of-particles                                 = 100000.0
+    gamma                                               = 10.0
+    direction                                           = ( 0.0,  0.0,  1.0 )
+    position                                            = ( 0.0,  0.0,  0.0 )
+    sigma-position                                      = (10.0, 10.0, 10.0 )
+    sigma-momentum                                      = ( 0.1,  0.1,  0.1 )
+    transverse-truncation                               = 60.0
+    longitudinal-truncation                             = 60.0
+  }
+
+  bunch-visualization
+  {
+    sample                                              = true
+    directory                                           = /cluster/scratch/afallahi/
+    base-name                                           = bunch-visualization/bunch
+    rhythm                                              = 20.0
+  }
+}
+
+EXTERNAL-FIELD
+{
+  electromagnetic-wave
+  {
+    beam-type						= gaussian-beam
+    radius-parallel					= 1000.0
+    radius-perpendicular				= 50.0
+    position						= ( 0.0, 0.0, 4000.0 )
+    direction						= ( 1.0, 0.0,    0.0 )
+    polarization					= ( 0.0, 0.0,    1.0 )
+    strength-parameter					= 0.2
+    signal-type						= gaussian
+    wavelength						= 10.0
+    pulse-length					= 1000.0
+    offset						= 4000.0
+    CEP							= 0.0
+  }
+
+  electromagnetic-wave
+  {
+    beam-type                                           = gaussian-beam
+    radius-parallel					= 1000.0
+    radius-perpendicular				= 50.0
+    position                                            = ( 0.0, 0.0, 4000.0 )
+    direction                                           = (-1.0, 0.0,    0.0 )
+    polarization                                        = ( 0.0, 0.0,    1.0 )
+    strength-parameter                                  = 0.2
+    signal-type                                         = gaussian
+    wavelength                                          = 10.0
+    pulse-length                                        = 1000.0
+    offset                                              = 4000.0
+    CEP                                                 = 0.0
+  }
+
+  electromagnetic-wave
+  {
+    beam-type						= gaussian-beam
+    radius-parallel					= 1000.0
+    radius-perpendicular				= 50.0
+    position						= ( 0.0, 0.0, 4000.0 )
+    direction						= ( 0.0, 1.0,    0.0 )
+    polarization					= ( 0.0, 0.0,    1.0 )
+    strength-parameter					= 0.2
+    signal-type						= gaussian
+    wavelength						= 10.0
+    pulse-length					= 1000.0
+    offset						= 4000.0
+    CEP							= 0.0
+  }
+
+  electromagnetic-wave
+  {
+    beam-type                                           = gaussian-beam
+    radius-parallel					= 1000.0
+    radius-perpendicular				= 50.0
+    position                                            = ( 0.0, 0.0, 4000.0 )
+    direction                                           = ( 0.0,-1.0,    0.0 )
+    polarization                                        = ( 0.0, 0.0,    1.0 )
+    strength-parameter                                  = 0.2
+    signal-type                                         = gaussian
+    wavelength                                          = 10.0
+    pulse-length                                        = 1000.0
+    offset                                              = 4000.0
+    CEP                                                 = 0.0
+  }
+}
+
+UNDULATOR
+{
+  optical-undulator
+  {
+    beam-type                                   	= plane-wave
+    position                                    	= ( 0.0, 0.0, 0.0 )
+    direction                                   	= ( 0.0, 0.0,-1.0 )
+    polarization                                	= ( 0.0, 1.0, 0.0 )
+    strength-parameter                          	= 1.0
+    signal-type                                 	= flat-top
+    wavelength                                  	= 10.0
+    pulse-length                                	= 9000.0
+    offset                                      	= 7500.0
+    CEP                                         	= 0.0
+  }
+}
+
+FEL-OUTPUT
+{
+  radiation-power
+  {
+    sample						= true
+    type						= at-point
+    directory						= ./
+    base-name						= power-sampling/power
+    plane-position					= 99.0
+    normalized-frequency                        	= 1.0
+  }
+}
+

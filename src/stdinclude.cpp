@@ -54,7 +54,7 @@ namespace MITHRA
     int p0, p, k, k0, a;
     Double x = 0.0;
 
-    k0 = j;
+    k0 = j + 1;
 
     p = prime[i];
 

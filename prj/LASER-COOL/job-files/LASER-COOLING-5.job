@@ -12,7 +12,7 @@ MESH
 {
   length-scale						= MICROMETER
   time-scale						= FEMTOSECOND
-  mesh-lengths						= ( 120.0, 120.0, 120.0 ) 
+  mesh-lengths						= ( 160.0, 160.0, 120.0 ) 
   mesh-resolution					= (   0.5,   0.5,   0.2 )
   mesh-center						= (   0.0,   0.0,   0.0 )
   total-time						= 24000
@@ -43,7 +43,7 @@ BUNCH
   {
     sample						= true
     directory						= ./
-    base-name						= bunch-profile/bunch
+    base-name						= /cluster/scratch/afallahi/bunch-profile/bunch
     rhythm						= 10.0
   }
 }

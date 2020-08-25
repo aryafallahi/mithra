@@ -102,11 +102,11 @@ namespace MITHRA
     Double gamma = 0.0;
     for (unsigned int i = 0; i < bunch_.bunchInit_.size(); i++)
       {
-        if ( bunch_.bunchInit_[i].bunchType_ == "file" )
-          computeFileGamma(bunch_.bunchInit_[i]);
-        if ( bunch_.bunchInit_[i].bunchType_ == "other" )
-          printmessage(std::string(__FILE__), __LINE__, std::string("Bunch mean gamma and direction are given by an external program. " ) );
-        gamma += bunch_.bunchInit_[i].initialGamma_ / bunch_.bunchInit_.size();
+	if ( bunch_.bunchInit_[i].bunchType_ == "file" )
+	  computeFileGamma(bunch_.bunchInit_[i]);
+	if ( bunch_.bunchInit_[i].bunchType_ == "other" )
+	  printmessage(std::string(__FILE__), __LINE__, std::string("Bunch mean gamma and direction are given by an external program. " ) );
+	gamma += bunch_.bunchInit_[i].initialGamma_ / bunch_.bunchInit_.size();
       }
 
     /* Now, depending on the undulator type determine the maximum and minimum gamma of the bunch
@@ -314,12 +314,12 @@ namespace MITHRA
 	iterQ->rnp[2]  += iterQ->gbnp[2] / g * ( iterQ->rnp[2] - bunch_.zu_ ) * beta_;
       }
 
-    
+
     /****************************************************************************************************/
 
     /* The bunch needs to be shifted such that it is centered in the computational domain when it enters
      * the undulator. For this the bunch mean z-coordinate and beta_z are required.			*/
-    if (( mesh_.optimizePosition_ ) && ( undulator_.size() > 0 ))
+    if ( mesh_.optimizePosition_ && ( undulator_.size() > 0 ))
       {
 	Double zL  = 0.0, zG;
 	Double bzL = 0.0, bzG;
@@ -339,7 +339,7 @@ namespace MITHRA
 	zmaxG 		-= shift;
 	bunch_.zu_ 	 = zmaxG;
 	dt_ 		 = - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmaxG + undulator_[0].dist_ / gamma_ );
-	seed_.dt_ = dt_;
+	seed_.dt_ 	 = dt_;
 
 	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
 	  iterQ->rnp[2] -= shift;
@@ -366,27 +366,28 @@ namespace MITHRA
      * factor in the simulation.									*/
     if ( mesh_.totalDist_ > 0.0 )
       {
-    /* Define the necessary variables, and get zmin and average beta_z.				*/
-    double Lu = 0.0;
-    for (auto und = undulator_.begin(); und != undulator_.end(); und++)
-      Lu += und->lu_ * und->length_ / gamma_;
-    double zEnd = mesh_.totalDist_ / gamma_;
-    double zMin = 1e100;
-    double bz = 0;
-    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
-      {
-      zMin = std::min(zMin, iter->rnp[2]);
-      bz += iter->gbnp[2] / std::sqrt(1 + iter->gbnp.norm2());
-      }
-    MPI_Allreduce(&zMin, &zMin, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
-    MPI_Allreduce(&bz, &bz, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    unsigned int Nq = chargeVectorn_.size();
-    MPI_Allreduce(&Nq, &Nq, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
-    bz /= Nq;
-    
-    mesh_.totalTime_ = 1 / (c0_ * (bz + beta_)) * (zEnd - beta_ * c0_ * dt_ - zMin + bz / beta_* Lu);
-    printmessage(std::string(__FILE__), __LINE__, std::string("The total time to simulate has been set to ") + stringify(mesh_.totalTime_ * gamma_) + std::string(" .") );    
-    
+	/* Define the necessary variables, and get zmin and average beta_z.				*/
+	double Lu = 0.0;
+	for (auto und = undulator_.begin(); und != undulator_.end(); und++)
+	  Lu += und->lu_ * und->length_ / gamma_;
+	double zEnd = mesh_.totalDist_ / gamma_;
+	double zMin = 1e100;
+	double bz = 0;
+	for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
+	  {
+	    zMin = std::min(zMin, iter->rnp[2]);
+	    bz += iter->gbnp[2] / std::sqrt(1 + iter->gbnp.norm2());
+	  }
+	MPI_Allreduce(&zMin, &zMin, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+	MPI_Allreduce(&bz, &bz, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	unsigned int Nq = chargeVectorn_.size();
+	MPI_Allreduce(&Nq, &Nq, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+	bz /= Nq;
+
+	mesh_.totalTime_ = 1 / (c0_ * (bz + beta_)) * (zEnd - beta_ * c0_ * dt_ - zMin + bz / beta_* Lu);
+
+	printmessage(std::string(__FILE__), __LINE__, std::string("The total time to simulate has been set to ") + stringify(mesh_.totalTime_ * gamma_) + std::string(" .") );
+
       }
   }
 
@@ -448,41 +449,41 @@ namespace MITHRA
 
   /******************************************************************************************************
    * Get the average gamma and average direction of a bunch read in from a file.
-  ******************************************************************************************************/
+   ******************************************************************************************************/
   void Solver::computeFileGamma 		(BunchInitialize & bunchInit)
-    {
-      /* Declare the required parameters for saving the average values.                	*/
-      Double ignore;
-      FieldVector<Double> gb (0.0);
-      bunchInit.initialGamma_ = 0.0;
-      bunchInit.initialDirection_ = 0.0;
-      
-      /* Read the file and sum up the momenta gbnp to get their average. */
-      std::ifstream myfile ( bunchInit.fileName_.c_str() );
+  {
+    /* Declare the required parameters for saving the average values.                	*/
+    Double ignore;
+    FieldVector<Double> gb (0.0);
+    bunchInit.initialGamma_ = 0.0;
+    bunchInit.initialDirection_ = 0.0;
 
-      while (myfile.good())
-        {
-          /* Ignore the first three values in each line belonging to the particle postiion. */
-          myfile >> ignore;
-          myfile >> ignore;
-          myfile >> ignore;
-          
-          myfile >> gb[0];
-          myfile >> gb[1];
-          myfile >> gb[2];
+    /* Read the file and sum up the momenta gbnp to get their average. */
+    std::ifstream myfile ( bunchInit.fileName_.c_str() );
 
-          bunchInit.initialGamma_ += std::sqrt( 1 + gb.norm2() );
-          bunchInit.initialDirection_ += gb;
-        }
+    while (myfile.good())
+      {
+	/* Ignore the first three values in each line belonging to the particle postiion. */
+	myfile >> ignore;
+	myfile >> ignore;
+	myfile >> ignore;
 
-      bunchInit.initialGamma_ /= bunchInit.numberOfParticles_;
-      bunchInit.initialDirection_ /= bunchInit.initialDirection_.norm();
+	myfile >> gb[0];
+	myfile >> gb[1];
+	myfile >> gb[2];
 
-      printmessage(std::string(__FILE__), __LINE__, std::string("Computed average gamma from file is " + stringify( bunchInit.initialGamma_ ) ) );
-      printmessage(std::string(__FILE__), __LINE__, std::string("Computed average direction from file is " + stringify( bunchInit.initialDirection_ ) ) );
-      
-      
-    }
+	bunchInit.initialGamma_ += std::sqrt( 1 + gb.norm2() );
+	bunchInit.initialDirection_ += gb;
+      }
+
+    bunchInit.initialGamma_ /= bunchInit.numberOfParticles_;
+    bunchInit.initialDirection_ /= bunchInit.initialDirection_.norm();
+
+    printmessage(std::string(__FILE__), __LINE__, std::string("Computed average gamma from file is " + stringify( bunchInit.initialGamma_ ) ) );
+    printmessage(std::string(__FILE__), __LINE__, std::string("Computed average direction from file is " + stringify( bunchInit.initialDirection_ ) ) );
+
+
+  }
 
   /******************************************************************************************************
    * Initialize the matrix for the field values and the coordinates.
@@ -1078,10 +1079,10 @@ namespace MITHRA
       {
 	/* Clear the temprary charge vector.								*/
 	qv.clear();
-    
-    if ( bunch_.bunchInit_[i].position_.size() == 0 )
+
+	if ( bunch_.bunchInit_[i].position_.size() == 0 )
 	  {
-        bunch_.bunchInit_[i].position_.push_back( FieldVector<Double>(0.0) );
+	    bunch_.bunchInit_[i].position_.push_back( FieldVector<Double>(0.0) );
 	    printmessage(std::string(__FILE__), __LINE__, std::string("No bunch position was given, using default " + stringify(bunch_.bunchInit_[i].position_[0]) ) );
 	  }      
 
@@ -1107,8 +1108,8 @@ namespace MITHRA
 	    for ( unsigned int ia = 0; ia < bunch_.bunchInit_[i].position_.size(); ia++)
 	      bunch_.initializeFile(		bunch_.bunchInit_[i], qv, zp_, rank_, size_, ia);
 	  }
-    else if ( bunch_.bunchInit_[i].bunchType_ == "other" )
-      printmessage(std::string(__FILE__), __LINE__, std::string("The charge vector has been filled in by an external program. ") );
+	else if ( bunch_.bunchInit_[i].bunchType_ == "other" )
+	  printmessage(std::string(__FILE__), __LINE__, std::string("The charge vector has been filled in by an external program. ") );
 
 	/* Add the bunch distribution to the global charge vector.					*/
 	chargeVectorn_.splice(chargeVectorn_.end(),qv);
@@ -1198,10 +1199,10 @@ namespace MITHRA
 	    timeBunch_ += bunch_.timeStep_;
 	    ++nTimeBunch_;
 	  }
-    
+
 	/* Record particles that have gone through the diagnostics screens.					*/
 	screenProfile();
-    
+
 	/* Update the values of the current.								*/
 	currentUpdate();
 
@@ -1236,7 +1237,7 @@ namespace MITHRA
 	energySample();
 
 	/* Shift the computed fields and the time points for the fields.				*/
-    fieldShift();
+	fieldShift();
 
 	timem1_ += mesh_.timeStep_;
 	time_   += mesh_.timeStep_;
@@ -1262,7 +1263,7 @@ namespace MITHRA
     /* Finalize the calculations and the data saving.							*/
     finalize();
   }
-  
+
   /******************************************************************************************************
    * Update the fields for one time-step
    ******************************************************************************************************/
@@ -1623,7 +1624,7 @@ namespace MITHRA
 	    gamma = sqrt( 1.0 + iter->gbnp.norm2() );
 	    beta  = iter->gbnp[2] / gamma;
 	    *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
-            							    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
+            								<< " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	  }
       }
     *vb_.file << 0.0 << " " << 0.0 << " " << 0.0						<< std::endl;
@@ -1685,6 +1686,8 @@ namespace MITHRA
     (*pb_.file).setf(std::ios::scientific);
     (*pb_.file).precision(15);
     (*pb_.file).width(40);
+
+    *pb_.file << time_ * gamma_ << std::endl;
 
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {

@@ -47,7 +47,7 @@ namespace MITHRA
 	  {
 	    if ( (*it == ' ') || (*it == '\t') ) { (*iter).erase(it); --it; }
 	  }
-	if (!(*iter).size() == 0) { cleanedJobFile.push_back(*iter); }
+	if ((*iter).size()) { cleanedJobFile.push_back(*iter); }
       }
     jobFile.swap(cleanedJobFile);
   }

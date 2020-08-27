@@ -40,6 +40,7 @@ namespace MITHRA
 
   /* Scientific constants.                                                                              */
   const Double PI           	= 3.1415926535;
+  const Double TPI		= 2.0 * PI;
   const Double EPSILON_ZERO  	= 8.85418782e-12;
   const Double MU_ZERO        	= 4.0 * PI * 1.0e-7;
   const Double C0             	= 1.0 / sqrt(EPSILON_ZERO * MU_ZERO);
@@ -94,9 +95,9 @@ namespace MITHRA
 	const char * elem = filename.c_str();
 	const char * shortfn = elem;
 	while ( *elem != '\0' ){
-	  if ( *elem == '/' )
-	    shortfn = elem + 1;
-	  elem = elem + 1;
+	    if ( *elem == '/' )
+	      shortfn = elem + 1;
+	    elem = elem + 1;
 	}
 	printedMessage  << shortfn << ":" << linenumber << " ::: \t \t " << message;
 

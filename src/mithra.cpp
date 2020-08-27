@@ -19,6 +19,7 @@
 #include <vector>
 #include <iostream>
 
+#include "stdinclude.h"
 #include "classes.h"
 #include "database.h"
 #include "datainput.h"
@@ -27,7 +28,6 @@
 #include "fieldvector.h"
 #include "readdata.h"
 #include "solver.h"
-#include "stdinclude.h"
 
 int main (int argc, char * (argv) [])
 {
@@ -37,7 +37,6 @@ int main (int argc, char * (argv) [])
 
   /* Activate namespaces                                                                                */
   using namespace MITHRA;
-  using namespace std;
 
   /* Retrieve time when we start the simulation.                                                        */
   timeval simulationStart, simulationEnd;

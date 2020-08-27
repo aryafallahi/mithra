@@ -1890,7 +1890,7 @@ namespace MITHRA
 			( pow( ubp.x / ( ubp.zRp * ubp.wrp) , 2 ) + pow( ubp.y / ( ubp.zRs * ubp.wrs ) , 2 ) );
 		    ubp.t   = exp( - pow( ubp.x/(iter->radius_[0]*ubp.wrp), 2) - pow( ubp.y/(iter->radius_[1]*ubp.wrs), 2) ) / sqrt(ubp.wrs*ubp.wrp);
 
-		    ubp.ex.mv( ubp.t * iter->amplitude_, 						iter->polarization_ );
+		    ubp.ex.mv( ubp.t * iter->amplitude_, 					iter->polarization_ );
 		    ubp.ez.mv( ubp.t * iter->amplitude_ * ( - ubp.x / ( ubp.wrp * ubp.zRp ) ), 	iter->direction_    );
 		    ubp.bz.mv( ubp.t * iter->amplitude_ * ( - ubp.y / ( ubp.wrs * ubp.zRs ) ) / c0_, iter->direction_    );
 		    ubp.by = cross( iter->direction_, ubp.ex); ubp.by /= c0_;

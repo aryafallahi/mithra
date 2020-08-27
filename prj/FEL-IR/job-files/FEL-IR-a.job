@@ -42,6 +42,22 @@ BUNCH
   }
 }
 
+FIELD
+{
+  field-sampling
+  {
+    sample						= true
+    type						= at-point
+    field						= Ex
+    field                           			= Ey
+    field                           			= Ez
+    directory						= ./
+    base-name						= field-sampling/field
+    rhythm						= 3.2
+    position						= (0.0, 0.0, 110.0)
+  }
+}
+
 UNDULATOR
 {
   static-undulator

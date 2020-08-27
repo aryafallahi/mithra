@@ -2,6 +2,7 @@ SHELL = /bin/sh
 COMP = mpic++
 
 CFLAGS+=-std=c++11
+CFLAGS+=-O3
 
 PREFIX ?= .
 LIB_DIR = $(PREFIX)/lib

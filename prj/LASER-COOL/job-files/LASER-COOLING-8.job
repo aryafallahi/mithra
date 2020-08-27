@@ -12,14 +12,14 @@ MESH
 {
   length-scale						= MICROMETER
   time-scale						= FEMTOSECOND
-  mesh-lengths						= ( 160.0, 160.0, 100.0    ) 
-  mesh-resolution					= (   2.0,   2.0,   0.004  )
-  mesh-center						= (   0.0,   0.0,   0.0    )
-  total-time						= 24000
+  mesh-lengths						= (  25.0,  25.0,  2.5   ) 
+  mesh-resolution					= ( 0.125, 0.125,  0.004 )
+  mesh-center						= (   0.0,   0.0,  0.0   )
+  total-time						= 15000
   bunch-time-step					= 0.5
   mesh-truncation-order					= 2
-  space-charge						= true
-  solver						= FD
+  space-charge						= false
+  solver						= NSFD
 }
  
 BUNCH
@@ -27,24 +27,17 @@ BUNCH
   bunch-initialization
   { 
     type                                                = ellipsoid
-    distribution                                        = gaussian
-    charge                                              = 10000.0
-    number-of-particles                                 = 100000.0
+    distribution                                        = uniform
+    charge                                              = 5e6
+    number-of-particles                                 = 5e6
     gamma                                               = 10.0
-    direction                                           = ( 0.0,  0.0,  1.0 )
-    position                                            = ( 0.0,  0.0,  0.0 )
-    sigma-position                                      = (10.0, 10.0, 10.0 )
-    sigma-momentum                                      = ( 0.1,  0.1,  0.1 )
-    transverse-truncation                               = 60.0
-    longitudinal-truncation                             = 60.0
-  }
-
-  bunch-visualization
-  {
-    sample                                              = true
-    directory                                           = /cluster/scratch/afallahi/
-    base-name                                           = bunch-visualization/bunch
-    rhythm                                              = 20.0
+    direction                                           = (   0.0,    0.0,  1.0    )
+    position                                            = (   0.0,    0.0,  0.0    )
+    sigma-position                                      = (   2.6,    2.6,  1.0    )
+    sigma-momentum                                      = ( 0.001,  0.001,  0.0025 )
+    transverse-truncation                               = 12.0
+    longitudinal-truncation                             = 1.5
+    shot-noise						= true
   }
 }
 
@@ -53,64 +46,64 @@ EXTERNAL-FIELD
   electromagnetic-wave
   {
     beam-type						= gaussian-beam
-    radius-parallel					= 1000.0
-    radius-perpendicular				= 50.0
-    position						= ( 0.0, 0.0, 4000.0 )
-    direction						= ( 1.0, 0.0,    0.0 )
-    polarization					= ( 0.0, 0.0,    1.0 )
-    strength-parameter					= 0.2
+    radius-parallel					= 1e10
+    radius-perpendicular				= 1e10
+    position						= ( 0.0, 0.0, 750.0 )
+    direction						= ( 1.0, 0.0,   0.0 )
+    polarization					= ( 0.0, 0.0,   1.0 )
+    strength-parameter					= 0.5
     signal-type						= gaussian
     wavelength						= 10.0
-    pulse-length					= 1000.0
-    offset						= 4000.0
+    pulse-length					= 250.0
+    offset						= 750.0
     CEP							= 0.0
   }
 
   electromagnetic-wave
   {
     beam-type                                           = gaussian-beam
-    radius-parallel					= 1000.0
-    radius-perpendicular				= 50.0
-    position                                            = ( 0.0, 0.0, 4000.0 )
-    direction                                           = (-1.0, 0.0,    0.0 )
-    polarization                                        = ( 0.0, 0.0,    1.0 )
-    strength-parameter                                  = 0.2
+    radius-parallel                                     = 1e10
+    radius-perpendicular                                = 1e10
+    position                                            = ( 0.0, 0.0, 750.0 )
+    direction                                           = (-1.0, 0.0,   0.0 )
+    polarization                                        = ( 0.0, 0.0,  -1.0 )
+    strength-parameter                                  = 0.5
     signal-type                                         = gaussian
     wavelength                                          = 10.0
-    pulse-length                                        = 1000.0
-    offset                                              = 4000.0
+    pulse-length                                        = 250.0
+    offset                                              = 750.0
     CEP                                                 = 0.0
   }
 
   electromagnetic-wave
   {
-    beam-type						= gaussian-beam
-    radius-parallel					= 1000.0
-    radius-perpendicular				= 50.0
-    position						= ( 0.0, 0.0, 4000.0 )
-    direction						= ( 0.0, 1.0,    0.0 )
-    polarization					= ( 0.0, 0.0,    1.0 )
-    strength-parameter					= 0.2
-    signal-type						= gaussian
-    wavelength						= 10.0
-    pulse-length					= 1000.0
-    offset						= 4000.0
-    CEP							= 0.0
+    beam-type                                           = gaussian-beam
+    radius-parallel                                     = 1e10
+    radius-perpendicular                                = 1e10
+    position                                            = ( 0.0, 0.0, 750.0 )
+    direction                                           = ( 0.0, 1.0,   0.0 )
+    polarization                                        = ( 0.0, 0.0,   1.0 )
+    strength-parameter                                  = 0.5
+    signal-type                                         = gaussian
+    wavelength                                          = 10.0
+    pulse-length                                        = 250.0
+    offset                                              = 750.0
+    CEP                                                 = 0.0
   }
 
   electromagnetic-wave
   {
     beam-type                                           = gaussian-beam
-    radius-parallel					= 1000.0
-    radius-perpendicular				= 50.0
-    position                                            = ( 0.0, 0.0, 4000.0 )
-    direction                                           = ( 0.0,-1.0,    0.0 )
-    polarization                                        = ( 0.0, 0.0,    1.0 )
-    strength-parameter                                  = 0.2
+    radius-parallel                                     = 1e10
+    radius-perpendicular                                = 1e10
+    position                                            = ( 0.0, 0.0, 750.0 )
+    direction                                           = ( 0.0,-1.0,   0.0 )
+    polarization                                        = ( 0.0, 0.0,  -1.0 )
+    strength-parameter                                  = 0.5
     signal-type                                         = gaussian
     wavelength                                          = 10.0
-    pulse-length                                        = 1000.0
-    offset                                              = 4000.0
+    pulse-length                                        = 250.0
+    offset                                              = 750.0
     CEP                                                 = 0.0
   }
 }
@@ -119,16 +112,16 @@ UNDULATOR
 {
   optical-undulator
   {
-    beam-type                                   	= plane-wave
-    position                                    	= ( 0.0, 0.0, 0.0 )
-    direction                                   	= ( 0.0, 0.0,-1.0 )
-    polarization                                	= ( 0.0, 1.0, 0.0 )
-    strength-parameter                          	= 1.0
-    signal-type                                 	= flat-top
-    wavelength                                  	= 10.0
-    pulse-length                                	= 9000.0
-    offset                                      	= 7500.0
-    CEP                                         	= 0.0
+    beam-type                                           = plane-wave
+    position                                            = ( 0.0, 0.0, 0.0 )
+    direction                                           = ( 0.0, 0.0,-1.0 )
+    polarization                                        = ( 0.0, 1.0, 0.0 )
+    strength-parameter                                  = 1.0
+    signal-type                                         = flat-top
+    wavelength                                          = 10.0
+    pulse-length                                        = 9000.0
+    offset                                              = 4500.0
+    CEP                                                 = 0.0
   }
 }
 
@@ -136,12 +129,12 @@ FEL-OUTPUT
 {
   radiation-power
   {
-    sample						= true
-    type						= at-point
-    directory						= ./
-    base-name						= power-sampling/power
-    plane-position					= 99.0
-    normalized-frequency                        	= 1.0
+    sample                                              = true
+    type                                                = at-point
+    directory                                           = ./
+    base-name                                           = power-sampling-20200825/power-25umx25umx2p5um-125nmx125nmx4nm-uniform-5e6-10-2p6umx2p6umx1um-1e-3x1e-3x25e-4-1e10x1e10-750-250-0p5-old
+    plane-position                                      = 1.2
+    normalized-frequency                                = 1.0
   }
 }
 

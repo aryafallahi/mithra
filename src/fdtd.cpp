@@ -800,9 +800,9 @@ namespace MITHRA
   void FdTd::fieldShift ()
   {
     std::vector<FieldVector<Double> >* at = anm1_;
-	anm1_ = an_;
-	an_   = anp1_;
-	anp1_ = at;
+    anm1_ = an_;
+    an_   = anp1_;
+    anp1_ = at;
   }
 
   /******************************************************************************************************

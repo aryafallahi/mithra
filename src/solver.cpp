@@ -285,7 +285,12 @@ namespace MITHRA
     if ( undulator_.size() > 0 )
       {
 	Double nl = ( undulator_[0].type_ == STATIC ) ? 2.0 : 10.0;
-	if (undulator_[0].dist_ == 0.0) undulator_[0].dist_ = nl * undulator_[0].lu_;
+	if (undulator_[0].dist_ == 0.0)
+	  {
+	    undulator_[0].dist_ = nl * undulator_[0].lu_;
+	    if ( undulator_[0].type_ == OPTICAL )
+	      undulator_[0].dist_ += ( undulator_[0].signal_.t0_ * c0_ - undulator_[0].signal_.s_ / 2.0 ) * c0_;
+	  }
 	else if (undulator_[0].dist_ < nl * undulator_[0].lu_)
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Warning: the undulator is set very close to the bunch, the results may be inaccurate.") );
 	dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmaxG + undulator_[0].dist_ / gamma_ );
@@ -1959,7 +1964,11 @@ namespace MITHRA
 	    ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
 
 	    /* Calculate the field only if the signal value is larger than a limit.                   	*/
-	    if ( fabs(ubp.tsignal) < 1.0e-100 ) { ubp.eT = 0.0; ubp.bT = 0.0; }
+	    if ( fabs(ubp.tsignal) < 1.0e-100 )
+	      {
+		ubp.eT = 0.0;
+		ubp.bT = 0.0;
+	      }
 	    else
 	      {
 		/* Provide vector to store the electric field of the external field.                  	*/

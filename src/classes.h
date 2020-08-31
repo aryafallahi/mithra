@@ -388,7 +388,7 @@ namespace MITHRA
 
     ExtField();
 
-    /* Type of the undulator, it can be an optical or a static undulator.                   		*/
+    /* Type of the external field, it can be an EM-wave or a cavity field.                   		*/
     ExtFieldType                        type_;
 
     /* Store type of the seed.                                                                    	*/

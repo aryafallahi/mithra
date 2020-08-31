@@ -299,6 +299,7 @@ namespace MITHRA
 
     /* Define the value of MPI variables.								*/
     int									rank_, size_;
+    int									rankB_, rankF_;
 
     /* Speed of light value in terms of the given length-scale and time-scale.				*/
     Double								c0_, m0_, e0_;

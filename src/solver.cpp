@@ -48,6 +48,8 @@ namespace MITHRA
     /* Initialize the value of MPI variables.								*/
     MPI_Comm_rank(MPI_COMM_WORLD,&rank_);
     MPI_Comm_size(MPI_COMM_WORLD,&size_);
+    rankB_ = ( rank_ == 0 ) ? size_ - 1 : rank_ - 1;
+    rankF_ = ( rank_ == size_ - 1 ) ? 0 : rank_ + 1;
 
     /* Initialize the speed of light value according to the given length scale and time scale.		*/
     c0_ = C0 / mesh_.lengthScale_ * mesh_.timeScale_;
@@ -407,7 +409,7 @@ namespace MITHRA
     std::list<Charge>::iterator it = chargeVector.begin();
     while(it != chargeVector.end())
       {
-	if ( ( it->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( it->rnp[2] >= zp_[0] || rank_ == 0 ) )
+	if ( particleInProcessor( it->rnp[2] ) )
 	  it++;
 	else
 	  {
@@ -1428,27 +1430,19 @@ namespace MITHRA
       }
 
     /* Now communicate the charges which propagate throughout the borders to other processors.		*/
-    if (rank_ != 0)
-      MPI_Send(&ubp.qSB[0],ubp.qSB.size(),MPI_DOUBLE,rank_-1,msgtag1,MPI_COMM_WORLD);
+    MPI_Send(&ubp.qSB[0],ubp.qSB.size(),MPI_DOUBLE,rankB_,msgtag1,MPI_COMM_WORLD);
 
-    if (rank_ != size_ - 1)
-      {
-	MPI_Probe(rank_+1,msgtag1,MPI_COMM_WORLD,&status);
-	MPI_Get_count(&status,MPI_DOUBLE,&ub_.nL);
-	ubp.qRF.resize(ub_.nL);
-	MPI_Recv(&ubp.qRF[0],ub_.nL,MPI_DOUBLE,rank_+1,msgtag1,MPI_COMM_WORLD,&status);
-      }
+    MPI_Probe(rankF_,msgtag1,MPI_COMM_WORLD,&status);
+    MPI_Get_count(&status,MPI_DOUBLE,&ub_.nL);
+    ubp.qRF.resize(ub_.nL);
+    MPI_Recv(&ubp.qRF[0],ub_.nL,MPI_DOUBLE,rankF_,msgtag1,MPI_COMM_WORLD,&status);
 
-    if (rank_ != size_ - 1)
-      MPI_Send(&ubp.qSF[0],ubp.qSF.size(),MPI_DOUBLE,rank_+1,msgtag2,MPI_COMM_WORLD);
+    MPI_Send(&ubp.qSF[0],ubp.qSF.size(),MPI_DOUBLE,rankF_,msgtag2,MPI_COMM_WORLD);
 
-    if (rank_ != 0)
-      {
-	MPI_Probe(rank_-1,msgtag2,MPI_COMM_WORLD,&status);
-	MPI_Get_count(&status,MPI_DOUBLE,&ub_.nL);
-	ubp.qRB.resize(ub_.nL);
-	MPI_Recv(&ubp.qRB[0],ub_.nL,MPI_DOUBLE,rank_-1,msgtag2,MPI_COMM_WORLD,&status);
-      }
+    MPI_Probe(rankB_,msgtag2,MPI_COMM_WORLD,&status);
+    MPI_Get_count(&status,MPI_DOUBLE,&ub_.nL);
+    ubp.qRB.resize(ub_.nL);
+    MPI_Recv(&ubp.qRB[0],ub_.nL,MPI_DOUBLE,rankB_,msgtag2,MPI_COMM_WORLD,&status);
 
     /* Now insert the newly incoming particles in this processor to the list of particles.            */
     unsigned i = 0;

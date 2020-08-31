@@ -83,4 +83,12 @@ namespace MITHRA
     printmessage(std::string(__FILE__), __LINE__, std::string("- Arnau Alba   ( Paul Scherrer Institut (PSI), Villigen, Switzerland )") );
     printmessage(std::string(__FILE__), __LINE__, std::string(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::") );
   }
+
+  /* Positive remainder between two double values.							*/
+  Double pmod ( const Double& a, const Double& b)
+  {
+    Double x = fmod(a, b);
+    x += ( x < 0.0 ) ? b : 0.0;
+    return (x);
+  }
 }

@@ -157,5 +157,8 @@ namespace MITHRA
   /* Hello message when initialising mithra.														*/
   void helloMessage();
 
+  /* Positive remainder between two double values.							*/
+  Double pmod ( const Double& a, const Double& b);
+
 }
 #endif

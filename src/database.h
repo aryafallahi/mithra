@@ -271,6 +271,8 @@ namespace MITHRA
     Double				tl, t0;
     Double				r0;
 
+    Double				zr;
+
     UpdateBunchParallel();
   };
 

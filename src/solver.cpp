@@ -289,7 +289,7 @@ namespace MITHRA
 	  {
 	    undulator_[0].dist_ = nl * undulator_[0].lu_;
 	    if ( undulator_[0].type_ == OPTICAL )
-	      undulator_[0].dist_ += ( undulator_[0].signal_.t0_ * c0_ - undulator_[0].signal_.s_ / 2.0 ) * c0_;
+	      undulator_[0].dist_ += ( undulator_[0].signal_.t0_ - undulator_[0].signal_.s_ / 2.0 ) * c0_;
 	  }
 	else if (undulator_[0].dist_ < nl * undulator_[0].lu_)
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Warning: the undulator is set very close to the bunch, the results may be inaccurate.") );
@@ -436,7 +436,7 @@ namespace MITHRA
     Charge charge;
     while (i < recvCV.size() )
       {
-	if ( (recvCV[i+3] < zp_[1] || rank_ == size_ - 1) && (recvCV[i+3] >= zp_[0] || rank_ == 0) )
+	if ( particleInProcessor(recvCV[i+3]) )
 	  {
 	    charge.q 		= recvCV[i++];
 	    charge.rnp[0] 	= recvCV[i++];
@@ -651,7 +651,7 @@ namespace MITHRA
     uc_.dy = mesh_.meshResolution_[1];
     uc_.dz = mesh_.meshResolution_[2];
     uc_.dv = - m0_ * EC / mesh_.timeStep_ /   ( uc_.dx * uc_.dy * uc_.dz );
-    uc_.rc = - EC / e0_ /	                  ( uc_.dx * uc_.dy * uc_.dz );
+    uc_.rc = - EC / e0_ /	              ( uc_.dx * uc_.dy * uc_.dz );
     FieldVector<Double> ZERO_VECTOR (0.0);
     uc_.jt.resize(N1N0_,ZERO_VECTOR);
     if ( mesh_.spaceCharge_ ) uc_.rt.resize(N1N0_,0.0);
@@ -696,21 +696,21 @@ namespace MITHRA
 
     Double d   = 1.0 / ( 2.0 * uf_.dt * uf_.dx ) + p / ( 2.0 * c0_ * uf_.dt * uf_.dt );
 
-    uf_.bB[0]	 = (   1.0 / ( 2.0 * uf_.dt * uf_.dx ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
-    uf_.bB[1]	 = ( - 1.0 / ( 2.0 * uf_.dt * uf_.dx ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
-    uf_.bB[2]  = (   p   / ( c0_ * uf_.dt * uf_.dt ) + q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( uf_.dy * uf_.dy ) + c0_ / ( uf_.dz * uf_.dz ) ) ) / d;
-    uf_.bB[3]  = - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dy * uf_.dy ) ) / d ;
-    uf_.bB[4]  = - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dz * uf_.dz ) ) / d ;
+    uf_.bB[0]	= (   1.0 / ( 2.0 * uf_.dt * uf_.dx ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
+    uf_.bB[1]	= ( - 1.0 / ( 2.0 * uf_.dt * uf_.dx ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
+    uf_.bB[2]	= (   p   / ( c0_ * uf_.dt * uf_.dt ) + q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( uf_.dy * uf_.dy ) + c0_ / ( uf_.dz * uf_.dz ) ) ) / d;
+    uf_.bB[3]	= - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dy * uf_.dy ) ) / d ;
+    uf_.bB[4]	= - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dz * uf_.dz ) ) / d ;
 
     /* y = 0 and y = h boundary coefficients.								*/
 
     d  	 = 1.0 / ( 2.0 * uf_.dt * uf_.dy ) + p / ( 2.0 * c0_ * uf_.dt * uf_.dt );
 
-    uf_.cB[0]	 = (   1.0 / ( 2.0 * uf_.dt * uf_.dy ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
-    uf_.cB[1]	 = ( - 1.0 / ( 2.0 * uf_.dt * uf_.dy ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
-    uf_.cB[2]  = (   p / ( c0_ * uf_.dt * uf_.dt ) + q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( uf_.dx * uf_.dx ) + c0_ / ( uf_.dz * uf_.dz ) ) ) / d;
-    uf_.cB[3]  = - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dx * uf_.dx ) ) / d ;
-    uf_.cB[4]  = - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dz * uf_.dz ) ) / d ;
+    uf_.cB[0]	= (   1.0 / ( 2.0 * uf_.dt * uf_.dy ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
+    uf_.cB[1]	= ( - 1.0 / ( 2.0 * uf_.dt * uf_.dy ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
+    uf_.cB[2]	= (   p / ( c0_ * uf_.dt * uf_.dt ) + q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( uf_.dx * uf_.dx ) + c0_ / ( uf_.dz * uf_.dz ) ) ) / d;
+    uf_.cB[3]	= - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dx * uf_.dx ) ) / d ;
+    uf_.cB[4]	= - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dz * uf_.dz ) ) / d ;
 
     /* z = 0 and z = h boundary coefficients.								*/
 
@@ -721,11 +721,11 @@ namespace MITHRA
 
     d  	 = 1.0 / ( 2.0 * uf_.dt * uf_.dz ) + p / ( 2.0 * c0_ * uf_.dt * uf_.dt );
 
-    uf_.dB[0]	 = (   1.0 / ( 2.0 * uf_.dt * uf_.dz ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
-    uf_.dB[1]	 = ( - 1.0 / ( 2.0 * uf_.dt * uf_.dz ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
-    uf_.dB[2]  = (   p / ( c0_ * uf_.dt * uf_.dt ) + q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( uf_.dx * uf_.dx ) + c0_ / ( uf_.dy * uf_.dy ) ) ) / d;
-    uf_.dB[3]  = - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dx * uf_.dx ) ) / d ;
-    uf_.dB[4]  = - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dy * uf_.dy ) ) / d ;
+    uf_.dB[0]	= (   1.0 / ( 2.0 * uf_.dt * uf_.dz ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
+    uf_.dB[1]	= ( - 1.0 / ( 2.0 * uf_.dt * uf_.dz ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
+    uf_.dB[2]  	= (   p / ( c0_ * uf_.dt * uf_.dt ) + q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( uf_.dx * uf_.dx ) + c0_ / ( uf_.dy * uf_.dy ) ) ) / d;
+    uf_.dB[3]  	= - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dx * uf_.dx ) ) / d ;
+    uf_.dB[4]  	= - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dy * uf_.dy ) ) / d ;
 
     /* Edge coefficients for edges along z.								*/
     d  	= ( 1.0 / uf_.dy + 1.0 / uf_.dx ) / ( 4.0 * uf_.dt ) + 3.0 / ( 8.0 * c0_ * uf_.dt * uf_.dt );
@@ -1289,7 +1289,7 @@ namespace MITHRA
     for ( auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++ )
       {
 	/* If the particle does not belong to this processor continue the loop over particles         	*/
-	if ( !( ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) ) ) continue;
+	if ( ! particleInProcessor(iter->rnp[2]) ) continue;
 
 	/* Get the boolean flag determining if the particle resides in the computational domain.      	*/
 	ubp.b1x = ( iter->rnp[0] < xmax_ - ub_.dx && iter->rnp[0] > xmin_ + ub_.dx );
@@ -1387,8 +1387,11 @@ namespace MITHRA
 	/* Determine the final position of the particle.				                */
 	iter->rnp.pmv( ub_.dtb / sqrt (1.0 + iter->gbnp.norm2()) , iter->gbnp );
 
+	/* Calculate the relative coordinate for processor association.					*/
+	ubp.zr = pmod( iter->rnp[2] - zmin_ , mesh_.meshLength_[2] ) + zmin_;
+
 	/* If the particle enters the adjacent computational domain, save it to communication buffer. 	*/
-	if ( iter->rnp[2] < zp_[0] && rank_ != 0 )
+	if ( ubp.zr < zp_[0] )
 	  {
 	    ubp.qSB.push_back( iter->q       );
 	    ubp.qSB.push_back( iter->rnp [0] );
@@ -1405,7 +1408,7 @@ namespace MITHRA
 	    ubp.qSB.push_back( iter->gbnm[2] );
 	    ubp.qSB.push_back( iter->e 	     );
 	  }
-	else if ( iter->rnp[2] >= zp_[1] && rank_ != size_ - 1 )
+	else if ( ubp.zr >= zp_[1] )
 	  {
 	    ubp.qSF.push_back( iter->q       );
 	    ubp.qSF.push_back( iter->rnp [0] );
@@ -1515,7 +1518,7 @@ namespace MITHRA
      * to do weighted additions.                                            				*/
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
-	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+	if ( particleInProcessor(iter->rnp[2]) )
 	  {
 	    sb_.q	 += iter->q;
 	    sb_.r .pmv(   iter->q, iter->rnp );
@@ -1581,7 +1584,7 @@ namespace MITHRA
     /* Store the number of particles in the simulation.							*/
     vb_.N = 0;
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
-      if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+      if ( particleInProcessor(iter->rnp[2]) )
 	vb_.N++;
 
     /* Write the initial data for the vtk file.                                                     	*/
@@ -1597,7 +1600,7 @@ namespace MITHRA
 
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
-	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+	if ( particleInProcessor(iter->rnp[2]) )
 	  *vb_.file << iter->rnp[0] << " " << iter->rnp[1] << " " << iter->rnp[2] 		<< std::endl;
       }
 
@@ -1624,7 +1627,7 @@ namespace MITHRA
 	<< std::endl;
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
-	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+	if ( particleInProcessor(iter->rnp[2]) )
 	  {
 	    gamma = sqrt( 1.0 + iter->gbnp.norm2() );
 	    beta  = iter->gbnp[2] / gamma;
@@ -1696,7 +1699,7 @@ namespace MITHRA
 
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
-	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+	if ( particleInProcessor(iter->rnp[2]) )
 	  {
 	    /* Loop over the particles and print the data of each particle into the file.		*/
 	    *pb_.file << iter->q  	<< "\t";
@@ -2340,7 +2343,7 @@ namespace MITHRA
 	    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
 	      {
 		/* Only look at particles which belong to the domain of this processor.			*/
-		if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+		if ( particleInProcessor(iter->rnp[2]) )
 		  {
 		    Double lzm = gamma_ * ( iter->rnm[2] + beta_ * c0_ * ( timeBunch_- mesh_.timeStep_ + dt_ ) );
 		    if ( lzm >= lzScreen )	continue;
@@ -2401,6 +2404,16 @@ namespace MITHRA
   Double Solver::interp( Double x0, Double x1, Double y0, Double y1, Double x )
   {
     return y0 + ( x - x0 ) / ( x1 - x0 ) * ( y1 - y0 );
+  }
+
+  /****************************************************************************************************
+   * Define the function for checking if the particle belongs to the processor.
+   ****************************************************************************************************/
+
+  bool Solver::particleInProcessor( const Double& z )
+  {
+    Double zr = pmod( z - zmin_ , mesh_.meshLength_[2] ) + zmin_;
+    return ( ( zr >= zp_[0] ) && ( zr < zp_[1] ) );
   }
 
 }

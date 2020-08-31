@@ -123,6 +123,9 @@ namespace MITHRA
     /* Define the function for linear interpolation.							*/
     Double	 	interp				(Double x0, Double x1, Double y0, Double y1, Double x);
 
+    /* Define the function for checking if the particle belongs to the processor.			*/
+    bool 		particleInProcessor		(const Double& z );
+
     /* Reset the currents to zero.									*/
     virtual void currentReset () = 0;
 

@@ -259,7 +259,7 @@ namespace MITHRA
     Double				dxr, dyr, dzr;
     Double				d2;
     double				d1;
-    FieldVector<Double>			gbm, gbp, gbpl;
+    FieldVector<Double>			gbm, gbp, gbpl, dr;
     Double				sz, cy;
 
     Double                              lz, ly;

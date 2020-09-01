@@ -574,7 +574,7 @@ namespace MITHRA
 	  }
 	else if ( rank_ == size_ - 1 )
 	  {
-	    np_ = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 3;
+	    np_ = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 1;
 	    k0_ = ( size_ - 1 ) * ( N2_ / size_ ) - 1;
 	  }
 	else
@@ -626,8 +626,10 @@ namespace MITHRA
 	    r_[m][1] = ymin_ + j         * mesh_.meshResolution_[1];
 	    r_[m][2] = zmin_ + (k + k0_) * mesh_.meshResolution_[2];
 
-	    if 		( k == 0 ) 		zp_[0] = r_[m][2];
-	    else if 	( k == np_ - 2 ) 	zp_[1] = r_[m][2];
+	    if 		( k == 0 ) 		
+		zp_[0] = r_[m][2];
+	    else if 	( k == np_ - ( ( rank_ == size_ - 1 ) ? 1 : 2 ) ) 	
+		zp_[1] = r_[m][2];
 	  }
 
     /* Initialize the time points for the fields in the domain.						*/
@@ -1291,7 +1293,8 @@ namespace MITHRA
     for ( auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++ )
       {
 	/* If the particle does not belong to this processor continue the loop over particles         	*/
-	if ( ! particleInProcessor(iter->rnp[2]) ) continue;
+	ubp.zr = pmod( iter->rnp[2] - zmin_ , mesh_.meshLength_[2] ) + zmin_;
+	if ( ! ( ( ubp.zr >= zp_[0] ) && ( ubp.zr < zp_[1] ) ) ) continue;
 
 	/* Get the boolean flag determining if the particle resides in the computational domain.      	*/
 	ubp.b1x = ( iter->rnp[0] < xmax_ - ub_.dx && iter->rnp[0] > xmin_ + ub_.dx );
@@ -1386,11 +1389,14 @@ namespace MITHRA
 	iter->gbnp = ubp.gbpl;
 	iter->gbnp.pmv( ub_.r1 , ubp.et );
 
+	/* Determine the movement of the particle.							*/
+	ubp.dr.mv( ub_.dtb / sqrt (1.0 + iter->gbnp.norm2()) , iter->gbnp );
+
 	/* Determine the final position of the particle.				                */
-	iter->rnp.pmv( ub_.dtb / sqrt (1.0 + iter->gbnp.norm2()) , iter->gbnp );
+	iter->rnp += ubp.dr;
 
 	/* Calculate the relative coordinate for processor association.					*/
-	ubp.zr = pmod( iter->rnm[2] - zmin_ , mesh_.meshLength_[2] ) + zmin_ + iter->rnp[2] - iter->rnm[2];
+	ubp.zr += ubp.dr[2];
 
 	/* If the particle enters the adjacent computational domain, save it to communication buffer. 	*/
 	if ( ubp.zr < zp_[0] )

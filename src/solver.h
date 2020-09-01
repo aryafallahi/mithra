@@ -126,6 +126,9 @@ namespace MITHRA
     /* Define the function for checking if the particle belongs to the processor.			*/
     bool 		particleInProcessor		(const Double& z );
 
+    /* Shift the time of the bunch and undulator according to the given time shift.			*/
+    void    		shiftBackInTime			();
+
     /* Reset the currents to zero.									*/
     virtual void currentReset () = 0;
 

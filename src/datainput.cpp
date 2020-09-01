@@ -104,6 +104,15 @@ namespace MITHRA
 	  }
 	else if (parameterName(*iter) == "space-charge") 		mesh_.spaceCharge_ 	= boolValue(*iter);
 	else if (parameterName(*iter) == "optimize-bunch-position") 	mesh_.optimizePosition_ = boolValue(*iter);
+	else if (parameterName(*iter) == "initial-time-back-shift")
+	  {
+	    mesh_.timeShift_ 	= doubleValue(*iter);
+	    if ( mesh_.timeShift_ < 0.0 )
+	      {
+		printmessage(std::string(__FILE__), __LINE__, std::string("The shift back in time should always be positive.") );
+		exit(1);
+	      }
+	  }
 	else if (parameterName(*iter) == "solver")
 	  {
 	    std::string solver 	= stringValue(*iter);

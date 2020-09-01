@@ -20,6 +20,7 @@ namespace MITHRA
     printmessage(std::string(__FILE__), __LINE__, std::string(" Time scale = ") + stringify(timeScale_));
     printmessage(std::string(__FILE__), __LINE__, std::string(" Total simulation time = ") + stringify(totalTime_));
     printmessage(std::string(__FILE__), __LINE__, std::string(" Mesh truncation order = ") + stringify(truncationOrder_));
+    printmessage(std::string(__FILE__), __LINE__, std::string(" Initial shift back in time = ") + stringify(timeShift_));
     if 	( spaceCharge_ == true )
       printmessage(std::string(__FILE__), __LINE__, std::string(" Space-charge = true "));
     else if 	( spaceCharge_ == false )
@@ -40,6 +41,7 @@ namespace MITHRA
     optimizePosition_	= false;
     solver_		= NSFD;
     totalDist_		= 0.0;
+    timeShift_		= 0.0;
   }
 
   /*** Bunch class **************************************************************************************/

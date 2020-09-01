@@ -39,9 +39,9 @@ namespace MITHRA
     N0_ = N1_ = N2_ = 0;
 
     /* Reset the time and the time number of the FdTd class.						*/
-    timep1_	   =  mesh_.timeStep_;
+    timep1_	   =  0.0;
     time_  	   =  0.0;
-    timem1_	   = -mesh_.timeStep_;
+    timem1_	   =  0.0;
     nTime_ 	   =  0;
     nTimeBunch_    =  0;
 
@@ -199,6 +199,7 @@ namespace MITHRA
     mesh_.meshResolution_[2] 	*= gamma_;
     mesh_.meshCenter_[2] 	*= gamma_;
     mesh_.totalTime_		/= gamma_;
+    mesh_.timeShift_		/= gamma_;
 
     /****************************************************************************************************/
 
@@ -288,11 +289,7 @@ namespace MITHRA
       {
 	Double nl = ( undulator_[0].type_ == STATIC ) ? 2.0 : 10.0;
 	if (undulator_[0].dist_ == 0.0)
-	  {
-	    undulator_[0].dist_ = nl * undulator_[0].lu_;
-	    if ( undulator_[0].type_ == OPTICAL )
-	      undulator_[0].dist_ += ( undulator_[0].signal_.t0_ - undulator_[0].signal_.s_ / 2.0 ) * c0_;
-	  }
+	  undulator_[0].dist_ = nl * undulator_[0].lu_;
 	else if (undulator_[0].dist_ < nl * undulator_[0].lu_)
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Warning: the undulator is set very close to the bunch, the results may be inaccurate.") );
 	dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmaxG + undulator_[0].dist_ / gamma_ );
@@ -541,6 +538,9 @@ namespace MITHRA
 
     /* Initialize required data for saving particles hitting screens.					*/
     initializeScreenProfile();
+
+    /* Shift the time of the bunch and undulator according to the given time shift.			*/
+    shiftBackInTime();
   }
 
   /******************************************************************************************************
@@ -632,9 +632,10 @@ namespace MITHRA
 		zp_[1] = r_[m][2];
 	  }
 
-    /* Initialize the time points for the fields in the domain.						*/
-    timep1_ += mesh_.timeStep_;
-    timem1_ -= mesh_.timeStep_;
+    /* Initialize the time values for the field update.							*/
+    timep1_	   =  mesh_.timeStep_;
+    time_  	   =  0.0;
+    timem1_	   = -mesh_.timeStep_;
 
     printmessage(std::string(__FILE__), __LINE__, std::string("The temporal and spatial mesh of the problem is initialized. :::") );
   }
@@ -1128,6 +1129,34 @@ namespace MITHRA
   }
 
   /******************************************************************************************************
+   * After the data is initialized, if the time shift is non-zero, shift the bunch and undulator back in
+   * time.
+   ******************************************************************************************************/
+  void Solver::shiftBackInTime()
+  {
+    /* Check first if the time shift is nonzero.							*/
+    if ( mesh_.timeShift_ != 0.0 )
+      {
+	/* To shift the undulator back in time, it is merely enough to manipulate the dt_ factor.	*/
+	timem1_ 	-= mesh_.timeShift_;
+	time_   	-= mesh_.timeShift_;
+	timep1_ 	-= mesh_.timeShift_;
+	timeBunch_ 	-= mesh_.timeShift_;
+
+	/* To shift the bunch back in time the values of rnm and rnp shoud be manipulated.		*/
+	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
+	  {
+	    Double t  	= c0_ * mesh_.timeShift_ / std::sqrt(1.0 + iterQ->gbnp.norm2());
+	    iterQ->rnp.mmv( t , iterQ->gbnp );
+	  }
+
+	/* Distribute particles in their respective processor, depending on their longitudinal
+	 * coordinate.											*/
+	distributeParticles(chargeVectorn_);
+      }
+  }
+
+  /******************************************************************************************************
    * The function which is called for solving the fields in time domain.
    ******************************************************************************************************/
 
@@ -1257,7 +1286,7 @@ namespace MITHRA
 	deltaTime  = ( simulationEnd.tv_usec - simulationStart.tv_usec ) / 1.0e6;
 	deltaTime += ( simulationEnd.tv_sec - simulationStart.tv_sec );
 
-	if ( rank_ == 0 && time_/mesh_.totalTime_ * 1000.0 > p )
+	if ( rank_ == 0 && ( int(time_/mesh_.totalTime_ * 1000.0) !=  int(timem1_/mesh_.totalTime_ * 1000.0) ) )
 	  {
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Percentage of the simulation completed (%)      = ") +
 			 stringify(time_/mesh_.totalTime_ * 100.0) );
@@ -1265,7 +1294,6 @@ namespace MITHRA
 			 stringify(deltaTime/(double)(nTime_))     );
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Estimated remaining time (min)                  = ") +
 			 stringify( (mesh_.totalTime_/time_ - 1) * deltaTime / 60 ) );
-	    p += 1.0;
 	  }
       }
 
@@ -1305,14 +1333,15 @@ namespace MITHRA
 	ubp.bt = 0.0;
 	ubp.et = 0.0;
 
+	/* Calculate the undulator field at the particle position.				        */
+	undulatorField(ubp, iter->rnp);
+
+	/* Calculate the external field at the particle position and add to the undulator field.	*/
+	externalField(ubp, iter->rnp);
+
 	/* Compute the fields if the particle has passed the entrance zone of the undulator.		*/
 	if ( iter->e == 1.0 )
 	  {
-	    /* Calculate the undulator field at the particle position.				        */
-	    undulatorField(ubp, iter->rnp);
-
-	    /* Calculate the external field at the particle position and add to the undulator field.	*/
-	    externalField(ubp, iter->rnp);
 
 	    if ( ubp.b1x && ubp.b1y && ubp.b1z )
 	      {

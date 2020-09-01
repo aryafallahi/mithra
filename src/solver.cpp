@@ -1390,7 +1390,7 @@ namespace MITHRA
 	iter->rnp.pmv( ub_.dtb / sqrt (1.0 + iter->gbnp.norm2()) , iter->gbnp );
 
 	/* Calculate the relative coordinate for processor association.					*/
-	ubp.zr = pmod( iter->rnp[2] - zmin_ , mesh_.meshLength_[2] ) + zmin_;
+	ubp.zr = pmod( iter->rnm[2] - zmin_ , mesh_.meshLength_[2] ) + zmin_ + iter->rnp[2] - iter->rnm[2];
 
 	/* If the particle enters the adjacent computational domain, save it to communication buffer. 	*/
 	if ( ubp.zr < zp_[0] )

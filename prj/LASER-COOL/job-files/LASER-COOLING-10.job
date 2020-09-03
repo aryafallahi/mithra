@@ -21,7 +21,7 @@ MESH
   space-charge						= false
   solver						= NSFD
   optimize-bunch-position				= true
-  initial-time-back-shift                               = 4000.0
+  initial-time-back-shift                               = 8000.0
 }
  
 BUNCH
@@ -56,64 +56,64 @@ EXTERNAL-FIELD
   electromagnetic-wave
   {
     beam-type						= gaussian-beam
-    radius-parallel					= 1e10
-    radius-perpendicular				= 1e10
+    radius-parallel					= 1000.0
+    radius-perpendicular				= 1000.0
     position						= ( 0.0, 0.0, 1000.0 )
-    direction						= ( 1.0, 0.0,   0.0 )
-    polarization					= ( 0.0, 1.0,   0.0 )
+    direction						= ( 1.0, 0.0,    0.0 )
+    polarization					= ( 0.0, 1.0,    0.0 )
     strength-parameter					= 0.08
     signal-type						= gaussian
     wavelength						= 10.0
-    pulse-length					= 1000.0
-    offset						= 1000.0
+    pulse-length					= 1.0e6
+    offset						= 0.0
     CEP							= 0.0
   }
 
   electromagnetic-wave
   {
     beam-type                                           = gaussian-beam
-    radius-parallel                                     = 1e10
-    radius-perpendicular                                = 1e10
+    radius-parallel                                     = 1000.0
+    radius-perpendicular                                = 1000.0
     position                                            = ( 0.0, 0.0, 1000.0 )
-    direction                                           = (-1.0, 0.0,   0.0 )
-    polarization                                        = ( 0.0,-1.0,   1.0 )
+    direction                                           = (-1.0, 0.0,    0.0 )
+    polarization                                        = ( 0.0,-1.0,    1.0 )
     strength-parameter                                  = 0.08
     signal-type                                         = gaussian
     wavelength                                          = 10.0
-    pulse-length                                        = 1000.0
-    offset                                              = 1000.0
+    pulse-length                                        = 1.0e6
+    offset                                              = 0.0
     CEP                                                 = 0.0
   }
 
   electromagnetic-wave
   {
     beam-type                                           = gaussian-beam
-    radius-parallel                                     = 1e10
-    radius-perpendicular                                = 1e10
+    radius-parallel                                     = 1000.0
+    radius-perpendicular                                = 1000.0
     position                                            = ( 0.0, 0.0, 1000.0 )
-    direction                                           = ( 0.0, 1.0,   0.0 )
-    polarization                                        = ( 1.0, 0.0,   0.0 )
+    direction                                           = ( 0.0, 1.0,    0.0 )
+    polarization                                        = ( 1.0, 0.0,    0.0 )
     strength-parameter                                  = 0.08
     signal-type                                         = gaussian
     wavelength                                          = 10.0
-    pulse-length                                        = 1000.0
-    offset                                              = 1000.0
+    pulse-length                                        = 1.0e6
+    offset                                              = 0.0
     CEP                                                 = 0.0
   }
 
   electromagnetic-wave
   {
     beam-type                                           = gaussian-beam
-    radius-parallel                                     = 1e10
-    radius-perpendicular                                = 1e10
+    radius-parallel                                     = 1000.0
+    radius-perpendicular                                = 1000.0
     position                                            = ( 0.0, 0.0, 1000.0 )
-    direction                                           = ( 0.0,-1.0,  0.0 )
-    polarization                                        = (-1.0, 0.0,  0.0 )
+    direction                                           = ( 0.0,-1.0,    0.0 )
+    polarization                                        = (-1.0, 0.0,    0.0 )
     strength-parameter                                  = 0.08
     signal-type                                         = gaussian
     wavelength                                          = 10.0
-    pulse-length                                        = 1000.0
-    offset                                              = 1000.0
+    pulse-length                                        = 1.0e6
+    offset                                              = 0.0
     CEP                                                 = 0.0
   }
 }
@@ -142,7 +142,7 @@ FEL-OUTPUT
     sample                                              = true
     type                                                = at-point
     directory                                           = ./
-    base-name                                           = power-sampling-20200902/power-25umx25umx2p5um-125nmx125nmx4nm-uniform-5e6(5e5)-10-2p6umx2p6umx1um-1e-1x1e-1x25e-4-1000-1000-1000-0p08-4000
+    base-name                                           = power-sampling-20200903/power-25umx25umx2p5um-125nmx125nmx4nm-uniform-5e6(5e5)-10-2p6umx2p6umx1um-1e-1x1e-1x25e-4-1000-1000-0p08-8000
     plane-position                                      = 1.2
     normalized-frequency                                = 1.0
   }

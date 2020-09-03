@@ -12,10 +12,10 @@ MESH
 {
   length-scale						= MICROMETER
   time-scale						= FEMTOSECOND
-  mesh-lengths						= (  25.0,  25.0, 2.5   ) 
-  mesh-resolution					= (   1.0,   1.0, 0.004 )
+  mesh-lengths						= (  50.0,  50.0, 2.5   ) 
+  mesh-resolution					= ( 0.125, 0.125, 0.004 )
   mesh-center						= (   0.0,   0.0, 0.0   )
-  total-time						= 8000
+  total-time						= 9000
   bunch-time-step					= 0.5
   mesh-truncation-order					= 2
   space-charge						= false
@@ -31,7 +31,7 @@ BUNCH
     type                                                = ellipsoid
     distribution                                        = uniform
     charge                                              = 5e6
-    number-of-particles                                 = 1e4
+    number-of-particles                                 = 5e5
     gamma                                               = 10.0
     direction                                           = (   0.0,    0.0,     1.0 )
     position                                            = (   0.0,    0.0,     0.0 )
@@ -75,7 +75,7 @@ FEL-OUTPUT
     sample						= true
     type						= at-point
     directory						= ./
-    base-name						= power-sampling-20200901/power-0 #25umx25umx2p5um-1000nmx1000nmx8nm-uniform-5e6(1e4)-10-2p6umx2p6umx1um-1e-3x1e-3x25e-4
+    base-name						= power-sampling-20200902/power-50umx50umx2p5um-125nmx125nmx4nm-uniform-5e6(5e5)-10-2p6umx2p6umx1um-1e-3xx1e-3x25e-4
     plane-position					= 1.2
     normalized-frequency                        	= 1.0
   }

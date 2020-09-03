@@ -86,6 +86,8 @@ The mesh and update parameters of the solver are defined through the following t
 	\item {\tt \em \small solver} determines if the non-standard finite-difference (NSFD) algorithm should be used to remove the effects of numerical dispersion or the simulation should be done with a simple finite-difference (FD) algorithm. Default is the non-standard finite-difference.
 	%
 	\item {\tt \em \small optimize-bunch-position} is a boolean flag that tells the solver to automatically shift the bunch so that it resides in the middle of the computational domain after passing through the undulator entrance. This parameter is by default set to false.
+	%
+	\item {\tt \em \small initial-time-back-shift} is a real positive value that tells the solver to start the simulation from a time before the standard initial condition of solver. We comment that the solver automatically places the bunch head in a given distance from the undulator entrance.
 \end{itemize}
 
 The format of the {\tt \em \small MESH} group is:
@@ -107,6 +109,7 @@ MESH
 	space-charge  				= < true | false >
 	solver						= < NSFD | FD >
 	optimize-bunch-position		= < true | false >
+	initial-time-back-shift = < real >
 \}
 \end{Verbatim}
 %%
@@ -127,6 +130,7 @@ MESH
 	space-charge				 = false
 	solver						 = NSFD
 	optimize-bunch-position		 = false
+	initial-time-back-shift = 0.0
 \}
 \end{Verbatim}
 \end{snugshade}

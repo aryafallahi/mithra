@@ -23,13 +23,15 @@ This situation provided me the motivation to develop a full-wave simulation tool
 %
 Certainly, the software development attempts strongly benefited from discussions with a number of colleagues, which are highly appreciated here.
 %
-Among them, I acknwledge the discussions with Prof. Alireza Yahaghi and support from Prof. Franz K\"artner at CFEL.
+Among them, I acknowledge the discussions with Prof. Alireza Yahaghi at CFEL.
 %
 The collaboration with Dr. PD. Andreas Adelmann and his group was also very fruitful in further enhancement of the tool.
 %
 Particularly, the work of Arnau Alb\`{a} in debugging the code, checking all the implemented algorithms and reviewing the software manual is highly acknowledged.
 %
 Eventually, my sincere gratitude to Prof. Niels Kuster for his support by providing a wonderful working environment at IT'IS foundation that was a critical factor in the latest development of MITHRA.
+%
+Most of all, I acknowledge the support from Swiss National Science Foundation (SNSF) for funding the code development under the Spark grant CRSK-2\_190840.
 
 After the software MITHRA was fully developed, I thought it might be of limited usage for the community.
 %
@@ -65,6 +67,8 @@ A list of new features and applied changes in version 2.0 released with this man
 	\item The job file in the new version accepts a parameter named as {\tt \small \em total-distance}, which tells the solver to run the simulation until the last particle passes a point staying at this distance from the coordinate origin.
 	%
 	\item In the several years of using this code, I never saw a case where bunches should be initialized in the middle of a simulation. Therefore, this option is removed from the code. This means that the parameter {\tt \small \em bunch-time-start} is no more accepted in the job-file.
+	%
+	\item Instead, a new option is added that enables the user to start the simulation from a previous time compared to the initial time considered by the solver. This option is activated by entering a non-zero and of course positive value for the parameter {\tt \small \em initial-time-back-shift} in the job-file.
 	%
 	\item A new group in the job file is added which is named as external-field. Through this group, fields of other devices than the undulator will be added to the simulation. Currently, addition of external electromagnetic waves to the interaction is implemented.
 	%

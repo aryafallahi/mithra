@@ -1289,11 +1289,11 @@ namespace MITHRA
 	if ( rank_ == 0 && ( int(time_/mesh_.totalTime_ * 1000.0) !=  int(timem1_/mesh_.totalTime_ * 1000.0) ) )
 	  {
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Percentage of the simulation completed (%)      = ") +
-			 stringify(time_/mesh_.totalTime_ * 100.0) );
+			 stringify( ( time_ + mesh_.timeShift_ ) / ( mesh_.totalTime_ + mesh_.timeShift_ ) * 100.0 ) );
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Average calculation time for each time step (s) = ") +
 			 stringify(deltaTime/(double)(nTime_))     );
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Estimated remaining time (min)                  = ") +
-			 stringify( (mesh_.totalTime_/time_ - 1) * deltaTime / 60 ) );
+			 stringify( ( ( mesh_.totalTime_ + mesh_.timeShift_ ) / ( time_ + mesh_.timeShift_ ) - 1) * deltaTime / 60 ) );
 	  }
       }
 

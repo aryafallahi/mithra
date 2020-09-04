@@ -12,9 +12,9 @@ MESH
 {
   length-scale						= MICROMETER
   time-scale						= FEMTOSECOND
-  mesh-lengths						= (  25.0,  25.0,  2.5   ) 
-  mesh-resolution					= (  0.25,  0.25,  0.004 )
-  mesh-center						= (   0.0,   0.0,  0.0   )
+  mesh-lengths						= (  25.0,  25.0,  0.04   ) 
+  mesh-resolution					= (  2.5,  2.5,  0.004 )
+  mesh-center						= (   0.0,   0.0,  1000.0   )
   total-time						= 9000
   bunch-time-step					= 0.5
   mesh-truncation-order					= 2
@@ -31,7 +31,7 @@ BUNCH
     type                                                = ellipsoid
     distribution                                        = uniform
     charge                                              = 5e6
-    number-of-particles                                 = 5e5
+    number-of-particles                                 = 1e5
     gamma                                               = 10.0
     direction                                           = (   0.0,    0.0,  1.0    )
     position                                            = (   0.0,    0.0,  0.0    )
@@ -54,7 +54,7 @@ BUNCH
   {
     sample                                              = true
     directory                                           = ./
-    base-name                                           = bunch-sampling-20200904/bunch-25umx25umx2p5um-250nmx250nmx4nm-uniform-5e6(1e5)-10-2p6umx2p6umx1um-1e-1x1e-1x25e-4-1000-1000-0p08-4000
+    base-name                                           = data-20200904/bunch-1
     rhythm                                              = 10.0
   }
 }
@@ -69,7 +69,7 @@ EXTERNAL-FIELD
     position						= ( 0.0, 0.0, 1000.0 )
     direction						= ( 1.0, 0.0,    0.0 )
     polarization					= ( 0.0, 1.0,    0.0 )
-    strength-parameter					= 0.08
+    strength-parameter					= 0.0
     signal-type						= gaussian
     wavelength						= 10.0
     pulse-length					= 1.0e6
@@ -85,7 +85,7 @@ EXTERNAL-FIELD
     position                                            = ( 0.0, 0.0, 1000.0 )
     direction                                           = (-1.0, 0.0,    0.0 )
     polarization                                        = ( 0.0,-1.0,    0.0 )
-    strength-parameter                                  = 0.08
+    strength-parameter                                  = 0.0
     signal-type                                         = gaussian
     wavelength                                          = 10.0
     pulse-length                                        = 1.0e6
@@ -101,7 +101,7 @@ EXTERNAL-FIELD
     position                                            = ( 0.0, 0.0, 1000.0 )
     direction                                           = ( 0.0, 1.0,    0.0 )
     polarization                                        = ( 1.0, 0.0,    0.0 )
-    strength-parameter                                  = 0.08
+    strength-parameter                                  = 0.0
     signal-type                                         = gaussian
     wavelength                                          = 10.0
     pulse-length                                        = 1.0e6
@@ -117,7 +117,7 @@ EXTERNAL-FIELD
     position                                            = ( 0.0, 0.0, 1000.0 )
     direction                                           = ( 0.0,-1.0,    0.0 )
     polarization                                        = (-1.0, 0.0,    0.0 )
-    strength-parameter                                  = 0.08
+    strength-parameter                                  = 0.0
     signal-type                                         = gaussian
     wavelength                                          = 10.0
     pulse-length                                        = 1.0e6
@@ -147,10 +147,10 @@ FEL-OUTPUT
 {
   radiation-power
   {
-    sample                                              = true
+    sample                                              = false
     type                                                = at-point
     directory                                           = ./
-    base-name                                           = power-sampling-20200904/power-25umx25umx2p5um-250nmx250nmx4nm-uniform-5e6(1e5)-10-2p6umx2p6umx1um-1e-1x1e-1x25e-4-1000-1000-0p08-4000
+    base-name                                           = data-20200904/power-25umx25umx2p5um-250nmx250nmx4nm-uniform-5e6(1e5)-10-2p6umx2p6umx1um-1e-1x1e-1x25e-4-1000-1000-0p0-4000
     plane-position                                      = 1.2
     normalized-frequency                                = 1.0
   }

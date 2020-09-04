@@ -424,12 +424,12 @@ namespace MITHRA
 
 	    do
 	      {
-		if      (parameterName(*iter) == "undulator-parameter")               undulator.k_            = doubleValue(*iter);
-		else if (parameterName(*iter) == "period")                            undulator.lu_           = doubleValue(*iter);
-		else if (parameterName(*iter) == "polarization-angle")                undulator.theta_        = PI / 180.0 * doubleValue(*iter);
-		else if (parameterName(*iter) == "length")                            undulator.length_       = intValue(*iter);
-		else if (parameterName(*iter) == "distance-to-bunch-head")            undulator.dist_         = doubleValue(*iter);
-		else if (parameterName(*iter) == "offset")                            undulator.rb_       	= doubleValue(*iter);
+		if      (parameterName(*iter) == "undulator-parameter")               undulator.k_	= doubleValue(*iter);
+		else if (parameterName(*iter) == "period")                            undulator.lu_	= doubleValue(*iter);
+		else if (parameterName(*iter) == "polarization-angle")                undulator.theta_	= PI / 180.0 * doubleValue(*iter);
+		else if (parameterName(*iter) == "length")                            undulator.length_	= intValue(*iter);
+		else if (parameterName(*iter) == "distance-to-bunch-head")            undulator.dist_	= doubleValue(*iter);
+		else if (parameterName(*iter) == "offset")                            undulator.rb_	= doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the static-undulator group." << std::endl; exit(1); }
 		++iter;
 	      }
@@ -456,11 +456,11 @@ namespace MITHRA
 		if      (parameterName(*iter) == "undulator-parameter")            k		= doubleValue(*iter);
 		else if (parameterName(*iter) == "period")                         lu		= doubleValue(*iter);
 		else if (parameterName(*iter) == "polarization-angle")             theta	= PI / 180.0 * doubleValue(*iter);
-		else if (parameterName(*iter) == "length")                         l   	= intValue(*iter);
+		else if (parameterName(*iter) == "length")                         l   		= intValue(*iter);
 		else if (parameterName(*iter) == "gap")                            g		= doubleValue(*iter);
 		else if (parameterName(*iter) == "number")                         N		= intValue(*iter);
 		else if (parameterName(*iter) == "tapering-parameter")             t		= doubleValue(*iter);
-		else if (parameterName(*iter) == "distance-to-bunch-head")         d          = doubleValue(*iter);
+		else if (parameterName(*iter) == "distance-to-bunch-head")         d          	= doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the static-undulator-array group." << std::endl; exit(1); }
 		++iter;
 	      }
@@ -490,7 +490,7 @@ namespace MITHRA
 	    if (*iter != "{") { std::cout << "The optical undulator directory is empty" << std::endl; exit(1); }
 	    else ++iter;
 
-	    Signal                	signal;
+	    Signal          signal;
 	    Undulator 		undulator; undulator.type_ = OPTICAL;
 	    std::string		type, signalType;
 
@@ -502,18 +502,19 @@ namespace MITHRA
 
 	    do
 	      {
-		if 	  (parameterName(*iter) == "beam-type")                         type                    = stringValue(*iter);
-		else if (parameterName(*iter) == "position")                          position                = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "direction")                         direction               = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "polarization")                      polarization            = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "strength-parameter")                a0               	= doubleValue(*iter);
-		else if (parameterName(*iter) == "radius-parallel")          		radius[0]               = doubleValue(*iter);
+		if 	  (parameterName(*iter) == "beam-type")							type                    = stringValue(*iter);
+		else if (parameterName(*iter) == "position")                   		position                = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "direction")                  		direction               = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "polarization")                	polarization            = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "strength-parameter")           	a0               		= doubleValue(*iter);
+		else if (parameterName(*iter) == "radius-parallel")         		radius[0]               = doubleValue(*iter);
 		else if (parameterName(*iter) == "radius-perpendicular")     		radius[1]               = doubleValue(*iter);
-		else if (parameterName(*iter) == "signal-type")                       signalType              = stringValue(*iter);
-		else if (parameterName(*iter) == "offset")                            offset                  = doubleValue(*iter);
-		else if (parameterName(*iter) == "pulse-length")                      pulseLength             = doubleValue(*iter);
-		else if (parameterName(*iter) == "wavelength")                        wavelength              = doubleValue(*iter);
-		else if (parameterName(*iter) == "CEP")                               cep                     = doubleValue(*iter);
+		else if (parameterName(*iter) == "signal-type")                  	signalType              = stringValue(*iter);
+		else if (parameterName(*iter) == "offset")                        	offset                  = doubleValue(*iter);
+		else if (parameterName(*iter) == "pulse-length")                  	pulseLength             = doubleValue(*iter);
+		else if (parameterName(*iter) == "wavelength")                   	wavelength              = doubleValue(*iter);
+		else if (parameterName(*iter) == "CEP")                           	cep                     = doubleValue(*iter);
+		else if (parameterName(*iter) == "distance-to-bunch-head")          undulator.dist_			= doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the optical-undulator group." << std::endl; exit(1); }
 		++iter;
 	      }

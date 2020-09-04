@@ -612,7 +612,7 @@ Note that the reference undulator for initializing bunches or setting the electr
     %
     \item {\tt \small \em offset} determines the point where the beginning of undulator resides. For the first undulator, it is automatically set to zero.
     %
-    \item {\tt \small \em distance-to-bunch-head} determines the distance between the undulator entrance and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default two undulator periods.
+    \item {\tt \small \em distance-to-bunch-head} determines the distance between the {\em first} undulator entrance and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default two undulator periods. In MITHRA, the radiation of the particles are calculated after they pass through this point. Therefore, this value has a different effect compared to the {\tt \small \em initial-time-back-shift} parameter that only shifts the particle in time.
     %
 \end{itemize}
 %
@@ -635,7 +635,7 @@ Note that the reference undulator for initializing bunches or setting the electr
     %
     \item {\tt \small \em tapering-parameter} is the tapering parameter of the undulator array, i.e. $\delta K$ in $K_i=K_0+i \delta K$ giving the K parameters of the $i$'th undulator module.
     %
-    \item {\tt \small \em distance-to-bunch-head} determines the distance between the {\em first} undulator entrance and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default two undulator periods.
+    \item {\tt \small \em distance-to-bunch-head} determines the distance between the {\em first} undulator entrance and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default two undulator periods. In MITHRA, the radiation of the particles are calculated after they pass through this point. Therefore, this value has a different effect compared to the {\tt \small \em initial-time-back-shift} parameter that only shifts the particle in time.
     %
 \end{itemize}
 %
@@ -665,6 +665,8 @@ Note that the reference undulator for initializing bunches or setting the electr
 	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal.
 	%
 	\item {\tt \small \em CEP} is the carrier envelope phase $\phi_{\mathrm{CEP}}$ of the modulated signal.
+	%
+	\item {\tt \small \em distance-to-bunch-head} determines the distance between the reference position of the optical undulator and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default ten undulator periods for optical undulators. In MITHRA, the radiation of the particles are calculated after they pass through this point. Therefore, this value has a different effect compared to the {\tt \small \em initial-time-back-shift} parameter that only shifts the particle in time.
 \end{itemize}
 %
 \end{enumerate}
@@ -710,6 +712,7 @@ UNDULATOR
 		pulse-length			  = < real >
 		wavelength				  = < real >
 		CEP						  = < real >
+		distance-to-bunch-head    = < real >
 	\textcolor{red}{\}}
 \}
 \end{Verbatim}

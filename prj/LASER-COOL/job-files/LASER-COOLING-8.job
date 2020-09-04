@@ -76,7 +76,7 @@ EXTERNAL-FIELD
     radius-perpendicular                                = 1e10
     position                                            = ( 0.0, 0.0, 1000.0 )
     direction                                           = (-1.0, 0.0,   0.0 )
-    polarization                                        = ( 0.0,-1.0,   1.0 )
+    polarization                                        = ( 0.0,-1.0,   0.0 )
     strength-parameter                                  = 0.08
     signal-type                                         = gaussian
     wavelength                                          = 10.0

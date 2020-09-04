@@ -13,7 +13,7 @@ MESH
   length-scale						= MICROMETER
   time-scale						= FEMTOSECOND
   mesh-lengths						= (  25.0,  25.0,  2.5   ) 
-  mesh-resolution					= ( 0.125, 0.125,  0.004 )
+  mesh-resolution					= (  0.25,  0.25,  0.004 )
   mesh-center						= (   0.0,   0.0,  0.0   )
   total-time						= 9000
   bunch-time-step					= 0.5
@@ -21,7 +21,7 @@ MESH
   space-charge						= false
   solver						= NSFD
   optimize-bunch-position				= true
-  initial-time-back-shift                               = 8000.0
+  initial-time-back-shift                               = 4000.0
 }
  
 BUNCH
@@ -48,6 +48,14 @@ BUNCH
     directory                                           = /cluster/scratch/afallahi/
     base-name                                           = bunch-visualization-cavity/bunch
     rhythm                                              = 50.0
+  }
+
+  bunch-sampling
+  {
+    sample                                              = true
+    directory                                           = ./
+    base-name                                           = bunch-sampling-20200904/bunch-25umx25umx2p5um-250nmx250nmx4nm-uniform-5e6(1e5)-10-2p6umx2p6umx1um-1e-1x1e-1x25e-4-1000-1000-0p08-4000
+    rhythm                                              = 10.0
   }
 }
 
@@ -76,7 +84,7 @@ EXTERNAL-FIELD
     radius-perpendicular                                = 1000.0
     position                                            = ( 0.0, 0.0, 1000.0 )
     direction                                           = (-1.0, 0.0,    0.0 )
-    polarization                                        = ( 0.0,-1.0,    1.0 )
+    polarization                                        = ( 0.0,-1.0,    0.0 )
     strength-parameter                                  = 0.08
     signal-type                                         = gaussian
     wavelength                                          = 10.0
@@ -142,7 +150,7 @@ FEL-OUTPUT
     sample                                              = true
     type                                                = at-point
     directory                                           = ./
-    base-name                                           = power-sampling-20200903/power-25umx25umx2p5um-125nmx125nmx4nm-uniform-5e6(5e5)-10-2p6umx2p6umx1um-1e-1x1e-1x25e-4-1000-1000-0p08-8000
+    base-name                                           = power-sampling-20200904/power-25umx25umx2p5um-250nmx250nmx4nm-uniform-5e6(1e5)-10-2p6umx2p6umx1um-1e-1x1e-1x25e-4-1000-1000-0p08-4000
     plane-position                                      = 1.2
     normalized-frequency                                = 1.0
   }

@@ -12,16 +12,16 @@ MESH
 {
   length-scale						= MICROMETER
   time-scale						= FEMTOSECOND
-  mesh-lengths						= (  25.0,  25.0,  0.04   ) 
-  mesh-resolution					= (  2.5,  2.5,  0.004 )
-  mesh-center						= (   0.0,   0.0,  1000.0   )
-  total-time						= 9000
+  mesh-lengths						= (  25.0,  25.0,  0.4   ) 
+  mesh-resolution					= (  12.5,  12.5,  0.004 )
+  mesh-center						= (   0.0,   0.0,  0.0   )
+  total-time						= 25000
   bunch-time-step					= 0.5
   mesh-truncation-order					= 2
   space-charge						= false
   solver						= NSFD
-  optimize-bunch-position				= true
-  initial-time-back-shift                               = 4000.0
+  optimize-bunch-position				= false
+  initial-time-back-shift                               = 16000.0
 }
  
 BUNCH
@@ -31,7 +31,7 @@ BUNCH
     type                                                = ellipsoid
     distribution                                        = uniform
     charge                                              = 5e6
-    number-of-particles                                 = 1e5
+    number-of-particles                                 = 1e4
     gamma                                               = 10.0
     direction                                           = (   0.0,    0.0,  1.0    )
     position                                            = (   0.0,    0.0,  0.0    )
@@ -54,7 +54,7 @@ BUNCH
   {
     sample                                              = true
     directory                                           = ./
-    base-name                                           = data-20200904/bunch-1
+    base-name                                           = data-20200904/bunch-18
     rhythm                                              = 10.0
   }
 }
@@ -64,12 +64,12 @@ EXTERNAL-FIELD
   electromagnetic-wave
   {
     beam-type						= gaussian-beam
-    radius-parallel					= 1000.0
-    radius-perpendicular				= 1000.0
-    position						= ( 0.0, 0.0, 1000.0 )
+    radius-parallel					= 100.0
+    radius-perpendicular				= 2000.0
+    position						= ( 0.0, 0.0, 2000.0 )
     direction						= ( 1.0, 0.0,    0.0 )
     polarization					= ( 0.0, 1.0,    0.0 )
-    strength-parameter					= 0.0
+    strength-parameter					= 0.5
     signal-type						= gaussian
     wavelength						= 10.0
     pulse-length					= 1.0e6
@@ -80,12 +80,12 @@ EXTERNAL-FIELD
   electromagnetic-wave
   {
     beam-type                                           = gaussian-beam
-    radius-parallel                                     = 1000.0
-    radius-perpendicular                                = 1000.0
-    position                                            = ( 0.0, 0.0, 1000.0 )
+    radius-parallel                                     = 100.0
+    radius-perpendicular                                = 2000.0
+    position                                            = ( 0.0, 0.0, 2000.0 )
     direction                                           = (-1.0, 0.0,    0.0 )
     polarization                                        = ( 0.0,-1.0,    0.0 )
-    strength-parameter                                  = 0.0
+    strength-parameter                                  = 0.5
     signal-type                                         = gaussian
     wavelength                                          = 10.0
     pulse-length                                        = 1.0e6
@@ -96,12 +96,12 @@ EXTERNAL-FIELD
   electromagnetic-wave
   {
     beam-type                                           = gaussian-beam
-    radius-parallel                                     = 1000.0
-    radius-perpendicular                                = 1000.0
-    position                                            = ( 0.0, 0.0, 1000.0 )
+    radius-parallel                                     = 100.0
+    radius-perpendicular                                = 2000.0
+    position                                            = ( 0.0, 0.0, 2000.0 )
     direction                                           = ( 0.0, 1.0,    0.0 )
     polarization                                        = ( 1.0, 0.0,    0.0 )
-    strength-parameter                                  = 0.0
+    strength-parameter                                  = 0.5
     signal-type                                         = gaussian
     wavelength                                          = 10.0
     pulse-length                                        = 1.0e6
@@ -112,12 +112,12 @@ EXTERNAL-FIELD
   electromagnetic-wave
   {
     beam-type                                           = gaussian-beam
-    radius-parallel                                     = 1000.0
-    radius-perpendicular                                = 1000.0
-    position                                            = ( 0.0, 0.0, 1000.0 )
+    radius-parallel                                     = 100.0
+    radius-perpendicular                                = 2000.0
+    position                                            = ( 0.0, 0.0, 2000.0 )
     direction                                           = ( 0.0,-1.0,    0.0 )
     polarization                                        = (-1.0, 0.0,    0.0 )
-    strength-parameter                                  = 0.0
+    strength-parameter                                  = 0.5
     signal-type                                         = gaussian
     wavelength                                          = 10.0
     pulse-length                                        = 1.0e6
@@ -134,7 +134,7 @@ UNDULATOR
     position                                            = ( 0.0, 0.0, 0.0 )
     direction                                           = ( 0.0, 0.0,-1.0 )
     polarization                                        = ( 0.0, 1.0, 0.0 )
-    strength-parameter                                  = 1.0
+    strength-parameter                                  = 0.5
     signal-type                                         = flat-top
     wavelength                                          = 10.0
     pulse-length                                        = 9000.0

@@ -84,10 +84,10 @@ namespace MITHRA
     void 		bunchProfile			();
 
     /* Calculate the magnetic field of undulator and add it to the magnetic field of the seed.		*/
-    void 		undulatorField 			(UpdateBunchParallel& ubp,  FieldVector<Double>& r);
+    void 		undulatorField 			(UpdateBunchParallel& ubp, FieldVector<Double>& r);
 
     /* Calculate the field of external field and add it to the field of the seed.			*/
-    void 		externalField			(UpdateBunchParallel& ubp,  FieldVector<Double>& r);
+    void 		externalField			(UpdateBunchParallel& ubp, FieldVector<Double>& r);
 
     /* Initialize the data required for sampling and saving the radiation power at the given position.	*/
     void 		initializePowerSample		();
@@ -170,6 +170,41 @@ namespace MITHRA
 
     /* Write the total profile of the field into the given file name.					*/
     virtual void fieldProfile () = 0;
+
+    /* Calculate the fields of a static undulator.							*/
+    void 	staticUndulator			(UpdateBunchParallel& ubp, typename std::vector<Undulator>::iterator& iter);
+
+    /* Calculate the fields of a plane-wave.								*/
+    template<class T>
+    void 	planeWave			(UpdateBunchParallel& ubp, T& s);
+
+    /* Calculate the fields of a truncated plane-wave.							*/
+    template<class T>
+    void 	planeWaveTruncated		(UpdateBunchParallel& ubp, T& s);
+
+    /* Calculate the fields of a gaussian beam.								*/
+    template<class T>
+    void 	gaussianBeam			(UpdateBunchParallel& ubp, T& s);
+
+    /* Calculate the fields of a super-gaussian beam.						*/
+    template<class T>
+    void 	superGaussianBeam		(UpdateBunchParallel& ubp, T& s);
+
+    /* Calculate the fields of a standing plane wave.							*/
+    template<class T>
+    void 	standingPlaneWave		(UpdateBunchParallel& ubp, T& s);
+
+    /* Calculate the fields of a truncated standing plane wave.						*/
+    template<class T>
+    void 	standingPlaneWaveTruncated	(UpdateBunchParallel& ubp, T& s);
+
+    /* Calculate the fields of a standing gaussian beam.						*/
+    template<class T>
+    void 	standingGaussianBeam		(UpdateBunchParallel& ubp, T& s);
+
+    /* Calculate the fields of a standing gaussian beam.						*/
+    template<class T>
+    void 	standingSuperGaussianBeam	(UpdateBunchParallel& ubp, T& s);
 
 
     /****************************************************************************************************

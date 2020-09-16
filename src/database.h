@@ -263,13 +263,15 @@ namespace MITHRA
     Double				sz, cy;
 
     Double                              lz, ly;
-    Double				tsignal;
-    Double				d, l, zRp, wrp, zRs, wrs, x, y, z, p, t;
+    Double				tsignal, tsignalm, tsignale, tsignalb;
+    Double				d, l, wrp, wrs, p0, p1, t;
+    Double				x, y, z, x0, y0, r0;
+    Double				af;
+    Double                              atanS, atanP;
     FieldVector<Double>			rv, yv, rl;
     FieldVector<Double>			ex, ez, eT;
     FieldVector<Double>			by, bz, bT;
-    Double				tl, t0;
-    Double				r0;
+    Double				tl, t0, tlm;
 
     Double				zr;
 

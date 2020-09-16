@@ -7,6 +7,7 @@
 #include <sys/time.h>
 
 #include "solver.h"
+#include "beam.cc"
 
 namespace MITHRA
 {
@@ -72,19 +73,39 @@ namespace MITHRA
     seed_.signal_.t0_ 		/= c0_;
     seed_.signal_.f0_ 		*= c0_;
     seed_.signal_.s_          	/= c0_;
+
+    seed_.l_ 		 	 = c0_ / seed_.signal_.f0_;
+    seed_.zR_.resize(2,0.0);
+
+    seed_.zR_[0] 		 = PI * seed_.radius_[0] * seed_.radius_[0] / seed_.l_;
+    seed_.zR_[1] 		 = PI * seed_.radius_[1] * seed_.radius_[1] / seed_.l_;
+
     for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
       {
 	iter->c0_ 	       	 = c0_;
 	iter->signal_.t0_     	/= c0_;
 	iter->signal_.f0_ 	*= c0_;
 	iter->signal_.s_ 	/= c0_;
+
+	iter->l_ 		 = c0_ / iter->signal_.f0_;
+	iter->zR_.resize(2,0.0);
+
+	iter->zR_[0] 		 = PI * iter->radius_[0] * iter->radius_[0] / iter->l_;
+	iter->zR_[1] 		 = PI * iter->radius_[1] * iter->radius_[1] / iter->l_;
       }
+
     for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
       {
 	iter->c0_ 	         = c0_;
 	iter->signal_.t0_     	/= c0_;
 	iter->signal_.f0_ 	*= c0_;
 	iter->signal_.s_ 	/= c0_;
+
+	iter->l_ 		 = c0_ / iter->signal_.f0_;
+	iter->zR_.resize(2,0.0);
+
+	iter->zR_[0] 		 = PI * iter->radius_[0] * iter->radius_[0] / iter->l_;
+	iter->zR_[1] 		 = PI * iter->radius_[1] * iter->radius_[1] / iter->l_;
       }
 
     /****************************************************************************************************/
@@ -627,9 +648,9 @@ namespace MITHRA
 	    r_[m][2] = zmin_ + (k + k0_) * mesh_.meshResolution_[2];
 
 	    if 		( k == 0 ) 		
-		zp_[0] = r_[m][2];
+	      zp_[0] = r_[m][2];
 	    else if 	( k == np_ - ( ( rank_ == size_ - 1 ) ? 1 : 2 ) ) 	
-		zp_[1] = r_[m][2];
+	      zp_[1] = r_[m][2];
 	  }
 
     /* Initialize the time values for the field update.							*/
@@ -1661,7 +1682,7 @@ namespace MITHRA
 	    gamma = sqrt( 1.0 + iter->gbnp.norm2() );
 	    beta  = iter->gbnp[2] / gamma;
 	    *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
-            								<< " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
+            										    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	  }
       }
     *vb_.file << 0.0 << " " << 0.0 << " " << 0.0						<< std::endl;
@@ -1774,66 +1795,7 @@ namespace MITHRA
 	    ubp.ly = r[0] * ub_.ct + r[1] * ub_.st;
 
 	    /* Now, calculate the undulator field according to the obtained position.               	*/
-	    if ( ubp.lz >= 0.0 && ubp.lz <= iter->length_ * iter->lu_ )
-	      {
-		ubp.d1     = ub_.b0 * cosh(ub_.ku * ubp.ly) * sin(ub_.ku * ubp.lz) * gamma_;
-		ubp.bt[0] += ubp.d1 * ub_.ct;
-		ubp.bt[1] += ubp.d1 * ub_.st;
-		ubp.bt[2] += ub_.b0 * sinh(ub_.ku * ubp.ly) * cos(ub_.ku * ubp.lz);
-
-		ubp.d1    *= c0_ * beta_;
-		ubp.et[1] +=   ubp.d1 * ub_.ct;
-		ubp.et[0] += - ubp.d1 * ub_.st;
-		ubp.et[2] += 0.0;
-	      }
-	    else if ( ubp.lz < 0.0 )
-	      {
-		ubp.sz = exp( - pow( ub_.ku * ubp.lz , 2 ) / 2.0 );
-
-		if ( iter != undulator_.begin() )
-		  {
-		    ubp.i  = iter - undulator_.begin() - 1;
-		    ubp.r0 = undulator_[ubp.i].rb_ + undulator_[ubp.i].length_ * undulator_[ubp.i].lu_ - iter->rb_;
-		    if ( ubp.lz < ubp.r0 || ubp.r0 == 0.0 ) ubp.sz = 0.0;
-		    else
-		      ubp.sz *= 0.35875 + 0.48829 * cos( PI * ubp.lz / ubp.r0 ) + 0.14128 * cos( 2.0 * PI * ubp.lz / ubp.r0 ) + 0.01168 * cos( 3.0 * PI * ubp.lz / ubp.r0 );
-		  }
-
-		ubp.d1     = ub_.b0 * cosh(ub_.ku * ubp.ly ) * ubp.sz * ub_.ku * ubp.lz * gamma_;
-		ubp.bt[0] += ubp.d1 * ub_.ct;
-		ubp.bt[1] += ubp.d1 * ub_.st;
-		ubp.bt[2] += ub_.b0 * sinh(ub_.ku * ubp.ly) * ubp.sz;
-
-		ubp.d1    *= c0_ * beta_;
-		ubp.et[1] +=   ubp.d1 * ub_.ct;
-		ubp.et[0] += - ubp.d1 * ub_.st;
-		ubp.et[2] += 0.0;
-	      }
-	    else if ( ubp.lz > iter->length_ * iter->lu_ )
-	      {
-		ubp.t0 = ubp.lz - iter->length_ * iter->lu_;
-
-		ubp.sz = exp( - pow( ub_.ku *  ubp.t0 , 2 ) / 2.0 );
-
-		if ( iter+1 != undulator_.end() )
-		  {
-		    ubp.i  = iter - undulator_.begin() + 1;
-		    ubp.r0 = undulator_[ubp.i].rb_ - iter->rb_ - iter->length_ * iter->lu_;
-		    if ( ubp.t0 > ubp.r0 || ubp.r0 == 0.0 ) ubp.sz = 0.0;
-		    else
-		      ubp.sz *= 0.35875 + 0.48829 * cos( PI * ubp.t0 / ubp.r0 ) + 0.14128 * cos( 2.0 * PI * ubp.t0 / ubp.r0 ) + 0.01168 * cos( 3.0 * PI * ubp.t0 / ubp.r0 );
-		  }
-
-		ubp.d1     = ub_.b0 * cosh(ub_.ku * ubp.ly ) * ubp.sz * ub_.ku * ubp.t0 * gamma_;
-		ubp.bt[0] += ubp.d1 * ub_.ct;
-		ubp.bt[1] += ubp.d1 * ub_.st;
-		ubp.bt[2] += ub_.b0 * sinh(ub_.ku * ubp.ly ) * ubp.sz;
-
-		ubp.d1    *= c0_ * beta_;
-		ubp.et[1] +=   ubp.d1 * ub_.ct;
-		ubp.et[0] += - ubp.d1 * ub_.st;
-		ubp.et[2] += 0.0;
-	      }
+	    this->staticUndulator(ubp, iter);
 	  }
 	else if ( iter->type_ == OPTICAL )
 	  {
@@ -1850,106 +1812,35 @@ namespace MITHRA
 	    ubp.tl = ubp.t0 - ubp.z / c0_;
 
 	    /* Reset the carrier envelope phase of the pulse.						*/
-	    ubp.p = 0.0;
+	    ubp.p0 = 0.0;
 
-	    /* Now manipulate the electric field vector depending on the specific seed given.		*/
-	    if ( iter->seedType_ == PLANEWAVE )
-	      {
-		/* Retrieve signal value at corrected time.                                   		*/
-		ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+	    /* Now manipulate the electric field vector depending on the specific seed given.           */
+	    switch ( iter->seedType_ )
+	    {
+	      case PLANEWAVE:
+		this->planeWave(ubp, *iter);			break;
 
-		/* Calculate the field only if the signal value is larger than a limit.			*/
-		if ( fabs(ubp.tsignal) < 1.0e-100 ) { ubp.eT = 0.0; ubp.bT = 0.0; }
-		else
-		  {
-		    /* Provide vector to store the electric field of the undulator.              	*/
-		    ubp.eT.mv( iter->amplitude_ * ubp.tsignal, iter->polarization_ );
+	      case PLANEWAVETRUNCATED:
+		this->planeWaveTruncated(ubp, *iter);		break;
 
-		    /* Provide vector to store the magnetic field of the undulator.         		*/
-		    ubp.bT = cross( iter->direction_, iter->polarization_ );
-		    ubp.bT.mv( iter->amplitude_ * ubp.tsignal / c0_, ubp.bT );
-		  }
-	      }
-	    else if ( iter->seedType_ == PLANEWAVECONFINED )
-	      {
-		/* Retrieve signal value at corrected time.                                     	*/
-		ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+	      case GAUSSIANBEAM:
+		this->gaussianBeam(ubp, *iter);			break;
 
-		/* Calculate the transverse distance to the center line.   				*/
-		ubp.x  = ubp.rv * iter->polarization_;
-		ubp.yv = cross( iter->direction_, iter->polarization_ );
-		ubp.y  = ubp.rv * ubp.yv;
+	      case SUPERGAUSSIANBEAM:
+	      	this->superGaussianBeam(ubp, *iter);		break;
 
-		/* Calculate the field only if the signal value is larger than a limit.			*/
-		if ( fabs(ubp.tsignal) < 1.0e-100 || sqrt( pow(ubp.x/iter->radius_[0],2) + pow(ubp.y/iter->radius_[1],2) ) > 1.0 )
-		  {
-		    ubp.eT = 0.0;
-		    ubp.bT = 0.0;
-		  }
-		else
-		  {
-		    /* Provide vector to store the electric field of the undulator.                 	*/
-		    ubp.eT.mv( iter->amplitude_ * ubp.tsignal, iter->polarization_ );
+	      case STANDINGPLANEWAVE:
+		this->standingPlaneWave(ubp, *iter);		break;
 
-		    /* Provide vector to store the magnetic field of the undulator.              	*/
-		    ubp.bT = cross( iter->direction_, iter->polarization_ );
-		    ubp.bT.mv( iter->amplitude_ * ubp.tsignal / c0_, ubp.bT );
-		  }
-	      }
-	    else if ( iter->seedType_ == GAUSSIANBEAM )
-	      {
-		/* Retrieve signal value at corrected time.                                     	*/
-		ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+	      case STANDINGPLANEWAVETRUNCATED:
+		this->standingPlaneWaveTruncated(ubp, *iter);	break;
 
-		if ( fabs(ubp.tsignal) < 1.0e-100 ) { ubp.eT = 0.0; ubp.bT = 0.0; }
-		else
-		  {
-		    /* Provide vector to store transverse, longitudinal and total  electric field. 	*/
-		    ubp.ex = iter->polarization_;
-		    ubp.ez = iter->direction_;
+	      case STANDINGGAUSSIANBEAM:
+		this->standingGaussianBeam(ubp, *iter);		break;
 
-		    /* Calculate the transverse distance to the center line.   				*/
-		    ubp.x  = ubp.rv * iter->polarization_;
-		    ubp.yv = cross( iter->direction_, iter->polarization_ );
-		    ubp.y  = ubp.rv * ubp.yv;
-
-		    /* Calculate the wavelength corresponding to the given central frequency.		*/
-		    ubp.l = c0_ / iter->signal_.f0_;
-
-		    /* Calculate the Rayleigh length and the relative radius of the beam.     		*/
-		    ubp.zRp = PI * pow( iter->radius_[0] , 2 ) / ubp.l;
-		    ubp.zRs = PI * pow( iter->radius_[1] , 2 ) / ubp.l;
-		    ubp.wrp = sqrt( 1.0 + pow( ubp.z / ubp.zRp , 2 ) );
-		    ubp.wrs = sqrt( 1.0 + pow( ubp.z / ubp.zRs , 2 ) );
-
-		    /* Compute the transverse vector between the point and the reference point.   	*/
-		    ubp.p   = 0.5 * ( atan( ubp.z / ubp.zRp ) + atan( ubp.z / ubp.zRs ) ) - PI * ubp.z / ubp.l *
-			( pow( ubp.x / ( ubp.zRp * ubp.wrp) , 2 ) + pow( ubp.y / ( ubp.zRs * ubp.wrs ) , 2 ) );
-		    ubp.t   = exp( - pow( ubp.x/(iter->radius_[0]*ubp.wrp), 2) - pow( ubp.y/(iter->radius_[1]*ubp.wrs), 2) ) / sqrt(ubp.wrs*ubp.wrp);
-
-		    ubp.ex.mv( ubp.t * iter->amplitude_, 					iter->polarization_ );
-		    ubp.ez.mv( ubp.t * iter->amplitude_ * ( - ubp.x / ( ubp.wrp * ubp.zRp ) ), 	iter->direction_    );
-		    ubp.bz.mv( ubp.t * iter->amplitude_ * ( - ubp.y / ( ubp.wrs * ubp.zRs ) ) / c0_, iter->direction_    );
-		    ubp.by = cross( iter->direction_, ubp.ex); ubp.by /= c0_;
-
-		    /* Retrieve signal value at corrected time.                                       	*/
-		    ubp.p 	-= PI/2.0;
-		    ubp.tsignal	 = iter->signal_.self(ubp.tl, ubp.p);
-		    ubp.ex 	*= ubp.tsignal; ubp.by *= ubp.tsignal;
-
-		    ubp.p 	+= PI/2.0 + atan(ubp.z/ubp.zRp);
-		    ubp.tsignal	 = iter->signal_.self(ubp.tl, ubp.p);
-		    ubp.ez	*= ubp.tsignal;
-
-		    ubp.p 	+= atan(ubp.z/ubp.zRs) - atan(ubp.z/ubp.zRp);
-		    ubp.tsignal	 = iter->signal_.self(ubp.tl, ubp.p);
-		    ubp.bz	*= ubp.tsignal;
-
-		    /* Calculate the total electric and magnetic field.					*/
-		    ubp.eT = ubp.ex; ubp.eT += ubp.ez;
-		    ubp.bT = ubp.by; ubp.bT += ubp.bz;
-		  }
-	      }
+	      case STANDINGSUPERGAUSSIANBEAM:
+		this->standingSuperGaussianBeam(ubp, *iter);	break;
+	    }
 
 	    /* Now transfer the computed magnetic vector potential into the bunch rest frame.		*/
 	    ubp.bt[0] += gamma_ * ( ubp.bT[0] + beta_ / c0_ * ubp.eT[1] );
@@ -1985,113 +1876,38 @@ namespace MITHRA
 
 	/* Compute propagation delay and subtract it from the time.                                   	*/
 	ubp.tl  = ubp.t0 - ubp.z / c0_;
+	ubp.tlm = ubp.t0 + ubp.z / c0_;
 
 	/* Reset the carrier envelope phase of the pulse.                                             	*/
-	ubp.p   = 0.0;
+	ubp.p0  = 0.0;
 
 	/* Now manipulate the electric field vector depending on the specific seed given.             	*/
-	if ( iter->seedType_ == PLANEWAVE )
-	  {
-	    /* Retrieve signal value at corrected time.                                               	*/
-	    ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+	switch ( iter->seedType_ )
+	{
+	  case PLANEWAVE:
+	    this->planeWave(ubp, *iter);			break;
 
-	    /* Calculate the field only if the signal value is larger than a limit.                   	*/
-	    if ( fabs(ubp.tsignal) < 1.0e-100 )
-	      {
-		ubp.eT = 0.0;
-		ubp.bT = 0.0;
-	      }
-	    else
-	      {
-		/* Provide vector to store the electric field of the external field.                  	*/
-		ubp.eT.mv( iter->amplitude_ * ubp.tsignal, iter->polarization_ );
+	  case PLANEWAVETRUNCATED:
+	    this->planeWaveTruncated(ubp, *iter);		break;
 
-		/* Provide vector to store the magnetic field of the external field.                  	*/
-		ubp.bT = cross( iter->direction_, iter->polarization_ );
-		ubp.bT.mv( iter->amplitude_ * ubp.tsignal / c0_, ubp.bT );
-	      }
-	  }
-	else if ( iter->seedType_ == PLANEWAVECONFINED )
-	  {
-	    /* Retrieve signal value at corrected time.                                               	*/
-	    ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+	  case GAUSSIANBEAM:
+	    this->gaussianBeam(ubp, *iter);			break;
 
-	    /* Calculate the transverse distance to the center line.   					*/
-	    ubp.x  = ubp.rv * iter->polarization_;
-	    ubp.yv = cross( iter->direction_, iter->polarization_ );
-	    ubp.y  = ubp.rv * ubp.yv;
+	  case SUPERGAUSSIANBEAM:
+	    this->superGaussianBeam(ubp, *iter);		break;
 
-	    /* Calculate the field only if the signal value is larger than a limit.			*/
-	    if ( fabs(ubp.tsignal) < 1.0e-100 || sqrt( pow(ubp.x/iter->radius_[0],2) + pow(ubp.y/iter->radius_[1],2) ) > 1.0 )
-	      {
-		ubp.eT = 0.0;
-		ubp.bT = 0.0;
-	      }
-	    else
-	      {
-		/* Provide vector to store the electric field of the undulator.                       	*/
-		ubp.eT.mv( iter->amplitude_ * ubp.tsignal, iter->polarization_ );
+	  case STANDINGPLANEWAVE:
+	    this->standingPlaneWave(ubp, *iter);		break;
 
-		/* Provide vector to store the magnetic field of the undulator.                       	*/
-		ubp.bT = cross( iter->direction_, iter->polarization_ );
-		ubp.bT.mv( iter->amplitude_ * ubp.tsignal / c0_, ubp.bT );
-	      }
-	  }
-	else if ( iter->seedType_ == GAUSSIANBEAM )
-	  {
-	    /* Retrieve signal value at corrected time.                                               	*/
-	    ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+	  case STANDINGPLANEWAVETRUNCATED:
+	    this->standingPlaneWaveTruncated(ubp, *iter);	break;
 
-	    if ( fabs(ubp.tsignal) < 1.0e-100 ) { ubp.eT = 0.0; ubp.bT = 0.0; }
-	    else
-	      {
-		/* Provide vector to store transverse, longitudinal and total  electric field.        	*/
-		ubp.ex = iter->polarization_;
-		ubp.ez = iter->direction_;
+	  case STANDINGGAUSSIANBEAM:
+	    this->standingGaussianBeam(ubp, *iter);		break;
 
-		/* Calculate the transverse distance to the center line.                              	*/
-		ubp.x  = ubp.rv * iter->polarization_;
-		ubp.yv = cross( iter->direction_, iter->polarization_ );
-		ubp.y  = ubp.rv * ubp.yv;
-
-		/* Calculate the wavelength corresponding to the given central frequency.             	*/
-		ubp.l = c0_ / iter->signal_.f0_;
-
-		/* Calculate the Rayleigh length and the relative radius of the beam.                 	*/
-		ubp.zRp = PI * pow( iter->radius_[0] , 2 ) / ubp.l;
-		ubp.zRs = PI * pow( iter->radius_[1] , 2 ) / ubp.l;
-		ubp.wrp = sqrt( 1.0 + pow( ubp.z / ubp.zRp , 2 ) );
-		ubp.wrs = sqrt( 1.0 + pow( ubp.z / ubp.zRs , 2 ) );
-
-		/* Compute the transverse vector between the point and the reference point.           	*/
-		ubp.p   = 0.5 * ( atan( ubp.z / ubp.zRp ) + atan( ubp.z / ubp.zRs ) ) - PI * ubp.z / ubp.l *
-		    ( pow( ubp.x / ( ubp.zRp * ubp.wrp) , 2 ) + pow( ubp.y / ( ubp.zRs * ubp.wrs ) , 2 ) );
-		ubp.t   = exp( - pow( ubp.x/(iter->radius_[0]*ubp.wrp), 2) - pow( ubp.y/(iter->radius_[1]*ubp.wrs), 2) ) / sqrt(ubp.wrs*ubp.wrp);
-
-		ubp.ex.mv( ubp.t * iter->amplitude_,                                             iter->polarization_ );
-		ubp.ez.mv( ubp.t * iter->amplitude_ * ( - ubp.x / ( ubp.wrp * ubp.zRp ) ),       iter->direction_    );
-		ubp.bz.mv( ubp.t * iter->amplitude_ * ( - ubp.y / ( ubp.wrs * ubp.zRs ) ) / c0_, iter->direction_    );
-		ubp.by  = cross( iter->direction_, ubp.ex);
-		ubp.by /= c0_;
-
-		/* Retrieve signal value at corrected time.                                           	*/
-		ubp.p         -= PI/2.0;
-		ubp.tsignal    = iter->signal_.self(ubp.tl, ubp.p);
-		ubp.ex        *= ubp.tsignal; ubp.by *= ubp.tsignal;
-
-		ubp.p         += PI/2.0 + atan(ubp.z/ubp.zRp);
-		ubp.tsignal    = iter->signal_.self(ubp.tl, ubp.p);
-		ubp.ez        *= ubp.tsignal;
-
-		ubp.p         += atan(ubp.z/ubp.zRs) - atan(ubp.z/ubp.zRp);
-		ubp.tsignal    = iter->signal_.self(ubp.tl, ubp.p);
-		ubp.bz        *= ubp.tsignal;
-
-		/* Calculate the total electric and magnetic field.                                   	*/
-		ubp.eT = ubp.ex; ubp.eT += ubp.ez;
-		ubp.bT = ubp.by; ubp.bT += ubp.bz;
-	      }
-	  }
+	  case STANDINGSUPERGAUSSIANBEAM:
+	    this->standingSuperGaussianBeam(ubp, *iter);	break;
+	}
 
 	/* Now transfer the computed magnetic vector potential into the bunch rest frame.             	*/
 	ubp.bt[0] += gamma_ * ( ubp.bT[0] + beta_ / c0_ * ubp.eT[1] );
@@ -2102,6 +1918,7 @@ namespace MITHRA
 	ubp.et[1] += gamma_ * ( ubp.eT[1] + beta_ * c0_ * ubp.bT[0] );
 	ubp.et[2] += ubp.eT[2];
       }
+
   }
 
   /******************************************************************************************************

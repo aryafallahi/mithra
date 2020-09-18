@@ -251,9 +251,6 @@ namespace MITHRA
     /* Order of the super-gaussian beam.								*/
     std::vector<int>			order_;
 
-    /* Amplitude and radius of the elements in the supergaussian beam derived from its order.		*/
-    std::vector<Double>			a0g_;
-
     /* Wavelength of the optical undulator.								*/
     Double				l_;
 
@@ -382,9 +379,6 @@ namespace MITHRA
     /* Order of the super-gaussian beam.								*/
     std::vector<int>			order_;
 
-    /* Amplitude and radius of the elements in the supergaussian beam derived from its order.		*/
-    std::vector<Double>			a0g_;
-
     /* Wavelength of the optical undulator.								*/
     Double				l_;
 
@@ -449,9 +443,6 @@ namespace MITHRA
 
     /* Order of the super-gaussian beam.								*/
     std::vector<int>			order_;
-
-    /* Amplitude and radius of the elements in the supergaussian beam derived from its order.		*/
-    std::vector<Double>			a0g_;
 
     /* Wavelength of the external field.								*/
     Double				l_;

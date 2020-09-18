@@ -507,21 +507,21 @@ namespace MITHRA
 
 	    do
 	      {
-		if 	(parameterName(*iter) == "beam-type")				type                    = stringValue(*iter);
-		else if (parameterName(*iter) == "position")                   		position                = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "direction")                  		direction               = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "polarization")                	polarization            = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "strength-parameter")           	a0               	= doubleValue(*iter);
-		else if (parameterName(*iter) == "radius-parallel")         		radius[0]               = doubleValue(*iter);
-		else if (parameterName(*iter) == "radius-perpendicular")     		radius[1]               = doubleValue(*iter);
-		else if (parameterName(*iter) == "order-parallel")          	    	order[0]               = doubleValue(*iter);
-		else if (parameterName(*iter) == "order-perpendicular")     		order[1]               = doubleValue(*iter);
-		else if (parameterName(*iter) == "signal-type")                  	signalType              = stringValue(*iter);
-		else if (parameterName(*iter) == "offset")                        	offset                  = doubleValue(*iter);
-		else if (parameterName(*iter) == "pulse-length")                  	pulseLength             = doubleValue(*iter);
-		else if (parameterName(*iter) == "wavelength")                   	wavelength              = doubleValue(*iter);
-		else if (parameterName(*iter) == "CEP")                           	cep                     = doubleValue(*iter);
-		else if (parameterName(*iter) == "distance-to-bunch-head")          undulator.dist_		= doubleValue(*iter);
+		if 	(parameterName(*iter) == "beam-type")			type                    = stringValue(*iter);
+		else if (parameterName(*iter) == "position")			position                = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "direction")			direction               = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "polarization")		polarization            = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "strength-parameter")		a0               	= doubleValue(*iter);
+		else if (parameterName(*iter) == "radius-parallel")		radius[0]               = doubleValue(*iter);
+		else if (parameterName(*iter) == "radius-perpendicular")	radius[1]               = doubleValue(*iter);
+		else if (parameterName(*iter) == "order-parallel")		order[0]                = doubleValue(*iter);
+		else if (parameterName(*iter) == "order-perpendicular")		order[1]                = doubleValue(*iter);
+		else if (parameterName(*iter) == "signal-type")			signalType              = stringValue(*iter);
+		else if (parameterName(*iter) == "offset")			offset                  = doubleValue(*iter);
+		else if (parameterName(*iter) == "pulse-length")		pulseLength             = doubleValue(*iter);
+		else if (parameterName(*iter) == "wavelength")			wavelength              = doubleValue(*iter);
+		else if (parameterName(*iter) == "CEP")				cep                     = doubleValue(*iter);
+		else if (parameterName(*iter) == "distance-to-bunch-head")	undulator.dist_		= doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the optical-undulator group." << std::endl; exit(1); }
 		++iter;
 	      }

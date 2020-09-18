@@ -169,10 +169,6 @@ namespace MITHRA
 	return;
       }
 
-    /* Provide vector to store transverse, longitudinal and total  electric field.        		*/
-    ubp.ex = s.polarization_;
-    ubp.ez = s.direction_;
-
     /* Get the required atan data.									*/
     ubp.atanP = atan( ubp.z / s.zR_[0] );
     ubp.atanS = atan( ubp.z / s.zR_[1] );
@@ -193,6 +189,8 @@ namespace MITHRA
     ubp.p1         = ubp.p0 - PI/2.0;
     ubp.tsignal    = s.signal_.self(ubp.tl, ubp.p1);
     ubp.ex        *= ubp.tsignal; ubp.by *= ubp.tsignal;
+
+    std::cout << ubp.ex[0] << "\t" << ubp.ex[1] << std::endl;
 
     ubp.p1         = ubp.p0 + ubp.atanP;
     ubp.tsignal    = s.signal_.self(ubp.tl, ubp.p1);
@@ -239,16 +237,12 @@ namespace MITHRA
 	return;
       }
 
-    /* Provide vector to store transverse, longitudinal and total electric field.        		*/
-    ubp.ex = s.polarization_;
-    ubp.ez = s.direction_;
-
     /* Get the required atan data.									*/
     ubp.atanP = atan( ubp.z / s.zR_[0] );
     ubp.atanS = atan( ubp.z / s.zR_[1] );
 
     /*  Calculate the effective amplitude.								*/
-    ubp.af = s.amplitude_ * s.a0g_[0] * s.a0g_[1] / ( s.a0_ * s.a0_ ) / sqrt(ubp.wrs*ubp.wrp);
+    ubp.af = s.amplitude_ / sqrt(ubp.wrs*ubp.wrp);
 
     /* Initialize the values for E and B fields.							*/
     ubp.ex = 0.0; ubp.ez = 0.0; ubp.bz = 0.0; ubp.by = 0.0;
@@ -263,7 +257,7 @@ namespace MITHRA
 
 	  if ( fabs(ubp.x0) > 4.0 * s.radius_[0] ||  fabs(ubp.y0) > 4.0 * s.radius_[1] ) continue;
 
-	  ubp.p0 = 0.5 * ( ubp.atanP + ubp.atanS ) - PI * ubp.z / ubp.l * ( pow( ubp.x0 / s.zR_[0] , 2 ) + pow( ubp.y / s.zR_[1] , 2 ) );
+	  ubp.p0 = 0.5 * ( ubp.atanP + ubp.atanS ) - PI * ubp.z / s.l_ * ( pow( ubp.x0 / s.zR_[0] , 2 ) + pow( ubp.y / s.zR_[1] , 2 ) );
 	  ubp.t  = ubp.af * exp( - pow( ubp.x0 / s.radius_[0], 2) - pow( ubp.y0 / s.radius_[1], 2) );
 
 	  /* Retrieve signal value at corrected time.                                           	*/
@@ -280,7 +274,6 @@ namespace MITHRA
 
 	  ubp.p1         = ubp.p0 + ubp.atanS;
 	  ubp.tsignal    = s.signal_.self(ubp.tl,  ubp.p1);
-	  ubp.bz        *= ( ubp.tsignal - ubp.tsignalm );
 
 	  ubp.bz.pmv( ubp.t * ( - ubp.y0 / s.zR_[1] ) * ubp.tsignal / c0_,	s.direction_    );
 	}
@@ -476,7 +469,7 @@ namespace MITHRA
     ubp.atanS = atan( ubp.z / s.zR_[1] );
 
     /*  Calculate the effective amplitude.								*/
-    ubp.af = s.amplitude_ * s.a0g_[0] * s.a0g_[1] / ( s.a0_ * s.a0_ ) / sqrt(ubp.wrs*ubp.wrp);
+    ubp.af = s.amplitude_ / sqrt(ubp.wrs*ubp.wrp);
 
     /* Initialize the values for E and B fields.							*/
     ubp.ex = 0.0; ubp.ez = 0.0; ubp.bz = 0.0; ubp.by = 0.0;
@@ -508,7 +501,7 @@ namespace MITHRA
 	  ubp.p1	 = -ubp.p1;
 	  ubp.tsignalm   = s.signal_.self(ubp.tlm, ubp.p1);
 
-	  ubp.ez.pmv( ubp.t * ( - ubp.x0 / s.zR_[0] ) * ( ubp.tsignal - ubp.tsignalm ),  	s.direction_    	);
+	  ubp.ez.pmv( ubp.t * ( - ubp.x0 / s.zR_[0] ) * ( ubp.tsignal + ubp.tsignalm ),  	s.direction_    	);
 
 	  ubp.p1         = ubp.p0 + ubp.atanS;
 	  ubp.tsignal    = s.signal_.self(ubp.tl,  ubp.p1);

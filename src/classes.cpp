@@ -631,17 +631,13 @@ namespace MITHRA
     if ( seedType_ == SUPERGAUSSIANBEAM || seedType_ == STANDINGSUPERGAUSSIANBEAM )
       {
 	order_ = order;
-	a0g_.resize(2);
 
-	Double d = 0;
-	for ( int i = -order_[0]; i <= order_[0]; i++ ) d += exp(-i*i);
-	radius_[0] /= order_[0] + sqrt( 1.0 - log(d) );
-	a0g_[0] = a0_ / d;
-
-	d = 0;
-	for ( int i = -order_[1]; i <= order_[1]; i++ ) d += exp(-i*i);
-	radius_[1] /= order_[1] + sqrt( 1.0 - log(d) );
-	a0g_[1] = a0_ / d;
+	Double d1 = 0.0, d2 = 0.0;
+	for ( int i = -order_[0]; i <= order_[0]; i++ ) d1 += exp(-i*i);
+	for ( int i = -order_[1]; i <= order_[1]; i++ ) d2 += exp(-i*i);
+	radius_[0] /= order_[0] + sqrt( 1.0 - log(d1) );
+	radius_[0] /= order_[0] + sqrt( 1.0 - log(d2) );
+	a0_ /= d1  * d2;
       }
   }
 
@@ -997,17 +993,13 @@ namespace MITHRA
     if ( seedType_ == SUPERGAUSSIANBEAM || seedType_ == STANDINGSUPERGAUSSIANBEAM )
       {
 	order_ = order;
-	a0g_.resize(2);
 
-	Double d = 0;
-	for ( int i = -order_[0]; i <= order_[0]; i++ ) d += exp(-i*i);
-	radius_[0] /= order_[0] + sqrt( 1.0 - log(d) );
-	a0g_[0] = a0_ / d;
-
-	d = 0;
-	for ( int i = -order_[1]; i <= order_[1]; i++ ) d += exp(-i*i);
-	radius_[1] /= order_[1] + sqrt( 1.0 - log(d) );
-	a0g_[1] = a0_ / d;
+	Double d1 = 0.0, d2 = 0.0;
+	for ( int i = -order_[0]; i <= order_[0]; i++ ) d1 += exp(-i*i);
+	for ( int i = -order_[1]; i <= order_[1]; i++ ) d2 += exp(-i*i);
+	radius_[0] /= order_[0] + sqrt( 1.0 - log(d1) );
+	radius_[0] /= order_[0] + sqrt( 1.0 - log(d2) );
+	a0_ /= d1  * d2;
       }
   }
 
@@ -1140,17 +1132,13 @@ namespace MITHRA
     if ( seedType_ == SUPERGAUSSIANBEAM || seedType_ == STANDINGSUPERGAUSSIANBEAM )
       {
 	order_ = order;
-	a0g_.resize(2);
 
-	Double d = 0;
-	for ( int i = -order_[0]; i <= order_[0]; i++ ) d += exp(-i*i);
-	radius_[0] /= order_[0] + sqrt( 1.0 - log(d) );
-	a0g_[0] = a0_ / d;
-
-	d = 0;
-	for ( int i = -order_[1]; i <= order_[1]; i++ ) d += exp(-i*i);
-	radius_[1] /= order_[1] + sqrt( 1.0 - log(d) );
-	a0g_[1] = a0_ / d;
+	Double d1 = 0.0, d2 = 0.0;
+	for ( int i = -order_[0]; i <= order_[0]; i++ ) d1 += exp(-i*i);
+	for ( int i = -order_[1]; i <= order_[1]; i++ ) d2 += exp(-i*i);
+	radius_[0] /= order_[0] + sqrt( 1.0 - log(d1) );
+	radius_[0] /= order_[0] + sqrt( 1.0 - log(d2) );
+	a0_ /= d1  * d2;
       }
   }
 

@@ -12,7 +12,7 @@ MESH
 {
   length-scale						= MICROMETER
   time-scale						= FEMTOSECOND
-  mesh-lengths						= (  50.0,  50.0, 2.5   ) 
+  mesh-lengths						= (  25.0,  25.0, 2.5   ) 
   mesh-resolution					= ( 0.125, 0.125, 0.004 )
   mesh-center						= (   0.0,   0.0, 0.0   )
   total-time						= 9000
@@ -33,10 +33,10 @@ BUNCH
     charge                                              = 5e6
     number-of-particles                                 = 5e5
     gamma                                               = 10.0
-    direction                                           = (   0.0,    0.0,     1.0 )
-    position                                            = (   0.0,    0.0,     0.0 )
-    sigma-position                                      = (   2.6,    2.6,     1.0 )
-    sigma-momentum                                      = ( 0.001,  0.001,  0.0025 )
+    direction                                           = (   0.0,    0.0,     1.0   )
+    position                                            = (   0.0,    0.0,     0.0   )
+    sigma-position                                      = (   2.5,    2.5,     1.0   )
+    sigma-momentum                                      = (  0.01,   0.01,    0.005  )
     transverse-truncation                               = 12.0
     longitudinal-truncation                             = 1.5
     shot-noise						= true
@@ -75,7 +75,7 @@ FEL-OUTPUT
     sample						= true
     type						= at-point
     directory						= ./
-    base-name						= power-sampling-20200902/power-50umx50umx2p5um-125nmx125nmx4nm-uniform-5e6(5e5)-10-2p6umx2p6umx1um-1e-3xx1e-3x25e-4
+    base-name						= data-sampling-20200921/power-25umx25umx2p5um-125nmx125nmx4nm-uniform-5e6(5e5)-10-2p5umx2p5umx1um-0p01x0p01x5e-3
     plane-position					= 1.2
     normalized-frequency                        	= 1.0
   }

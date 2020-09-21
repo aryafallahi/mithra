@@ -501,7 +501,7 @@ namespace MITHRA
 	  ubp.p1	 = -ubp.p1;
 	  ubp.tsignalm   = s.signal_.self(ubp.tlm, ubp.p1);
 
-	  ubp.ez.pmv( ubp.t * ( - ubp.x0 / s.zR_[0] ) * ( ubp.tsignal + ubp.tsignalm ),  	s.direction_    	);
+	  ubp.ez.pmv( ubp.t * ( - ubp.x0 / s.zR_[0] ) * ( ubp.tsignal - ubp.tsignalm ),  	s.direction_    	);
 
 	  ubp.p1         = ubp.p0 + ubp.atanS;
 	  ubp.tsignal    = s.signal_.self(ubp.tl,  ubp.p1);

@@ -277,11 +277,12 @@ namespace MITHRA
 	    else ++iter;
 
 	    Signal                	signal;
-	    std::string		type, signalType;
-	    std::vector<Double>	position (3,0.0), direction (3,0.0), polarization (3,0.0);
+	    std::string			type, signalType;
+	    std::vector<Double>		position (3,0.0), direction (3,0.0), polarization (3,0.0);
 
 	    /* Initialize variables with values from class constructors.				*/
-	    Double                	amplitude, offset, pulseLength, wavelength, cep;
+	    Double                	amplitude = 0.0, offset = 0.0,
+					pulseLength = 0.0, wavelength = 0.0, cep = 0.0;
 	    std::vector<Double>   	radius (2,0.0);
 	    std::vector<int>		order  (2,0);
 

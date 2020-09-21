@@ -420,7 +420,7 @@ namespace MITHRA
    * Distribute particles in their respective processor, depending on their longituinal coordinate.
    ******************************************************************************************************/
 
-  void Solver::distributeParticles (std::list<Charge>& chargeVector)
+  void Solver::distributeParticles (const std::list<Charge>& chargeVector)
   {
     /* Note that this function only redistributes q, rnp, gbnp, but NOT rnm and gbnm.			*/
     std::vector<Double> sendCV;

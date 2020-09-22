@@ -190,8 +190,6 @@ namespace MITHRA
     ubp.tsignal    = s.signal_.self(ubp.tl, ubp.p1);
     ubp.ex        *= ubp.tsignal; ubp.by *= ubp.tsignal;
 
-    std::cout << ubp.ex[0] << "\t" << ubp.ex[1] << std::endl;
-
     ubp.p1         = ubp.p0 + ubp.atanP;
     ubp.tsignal    = s.signal_.self(ubp.tl, ubp.p1);
     ubp.ez        *= ubp.tsignal;

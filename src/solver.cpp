@@ -442,33 +442,41 @@ namespace MITHRA
 	  }
       }
 
-    /* Send the charges that were erased from the charge vector.					*/
-    int sizeSend = sendCV.size();
-    int *counts = new int [size_], *disps = new int [size_];
-    MPI_Allgather( &sizeSend, 1, MPI_INT, counts, 1, MPI_INT, MPI_COMM_WORLD );
-    for (int i = 0; i < size_; i++)
-      disps[i] = (i > 0) ? (disps[i-1] + counts[i-1]) : 0;
-    std::vector<Double> recvCV (disps[size_-1] + counts[size_-1], 0);
-    MPI_Allgatherv(&sendCV[0], sizeSend, MPI_DOUBLE, &recvCV[0], counts, disps, MPI_DOUBLE, MPI_COMM_WORLD);
-
-    /* And now replace all the charges in the charge vector of the corresponding processor.  		*/
-    unsigned i = 0;
-    Charge charge;
-    while (i < recvCV.size() )
+    /* Do a for loop over processors and put the charges in the correct processor.			*/
+    for ( unsigned int ip = 0; ip < size_; ip++ )
       {
-	if ( particleInProcessor(recvCV[i+3]) )
+	/* Get the size of the data to be sent by i'th processor.					*/
+	int sizeSend = sendCV.size();
+
+	/* Broadcast the size to all other processors.							*/
+	MPI_Bcast(&sizeSend, 1, MPI_INT, ip, MPI_COMM_WORLD);
+
+	/* Initialize the receive buffer.								*/
+	std::vector<Double> recvCV (sizeSend);
+	if ( ip == rank_ ) recvCV = sendCV;
+
+	/* Now broadcast the data from i'th processor to all other processors.				*/
+	MPI_Bcast(&recvCV[0], sizeSend, MPI_DOUBLE, ip, MPI_COMM_WORLD);
+
+	/* And now place all the charges in the charge vector of the corresponding processor.  		*/
+	unsigned int i = 0;
+	Charge charge;
+	while (i < recvCV.size() )
 	  {
-	    charge.q 		= recvCV[i++];
-	    charge.rnp[0] 	= recvCV[i++];
-	    charge.rnp[1] 	= recvCV[i++];
-	    charge.rnp[2] 	= recvCV[i++];
-	    charge.gbnp[0] 	= recvCV[i++];
-	    charge.gbnp[1] 	= recvCV[i++];
-	    charge.gbnp[2] 	= recvCV[i++];
-	    chargeVector.push_back(charge);
+	    if ( particleInProcessor(recvCV[i+3]) )
+	      {
+		charge.q 	= recvCV[i++];
+		charge.rnp[0] 	= recvCV[i++];
+		charge.rnp[1] 	= recvCV[i++];
+		charge.rnp[2] 	= recvCV[i++];
+		charge.gbnp[0] 	= recvCV[i++];
+		charge.gbnp[1] 	= recvCV[i++];
+		charge.gbnp[2] 	= recvCV[i++];
+		chargeVector.push_back(charge);
+	      }
+	    else
+	      i += 7;
 	  }
-	else
-	  i += 7;
       }
   }
 
@@ -1682,7 +1690,7 @@ namespace MITHRA
 	    gamma = sqrt( 1.0 + iter->gbnp.norm2() );
 	    beta  = iter->gbnp[2] / gamma;
 	    *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
-            										    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
+            											<< " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	  }
       }
     *vb_.file << 0.0 << " " << 0.0 << " " << 0.0						<< std::endl;
@@ -1827,7 +1835,7 @@ namespace MITHRA
 		this->gaussianBeam(ubp, *iter);			break;
 
 	      case SUPERGAUSSIANBEAM:
-	      	this->superGaussianBeam(ubp, *iter);		break;
+		this->superGaussianBeam(ubp, *iter);		break;
 
 	      case STANDINGPLANEWAVE:
 		this->standingPlaneWave(ubp, *iter);		break;

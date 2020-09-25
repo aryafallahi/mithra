@@ -1267,7 +1267,7 @@ namespace MITHRA
 		  }
 		else if ( i == size_ - 1 )
 		  {
-		    np = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 3;
+		    np = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 1;
 		    k0 = ( size_ - 1 ) * ( N2_ / size_ ) - 1;
 		  }
 		else
@@ -1431,7 +1431,7 @@ namespace MITHRA
 		  }
 		else if ( i == size_ - 1 )
 		  {
-		    np = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 3;
+		    np = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 1;
 		    k0 = ( size_ - 1 ) * ( N2_ / size_ ) - 1;
 		  }
 		else

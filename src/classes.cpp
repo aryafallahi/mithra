@@ -20,6 +20,7 @@ namespace MITHRA
     printmessage(std::string(__FILE__), __LINE__, std::string(" Time scale = ") + stringify(timeScale_));
     printmessage(std::string(__FILE__), __LINE__, std::string(" Total simulation time = ") + stringify(totalTime_));
     printmessage(std::string(__FILE__), __LINE__, std::string(" Mesh truncation order = ") + stringify(truncationOrder_));
+    printmessage(std::string(__FILE__), __LINE__, std::string(" Initial shift back in time = ") + stringify(timeShift_));
     if 	( spaceCharge_ == true )
       printmessage(std::string(__FILE__), __LINE__, std::string(" Space-charge = true "));
     else if 	( spaceCharge_ == false )
@@ -40,6 +41,7 @@ namespace MITHRA
     optimizePosition_	= false;
     solver_		= NSFD;
     totalDist_		= 0.0;
+    timeShift_		= 0.0;
   }
 
   /*** Bunch class **************************************************************************************/
@@ -343,7 +345,7 @@ namespace MITHRA
     std::ifstream myfile ( bunchInit.fileName_.c_str() );
 
     charge.q  = bunchInit.cloudCharge_ / bunchInit.numberOfParticles_;
-        
+
     while (myfile.good())
       {
 
@@ -355,12 +357,12 @@ namespace MITHRA
 	myfile >> charge.gbnp[1];
 	myfile >> charge.gbnp[2];
 
-    charge.rnp += bunchInit.position_[ia];
+	charge.rnp += bunchInit.position_[ia];
 
 	/* Insert this charge to the charge list only in one processor.										*/
-    if (saveRank == rank)
+	if (saveRank == rank)
 	  chargeVector.push_back(charge);
-    saveRank = ( saveRank == size - 1 ) ? 0 : saveRank + 1;
+	saveRank = ( saveRank == size - 1 ) ? 0 : saveRank + 1;
 
 	if ( fabs(charge.rnp[0]) > bunchInit.tranTrun_ || fabs(charge.rnp[1]) > bunchInit.tranTrun_ )
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The particle coordinate is out of the truncation bunch. "
@@ -374,7 +376,7 @@ namespace MITHRA
     /* Check the size of the charge vector with the number of particles.                            	*/
     if ( bunchInit.numberOfParticles_ != NqG && rank == 0 )
       {
-        printmessage(std::string(__FILE__), __LINE__, std::string("The number of the particles and the file size do not match !!! The file contains " + stringify(NqG) + " particles.") );
+	printmessage(std::string(__FILE__), __LINE__, std::string("The number of the particles and the file size do not match !!! The file contains " + stringify(NqG) + " particles.") );
 	exit(1);
       }
   }
@@ -388,7 +390,7 @@ namespace MITHRA
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Type of the current profile = ") + bunchInit_[i].distribution_ );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Number of macro-particles = ") + stringify(bunchInit_[i].numberOfParticles_) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Total number of electrons in the cloud = ") + stringify(bunchInit_[i].cloudCharge_) );
-    printmessage(std::string(__FILE__), __LINE__, std::string(" Total charge of the cloud [Coulombs] = ") + stringify(-bunchInit_[i].cloudCharge_ * EC) );
+	printmessage(std::string(__FILE__), __LINE__, std::string(" Total charge of the cloud [Coulombs] = ") + stringify(-bunchInit_[i].cloudCharge_ * EC) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Initial mean gamma of the bunch = ") + stringify(bunchInit_[i].initialGamma_) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Initial mean speed of the bunch = ") + stringify(bunchInit_[i].initialBeta_) );
 	printmessage(std::string(__FILE__), __LINE__, std::string(" Initial direction of the bunch speed = ") + stringify(bunchInit_[i].initialDirection_) );
@@ -552,18 +554,24 @@ namespace MITHRA
 			 std::vector<Double>    polarization,
 			 Double                 a0,
 			 std::vector<Double>	radius,
+			 std::vector<int>	order,
 			 Signal                 signal)
   {
     /* Set the seed type according to the returned string for seedType.                   		*/
-    if      ( type.compare("plane-wave"         ) == 0 ) seedType_ = PLANEWAVE;
-    else if ( type.compare("confined-plane-wave") == 0 ) seedType_ = PLANEWAVECONFINED;
-    else if ( type.compare("gaussian-beam"      ) == 0 ) seedType_ = GAUSSIANBEAM;
+    if      ( type.compare("plane-wave"         	  ) == 0 ) seedType_ = PLANEWAVE;
+    else if ( type.compare("truncated-plane-wave"	  ) == 0 ) seedType_ = PLANEWAVETRUNCATED;
+    else if ( type.compare("gaussian-beam"      	  ) == 0 ) seedType_ = GAUSSIANBEAM;
+    else if ( type.compare("super-gaussian-beam"      	  ) == 0 ) seedType_ = SUPERGAUSSIANBEAM;
+    else if ( type.compare("standing-plane-wave"	  ) == 0 ) seedType_ = STANDINGPLANEWAVE;
+    else if ( type.compare("standing-truncated-plane-wave") == 0 ) seedType_ = STANDINGPLANEWAVETRUNCATED;
+    else if ( type.compare("standing-gaussian-beam"       ) == 0 ) seedType_ = STANDINGGAUSSIANBEAM;
+    else if ( type.compare("standing-super-gaussian-beam" ) == 0 ) seedType_ = STANDINGSUPERGAUSSIANBEAM;
     else    { std::cout << type << " is an unknown type." << std::endl; exit(1); }
 
     /* Set the vectors position, direction and polarization for the seed class.                 	*/
-    position_ 	= position;
+    position_ 		= position;
     polarization_ 	= polarization;
-    direction_ 	= direction;
+    direction_ 		= direction;
 
     /* check if length of diection vector is zero and normalize the vector.				*/
     if ( direction_.norm2() == 0.0)
@@ -606,15 +614,31 @@ namespace MITHRA
     radius_ 		= radius;
 
     /* check if length of polarization vector is zero and normalize the vector.                       	*/
-    if ( seedType_ == GAUSSIANBEAM && radius_[0] * radius_[1] == 0.0)
+    if ( seedType_ == GAUSSIANBEAM || seedType_ == STANDINGGAUSSIANBEAM || seedType_ == SUPERGAUSSIANBEAM || seedType_ == STANDINGSUPERGAUSSIANBEAM )
       {
-	printmessage(std::string(__FILE__), __LINE__, std::string("One of the radii of the Gaussian beam is set to zero."));
-	printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
-	exit(1);
+	if ( radius_[0] * radius_[1] == 0.0 )
+	  {
+	    printmessage(std::string(__FILE__), __LINE__, std::string("One of the radii of the Gaussian beam is set to zero."));
+	    printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
+	    exit(1);
+	  }
       }
 
-    /* Initialize the signal of the seed.                                                       	*/
-    signal_ 		= signal;
+    /* Initialize the signal of the seed.                                                             	*/
+    signal_           = signal;
+
+    /* Initialize the values for the super-gaussian beam.						*/
+    if ( seedType_ == SUPERGAUSSIANBEAM || seedType_ == STANDINGSUPERGAUSSIANBEAM )
+      {
+	order_ = order;
+
+	Double d1 = 0.0, d2 = 0.0;
+	for ( int i = -order_[0]; i <= order_[0]; i++ ) d1 += exp(-i*i);
+	for ( int i = -order_[1]; i <= order_[1]; i++ ) d2 += exp(-i*i);
+	radius_[0] /= order_[0] + sqrt( 1.0 - log(d1) );
+	radius_[0] /= order_[0] + sqrt( 1.0 - log(d2) );
+	a0_ /= d1  * d2;
+      }
   }
 
   /* Return the potentials at any desired location and time.                    			*/
@@ -642,12 +666,12 @@ namespace MITHRA
 	tsignal = signal_.self(tl, p);
 
 	/* Calculate the field only if the signal value is larger than a limit.				*/
-	if ( fabs(tsignal) < 1.0e-100 )
+	if ( fabs(tsignal) < 1.0e-6 )
 	  a = 0.0;
 	else
 	  a.mv( amplitude_ * tsignal , polarization_ );
       }
-    else if ( seedType_ == PLANEWAVECONFINED )
+    else if ( seedType_ == PLANEWAVETRUNCATED )
       {
 	/* Retrieve signal value at corrected time.                                                   	*/
 	tsignal = signal_.self(tl, p);
@@ -658,7 +682,7 @@ namespace MITHRA
 	y  = rv * yv;
 
 	/* Calculate the field only if the signal value is larger than a limit.				*/
-	if ( fabs(tsignal) < 1.0e-100  || fabs(x) > radius_[0] || fabs(y) > radius_[1] )
+	if ( fabs(tsignal) < 1.0e-6  || fabs(x) > radius_[0] || fabs(y) > radius_[1] )
 	  a = 0.0;
 	else
 	  a.mv( amplitude_ * tsignal , polarization_ );
@@ -668,12 +692,9 @@ namespace MITHRA
 	/* Retrieve signal value at corrected time.                                         		*/
 	tsignal = signal_.self(tl, p);
 
-	if ( fabs(tsignal) < 1.0e-100 ) a = 0.0;
+	if ( fabs(tsignal) < 1.0e-6 ) a = 0.0;
 	else
 	  {
-	    /* Provide vector to store transverse, longitudinal and total  electric field.      	*/
-	    a = polarization_;
-
 	    /* Calculate the transverse distance to the center line.   					*/
 	    x  = rv * polarization_;
 	    yv = cross(direction_, polarization_);
@@ -692,7 +713,45 @@ namespace MITHRA
 	    p         = 0.5 * ( atan(z/zRp) + atan(z/zRs) - PI ) - PI*z/l * ( pow(x/(zRp*wrp),2) + pow(y/(zRs*wrs),2) );
 	    tsignal   = signal_.self(tl, p);
 	    t         = exp( - pow(x/(radius_[0]*wrp),2) - pow(y/(radius_[1]*wrs),2) ) / sqrt(wrs*wrp) * amplitude_;
-	    a.mv( t * tsignal, a);
+	    a.mv( t * tsignal, polarization_);
+	  }
+      }
+    else if ( seedType_ == SUPERGAUSSIANBEAM )
+      {
+	/* Retrieve signal value at corrected time.                                         		*/
+	tsignal = signal_.self(tl, p);
+
+	if ( fabs(tsignal) < 1.0e-6 ) a = 0.0;
+	else
+	  {
+	    /* Calculate the transverse distance to the center line.   					*/
+	    x  = rv * polarization_;
+	    yv = cross(direction_, polarization_);
+	    y  = rv * yv;
+
+	    /* Calculate the wavelength corresponding to the given central frequency.              	*/
+	    l = c0_ / signal_.f0_;
+
+	    /* Calculate the Rayleigh length and the relative radius of the beam.                	*/
+	    zRp = PI * radius_[0] * radius_[0] / l;
+	    wrp = sqrt(1.0 + z * z / ( zRp * zRp ));
+	    zRs = PI * radius_[1] * radius_[1] / l;
+	    wrs = sqrt(1.0 + z * z / ( zRs * zRs ));
+
+	    /* Loop over elements of the super-gaussian beam and add their fields.			*/
+	    for ( int i = - order_[0]; i <= order_[0]; i++ )
+	      for ( int j = - order_[1]; j <= order_[1]; j++ )
+		{
+		  /* Compute the transverse vector between the point and the reference point.		*/
+		  x0 = ( x - i * radius_[0] ) / wrp;
+		  y0 = ( y - j * radius_[1] ) / wrs;
+
+		  /* Compute the transverse vector between the point and the reference point.          	*/
+		  p         = 0.5 * ( atan(z/zRp) + atan(z/zRs) - PI ) - PI*z/l * ( pow(x/(zRp*wrp),2) + pow(y/(zRs*wrs),2) );
+		  tsignal   = signal_.self(tl, p);
+		  t         = exp( - pow(x/(radius_[0]*wrp),2) - pow(y/(radius_[1]*wrs),2) ) / sqrt(wrs*wrp) * amplitude_;
+		  a.pmv( t * tsignal, polarization_);
+		}
 	  }
       }
 
@@ -762,7 +821,7 @@ namespace MITHRA
   void Seed::show ()
   {
     if        (seedType_ == PLANEWAVE)      		printmessage(std::string(__FILE__), __LINE__, std::string("Seed type = plane-wave"));
-    else if   (seedType_ == PLANEWAVECONFINED)   	printmessage(std::string(__FILE__), __LINE__, std::string("Seed type = confined-plane-wave"));
+    else if   (seedType_ == PLANEWAVETRUNCATED)   	printmessage(std::string(__FILE__), __LINE__, std::string("Seed type = truncated-plane-wave"));
     else if   (seedType_ == GAUSSIANBEAM)   		printmessage(std::string(__FILE__), __LINE__, std::string("Seed type = gaussian-beam"));
     printmessage(std::string(__FILE__), __LINE__, std::string("Seed position [")
     + stringify(position_[0]) + std::string("; ")
@@ -825,13 +884,13 @@ namespace MITHRA
     k_		= 0.0;
     lu_		= 0.0;
     rb_		= 0.0;
-    length_		= 0.0;
-    dist_		= 0.0;
-    beta_		= 0.0;
-    gamma_		= 1.0;
+    length_	= 0.0;
+    dist_	= 0.0;
+    beta_	= 0.0;
+    gamma_	= 1.0;
     dt_		= 0.0;
-    theta_		= 0.0;
-    type_		= STATIC;
+    theta_	= 0.0;
+    type_	= STATIC;
     seedType_ 	= PLANEWAVE;
     c0_		= 0.0;
     amplitude_	= 0.0;
@@ -854,12 +913,18 @@ namespace MITHRA
 			      Double                 	a0,
 			      std::vector<Double>	radius,
 			      Double			wavelength,
+			      std::vector<int>		order,
 			      Signal                   	signal)
   {
     /* Set the seed type according to the returned string for seedType.                   		*/
-    if      ( type.compare("plane-wave"         ) == 0 ) seedType_ = PLANEWAVE;
-    else if ( type.compare("plane-wave-confined") == 0 ) seedType_ = PLANEWAVECONFINED;
-    else if ( type.compare("gaussian-beam"      ) == 0 ) seedType_ = GAUSSIANBEAM;
+    if      ( type.compare("plane-wave"         	  ) == 0 ) seedType_ = PLANEWAVE;
+    else if ( type.compare("truncated-plane-wave"	  ) == 0 ) seedType_ = PLANEWAVETRUNCATED;
+    else if ( type.compare("gaussian-beam"      	  ) == 0 ) seedType_ = GAUSSIANBEAM;
+    else if ( type.compare("super-gaussian-beam"      	  ) == 0 ) seedType_ = SUPERGAUSSIANBEAM;
+    else if ( type.compare("standing-plane-wave"	  ) == 0 ) seedType_ = STANDINGPLANEWAVE;
+    else if ( type.compare("standing-truncated-plane-wave") == 0 ) seedType_ = STANDINGPLANEWAVETRUNCATED;
+    else if ( type.compare("standing-gaussian-beam"       ) == 0 ) seedType_ = STANDINGGAUSSIANBEAM;
+    else if ( type.compare("standing-super-gaussian-beam" ) == 0 ) seedType_ = STANDINGSUPERGAUSSIANBEAM;
     else    { std::cout << type << " is an unknown type." << std::endl; exit(1); }
 
     /* Set the vectors position, direction and polarization for the seed class.                 	*/
@@ -910,16 +975,32 @@ namespace MITHRA
     /* Initialize the undulator period according to the given wavelength for the signal.		*/
     lu_			= wavelength;
 
-    /* check if the given radius of the gaussian beam makes sense.                       		*/
-    if ( seedType_ == GAUSSIANBEAM && radius_[0] * radius_[1] == 0.0)
+    /* check if length of polarization vector is zero and normalize the vector.                       	*/
+    if ( seedType_ == GAUSSIANBEAM || seedType_ == STANDINGGAUSSIANBEAM || seedType_ == SUPERGAUSSIANBEAM || seedType_ == STANDINGSUPERGAUSSIANBEAM )
       {
-	printmessage(std::string(__FILE__), __LINE__, std::string("One of the radii of the Gaussian beam is set to zero."));
-	printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
-	exit(1);
+	if ( radius_[0] * radius_[1] == 0.0 )
+	  {
+	    printmessage(std::string(__FILE__), __LINE__, std::string("One of the radii of the Gaussian beam is set to zero."));
+	    printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
+	    exit(1);
+	  }
       }
 
-    /* Initialize the signal of the seed.                                                       	*/
-    signal_ 		= signal;
+    /* Initialize the signal of the seed.                                                             	*/
+    signal_           = signal;
+
+    /* Initialize the values for the super-gaussian beam.						*/
+    if ( seedType_ == SUPERGAUSSIANBEAM || seedType_ == STANDINGSUPERGAUSSIANBEAM )
+      {
+	order_ = order;
+
+	Double d1 = 0.0, d2 = 0.0;
+	for ( int i = -order_[0]; i <= order_[0]; i++ ) d1 += exp(-i*i);
+	for ( int i = -order_[1]; i <= order_[1]; i++ ) d2 += exp(-i*i);
+	radius_[0] /= order_[0] + sqrt( 1.0 - log(d1) );
+	radius_[0] /= order_[0] + sqrt( 1.0 - log(d2) );
+	a0_ /= d1  * d2;
+      }
   }
 
   /* Show the stored values for the undulator.                                                        	*/
@@ -974,12 +1055,18 @@ namespace MITHRA
 			     Double                     a0,
 			     std::vector<Double>        radius,
 			     Double                     wavelength,
+			     std::vector<int>		order,
 			     Signal                     signal)
   {
     /* Set the seed type according to the returned string for seedType.                               	*/
-    if      ( type.compare("plane-wave"         ) == 0 ) seedType_ = PLANEWAVE;
-    else if ( type.compare("plane-wave-confined") == 0 ) seedType_ = PLANEWAVECONFINED;
-    else if ( type.compare("gaussian-beam"      ) == 0 ) seedType_ = GAUSSIANBEAM;
+    if      ( type.compare("plane-wave"         	  ) == 0 ) seedType_ = PLANEWAVE;
+    else if ( type.compare("truncated-plane-wave"	  ) == 0 ) seedType_ = PLANEWAVETRUNCATED;
+    else if ( type.compare("gaussian-beam"      	  ) == 0 ) seedType_ = GAUSSIANBEAM;
+    else if ( type.compare("super-gaussian-beam"      	  ) == 0 ) seedType_ = SUPERGAUSSIANBEAM;
+    else if ( type.compare("standing-plane-wave"	  ) == 0 ) seedType_ = STANDINGPLANEWAVE;
+    else if ( type.compare("standing-truncated-plane-wave") == 0 ) seedType_ = STANDINGPLANEWAVETRUNCATED;
+    else if ( type.compare("standing-gaussian-beam"       ) == 0 ) seedType_ = STANDINGGAUSSIANBEAM;
+    else if ( type.compare("standing-super-gaussian-beam" ) == 0 ) seedType_ = STANDINGSUPERGAUSSIANBEAM;
     else    { std::cout << type << " is an unknown type." << std::endl; exit(1); }
 
     /* Set the vectors position, direction and polarization for the seed class.                       	*/
@@ -1028,15 +1115,31 @@ namespace MITHRA
     radius_           	= radius;
 
     /* check if length of polarization vector is zero and normalize the vector.                       	*/
-    if ( seedType_ == GAUSSIANBEAM && radius_[0] * radius_[1] == 0.0)
+    if ( seedType_ == GAUSSIANBEAM || seedType_ == STANDINGGAUSSIANBEAM || seedType_ == SUPERGAUSSIANBEAM || seedType_ == STANDINGSUPERGAUSSIANBEAM )
       {
-	printmessage(std::string(__FILE__), __LINE__, std::string("One of the radii of the Gaussian beam is set to zero."));
-	printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
-	exit(1);
+	if ( radius_[0] * radius_[1] == 0.0 )
+	  {
+	    printmessage(std::string(__FILE__), __LINE__, std::string("One of the radii of the Gaussian beam is set to zero."));
+	    printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
+	    exit(1);
+	  }
       }
 
     /* Initialize the signal of the seed.                                                             	*/
     signal_           = signal;
+
+    /* Initialize the values for the super-gaussian beam.						*/
+    if ( seedType_ == SUPERGAUSSIANBEAM || seedType_ == STANDINGSUPERGAUSSIANBEAM )
+      {
+	order_ = order;
+
+	Double d1 = 0.0, d2 = 0.0;
+	for ( int i = -order_[0]; i <= order_[0]; i++ ) d1 += exp(-i*i);
+	for ( int i = -order_[1]; i <= order_[1]; i++ ) d2 += exp(-i*i);
+	radius_[0] /= order_[0] + sqrt( 1.0 - log(d1) );
+	radius_[0] /= order_[0] + sqrt( 1.0 - log(d2) );
+	a0_ /= d1  * d2;
+      }
   }
 
   /* Show the stored values for the external field.							*/

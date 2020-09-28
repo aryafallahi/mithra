@@ -104,6 +104,15 @@ namespace MITHRA
 	  }
 	else if (parameterName(*iter) == "space-charge") 		mesh_.spaceCharge_ 	= boolValue(*iter);
 	else if (parameterName(*iter) == "optimize-bunch-position") 	mesh_.optimizePosition_ = boolValue(*iter);
+	else if (parameterName(*iter) == "initial-time-back-shift")
+	  {
+	    mesh_.timeShift_ 	= doubleValue(*iter);
+	    if ( mesh_.timeShift_ < 0.0 )
+	      {
+		printmessage(std::string(__FILE__), __LINE__, std::string("The shift back in time should always be positive.") );
+		exit(1);
+	      }
+	  }
 	else if (parameterName(*iter) == "solver")
 	  {
 	    std::string solver 	= stringValue(*iter);
@@ -268,11 +277,14 @@ namespace MITHRA
 	    else ++iter;
 
 	    Signal                	signal;
-	    std::string		type, signalType;
-	    std::vector<Double>	position (3,0.0), direction (3,0.0), polarization (3,0.0);
+	    std::string			type, signalType;
+	    std::vector<Double>		position (3,0.0), direction (3,0.0), polarization (3,0.0);
+
 	    /* Initialize variables with values from class constructors.				*/
-	    Double                	amplitude = seed_.amplitude_, offset = signal.t0_, pulseLength = signal.s_, wavelength = 1 / signal.f0_, cep = signal.cep_;
+	    Double                	amplitude = 0.0, offset = 0.0,
+					pulseLength = 0.0, wavelength = 0.0, cep = 0.0;
 	    std::vector<Double>   	radius (2,0.0);
+	    std::vector<int>		order  (2,0);
 
 	    do
 	      {
@@ -283,6 +295,8 @@ namespace MITHRA
 		else if (parameterName(*iter) == "strength-parameter")          amplitude       = doubleValue(*iter);
 		else if (parameterName(*iter) == "radius-parallel")          	radius[0]       = doubleValue(*iter);
 		else if (parameterName(*iter) == "radius-perpendicular")     	radius[1]       = doubleValue(*iter);
+		else if (parameterName(*iter) == "order-parallel")          	order[0]        = doubleValue(*iter);
+		else if (parameterName(*iter) == "order-perpendicular")     	order[1]        = doubleValue(*iter);
 		else if (parameterName(*iter) == "signal-type")                 signalType      = stringValue(*iter);
 		else if (parameterName(*iter) == "offset")                      offset          = doubleValue(*iter);
 		else if (parameterName(*iter) == "pulse-length")                pulseLength     = doubleValue(*iter);
@@ -298,7 +312,7 @@ namespace MITHRA
 	      signal.initialize(signalType, offset, pulseLength, wavelength, cep);
 	    else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
 
-	    seed_.initialize(type, position, direction, polarization, amplitude, radius, signal);
+	    seed_.initialize(type, position, direction, polarization, amplitude, radius, order, signal);
 	  }
 
 	/* The data related to the seed sampling are to be parsed.                            	*/
@@ -415,12 +429,12 @@ namespace MITHRA
 
 	    do
 	      {
-		if      (parameterName(*iter) == "undulator-parameter")               undulator.k_            = doubleValue(*iter);
-		else if (parameterName(*iter) == "period")                            undulator.lu_           = doubleValue(*iter);
-		else if (parameterName(*iter) == "polarization-angle")                undulator.theta_        = PI / 180.0 * doubleValue(*iter);
-		else if (parameterName(*iter) == "length")                            undulator.length_       = intValue(*iter);
-		else if (parameterName(*iter) == "distance-to-bunch-head")            undulator.dist_         = doubleValue(*iter);
-		else if (parameterName(*iter) == "offset")                            undulator.rb_       	= doubleValue(*iter);
+		if      (parameterName(*iter) == "undulator-parameter")               undulator.k_	= doubleValue(*iter);
+		else if (parameterName(*iter) == "period")                            undulator.lu_	= doubleValue(*iter);
+		else if (parameterName(*iter) == "polarization-angle")                undulator.theta_	= PI / 180.0 * doubleValue(*iter);
+		else if (parameterName(*iter) == "length")                            undulator.length_	= intValue(*iter);
+		else if (parameterName(*iter) == "distance-to-bunch-head")            undulator.dist_	= doubleValue(*iter);
+		else if (parameterName(*iter) == "offset")                            undulator.rb_	= doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the static-undulator group." << std::endl; exit(1); }
 		++iter;
 	      }
@@ -447,11 +461,11 @@ namespace MITHRA
 		if      (parameterName(*iter) == "undulator-parameter")            k		= doubleValue(*iter);
 		else if (parameterName(*iter) == "period")                         lu		= doubleValue(*iter);
 		else if (parameterName(*iter) == "polarization-angle")             theta	= PI / 180.0 * doubleValue(*iter);
-		else if (parameterName(*iter) == "length")                         l   	= intValue(*iter);
+		else if (parameterName(*iter) == "length")                         l   		= intValue(*iter);
 		else if (parameterName(*iter) == "gap")                            g		= doubleValue(*iter);
 		else if (parameterName(*iter) == "number")                         N		= intValue(*iter);
 		else if (parameterName(*iter) == "tapering-parameter")             t		= doubleValue(*iter);
-		else if (parameterName(*iter) == "distance-to-bunch-head")         d          = doubleValue(*iter);
+		else if (parameterName(*iter) == "distance-to-bunch-head")         d          	= doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the static-undulator-array group." << std::endl; exit(1); }
 		++iter;
 	      }
@@ -481,30 +495,34 @@ namespace MITHRA
 	    if (*iter != "{") { std::cout << "The optical undulator directory is empty" << std::endl; exit(1); }
 	    else ++iter;
 
-	    Signal                	signal;
+	    Signal          signal;
 	    Undulator 		undulator; undulator.type_ = OPTICAL;
 	    std::string		type, signalType;
 
 	    /* Initialize variables with default variables from the constructor.			*/
-	    std::vector<Double>	position (3,0.0), direction (3,0.0), polarization (3,0.0);
-	    Double                	a0 = undulator.a0_, offset = signal.t0_, pulseLength = signal.s_,
-		wavelength = 1 / signal.f0_, cep = signal.cep_ * 180 / PI;
-	    std::vector<Double>   	radius (2,0.0);
+	    std::vector<Double>		position (3,0.0), direction (3,0.0), polarization (3,0.0);
+	    Double              	a0, offset, pulseLength, wavelength, cep;
+	    std::vector<Double> 	radius (2,0.0);
+	    std::vector<int>          	order  (2,0);
+
 
 	    do
 	      {
-		if 	  (parameterName(*iter) == "beam-type")                         type                    = stringValue(*iter);
-		else if (parameterName(*iter) == "position")                          position                = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "direction")                         direction               = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "polarization")                      polarization            = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "strength-parameter")                a0               	= doubleValue(*iter);
-		else if (parameterName(*iter) == "radius-parallel")          		radius[0]               = doubleValue(*iter);
-		else if (parameterName(*iter) == "radius-perpendicular")     		radius[1]               = doubleValue(*iter);
-		else if (parameterName(*iter) == "signal-type")                       signalType              = stringValue(*iter);
-		else if (parameterName(*iter) == "offset")                            offset                  = doubleValue(*iter);
-		else if (parameterName(*iter) == "pulse-length")                      pulseLength             = doubleValue(*iter);
-		else if (parameterName(*iter) == "wavelength")                        wavelength              = doubleValue(*iter);
-		else if (parameterName(*iter) == "CEP")                               cep                     = doubleValue(*iter);
+		if 	(parameterName(*iter) == "beam-type")			type                    = stringValue(*iter);
+		else if (parameterName(*iter) == "position")			position                = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "direction")			direction               = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "polarization")		polarization            = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "strength-parameter")		a0               	= doubleValue(*iter);
+		else if (parameterName(*iter) == "radius-parallel")		radius[0]               = doubleValue(*iter);
+		else if (parameterName(*iter) == "radius-perpendicular")	radius[1]               = doubleValue(*iter);
+		else if (parameterName(*iter) == "order-parallel")		order[0]                = doubleValue(*iter);
+		else if (parameterName(*iter) == "order-perpendicular")		order[1]                = doubleValue(*iter);
+		else if (parameterName(*iter) == "signal-type")			signalType              = stringValue(*iter);
+		else if (parameterName(*iter) == "offset")			offset                  = doubleValue(*iter);
+		else if (parameterName(*iter) == "pulse-length")		pulseLength             = doubleValue(*iter);
+		else if (parameterName(*iter) == "wavelength")			wavelength              = doubleValue(*iter);
+		else if (parameterName(*iter) == "CEP")				cep                     = doubleValue(*iter);
+		else if (parameterName(*iter) == "distance-to-bunch-head")	undulator.dist_		= doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the optical-undulator group." << std::endl; exit(1); }
 		++iter;
 	      }
@@ -515,7 +533,7 @@ namespace MITHRA
 	      signal.initialize(signalType, offset, pulseLength, wavelength, cep);
 	    else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
 
-	    undulator.initialize(type, position, direction, polarization, a0, radius, wavelength, signal);
+	    undulator.initialize(type, position, direction, polarization, a0, radius, wavelength, order, signal);
 
 	    undulator_.push_back(undulator);
 	  }
@@ -550,21 +568,24 @@ namespace MITHRA
 	    std::vector<Double>       position (3,0.0), direction (3,0.0), polarization (3,0.0);
 	    Double                    a0 = extField.a0_, offset = signal.t0_, pulseLength = signal.s_, wavelength = 1 / signal.f0_, cep = signal.cep_;
 	    std::vector<Double>       radius (2,0.0);
+	    std::vector<int>          order  (2,0);
 
 	    do
 	      {
 		if      (parameterName(*iter) == "beam-type")                       	type                    = stringValue(*iter);
-		else if (parameterName(*iter) == "position")                          position                = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "direction")                         direction               = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "polarization")                      polarization            = vectorDoubleValue(*iter);
-		else if (parameterName(*iter) == "strength-parameter")                a0               	= doubleValue(*iter);
-		else if (parameterName(*iter) == "radius-parallel")          		radius[0]               = doubleValue(*iter);
+		else if (parameterName(*iter) == "position")                        	position                = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "direction")                       	direction               = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "polarization")                    	polarization            = vectorDoubleValue(*iter);
+		else if (parameterName(*iter) == "strength-parameter")              	a0               	= doubleValue(*iter);
+		else if (parameterName(*iter) == "radius-parallel")          	    	radius[0]               = doubleValue(*iter);
 		else if (parameterName(*iter) == "radius-perpendicular")     		radius[1]               = doubleValue(*iter);
-		else if (parameterName(*iter) == "signal-type")                       signalType              = stringValue(*iter);
-		else if (parameterName(*iter) == "offset")                            offset                  = doubleValue(*iter);
+		else if (parameterName(*iter) == "order-parallel")          	    	order[0]               = doubleValue(*iter);
+		else if (parameterName(*iter) == "order-perpendicular")     		order[1]               = doubleValue(*iter);
+		else if (parameterName(*iter) == "signal-type")                       	signalType              = stringValue(*iter);
+		else if (parameterName(*iter) == "offset")                            	offset                  = doubleValue(*iter);
 		else if (parameterName(*iter) == "pulse-length")			pulseLength		= doubleValue(*iter);
-		else if (parameterName(*iter) == "wavelength")                        wavelength              = doubleValue(*iter);
-		else if (parameterName(*iter) == "CEP")                               cep                     = doubleValue(*iter);
+		else if (parameterName(*iter) == "wavelength")                        	wavelength              = doubleValue(*iter);
+		else if (parameterName(*iter) == "CEP")                               	cep                     = doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the electromagnetic external field group." << std::endl; exit(1); }
 		++iter;
 	      }
@@ -575,7 +596,7 @@ namespace MITHRA
 	      signal.initialize(signalType, offset, pulseLength, wavelength, cep);
 	    else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
 
-	    extField.initialize(type, position, direction, polarization, a0, radius, wavelength, signal);
+	    extField.initialize(type, position, direction, polarization, a0, radius, wavelength, order, signal);
 
 	    extField_.push_back(extField);
 	  }

@@ -18,7 +18,8 @@ namespace MITHRA
   enum SignalType       	{NEUMANN, GAUSSIAN, SECANT, FLATTOP};
 
   /* Define the types of the excitations.                                                               */
-  enum SeedType   		{PLANEWAVE, PLANEWAVECONFINED, GAUSSIANBEAM};
+  enum SeedType   		{PLANEWAVE, PLANEWAVETRUNCATED, GAUSSIANBEAM, SUPERGAUSSIANBEAM,
+				 STANDINGPLANEWAVE, STANDINGPLANEWAVETRUNCATED, STANDINGGAUSSIANBEAM, STANDINGSUPERGAUSSIANBEAM};
 
   /* Define the type of the external field.                                                             */
   enum ExtFieldType             {EMWAVE};
@@ -156,6 +157,9 @@ namespace MITHRA
 
   /* Hello message when initialising mithra.														*/
   void helloMessage();
+
+  /* Positive remainder between two double values.							*/
+  Double pmod ( const Double& a, const Double& b);
 
 }
 #endif

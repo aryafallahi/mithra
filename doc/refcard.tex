@@ -60,6 +60,7 @@ MESH
 	space-charge  						= < true | false >
 	solver										= < NSFD | FD >
 	optimize-bunch-position	 = < true | false >
+	initial-time-back-shift	 = < real >
 \}
 
 BUNCH
@@ -212,14 +213,21 @@ UNDULATOR
 
 	\textcolor{red}{optical-undulator}
 	\textcolor{red}{\{}
-		beam-type  						 = < plane-wave | 
-																confined-plane-wave | 
-																gaussian-beam >
+		beam-type  		= < plane-wave | 
+											 truncated-plane-wave | 
+											 gaussian-beam |
+											 super-gaussian-beam |
+											 standing-plane-wave | 
+											 standing-truncated-plane-wave | 
+											 standing-gaussian-beam |
+											 standing-super-gaussian-beam >
 		position  							= < ( real, real, real ) >
 		direction  						 = < ( real, real, real ) >
 		polarization  					= < ( real, real, real ) >
 		radius-parallel  			 = < real >
 		radius-perpendicular  	= < real >
+		order-parallel  			  = < int >
+		order-perpendicular  	 = < int >
 		signal-type  					 = < neumann | gaussian | 
 																secant-hyperbolic | 
 																flat-top >
@@ -236,14 +244,21 @@ EXTERNAL-FIELD
 \{
 	\textcolor{red}{electromagnetic-wave}
 	\textcolor{red}{\{}
-		beam-type  						 = < plane-wave | 
-																confined-plane-wave | 
-																gaussian-beam >
+		beam-type  		= < plane-wave | 
+											 truncated-plane-wave | 
+											 gaussian-beam |
+											 super-gaussian-beam |
+											 standing-plane-wave | 
+											 standing-truncated-plane-wave | 
+											 standing-gaussian-beam |
+											 standing-super-gaussian-beam >
 		position  							= < ( real, real, real ) >
 		direction  						 = < ( real, real, real ) >
 		polarization  					= < ( real, real, real ) >
 		radius-parallel  			 = < real >
 		radius-perpendicular  	= < real >
+		order-parallel  			  = < int >
+		order-perpendicular  	 = < int >
 		signal-type  					 = < neumann | gaussian | 
 																secant-hyperbolic | 
 																flat-top >

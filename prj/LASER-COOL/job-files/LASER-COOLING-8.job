@@ -15,11 +15,13 @@ MESH
   mesh-lengths						= (  25.0,  25.0,  2.5   ) 
   mesh-resolution					= ( 0.125, 0.125,  0.004 )
   mesh-center						= (   0.0,   0.0,  0.0   )
-  total-time						= 15000
+  total-time						= 9000
   bunch-time-step					= 0.5
   mesh-truncation-order					= 2
   space-charge						= false
   solver						= NSFD
+  optimize-bunch-position				= true
+  initial-time-back-shift                               = 8000.0
 }
  
 BUNCH
@@ -28,16 +30,24 @@ BUNCH
   { 
     type                                                = ellipsoid
     distribution                                        = uniform
-    charge                                              = 5e6
-    number-of-particles                                 = 5e6
+    charge                                              = 20e6
+    number-of-particles                                 = 20e5
     gamma                                               = 10.0
     direction                                           = (   0.0,    0.0,  1.0    )
     position                                            = (   0.0,    0.0,  0.0    )
-    sigma-position                                      = (   2.6,    2.6,  1.0    )
-    sigma-momentum                                      = ( 0.001,  0.001,  0.0025 )
+    sigma-position                                      = (  10.0,    2.5,  1.0    )
+    sigma-momentum                                      = (  0.01,   0.01,  0.0025 )
     transverse-truncation                               = 12.0
     longitudinal-truncation                             = 1.5
     shot-noise						= true
+  }
+
+  bunch-visualization
+  {
+    sample                                              = false
+    directory                                           = /cluster/scratch/afallahi/
+    base-name                                           = bunch-visualization-cavity/bunch
+    rhythm                                              = 50.0
   }
 }
 
@@ -45,65 +55,33 @@ EXTERNAL-FIELD
 {
   electromagnetic-wave
   {
-    beam-type						= gaussian-beam
-    radius-parallel					= 1e10
-    radius-perpendicular				= 1e10
-    position						= ( 0.0, 0.0, 750.0 )
+    beam-type						= standing-gaussian-beam
+    radius-parallel					= 100
+    radius-perpendicular				= 1200
+    position						= ( 0.0, 0.0, 1200.0 )
     direction						= ( 1.0, 0.0,   0.0 )
-    polarization					= ( 0.0, 0.0,   1.0 )
-    strength-parameter					= 0.5
+    polarization					= ( 0.0, 1.0,   0.0 )
+    strength-parameter					= 0.03
     signal-type						= gaussian
     wavelength						= 10.0
-    pulse-length					= 250.0
-    offset						= 750.0
+    pulse-length					= 1.0e6
+    offset						= 0.0
     CEP							= 0.0
   }
 
   electromagnetic-wave
   {
-    beam-type                                           = gaussian-beam
-    radius-parallel                                     = 1e10
-    radius-perpendicular                                = 1e10
-    position                                            = ( 0.0, 0.0, 750.0 )
-    direction                                           = (-1.0, 0.0,   0.0 )
-    polarization                                        = ( 0.0, 0.0,  -1.0 )
-    strength-parameter                                  = 0.5
-    signal-type                                         = gaussian
-    wavelength                                          = 10.0
-    pulse-length                                        = 250.0
-    offset                                              = 750.0
-    CEP                                                 = 0.0
-  }
-
-  electromagnetic-wave
-  {
-    beam-type                                           = gaussian-beam
-    radius-parallel                                     = 1e10
-    radius-perpendicular                                = 1e10
-    position                                            = ( 0.0, 0.0, 750.0 )
+    beam-type                                           = standing-gaussian-beam
+    radius-parallel                                     = 100
+    radius-perpendicular                                = 1200
+    position                                            = ( 0.0, 0.0, 1200.0 )
     direction                                           = ( 0.0, 1.0,   0.0 )
-    polarization                                        = ( 0.0, 0.0,   1.0 )
-    strength-parameter                                  = 0.5
+    polarization                                        = ( 1.0, 0.0,   0.0 )
+    strength-parameter                                  = 0.03
     signal-type                                         = gaussian
     wavelength                                          = 10.0
-    pulse-length                                        = 250.0
-    offset                                              = 750.0
-    CEP                                                 = 0.0
-  }
-
-  electromagnetic-wave
-  {
-    beam-type                                           = gaussian-beam
-    radius-parallel                                     = 1e10
-    radius-perpendicular                                = 1e10
-    position                                            = ( 0.0, 0.0, 750.0 )
-    direction                                           = ( 0.0,-1.0,   0.0 )
-    polarization                                        = ( 0.0, 0.0,  -1.0 )
-    strength-parameter                                  = 0.5
-    signal-type                                         = gaussian
-    wavelength                                          = 10.0
-    pulse-length                                        = 250.0
-    offset                                              = 750.0
+    pulse-length                                        = 1.0e6
+    offset                                              = 0.0
     CEP                                                 = 0.0
   }
 }
@@ -132,7 +110,7 @@ FEL-OUTPUT
     sample                                              = true
     type                                                = at-point
     directory                                           = ./
-    base-name                                           = power-sampling-20200825/power-25umx25umx2p5um-125nmx125nmx4nm-uniform-5e6-10-2p6umx2p6umx1um-1e-3x1e-3x25e-4-1e10x1e10-750-250-0p5-old
+    base-name                                           = data-sampling-20200921/power-25umx25umx2p5um-125nmx125nmx4nm-uniform-20e6(20e5)-10-10umx2p5umx1um-0p01x0p01x25e-4-1200-1200-0p03-8000
     plane-position                                      = 1.2
     normalized-frequency                                = 1.0
   }

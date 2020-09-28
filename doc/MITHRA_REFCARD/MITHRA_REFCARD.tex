@@ -35,6 +35,7 @@ MESH
 	space-charge  						= < true | false >
 	solver										= < NSFD | FD >
 	optimize-bunch-position	 = < true | false >
+	initial-time-back-shift	 = < real >
 \}
 
 BUNCH
@@ -187,9 +188,12 @@ UNDULATOR
 
 	\textcolor{red}{optical-undulator}
 	\textcolor{red}{\{}
-		beam-type  						 = < plane-wave | 
-																confined-plane-wave | 
-																gaussian-beam >
+		beam-type  			= < plane-wave | 
+												 confined-plane-wave | 
+												 gaussian-beam | 
+												 standing-plane-wave | 
+												 standing-confined-plane-wave | 
+												 standing-gaussian-beam >
 		position  							= < ( real, real, real ) >
 		direction  						 = < ( real, real, real ) >
 		polarization  					= < ( real, real, real ) >
@@ -211,9 +215,12 @@ EXTERNAL-FIELD
 \{
 	\textcolor{red}{electromagnetic-wave}
 	\textcolor{red}{\{}
-		beam-type  						 = < plane-wave | 
-																confined-plane-wave | 
-																gaussian-beam >
+		beam-type  			= < plane-wave | 
+												 confined-plane-wave | 
+												 gaussian-beam | 
+												 standing-plane-wave | 
+												 standing-confined-plane-wave | 
+												 standing-gaussian-beam >
 		position  							= < ( real, real, real ) >
 		direction  						 = < ( real, real, real ) >
 		polarization  					= < ( real, real, real ) >

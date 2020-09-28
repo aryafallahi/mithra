@@ -41,8 +41,11 @@ namespace MITHRA
     /* Boolean flag returning the status of space charge assumption.					*/
     bool			spaceCharge_;
 
-    /* Boolean that determines whether to shift the bunch in the initial setup.					*/
+    /* Boolean that determines whether to shift the bunch in the initial setup.				*/
     bool			optimizePosition_;
+
+    /* Initial shift in time with respect to the standard initial conditions.				*/
+    Double			timeShift_;
 
     /* Solver type that will be used to update the field values.					*/
     SolverType			solver_;
@@ -195,6 +198,7 @@ namespace MITHRA
 		     std::vector<Double>    	polarization,
 		     Double                 	amplitude,
 		     std::vector<Double>	radius,
+		     std::vector<int>		order,
 		     Signal                   	signal);
 
     /* Store data required for visualizing the radiated field in all-domain.                            */
@@ -244,17 +248,24 @@ namespace MITHRA
     /* Store the signal class for this seed.                                                      	*/
     Signal                   		signal_;
 
+    /* Order of the super-gaussian beam.								*/
+    std::vector<int>			order_;
+
+    /* Wavelength of the optical undulator.								*/
+    Double				l_;
+
+    /* Rayleigh lengths of the optical undulator excitation.						*/
+    std::vector<Double>                 zR_;
+
     /* Parameters for Lorentz transformation.								*/
     Double				beta_;
     Double				gamma_;
     Double				dt_;
 
-  private:
-
     /* Store all the required variables in the computations.                                            */
     Double                    		gamma;
     Double				tsignal;
-    Double				d, l, zRp, wrp, zRs, wrs, x, y, z, p, t;
+    Double				d, l, zRp, wrp, zRs, wrs, x, y, x0, y0, z, p, t;
     FieldVector<Double>			rv, yv, ax, az;
     FieldVector<Double>			rl;
     Double				tl;
@@ -313,7 +324,7 @@ namespace MITHRA
     /* The magnetic field of the undulator.                                                       	*/
     Double				k_;
 
-    /* The period of the undulator.                                                       		*/
+    /* The period of the static undulator.                                                       	*/
     Double				lu_;
 
     /* The start position of the undulator.								*/
@@ -322,7 +333,7 @@ namespace MITHRA
     /* The length of the undulator.									*/
     unsigned int			length_;
 
-    /* The initial distance between the bunch head and the undulator begin.						*/
+    /* The initial distance between the bunch head and the undulator begin.				*/
     Double				dist_;
     
     /* The normalized velocity and the equivalent gamma of the undulator movement.			*/
@@ -365,6 +376,15 @@ namespace MITHRA
     /* Store the signal class for this seed.                                                      	*/
     Signal                   		signal_;
 
+    /* Order of the super-gaussian beam.								*/
+    std::vector<int>			order_;
+
+    /* Wavelength of the optical undulator.								*/
+    Double				l_;
+
+    /* Rayleigh lengths of the optical undulator excitation.						*/
+    std::vector<Double>                 zR_;
+
     /* Set the type of the undulator.                                                                   */
     UndulatorType undulatorType (std::string undulatorType);
 
@@ -376,6 +396,7 @@ namespace MITHRA
 		     Double                 	amplitude,
 		     std::vector<Double>	radius,
 		     Double			wavelength,
+		     std::vector<int>		order,
 		     Signal                   	signal);
 
     /* Show the stored values for the undulator.                                                        */
@@ -388,7 +409,7 @@ namespace MITHRA
 
     ExtField();
 
-    /* Type of the undulator, it can be an optical or a static undulator.                   		*/
+    /* Type of the external field, it can be an EM-wave or a cavity field.                   		*/
     ExtFieldType                        type_;
 
     /* Store type of the seed.                                                                    	*/
@@ -420,6 +441,15 @@ namespace MITHRA
     /* Store the signal class for this seed.                                                         	*/
     Signal                              signal_;
 
+    /* Order of the super-gaussian beam.								*/
+    std::vector<int>			order_;
+
+    /* Wavelength of the external field.								*/
+    Double				l_;
+
+    /* Rayleigh lengths of the external excitation.							*/
+    std::vector<Double>                 zR_;
+
     /* Initialize the data of the undulator according to the input parameters.				*/
     void initialize (std::string                type,
 		     std::vector<Double>        position,
@@ -428,6 +458,7 @@ namespace MITHRA
 		     Double                     amplitude,
 		     std::vector<Double>        radius,
 		     Double                     wavelength,
+		     std::vector<int>        	order,
 		     Signal                     signal);
 
     /* Show the stored values for the external field.							*/

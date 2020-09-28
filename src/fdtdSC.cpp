@@ -54,10 +54,12 @@ namespace MITHRA
 	uc_.rm  = it->rnm;
 
 	/* Save the flag detecting that the particle is in the domain of the processor.               	*/
-	bp = ( uc_.rp[0] < xmax_ - uc_.dx && uc_.rp[0] > xmin_ + uc_.dx &&
+	bp = (
+	    uc_.rp[0] < xmax_ - uc_.dx && uc_.rp[0] > xmin_ + uc_.dx &&
 	    uc_.rp[1] < ymax_ - uc_.dy && uc_.rp[1] > ymin_ + uc_.dy &&
 	    uc_.rp[2] < zp_[1]         && uc_.rp[2] >= zp_[0] );
-	bm = ( uc_.rm[0] < xmax_ - uc_.dx && uc_.rm[0] > xmin_ + uc_.dx &&
+	bm = (
+	    uc_.rm[0] < xmax_ - uc_.dx && uc_.rm[0] > xmin_ + uc_.dx &&
 	    uc_.rm[1] < ymax_ - uc_.dy && uc_.rm[1] > ymin_ + uc_.dy &&
 	    uc_.rm[2] < zp_[1]         && uc_.rm[2] >= zp_[0] );
 
@@ -212,9 +214,10 @@ namespace MITHRA
 
   void FdTdSC::currentCommunicate ()
   {
-    int                               msgtag9 = 9, msgtag10 = 10;
-    MPI_Status                        status;
-    std::list<Charge>::iterator       it = chargeVectorn_.begin();
+    int                       	msgtag9 = 9, msgtag10 = 10;
+    MPI_Status                 	status;
+    std::list<Charge>::iterator	it = chargeVectorn_.begin();
+    Double			zr;
 
     /* Add the contribution of each processor to the charge and current density at the boundaries.    	*/
     if (rank_ != 0)
@@ -240,9 +243,10 @@ namespace MITHRA
     it = chargeVectorn_.begin();
     while ( it != chargeVectorn_.end() )
       {
-	if      ( it->rnp[2] <  zp_[0] && rank_ != 0 )
+	zr = pmod( it->rnp[2] - zmin_ , mesh_.meshLength_[2] ) + zmin_;
+	if      ( zr <  zp_[0] )
 	  it = chargeVectorn_.erase(it);
-	else if ( it->rnp[2] >= zp_[1] && rank_ != size_ - 1 )
+	else if ( zr >= zp_[1] )
 	  it = chargeVectorn_.erase(it);
 	else
 	  ++it;
@@ -1410,7 +1414,7 @@ namespace MITHRA
 		  }
 		else if ( i == size_ - 1 )
 		  {
-		    np = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 3;
+		    np = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 1;
 		    k0 = ( size_ - 1 ) * ( N2_ / size_ ) - 1;
 		  }
 		else
@@ -1591,7 +1595,7 @@ namespace MITHRA
 		  }
 		else if ( i == size_ - 1 )
 		  {
-		    np = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 3;
+		    np = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 1;
 		    k0 = ( size_ - 1 ) * ( N2_ / size_ ) - 1;
 		  }
 		else
@@ -1757,7 +1761,7 @@ namespace MITHRA
 		  }
 		else if ( i == size_ - 1 )
 		  {
-		    np = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 3;
+		    np = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 1;
 		    k0 = ( size_ - 1 ) * ( N2_ / size_ ) - 1;
 		  }
 		else

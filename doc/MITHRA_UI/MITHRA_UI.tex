@@ -86,6 +86,8 @@ The mesh and update parameters of the solver are defined through the following t
 	\item {\tt \em \small solver} determines if the non-standard finite-difference (NSFD) algorithm should be used to remove the effects of numerical dispersion or the simulation should be done with a simple finite-difference (FD) algorithm. Default is the non-standard finite-difference.
 	%
 	\item {\tt \em \small optimize-bunch-position} is a boolean flag that tells the solver to automatically shift the bunch so that it resides in the middle of the computational domain after passing through the undulator entrance. This parameter is by default set to false.
+	%
+	\item {\tt \em \small initial-time-back-shift} is a real positive value that tells the solver to start the simulation from a time before the standard initial condition of solver. We comment that the solver automatically places the bunch head in a given distance from the undulator entrance.
 \end{itemize}
 
 The format of the {\tt \em \small MESH} group is:
@@ -107,6 +109,7 @@ MESH
 	space-charge  				= < true | false >
 	solver						= < NSFD | FD >
 	optimize-bunch-position		= < true | false >
+	initial-time-back-shift 	= < real >
 \}
 \end{Verbatim}
 %%
@@ -127,6 +130,7 @@ MESH
 	space-charge				 = false
 	solver						 = NSFD
 	optimize-bunch-position		 = false
+	initial-time-back-shift 	 = 0.0
 \}
 \end{Verbatim}
 \end{snugshade}
@@ -362,7 +366,7 @@ In what follows, the parameters in each group are introduced:
 \item {\tt \small \em field-initialization:} This group mainly determines the parameters whose values are needed for initializing a field excitation entering the computational domain. The excitation may have different types. This group is where a seed can be added to the simulations to simulate a seeded-FEL problem. The set of values accepted in this group include:
 %
 \begin{itemize}
-	\item {\tt \small \em type} is the type of the excitation. The accepted excitation types in MITHRA include plane wave, confined plane-wave, and Gaussian beam. A confined plane-wave is a plane-wave that introduces fields to the particle only over an ellipse determined by beam radii.
+	\item {\tt \small \em type} is the type of the excitation or the seed field. The accepted excitation types in MITHRA include plane wave, truncated plane-wave, Gaussian beam, and super-Gaussian beam. A truncated plane-wave is a plane-wave that introduces fields to the particle only over an ellipse determined by beam radii.
 	%
 	\item {\tt \small \em position} is the reference position of the excitation. It is the reference position of the plane wave propagation in the plane-wave excitation and the focusing point in the Gaussian beam excitation. The coordinate system for this position vector is the same as for bunch position vector. Typically, the focal point or the reference position of the seed is given with respect to the undulator begin. Therefore, special care should be exercised with this position vector;
 	If the reference position with respect to undulator begin is $z_0$, then the value for seed reference position should be given as $z_0 + l_z + 10\lambda_X$, where $l_z$ is the {\tt \small \em longitudinal truncation} value and $\lambda_X$ is the radiation wavelength.
@@ -371,9 +375,13 @@ In what follows, the parameters in each group are introduced:
 	%
 	\item {\tt \small \em polarization} is the polarization of the incoming excitation and is used by both plane-wave and Gaussian-beam types.
 	%
-	\item {\tt \small \em radius-parallel} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction parallel to the polarization. For the confined plane-wave it is the radius of the ellipse along the polarization direction confining the plane wave.
+	\item {\tt \small \em radius-parallel} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction parallel to the polarization. For the truncated plane-wave it is the radius of the ellipse along the polarization direction confining the plane wave.
 	%
-	\item {\tt \small \em radius-perpendicular} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction perpendicular to the polarization. For the confined plane-wave it is the radius of the ellipse perpendicular to the polarization direction confining the plane-wave.
+	\item {\tt \small \em radius-perpendicular} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction perpendicular to the polarization. For the truncated plane-wave it is the radius of the ellipse perpendicular to the polarization direction confining the plane-wave.
+	%
+	\item {\tt \small \em order-parallel} is the order of the super Gaussian beam along the field polarization.
+	%
+	\item {\tt \small \em order-perpendicular} is the order of the super Gaussian beam perpendicular to the field polarization.
 	%
 	\item {\tt \small \em signal-type} determines the time signature of the signal exciting the fields according to the particular type. The accepted signal types in MITHRA include modulated Neumann, modulated Gaussian, modulated secant hyperbolic and the sinusoidal pulse. The equation representing the time domain variation of each pulse is as follows:
 	%
@@ -465,12 +473,15 @@ FIELD
 \{
 	field-initialization
 	\{
-		type  					 = < plane-wave | confined-plane-wave | gaussian-beam >
+		type  					 = < plane-wave | truncated-plane-wave | gaussian-beam |
+									 super-gaussian-beam >
 		position  				 = < ( real, real, real ) >
 		direction  				 = < ( real, real, real ) >
 		polarization  			 = < ( real, real, real ) >
 		radius-parallel  		 = < real >
 		radius-perpendicular  	 = < real >
+		order-parallel			 = < int >
+		order-perpendicular		 = < int >
 		signal-type  			 = < neumann | gaussian | secant-hyperbolic | flat-top >
 		strength-parameter  	 = < real >
 		offset  				 = < real >
@@ -608,7 +619,7 @@ Note that the reference undulator for initializing bunches or setting the electr
     %
     \item {\tt \small \em offset} determines the point where the beginning of undulator resides. For the first undulator, it is automatically set to zero.
     %
-    \item {\tt \small \em distance-to-bunch-head} determines the distance between the undulator entrance and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default two undulator periods.
+    \item {\tt \small \em distance-to-bunch-head} determines the distance between the {\em first} undulator entrance and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default two undulator periods. In MITHRA, the radiation of the particles are calculated after they pass through this point. Therefore, this value has a different effect compared to the {\tt \small \em initial-time-back-shift} parameter that only shifts the particle in time.
     %
 \end{itemize}
 %
@@ -631,14 +642,14 @@ Note that the reference undulator for initializing bunches or setting the electr
     %
     \item {\tt \small \em tapering-parameter} is the tapering parameter of the undulator array, i.e. $\delta K$ in $K_i=K_0+i \delta K$ giving the K parameters of the $i$'th undulator module.
     %
-    \item {\tt \small \em distance-to-bunch-head} determines the distance between the {\em first} undulator entrance and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default two undulator periods.
+    \item {\tt \small \em distance-to-bunch-head} determines the distance between the {\em first} undulator entrance and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default two undulator periods. In MITHRA, the radiation of the particles are calculated after they pass through this point. Therefore, this value has a different effect compared to the {\tt \small \em initial-time-back-shift} parameter that only shifts the particle in time.
     %
 \end{itemize}
 %
 \item {\tt \small \em optical-undulator:} This group mainly determines the parameters for defining an optical undulator. The set of values accepted in this group include:
 %
 \begin{itemize}
-	\item {\tt \small \em beam-type} is the type of the pulse for an optical undulator. The accepted undulator beam types in MITHRA include plane wave, confined plane-wave, and Gaussian beam. A confined plane-wave is a plane-wave that introduces fields to the particle only over an ellipse determined by beam waist.
+	\item {\tt \small \em beam-type} is the type of the pulse for an optical undulator. The accepted excitation types in MITHRA include plane wave, truncated plane-wave, Gaussian beam, and super-Gaussian beam. A truncated plane-wave is a plane-wave that introduces fields to the particle only over an ellipse determined by beam radii. In addition, for each beam type an equivalent standing wave type can be defined, which represents superposition of two beams with same properties propagating counter to each other.
 	%
 	\item {\tt \small \em position} is the reference position of the undulator. It is the reference position of the plane-wave propagation in the plane-wave undulator and the focusing point in the Gaussian beam undulator.
 	%
@@ -646,9 +657,13 @@ Note that the reference undulator for initializing bunches or setting the electr
 	%
 	\item {\tt \small \em polarization} is the polarization of the undulator and is used by both plane-wave and Gaussian beam types.
 	%
-	\item {\tt \small \em radius-parallel} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction parallel to the polarization. For the confined plane-wave it is the radius of the ellipse along the polarization direction confining the plane-wave.
+	\item {\tt \small \em radius-parallel} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction parallel to the polarization. For the truncated plane-wave it is the radius of the ellipse along the polarization direction confining the plane-wave.
 	%
-	\item {\tt \small \em radius-perpendicular} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction perpendicular to the polarization. For the confined plane-wave it is the radius of the ellipse perpendicular to the polarization direction confining the plane-wave.
+	\item {\tt \small \em radius-perpendicular} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction perpendicular to the polarization. For the truncated plane-wave it is the radius of the ellipse perpendicular to the polarization direction confining the plane-wave.
+	%
+	\item {\tt \small \em order-parallel} is the order of the super Gaussian beam along the field polarization.
+	%
+	\item {\tt \small \em order-perpendicular} is the order of the super Gaussian beam perpendicular to the field polarization.
 	%
 	\item {\tt \small \em signal-type} determines the time signature of the undulator. The accepted signal types in MITHRA are listed in the field section. Here, the same set of signal can be given as an undulator envelope.
 	%
@@ -661,6 +676,8 @@ Note that the reference undulator for initializing bunches or setting the electr
 	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal.
 	%
 	\item {\tt \small \em CEP} is the carrier envelope phase $\phi_{\mathrm{CEP}}$ of the modulated signal.
+	%
+	\item {\tt \small \em distance-to-bunch-head} determines the distance between the reference position of the optical undulator and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default ten undulator periods for optical undulators. In MITHRA, the radiation of the particles are calculated after they pass through this point. Therefore, this value has a different effect compared to the {\tt \small \em initial-time-back-shift} parameter that only shifts the particle in time.
 \end{itemize}
 %
 \end{enumerate}
@@ -694,18 +711,24 @@ UNDULATOR
 
 	\textcolor{red}{optical-undulator}
 	\textcolor{red}{\{}
-		beam-type				  = < plane-wave | confined-plane-wave | gaussian-beam >
+		beam-type  				  = < plane-wave | standing-plane-wave |
+									  truncated-plane-wave | standing-truncated-plane-wave |
+									  gaussian-beam | standing-gaussian-beam |
+									  super-gaussian-beam | standing-super-gaussian-beam >
 		position				  = < ( real, real, real ) >
 		direction				  = < ( real, real, real ) >
 		polarization			  = < ( real, real, real ) >
 		radius-parallel			  = < real >
 		radius-perpendicular	  = < real >
+		order-parallel			  = < int >
+		order-perpendicular		  = < int >
 		signal-type				  = < neumann | gaussian | secant-hyperbolic | flat-top >
 		strength-parameter		  = < real >
 		offset					  = < real >
 		pulse-length			  = < real >
 		wavelength				  = < real >
 		CEP						  = < real >
+		distance-to-bunch-head    = < real >
 	\textcolor{red}{\}}
 \}
 \end{Verbatim}
@@ -775,7 +798,7 @@ The current version of MITHRA accepts the following set of external fields:
 %
 \begin{itemize}
 	%
-    \item {\tt \small \em beam-type} is the type of the beam. The accepted excitation types in MITHRA include plane-wave, confined plane-wave and Gaussian beam. A confined plane-wave is a plane-wave that introduces fields to the particle only over an ellipse determined by beam radii.
+    \item {\tt \small \em beam-type} is the type of the beam. The accepted excitation types in MITHRA include plane wave, truncated plane-wave, Gaussian beam, and super-Gaussian beam. A truncated plane-wave is a plane-wave that introduces fields to the particle only over an ellipse determined by beam radii. In addition, for each beam type an equivalent standing wave type can be defined, which represents superposition of two beams with same properties propagating counter to each other.
     %
     \item {\tt \small \em position} is the reference position of the excitation. It is the reference position of the plane-wave propagation in the plane-wave excitation and the focusing point in the Gaussian beam excitation.
     %
@@ -786,6 +809,10 @@ The current version of MITHRA accepts the following set of external fields:
 	\item {\tt \small \em radius-parallel} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction parallel to the polarization. For the confined plane-wave, it is the radius of the ellipse along the polarization direction confining the plane-wave.
 	%
 	\item {\tt \small \em radius-perpendicular} is the Rayleigh radius (beam waist) of the Gaussian beam in the direction perpendicular to the polarization. For the confined plane-wave, it is the radius of the ellipse perpendicular to the polarization direction confining the plane-wave.
+	%
+	\item {\tt \small \em order-parallel} is the order of the super Gaussian beam along the field polarization.
+	%
+	\item {\tt \small \em order-perpendicular} is the order of the super Gaussian beam perpendicular to the field polarization.
 	%
 	\item {\tt \small \em signal-type} determines the time signature of the signal exciting the fields according to the particular type. The accepted signal types in MITHRA include modulated Neumann, modulated Gaussian, modulated secant-hyperbolic and the sinusoidal pulse. The equation representing the time domain variation of each pulse is as follows:
 	%
@@ -818,12 +845,17 @@ EXTERNAL-FIELD
 \{
 	\textcolor{red}{electromagnetic-wave}
 	\textcolor{red}{\{}
-		beam-type				  = < plane-wave | confined-plane-wave | gaussian-beam >
+		beam-type  				  = < plane-wave | standing-plane-wave |
+									  truncated-plane-wave | standing-truncated-plane-wave |
+									  gaussian-beam | standing-gaussian-beam |
+									  super-gaussian-beam | standing-super-gaussian-beam >
 		position				  = < ( real, real, real ) >
 		direction				  = < ( real, real, real ) >
 		polarization			  = < ( real, real, real ) >
 		radius-parallel			  = < real >
 		radius-perpendicular	  = < real >
+		order-parallel			  = < int >
+		order-perpendicular		  = < int >
 		signal-type				  = < neumann | gaussian | secant-hyperbolic | flat-top >
 		strength-parameter		  = < real >
 		offset					  = < real >

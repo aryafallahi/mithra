@@ -7,6 +7,7 @@
 #include <sys/time.h>
 
 #include "solver.h"
+#include "beam.cc"
 
 namespace MITHRA
 {
@@ -39,15 +40,17 @@ namespace MITHRA
     N0_ = N1_ = N2_ = 0;
 
     /* Reset the time and the time number of the FdTd class.						*/
-    timep1_	   =  mesh_.timeStep_;
+    timep1_	   =  0.0;
     time_  	   =  0.0;
-    timem1_	   = -mesh_.timeStep_;
+    timem1_	   =  0.0;
     nTime_ 	   =  0;
     nTimeBunch_    =  0;
 
     /* Initialize the value of MPI variables.								*/
     MPI_Comm_rank(MPI_COMM_WORLD,&rank_);
     MPI_Comm_size(MPI_COMM_WORLD,&size_);
+    rankB_ = ( rank_ == 0 ) ? size_ - 1 : rank_ - 1;
+    rankF_ = ( rank_ == size_ - 1 ) ? 0 : rank_ + 1;
 
     /* Initialize the speed of light value according to the given length scale and time scale.		*/
     c0_ = C0 / mesh_.lengthScale_ * mesh_.timeScale_;
@@ -70,19 +73,39 @@ namespace MITHRA
     seed_.signal_.t0_ 		/= c0_;
     seed_.signal_.f0_ 		*= c0_;
     seed_.signal_.s_          	/= c0_;
+
+    seed_.l_ 		 	 = c0_ / seed_.signal_.f0_;
+    seed_.zR_.resize(2,0.0);
+
+    seed_.zR_[0] 		 = PI * seed_.radius_[0] * seed_.radius_[0] / seed_.l_;
+    seed_.zR_[1] 		 = PI * seed_.radius_[1] * seed_.radius_[1] / seed_.l_;
+
     for (std::vector<Undulator>::iterator iter = undulator_.begin(); iter != undulator_.end(); iter++)
       {
 	iter->c0_ 	       	 = c0_;
 	iter->signal_.t0_     	/= c0_;
 	iter->signal_.f0_ 	*= c0_;
 	iter->signal_.s_ 	/= c0_;
+
+	iter->l_ 		 = c0_ / iter->signal_.f0_;
+	iter->zR_.resize(2,0.0);
+
+	iter->zR_[0] 		 = PI * iter->radius_[0] * iter->radius_[0] / iter->l_;
+	iter->zR_[1] 		 = PI * iter->radius_[1] * iter->radius_[1] / iter->l_;
       }
+
     for (std::vector<ExtField>::iterator iter = extField_.begin(); iter != extField_.end(); iter++)
       {
 	iter->c0_ 	         = c0_;
 	iter->signal_.t0_     	/= c0_;
 	iter->signal_.f0_ 	*= c0_;
 	iter->signal_.s_ 	/= c0_;
+
+	iter->l_ 		 = c0_ / iter->signal_.f0_;
+	iter->zR_.resize(2,0.0);
+
+	iter->zR_[0] 		 = PI * iter->radius_[0] * iter->radius_[0] / iter->l_;
+	iter->zR_[1] 		 = PI * iter->radius_[1] * iter->radius_[1] / iter->l_;
       }
 
     /****************************************************************************************************/
@@ -197,6 +220,7 @@ namespace MITHRA
     mesh_.meshResolution_[2] 	*= gamma_;
     mesh_.meshCenter_[2] 	*= gamma_;
     mesh_.totalTime_		/= gamma_;
+    mesh_.timeShift_		/= gamma_;
 
     /****************************************************************************************************/
 
@@ -285,7 +309,8 @@ namespace MITHRA
     if ( undulator_.size() > 0 )
       {
 	Double nl = ( undulator_[0].type_ == STATIC ) ? 2.0 : 10.0;
-	if (undulator_[0].dist_ == 0.0) undulator_[0].dist_ = nl * undulator_[0].lu_;
+	if (undulator_[0].dist_ == 0.0)
+	  undulator_[0].dist_ = nl * undulator_[0].lu_;
 	else if (undulator_[0].dist_ < nl * undulator_[0].lu_)
 	  printmessage(std::string(__FILE__), __LINE__, std::string("Warning: the undulator is set very close to the bunch, the results may be inaccurate.") );
 	dt_ 		= - 1.0 / ( beta_ * undulator_[0].c0_ ) * ( zmaxG + undulator_[0].dist_ / gamma_ );
@@ -402,7 +427,7 @@ namespace MITHRA
     std::list<Charge>::iterator it = chargeVector.begin();
     while(it != chargeVector.end())
       {
-	if ( ( it->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( it->rnp[2] >= zp_[0] || rank_ == 0 ) )
+	if ( particleInProcessor( it->rnp[2] ) )
 	  it++;
 	else
 	  {
@@ -417,33 +442,41 @@ namespace MITHRA
 	  }
       }
 
-    /* Send the charges that were erased from the charge vector.					*/
-    int sizeSend = sendCV.size();
-    int *counts = new int [size_], *disps = new int [size_];
-    MPI_Allgather( &sizeSend, 1, MPI_INT, counts, 1, MPI_INT, MPI_COMM_WORLD );
-    for (int i = 0; i < size_; i++)
-      disps[i] = (i > 0) ? (disps[i-1] + counts[i-1]) : 0;
-    std::vector<Double> recvCV (disps[size_-1] + counts[size_-1], 0);
-    MPI_Allgatherv(&sendCV[0], sizeSend, MPI_DOUBLE, &recvCV[0], counts, disps, MPI_DOUBLE, MPI_COMM_WORLD);
-
-    /* And now replace all the charges in the charge vector of the corresponding processor.  		*/
-    unsigned i = 0;
-    Charge charge;
-    while (i < recvCV.size() )
+    /* Do a for loop over processors and put the charges in the correct processor.			*/
+    for ( unsigned int ip = 0; ip < size_; ip++ )
       {
-	if ( (recvCV[i+3] < zp_[1] || rank_ == size_ - 1) && (recvCV[i+3] >= zp_[0] || rank_ == 0) )
+	/* Get the size of the data to be sent by i'th processor.					*/
+	int sizeSend = sendCV.size();
+
+	/* Broadcast the size to all other processors.							*/
+	MPI_Bcast(&sizeSend, 1, MPI_INT, ip, MPI_COMM_WORLD);
+
+	/* Initialize the receive buffer.								*/
+	std::vector<Double> recvCV (sizeSend);
+	if ( ip == rank_ ) recvCV = sendCV;
+
+	/* Now broadcast the data from i'th processor to all other processors.				*/
+	MPI_Bcast(&recvCV[0], sizeSend, MPI_DOUBLE, ip, MPI_COMM_WORLD);
+
+	/* And now place all the charges in the charge vector of the corresponding processor.  		*/
+	unsigned int i = 0;
+	Charge charge;
+	while (i < recvCV.size() )
 	  {
-	    charge.q 		= recvCV[i++];
-	    charge.rnp[0] 	= recvCV[i++];
-	    charge.rnp[1] 	= recvCV[i++];
-	    charge.rnp[2] 	= recvCV[i++];
-	    charge.gbnp[0] 	= recvCV[i++];
-	    charge.gbnp[1] 	= recvCV[i++];
-	    charge.gbnp[2] 	= recvCV[i++];
-	    chargeVector.push_back(charge);
+	    if ( particleInProcessor(recvCV[i+3]) )
+	      {
+		charge.q 	= recvCV[i++];
+		charge.rnp[0] 	= recvCV[i++];
+		charge.rnp[1] 	= recvCV[i++];
+		charge.rnp[2] 	= recvCV[i++];
+		charge.gbnp[0] 	= recvCV[i++];
+		charge.gbnp[1] 	= recvCV[i++];
+		charge.gbnp[2] 	= recvCV[i++];
+		chargeVector.push_back(charge);
+	      }
+	    else
+	      i += 7;
 	  }
-	else
-	  i += 7;
       }
   }
 
@@ -534,6 +567,9 @@ namespace MITHRA
 
     /* Initialize required data for saving particles hitting screens.					*/
     initializeScreenProfile();
+
+    /* Shift the time of the bunch and undulator according to the given time shift.			*/
+    shiftBackInTime();
   }
 
   /******************************************************************************************************
@@ -567,7 +603,7 @@ namespace MITHRA
 	  }
 	else if ( rank_ == size_ - 1 )
 	  {
-	    np_ = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 3;
+	    np_ = N2_ - ( size_ - 1 ) * ( N2_ / size_ ) + 1;
 	    k0_ = ( size_ - 1 ) * ( N2_ / size_ ) - 1;
 	  }
 	else
@@ -619,13 +655,16 @@ namespace MITHRA
 	    r_[m][1] = ymin_ + j         * mesh_.meshResolution_[1];
 	    r_[m][2] = zmin_ + (k + k0_) * mesh_.meshResolution_[2];
 
-	    if 		( k == 0 ) 		zp_[0] = r_[m][2];
-	    else if 	( k == np_ - 2 ) 	zp_[1] = r_[m][2];
+	    if 		( k == 0 ) 		
+	      zp_[0] = r_[m][2];
+	    else if 	( k == np_ - ( ( rank_ == size_ - 1 ) ? 1 : 2 ) ) 	
+	      zp_[1] = r_[m][2];
 	  }
 
-    /* Initialize the time points for the fields in the domain.						*/
-    timep1_ += mesh_.timeStep_;
-    timem1_ -= mesh_.timeStep_;
+    /* Initialize the time values for the field update.							*/
+    timep1_	   =  mesh_.timeStep_;
+    time_  	   =  0.0;
+    timem1_	   = -mesh_.timeStep_;
 
     printmessage(std::string(__FILE__), __LINE__, std::string("The temporal and spatial mesh of the problem is initialized. :::") );
   }
@@ -646,7 +685,7 @@ namespace MITHRA
     uc_.dy = mesh_.meshResolution_[1];
     uc_.dz = mesh_.meshResolution_[2];
     uc_.dv = - m0_ * EC / mesh_.timeStep_ /   ( uc_.dx * uc_.dy * uc_.dz );
-    uc_.rc = - EC / e0_ /	                  ( uc_.dx * uc_.dy * uc_.dz );
+    uc_.rc = - EC / e0_ /	              ( uc_.dx * uc_.dy * uc_.dz );
     FieldVector<Double> ZERO_VECTOR (0.0);
     uc_.jt.resize(N1N0_,ZERO_VECTOR);
     if ( mesh_.spaceCharge_ ) uc_.rt.resize(N1N0_,0.0);
@@ -691,21 +730,21 @@ namespace MITHRA
 
     Double d   = 1.0 / ( 2.0 * uf_.dt * uf_.dx ) + p / ( 2.0 * c0_ * uf_.dt * uf_.dt );
 
-    uf_.bB[0]	 = (   1.0 / ( 2.0 * uf_.dt * uf_.dx ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
-    uf_.bB[1]	 = ( - 1.0 / ( 2.0 * uf_.dt * uf_.dx ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
-    uf_.bB[2]  = (   p   / ( c0_ * uf_.dt * uf_.dt ) + q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( uf_.dy * uf_.dy ) + c0_ / ( uf_.dz * uf_.dz ) ) ) / d;
-    uf_.bB[3]  = - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dy * uf_.dy ) ) / d ;
-    uf_.bB[4]  = - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dz * uf_.dz ) ) / d ;
+    uf_.bB[0]	= (   1.0 / ( 2.0 * uf_.dt * uf_.dx ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
+    uf_.bB[1]	= ( - 1.0 / ( 2.0 * uf_.dt * uf_.dx ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
+    uf_.bB[2]	= (   p   / ( c0_ * uf_.dt * uf_.dt ) + q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( uf_.dy * uf_.dy ) + c0_ / ( uf_.dz * uf_.dz ) ) ) / d;
+    uf_.bB[3]	= - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dy * uf_.dy ) ) / d ;
+    uf_.bB[4]	= - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dz * uf_.dz ) ) / d ;
 
     /* y = 0 and y = h boundary coefficients.								*/
 
     d  	 = 1.0 / ( 2.0 * uf_.dt * uf_.dy ) + p / ( 2.0 * c0_ * uf_.dt * uf_.dt );
 
-    uf_.cB[0]	 = (   1.0 / ( 2.0 * uf_.dt * uf_.dy ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
-    uf_.cB[1]	 = ( - 1.0 / ( 2.0 * uf_.dt * uf_.dy ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
-    uf_.cB[2]  = (   p / ( c0_ * uf_.dt * uf_.dt ) + q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( uf_.dx * uf_.dx ) + c0_ / ( uf_.dz * uf_.dz ) ) ) / d;
-    uf_.cB[3]  = - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dx * uf_.dx ) ) / d ;
-    uf_.cB[4]  = - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dz * uf_.dz ) ) / d ;
+    uf_.cB[0]	= (   1.0 / ( 2.0 * uf_.dt * uf_.dy ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
+    uf_.cB[1]	= ( - 1.0 / ( 2.0 * uf_.dt * uf_.dy ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
+    uf_.cB[2]	= (   p / ( c0_ * uf_.dt * uf_.dt ) + q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( uf_.dx * uf_.dx ) + c0_ / ( uf_.dz * uf_.dz ) ) ) / d;
+    uf_.cB[3]	= - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dx * uf_.dx ) ) / d ;
+    uf_.cB[4]	= - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dz * uf_.dz ) ) / d ;
 
     /* z = 0 and z = h boundary coefficients.								*/
 
@@ -716,11 +755,11 @@ namespace MITHRA
 
     d  	 = 1.0 / ( 2.0 * uf_.dt * uf_.dz ) + p / ( 2.0 * c0_ * uf_.dt * uf_.dt );
 
-    uf_.dB[0]	 = (   1.0 / ( 2.0 * uf_.dt * uf_.dz ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
-    uf_.dB[1]	 = ( - 1.0 / ( 2.0 * uf_.dt * uf_.dz ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
-    uf_.dB[2]  = (   p / ( c0_ * uf_.dt * uf_.dt ) + q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( uf_.dx * uf_.dx ) + c0_ / ( uf_.dy * uf_.dy ) ) ) / d;
-    uf_.dB[3]  = - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dx * uf_.dx ) ) / d ;
-    uf_.dB[4]  = - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dy * uf_.dy ) ) / d ;
+    uf_.dB[0]	= (   1.0 / ( 2.0 * uf_.dt * uf_.dz ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
+    uf_.dB[1]	= ( - 1.0 / ( 2.0 * uf_.dt * uf_.dz ) - p / ( 2.0 * c0_ * uf_.dt * uf_.dt ) ) / d;
+    uf_.dB[2]  	= (   p / ( c0_ * uf_.dt * uf_.dt ) + q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( uf_.dx * uf_.dx ) + c0_ / ( uf_.dy * uf_.dy ) ) ) / d;
+    uf_.dB[3]  	= - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dx * uf_.dx ) ) / d ;
+    uf_.dB[4]  	= - q * ( mesh_.truncationOrder_ - 1.0 ) * ( c0_ / ( 2.0 * uf_.dy * uf_.dy ) ) / d ;
 
     /* Edge coefficients for edges along z.								*/
     d  	= ( 1.0 / uf_.dy + 1.0 / uf_.dx ) / ( 4.0 * uf_.dt ) + 3.0 / ( 8.0 * c0_ * uf_.dt * uf_.dt );
@@ -1119,6 +1158,34 @@ namespace MITHRA
   }
 
   /******************************************************************************************************
+   * After the data is initialized, if the time shift is non-zero, shift the bunch and undulator back in
+   * time.
+   ******************************************************************************************************/
+  void Solver::shiftBackInTime()
+  {
+    /* Check first if the time shift is nonzero.							*/
+    if ( mesh_.timeShift_ != 0.0 )
+      {
+	/* To shift the undulator back in time, it is merely enough to manipulate the dt_ factor.	*/
+	timem1_ 	-= mesh_.timeShift_;
+	time_   	-= mesh_.timeShift_;
+	timep1_ 	-= mesh_.timeShift_;
+	timeBunch_ 	-= mesh_.timeShift_;
+
+	/* To shift the bunch back in time the values of rnm and rnp shoud be manipulated.		*/
+	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
+	  {
+	    Double t  	= c0_ * mesh_.timeShift_ / std::sqrt(1.0 + iterQ->gbnp.norm2());
+	    iterQ->rnp.mmv( t , iterQ->gbnp );
+	  }
+
+	/* Distribute particles in their respective processor, depending on their longitudinal
+	 * coordinate.											*/
+	distributeParticles(chargeVectorn_);
+      }
+  }
+
+  /******************************************************************************************************
    * The function which is called for solving the fields in time domain.
    ******************************************************************************************************/
 
@@ -1211,11 +1278,11 @@ namespace MITHRA
 
 	/* If sampling of the bunch is enabled and the rhythm for sampling is achieved. Sample the
 	 * bunch and save them into the file.								*/
-	if ( bunch_.sampling_ && fmod(time_, bunch_.rhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchSample();
+	if ( bunch_.sampling_ && fmod(time_ + mesh_.timeShift_ , bunch_.rhythm_) < mesh_.timeStep_ && ( time_ + mesh_.timeShift_ > 0.0 ) ) bunchSample();
 
 	/* If visualization of the bunch is enabled and the rhythm for visualization is achieved,
 	 * visualize the bunch and save the vtk data in the given file name.				*/
-	if ( bunch_.bunchVTK_ && fmod(time_, bunch_.bunchVTKRhythm_) < mesh_.timeStep_ && time_ > 0.0 ) bunchVisualize();
+	if ( bunch_.bunchVTK_ && fmod(time_ + mesh_.timeShift_ , bunch_.bunchVTKRhythm_) < mesh_.timeStep_ && ( time_ + mesh_.timeShift_ > 0.0 ) ) bunchVisualize();
 
 	/* If profiling of the bunch is enabled and the time for profiling is achieved, write the bunch
 	 * profile and save the data in the given file name.						*/
@@ -1224,7 +1291,7 @@ namespace MITHRA
 	    for (unsigned int i = 0; i < (bunch_.bunchProfileTime_).size(); i++)
 	      if ( time_ - bunch_.bunchProfileTime_[i] < mesh_.timeStep_ && time_ > bunch_.bunchProfileTime_[i] )
 		bunchProfile();
-	    if ( fmod(time_, bunch_.bunchProfileRhythm_) < mesh_.timeStep_ && time_ > 0.0 && bunch_.bunchProfileRhythm_ != 0.0 )
+	    if ( fmod(time_ + mesh_.timeShift_ , bunch_.bunchProfileRhythm_) < mesh_.timeStep_ && ( time_ + mesh_.timeShift_ > 0.0 ) && ( bunch_.bunchProfileRhythm_ != 0.0 ) )
 	      bunchProfile();
 	  }
 
@@ -1248,15 +1315,14 @@ namespace MITHRA
 	deltaTime  = ( simulationEnd.tv_usec - simulationStart.tv_usec ) / 1.0e6;
 	deltaTime += ( simulationEnd.tv_sec - simulationStart.tv_sec );
 
-	if ( rank_ == 0 && time_/mesh_.totalTime_ * 1000.0 > p )
+	if ( rank_ == 0 && ( int(time_/mesh_.totalTime_ * 1000.0) !=  int(timem1_/mesh_.totalTime_ * 1000.0) ) )
 	  {
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Percentage of the simulation completed (%)      = ") +
-			 stringify(time_/mesh_.totalTime_ * 100.0) );
+			 stringify( ( time_ + mesh_.timeShift_ ) / ( mesh_.totalTime_ + mesh_.timeShift_ ) * 100.0 ) );
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Average calculation time for each time step (s) = ") +
 			 stringify(deltaTime/(double)(nTime_))     );
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Estimated remaining time (min)                  = ") +
-			 stringify( (mesh_.totalTime_/time_ - 1) * deltaTime / 60 ) );
-	    p += 1.0;
+			 stringify( ( ( mesh_.totalTime_ + mesh_.timeShift_ ) / ( time_ + mesh_.timeShift_ ) - 1) * deltaTime / 60 ) );
 	  }
       }
 
@@ -1284,7 +1350,8 @@ namespace MITHRA
     for ( auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++ )
       {
 	/* If the particle does not belong to this processor continue the loop over particles         	*/
-	if ( !( ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) && ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) ) ) continue;
+	ubp.zr = pmod( iter->rnp[2] - zmin_ , mesh_.meshLength_[2] ) + zmin_;
+	if ( ! ( ( ubp.zr >= zp_[0] ) && ( ubp.zr < zp_[1] ) ) ) continue;
 
 	/* Get the boolean flag determining if the particle resides in the computational domain.      	*/
 	ubp.b1x = ( iter->rnp[0] < xmax_ - ub_.dx && iter->rnp[0] > xmin_ + ub_.dx );
@@ -1295,14 +1362,15 @@ namespace MITHRA
 	ubp.bt = 0.0;
 	ubp.et = 0.0;
 
+	/* Calculate the undulator field at the particle position.				        */
+	undulatorField(ubp, iter->rnp);
+
+	/* Calculate the external field at the particle position and add to the undulator field.	*/
+	externalField(ubp, iter->rnp);
+
 	/* Compute the fields if the particle has passed the entrance zone of the undulator.		*/
 	if ( iter->e == 1.0 )
 	  {
-	    /* Calculate the undulator field at the particle position.				        */
-	    undulatorField(ubp, iter->rnp);
-
-	    /* Calculate the external field at the particle position and add to the undulator field.	*/
-	    externalField(ubp, iter->rnp);
 
 	    if ( ubp.b1x && ubp.b1y && ubp.b1z )
 	      {
@@ -1379,11 +1447,17 @@ namespace MITHRA
 	iter->gbnp = ubp.gbpl;
 	iter->gbnp.pmv( ub_.r1 , ubp.et );
 
+	/* Determine the movement of the particle.							*/
+	ubp.dr.mv( ub_.dtb / sqrt (1.0 + iter->gbnp.norm2()) , iter->gbnp );
+
 	/* Determine the final position of the particle.				                */
-	iter->rnp.pmv( ub_.dtb / sqrt (1.0 + iter->gbnp.norm2()) , iter->gbnp );
+	iter->rnp += ubp.dr;
+
+	/* Calculate the relative coordinate for processor association.					*/
+	ubp.zr += ubp.dr[2];
 
 	/* If the particle enters the adjacent computational domain, save it to communication buffer. 	*/
-	if ( iter->rnp[2] < zp_[0] && rank_ != 0 )
+	if ( ubp.zr < zp_[0] )
 	  {
 	    ubp.qSB.push_back( iter->q       );
 	    ubp.qSB.push_back( iter->rnp [0] );
@@ -1400,7 +1474,7 @@ namespace MITHRA
 	    ubp.qSB.push_back( iter->gbnm[2] );
 	    ubp.qSB.push_back( iter->e 	     );
 	  }
-	else if ( iter->rnp[2] >= zp_[1] && rank_ != size_ - 1 )
+	else if ( ubp.zr >= zp_[1] )
 	  {
 	    ubp.qSF.push_back( iter->q       );
 	    ubp.qSF.push_back( iter->rnp [0] );
@@ -1420,27 +1494,19 @@ namespace MITHRA
       }
 
     /* Now communicate the charges which propagate throughout the borders to other processors.		*/
-    if (rank_ != 0)
-      MPI_Send(&ubp.qSB[0],ubp.qSB.size(),MPI_DOUBLE,rank_-1,msgtag1,MPI_COMM_WORLD);
+    MPI_Send(&ubp.qSB[0],ubp.qSB.size(),MPI_DOUBLE,rankB_,msgtag1,MPI_COMM_WORLD);
 
-    if (rank_ != size_ - 1)
-      {
-	MPI_Probe(rank_+1,msgtag1,MPI_COMM_WORLD,&status);
-	MPI_Get_count(&status,MPI_DOUBLE,&ub_.nL);
-	ubp.qRF.resize(ub_.nL);
-	MPI_Recv(&ubp.qRF[0],ub_.nL,MPI_DOUBLE,rank_+1,msgtag1,MPI_COMM_WORLD,&status);
-      }
+    MPI_Probe(rankF_,msgtag1,MPI_COMM_WORLD,&status);
+    MPI_Get_count(&status,MPI_DOUBLE,&ub_.nL);
+    ubp.qRF.resize(ub_.nL);
+    MPI_Recv(&ubp.qRF[0],ub_.nL,MPI_DOUBLE,rankF_,msgtag1,MPI_COMM_WORLD,&status);
 
-    if (rank_ != size_ - 1)
-      MPI_Send(&ubp.qSF[0],ubp.qSF.size(),MPI_DOUBLE,rank_+1,msgtag2,MPI_COMM_WORLD);
+    MPI_Send(&ubp.qSF[0],ubp.qSF.size(),MPI_DOUBLE,rankF_,msgtag2,MPI_COMM_WORLD);
 
-    if (rank_ != 0)
-      {
-	MPI_Probe(rank_-1,msgtag2,MPI_COMM_WORLD,&status);
-	MPI_Get_count(&status,MPI_DOUBLE,&ub_.nL);
-	ubp.qRB.resize(ub_.nL);
-	MPI_Recv(&ubp.qRB[0],ub_.nL,MPI_DOUBLE,rank_-1,msgtag2,MPI_COMM_WORLD,&status);
-      }
+    MPI_Probe(rankB_,msgtag2,MPI_COMM_WORLD,&status);
+    MPI_Get_count(&status,MPI_DOUBLE,&ub_.nL);
+    ubp.qRB.resize(ub_.nL);
+    MPI_Recv(&ubp.qRB[0],ub_.nL,MPI_DOUBLE,rankB_,msgtag2,MPI_COMM_WORLD,&status);
 
     /* Now insert the newly incoming particles in this processor to the list of particles.            */
     unsigned i = 0;
@@ -1510,7 +1576,7 @@ namespace MITHRA
      * to do weighted additions.                                            				*/
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
-	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+	if ( particleInProcessor(iter->rnp[2]) )
 	  {
 	    sb_.q	 += iter->q;
 	    sb_.r .pmv(   iter->q, iter->rnp );
@@ -1576,7 +1642,7 @@ namespace MITHRA
     /* Store the number of particles in the simulation.							*/
     vb_.N = 0;
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
-      if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+      if ( particleInProcessor(iter->rnp[2]) )
 	vb_.N++;
 
     /* Write the initial data for the vtk file.                                                     	*/
@@ -1592,7 +1658,7 @@ namespace MITHRA
 
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
-	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+	if ( particleInProcessor(iter->rnp[2]) )
 	  *vb_.file << iter->rnp[0] << " " << iter->rnp[1] << " " << iter->rnp[2] 		<< std::endl;
       }
 
@@ -1619,12 +1685,12 @@ namespace MITHRA
 	<< std::endl;
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
-	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+	if ( particleInProcessor(iter->rnp[2]) )
 	  {
 	    gamma = sqrt( 1.0 + iter->gbnp.norm2() );
 	    beta  = iter->gbnp[2] / gamma;
 	    *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
-            								<< " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
+            											<< " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	  }
       }
     *vb_.file << 0.0 << " " << 0.0 << " " << 0.0						<< std::endl;
@@ -1691,7 +1757,7 @@ namespace MITHRA
 
     for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
       {
-	if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+	if ( particleInProcessor(iter->rnp[2]) )
 	  {
 	    /* Loop over the particles and print the data of each particle into the file.		*/
 	    *pb_.file << iter->q  	<< "\t";
@@ -1737,66 +1803,7 @@ namespace MITHRA
 	    ubp.ly = r[0] * ub_.ct + r[1] * ub_.st;
 
 	    /* Now, calculate the undulator field according to the obtained position.               	*/
-	    if ( ubp.lz >= 0.0 && ubp.lz <= iter->length_ * iter->lu_ )
-	      {
-		ubp.d1     = ub_.b0 * cosh(ub_.ku * ubp.ly) * sin(ub_.ku * ubp.lz) * gamma_;
-		ubp.bt[0] += ubp.d1 * ub_.ct;
-		ubp.bt[1] += ubp.d1 * ub_.st;
-		ubp.bt[2] += ub_.b0 * sinh(ub_.ku * ubp.ly) * cos(ub_.ku * ubp.lz);
-
-		ubp.d1    *= c0_ * beta_;
-		ubp.et[1] +=   ubp.d1 * ub_.ct;
-		ubp.et[0] += - ubp.d1 * ub_.st;
-		ubp.et[2] += 0.0;
-	      }
-	    else if ( ubp.lz < 0.0 )
-	      {
-		ubp.sz = exp( - pow( ub_.ku * ubp.lz , 2 ) / 2.0 );
-
-		if ( iter != undulator_.begin() )
-		  {
-		    ubp.i  = iter - undulator_.begin() - 1;
-		    ubp.r0 = undulator_[ubp.i].rb_ + undulator_[ubp.i].length_ * undulator_[ubp.i].lu_ - iter->rb_;
-		    if ( ubp.lz < ubp.r0 || ubp.r0 == 0.0 ) ubp.sz = 0.0;
-		    else
-		      ubp.sz *= 0.35875 + 0.48829 * cos( PI * ubp.lz / ubp.r0 ) + 0.14128 * cos( 2.0 * PI * ubp.lz / ubp.r0 ) + 0.01168 * cos( 3.0 * PI * ubp.lz / ubp.r0 );
-		  }
-
-		ubp.d1     = ub_.b0 * cosh(ub_.ku * ubp.ly ) * ubp.sz * ub_.ku * ubp.lz * gamma_;
-		ubp.bt[0] += ubp.d1 * ub_.ct;
-		ubp.bt[1] += ubp.d1 * ub_.st;
-		ubp.bt[2] += ub_.b0 * sinh(ub_.ku * ubp.ly) * ubp.sz;
-
-		ubp.d1    *= c0_ * beta_;
-		ubp.et[1] +=   ubp.d1 * ub_.ct;
-		ubp.et[0] += - ubp.d1 * ub_.st;
-		ubp.et[2] += 0.0;
-	      }
-	    else if ( ubp.lz > iter->length_ * iter->lu_ )
-	      {
-		ubp.t0 = ubp.lz - iter->length_ * iter->lu_;
-
-		ubp.sz = exp( - pow( ub_.ku *  ubp.t0 , 2 ) / 2.0 );
-
-		if ( iter+1 != undulator_.end() )
-		  {
-		    ubp.i  = iter - undulator_.begin() + 1;
-		    ubp.r0 = undulator_[ubp.i].rb_ - iter->rb_ - iter->length_ * iter->lu_;
-		    if ( ubp.t0 > ubp.r0 || ubp.r0 == 0.0 ) ubp.sz = 0.0;
-		    else
-		      ubp.sz *= 0.35875 + 0.48829 * cos( PI * ubp.t0 / ubp.r0 ) + 0.14128 * cos( 2.0 * PI * ubp.t0 / ubp.r0 ) + 0.01168 * cos( 3.0 * PI * ubp.t0 / ubp.r0 );
-		  }
-
-		ubp.d1     = ub_.b0 * cosh(ub_.ku * ubp.ly ) * ubp.sz * ub_.ku * ubp.t0 * gamma_;
-		ubp.bt[0] += ubp.d1 * ub_.ct;
-		ubp.bt[1] += ubp.d1 * ub_.st;
-		ubp.bt[2] += ub_.b0 * sinh(ub_.ku * ubp.ly ) * ubp.sz;
-
-		ubp.d1    *= c0_ * beta_;
-		ubp.et[1] +=   ubp.d1 * ub_.ct;
-		ubp.et[0] += - ubp.d1 * ub_.st;
-		ubp.et[2] += 0.0;
-	      }
+	    this->staticUndulator(ubp, iter);
 	  }
 	else if ( iter->type_ == OPTICAL )
 	  {
@@ -1813,106 +1820,35 @@ namespace MITHRA
 	    ubp.tl = ubp.t0 - ubp.z / c0_;
 
 	    /* Reset the carrier envelope phase of the pulse.						*/
-	    ubp.p = 0.0;
+	    ubp.p0 = 0.0;
 
-	    /* Now manipulate the electric field vector depending on the specific seed given.		*/
-	    if ( iter->seedType_ == PLANEWAVE )
-	      {
-		/* Retrieve signal value at corrected time.                                   		*/
-		ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+	    /* Now manipulate the electric field vector depending on the specific seed given.           */
+	    switch ( iter->seedType_ )
+	    {
+	      case PLANEWAVE:
+		this->planeWave(ubp, *iter);			break;
 
-		/* Calculate the field only if the signal value is larger than a limit.			*/
-		if ( fabs(ubp.tsignal) < 1.0e-100 ) { ubp.eT = 0.0; ubp.bT = 0.0; }
-		else
-		  {
-		    /* Provide vector to store the electric field of the undulator.              	*/
-		    ubp.eT.mv( iter->amplitude_ * ubp.tsignal, iter->polarization_ );
+	      case PLANEWAVETRUNCATED:
+		this->planeWaveTruncated(ubp, *iter);		break;
 
-		    /* Provide vector to store the magnetic field of the undulator.         		*/
-		    ubp.bT = cross( iter->direction_, iter->polarization_ );
-		    ubp.bT.mv( iter->amplitude_ * ubp.tsignal / c0_, ubp.bT );
-		  }
-	      }
-	    else if ( iter->seedType_ == PLANEWAVECONFINED )
-	      {
-		/* Retrieve signal value at corrected time.                                     	*/
-		ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+	      case GAUSSIANBEAM:
+		this->gaussianBeam(ubp, *iter);			break;
 
-		/* Calculate the transverse distance to the center line.   				*/
-		ubp.x  = ubp.rv * iter->polarization_;
-		ubp.yv = cross( iter->direction_, iter->polarization_ );
-		ubp.y  = ubp.rv * ubp.yv;
+	      case SUPERGAUSSIANBEAM:
+		this->superGaussianBeam(ubp, *iter);		break;
 
-		/* Calculate the field only if the signal value is larger than a limit.			*/
-		if ( fabs(ubp.tsignal) < 1.0e-100 || sqrt( pow(ubp.x/iter->radius_[0],2) + pow(ubp.y/iter->radius_[1],2) ) > 1.0 )
-		  {
-		    ubp.eT = 0.0;
-		    ubp.bT = 0.0;
-		  }
-		else
-		  {
-		    /* Provide vector to store the electric field of the undulator.                 	*/
-		    ubp.eT.mv( iter->amplitude_ * ubp.tsignal, iter->polarization_ );
+	      case STANDINGPLANEWAVE:
+		this->standingPlaneWave(ubp, *iter);		break;
 
-		    /* Provide vector to store the magnetic field of the undulator.              	*/
-		    ubp.bT = cross( iter->direction_, iter->polarization_ );
-		    ubp.bT.mv( iter->amplitude_ * ubp.tsignal / c0_, ubp.bT );
-		  }
-	      }
-	    else if ( iter->seedType_ == GAUSSIANBEAM )
-	      {
-		/* Retrieve signal value at corrected time.                                     	*/
-		ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+	      case STANDINGPLANEWAVETRUNCATED:
+		this->standingPlaneWaveTruncated(ubp, *iter);	break;
 
-		if ( fabs(ubp.tsignal) < 1.0e-100 ) { ubp.eT = 0.0; ubp.bT = 0.0; }
-		else
-		  {
-		    /* Provide vector to store transverse, longitudinal and total  electric field. 	*/
-		    ubp.ex = iter->polarization_;
-		    ubp.ez = iter->direction_;
+	      case STANDINGGAUSSIANBEAM:
+		this->standingGaussianBeam(ubp, *iter);		break;
 
-		    /* Calculate the transverse distance to the center line.   				*/
-		    ubp.x  = ubp.rv * iter->polarization_;
-		    ubp.yv = cross( iter->direction_, iter->polarization_ );
-		    ubp.y  = ubp.rv * ubp.yv;
-
-		    /* Calculate the wavelength corresponding to the given central frequency.		*/
-		    ubp.l = c0_ / iter->signal_.f0_;
-
-		    /* Calculate the Rayleigh length and the relative radius of the beam.     		*/
-		    ubp.zRp = PI * pow( iter->radius_[0] , 2 ) / ubp.l;
-		    ubp.zRs = PI * pow( iter->radius_[1] , 2 ) / ubp.l;
-		    ubp.wrp = sqrt( 1.0 + pow( ubp.z / ubp.zRp , 2 ) );
-		    ubp.wrs = sqrt( 1.0 + pow( ubp.z / ubp.zRs , 2 ) );
-
-		    /* Compute the transverse vector between the point and the reference point.   	*/
-		    ubp.p   = 0.5 * ( atan( ubp.z / ubp.zRp ) + atan( ubp.z / ubp.zRs ) ) - PI * ubp.z / ubp.l *
-			( pow( ubp.x / ( ubp.zRp * ubp.wrp) , 2 ) + pow( ubp.y / ( ubp.zRs * ubp.wrs ) , 2 ) );
-		    ubp.t   = exp( - pow( ubp.x/(iter->radius_[0]*ubp.wrp), 2) - pow( ubp.y/(iter->radius_[1]*ubp.wrs), 2) ) / sqrt(ubp.wrs*ubp.wrp);
-
-		    ubp.ex.mv( ubp.t * iter->amplitude_, 					iter->polarization_ );
-		    ubp.ez.mv( ubp.t * iter->amplitude_ * ( - ubp.x / ( ubp.wrp * ubp.zRp ) ), 	iter->direction_    );
-		    ubp.bz.mv( ubp.t * iter->amplitude_ * ( - ubp.y / ( ubp.wrs * ubp.zRs ) ) / c0_, iter->direction_    );
-		    ubp.by = cross( iter->direction_, ubp.ex); ubp.by /= c0_;
-
-		    /* Retrieve signal value at corrected time.                                       	*/
-		    ubp.p 	-= PI/2.0;
-		    ubp.tsignal	 = iter->signal_.self(ubp.tl, ubp.p);
-		    ubp.ex 	*= ubp.tsignal; ubp.by *= ubp.tsignal;
-
-		    ubp.p 	+= PI/2.0 + atan(ubp.z/ubp.zRp);
-		    ubp.tsignal	 = iter->signal_.self(ubp.tl, ubp.p);
-		    ubp.ez	*= ubp.tsignal;
-
-		    ubp.p 	+= atan(ubp.z/ubp.zRs) - atan(ubp.z/ubp.zRp);
-		    ubp.tsignal	 = iter->signal_.self(ubp.tl, ubp.p);
-		    ubp.bz	*= ubp.tsignal;
-
-		    /* Calculate the total electric and magnetic field.					*/
-		    ubp.eT = ubp.ex; ubp.eT += ubp.ez;
-		    ubp.bT = ubp.by; ubp.bT += ubp.bz;
-		  }
-	      }
+	      case STANDINGSUPERGAUSSIANBEAM:
+		this->standingSuperGaussianBeam(ubp, *iter);	break;
+	    }
 
 	    /* Now transfer the computed magnetic vector potential into the bunch rest frame.		*/
 	    ubp.bt[0] += gamma_ * ( ubp.bT[0] + beta_ / c0_ * ubp.eT[1] );
@@ -1948,109 +1884,38 @@ namespace MITHRA
 
 	/* Compute propagation delay and subtract it from the time.                                   	*/
 	ubp.tl  = ubp.t0 - ubp.z / c0_;
+	ubp.tlm = ubp.t0 + ubp.z / c0_;
 
 	/* Reset the carrier envelope phase of the pulse.                                             	*/
-	ubp.p   = 0.0;
+	ubp.p0  = 0.0;
 
 	/* Now manipulate the electric field vector depending on the specific seed given.             	*/
-	if ( iter->seedType_ == PLANEWAVE )
-	  {
-	    /* Retrieve signal value at corrected time.                                               	*/
-	    ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+	switch ( iter->seedType_ )
+	{
+	  case PLANEWAVE:
+	    this->planeWave(ubp, *iter);			break;
 
-	    /* Calculate the field only if the signal value is larger than a limit.                   	*/
-	    if ( fabs(ubp.tsignal) < 1.0e-100 ) { ubp.eT = 0.0; ubp.bT = 0.0; }
-	    else
-	      {
-		/* Provide vector to store the electric field of the external field.                  	*/
-		ubp.eT.mv( iter->amplitude_ * ubp.tsignal, iter->polarization_ );
+	  case PLANEWAVETRUNCATED:
+	    this->planeWaveTruncated(ubp, *iter);		break;
 
-		/* Provide vector to store the magnetic field of the external field.                  	*/
-		ubp.bT = cross( iter->direction_, iter->polarization_ );
-		ubp.bT.mv( iter->amplitude_ * ubp.tsignal / c0_, ubp.bT );
-	      }
-	  }
-	else if ( iter->seedType_ == PLANEWAVECONFINED )
-	  {
-	    /* Retrieve signal value at corrected time.                                               	*/
-	    ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+	  case GAUSSIANBEAM:
+	    this->gaussianBeam(ubp, *iter);			break;
 
-	    /* Calculate the transverse distance to the center line.   					*/
-	    ubp.x  = ubp.rv * iter->polarization_;
-	    ubp.yv = cross( iter->direction_, iter->polarization_ );
-	    ubp.y  = ubp.rv * ubp.yv;
+	  case SUPERGAUSSIANBEAM:
+	    this->superGaussianBeam(ubp, *iter);		break;
 
-	    /* Calculate the field only if the signal value is larger than a limit.			*/
-	    if ( fabs(ubp.tsignal) < 1.0e-100 || sqrt( pow(ubp.x/iter->radius_[0],2) + pow(ubp.y/iter->radius_[1],2) ) > 1.0 )
-	      {
-		ubp.eT = 0.0;
-		ubp.bT = 0.0;
-	      }
-	    else
-	      {
-		/* Provide vector to store the electric field of the undulator.                       	*/
-		ubp.eT.mv( iter->amplitude_ * ubp.tsignal, iter->polarization_ );
+	  case STANDINGPLANEWAVE:
+	    this->standingPlaneWave(ubp, *iter);		break;
 
-		/* Provide vector to store the magnetic field of the undulator.                       	*/
-		ubp.bT = cross( iter->direction_, iter->polarization_ );
-		ubp.bT.mv( iter->amplitude_ * ubp.tsignal / c0_, ubp.bT );
-	      }
-	  }
-	else if ( iter->seedType_ == GAUSSIANBEAM )
-	  {
-	    /* Retrieve signal value at corrected time.                                               	*/
-	    ubp.tsignal = iter->signal_.self(ubp.tl, ubp.p);
+	  case STANDINGPLANEWAVETRUNCATED:
+	    this->standingPlaneWaveTruncated(ubp, *iter);	break;
 
-	    if ( fabs(ubp.tsignal) < 1.0e-100 ) { ubp.eT = 0.0; ubp.bT = 0.0; }
-	    else
-	      {
-		/* Provide vector to store transverse, longitudinal and total  electric field.        	*/
-		ubp.ex = iter->polarization_;
-		ubp.ez = iter->direction_;
+	  case STANDINGGAUSSIANBEAM:
+	    this->standingGaussianBeam(ubp, *iter);		break;
 
-		/* Calculate the transverse distance to the center line.                              	*/
-		ubp.x  = ubp.rv * iter->polarization_;
-		ubp.yv = cross( iter->direction_, iter->polarization_ );
-		ubp.y  = ubp.rv * ubp.yv;
-
-		/* Calculate the wavelength corresponding to the given central frequency.             	*/
-		ubp.l = c0_ / iter->signal_.f0_;
-
-		/* Calculate the Rayleigh length and the relative radius of the beam.                 	*/
-		ubp.zRp = PI * pow( iter->radius_[0] , 2 ) / ubp.l;
-		ubp.zRs = PI * pow( iter->radius_[1] , 2 ) / ubp.l;
-		ubp.wrp = sqrt( 1.0 + pow( ubp.z / ubp.zRp , 2 ) );
-		ubp.wrs = sqrt( 1.0 + pow( ubp.z / ubp.zRs , 2 ) );
-
-		/* Compute the transverse vector between the point and the reference point.           	*/
-		ubp.p   = 0.5 * ( atan( ubp.z / ubp.zRp ) + atan( ubp.z / ubp.zRs ) ) - PI * ubp.z / ubp.l *
-		    ( pow( ubp.x / ( ubp.zRp * ubp.wrp) , 2 ) + pow( ubp.y / ( ubp.zRs * ubp.wrs ) , 2 ) );
-		ubp.t   = exp( - pow( ubp.x/(iter->radius_[0]*ubp.wrp), 2) - pow( ubp.y/(iter->radius_[1]*ubp.wrs), 2) ) / sqrt(ubp.wrs*ubp.wrp);
-
-		ubp.ex.mv( ubp.t * iter->amplitude_,                                             iter->polarization_ );
-		ubp.ez.mv( ubp.t * iter->amplitude_ * ( - ubp.x / ( ubp.wrp * ubp.zRp ) ),       iter->direction_    );
-		ubp.bz.mv( ubp.t * iter->amplitude_ * ( - ubp.y / ( ubp.wrs * ubp.zRs ) ) / c0_, iter->direction_    );
-		ubp.by  = cross( iter->direction_, ubp.ex);
-		ubp.by /= c0_;
-
-		/* Retrieve signal value at corrected time.                                           	*/
-		ubp.p         -= PI/2.0;
-		ubp.tsignal    = iter->signal_.self(ubp.tl, ubp.p);
-		ubp.ex        *= ubp.tsignal; ubp.by *= ubp.tsignal;
-
-		ubp.p         += PI/2.0 + atan(ubp.z/ubp.zRp);
-		ubp.tsignal    = iter->signal_.self(ubp.tl, ubp.p);
-		ubp.ez        *= ubp.tsignal;
-
-		ubp.p         += atan(ubp.z/ubp.zRs) - atan(ubp.z/ubp.zRp);
-		ubp.tsignal    = iter->signal_.self(ubp.tl, ubp.p);
-		ubp.bz        *= ubp.tsignal;
-
-		/* Calculate the total electric and magnetic field.                                   	*/
-		ubp.eT = ubp.ex; ubp.eT += ubp.ez;
-		ubp.bT = ubp.by; ubp.bT += ubp.bz;
-	      }
-	  }
+	  case STANDINGSUPERGAUSSIANBEAM:
+	    this->standingSuperGaussianBeam(ubp, *iter);	break;
+	}
 
 	/* Now transfer the computed magnetic vector potential into the bunch rest frame.             	*/
 	ubp.bt[0] += gamma_ * ( ubp.bT[0] + beta_ / c0_ * ubp.eT[1] );
@@ -2061,6 +1926,7 @@ namespace MITHRA
 	ubp.et[1] += gamma_ * ( ubp.eT[1] + beta_ * c0_ * ubp.bT[0] );
 	ubp.et[2] += ubp.eT[2];
       }
+
   }
 
   /******************************************************************************************************
@@ -2331,7 +2197,7 @@ namespace MITHRA
 	    for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
 	      {
 		/* Only look at particles which belong to the domain of this processor.			*/
-		if ( ( iter->rnp[2] >= zp_[0] || rank_ == 0 ) && ( iter->rnp[2] < zp_[1] || rank_ == size_ - 1 ) )
+		if ( particleInProcessor(iter->rnp[2]) )
 		  {
 		    Double lzm = gamma_ * ( iter->rnm[2] + beta_ * c0_ * ( timeBunch_- mesh_.timeStep_ + dt_ ) );
 		    if ( lzm >= lzScreen )	continue;
@@ -2392,6 +2258,16 @@ namespace MITHRA
   Double Solver::interp( Double x0, Double x1, Double y0, Double y1, Double x )
   {
     return y0 + ( x - x0 ) / ( x1 - x0 ) * ( y1 - y0 );
+  }
+
+  /****************************************************************************************************
+   * Define the function for checking if the particle belongs to the processor.
+   ****************************************************************************************************/
+
+  bool Solver::particleInProcessor( const Double& z )
+  {
+    Double zr = pmod( z - zmin_ , mesh_.meshLength_[2] ) + zmin_;
+    return ( ( zr >= zp_[0] ) && ( zr < zp_[1] ) );
   }
 
 }

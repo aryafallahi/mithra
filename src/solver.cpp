@@ -1249,6 +1249,11 @@ namespace MITHRA
 	      bunchProfile();
 	  }
 
+	timem1_ += mesh_.timeStep_;
+	time_   += mesh_.timeStep_;
+	timep1_ += mesh_.timeStep_;
+	++nTime_;
+
 	gettimeofday(&simulationEnd, NULL);
 	deltaTime  = ( simulationEnd.tv_usec - simulationStart.tv_usec ) / 1.0e6;
 	deltaTime += ( simulationEnd.tv_sec - simulationStart.tv_sec );

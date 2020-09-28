@@ -1205,15 +1205,75 @@ namespace MITHRA
     /* Retrieve time when we start the electric update part                                  		*/
     gettimeofday(&simulationStart, NULL);
 
-    /* Set the precision of number reports.								*/
-    std::cout << std::fixed;
-    std::cout << std::setprecision(3);
+    /* Now update the field starting from time zero for the total simulation time.			*/
+    printmessage(std::string(__FILE__), __LINE__, std::string("-> Run the time domain inital particle simulation ...") );
+
+    /* First run the solver for particle motion up to the initial time.					*/
+    while (time_ < 0.0)
+      {
+	/* Update the position and velocity parameters.							*/
+	for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
+	  {
+	    iter->rnm  = iter->rnp;
+	    iter->gbnm = iter->gbnp;
+	  }
+
+	/* Update the bunch till the time of the bunch properties reaches the time instant of the
+	 * field.											*/
+	for (Double t = 0.0; t < nUpdateBunch_; t += 1.0)
+	  {
+	    bunchUpdate();
+	    timeBunch_ += bunch_.timeStep_;
+	    ++nTimeBunch_;
+	  }
+
+	/* Record particles that have gone through the diagnostics screens.				*/
+	screenProfile();
+
+	/* If sampling of the bunch is enabled and the rhythm for sampling is achieved. Sample the
+	 * bunch and save them into the file.								*/
+	if ( bunch_.sampling_ && fmod(time_ + mesh_.timeShift_ , bunch_.rhythm_) < mesh_.timeStep_ && ( time_ + mesh_.timeShift_ > 0.0 ) ) bunchSample();
+
+	/* If visualization of the bunch is enabled and the rhythm for visualization is achieved,
+	 * visualize the bunch and save the vtk data in the given file name.				*/
+	if ( bunch_.bunchVTK_ && fmod(time_ + mesh_.timeShift_ , bunch_.bunchVTKRhythm_) < mesh_.timeStep_ && ( time_ + mesh_.timeShift_ > 0.0 ) ) bunchVisualize();
+
+	/* If profiling of the bunch is enabled and the time for profiling is achieved, write the bunch
+	 * profile and save the data in the given file name.						*/
+	if (bunch_.bunchProfile_ > 0)
+	  {
+	    for (unsigned int i = 0; i < (bunch_.bunchProfileTime_).size(); i++)
+	      if ( time_ - bunch_.bunchProfileTime_[i] < mesh_.timeStep_ && time_ > bunch_.bunchProfileTime_[i] )
+		bunchProfile();
+	    if ( fmod(time_ + mesh_.timeShift_ , bunch_.bunchProfileRhythm_) < mesh_.timeStep_ && ( time_ + mesh_.timeShift_ > 0.0 ) && ( bunch_.bunchProfileRhythm_ != 0.0 ) )
+	      bunchProfile();
+	  }
+
+	gettimeofday(&simulationEnd, NULL);
+	deltaTime  = ( simulationEnd.tv_usec - simulationStart.tv_usec ) / 1.0e6;
+	deltaTime += ( simulationEnd.tv_sec - simulationStart.tv_sec );
+
+	if ( rank_ == 0 && ( int(time_/mesh_.timeShift_ * 1000.0) !=  int(timem1_/mesh_.timeShift_ * 1000.0) ) )
+	  {
+	    printmessage(std::string(__FILE__), __LINE__, std::string(" Percentage of the initial simulation completed (%)      = ") +
+			 stringify( fabs( time_ / mesh_.timeShift_ ) * 100.0 ) );
+	    printmessage(std::string(__FILE__), __LINE__, std::string(" Average calculation time for each time step (s) = ") +
+			 stringify(deltaTime/(double)(nTime_))     );
+	    printmessage(std::string(__FILE__), __LINE__, std::string(" Estimated remaining time of the initial simulation (min)                  = ") +
+			 stringify( ( fabs( mesh_.timeShift_ / time_ ) - 1 ) * deltaTime / 60 ) );
+	  }
+      }
+
+    /* Retrieve time when we start the electric update part                                  		*/
+    gettimeofday(&simulationStart, NULL);
 
     /* Now update the field starting from time zero for the total simulation time.			*/
-    printmessage(std::string(__FILE__), __LINE__, std::string("-> Run the time domain simulation ...") );
+    printmessage(std::string(__FILE__), __LINE__, std::string("-> Run the time domain field simulation ...") );
+
+    /* Now run the whole radiation calculation up to the final time.					*/
     while (time_ < mesh_.totalTime_)
       {
-	/* Update the fields for one time step using the FDTD algorithm					*/
+	/* Update the fields for one time step using the FDTD algorithm.				*/
 	fieldUpdate();
 
 	/* If sampling of the field is enabled and the rhythm for sampling is achieved. Sample the
@@ -1317,12 +1377,12 @@ namespace MITHRA
 
 	if ( rank_ == 0 && ( int(time_/mesh_.totalTime_ * 1000.0) !=  int(timem1_/mesh_.totalTime_ * 1000.0) ) )
 	  {
-	    printmessage(std::string(__FILE__), __LINE__, std::string(" Percentage of the simulation completed (%)      = ") +
-			 stringify( ( time_ + mesh_.timeShift_ ) / ( mesh_.totalTime_ + mesh_.timeShift_ ) * 100.0 ) );
+	    printmessage(std::string(__FILE__), __LINE__, std::string(" Percentage of the total simulation completed (%)      = ") +
+			 stringify( ( time_ ) / ( mesh_.totalTime_ ) * 100.0 ) );
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Average calculation time for each time step (s) = ") +
 			 stringify(deltaTime/(double)(nTime_))     );
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Estimated remaining time (min)                  = ") +
-			 stringify( ( ( mesh_.totalTime_ + mesh_.timeShift_ ) / ( time_ + mesh_.timeShift_ ) - 1) * deltaTime / 60 ) );
+			 stringify( ( mesh_.totalTime_ / time_ - 1) * deltaTime / 60 ) );
 	  }
       }
 
@@ -1690,7 +1750,7 @@ namespace MITHRA
 	    gamma = sqrt( 1.0 + iter->gbnp.norm2() );
 	    beta  = iter->gbnp[2] / gamma;
 	    *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
-            											<< " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
+            											    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	  }
       }
     *vb_.file << 0.0 << " " << 0.0 << " " << 0.0						<< std::endl;

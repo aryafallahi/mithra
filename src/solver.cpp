@@ -1258,14 +1258,14 @@ namespace MITHRA
 	deltaTime  = ( simulationEnd.tv_usec - simulationStart.tv_usec ) / 1.0e6;
 	deltaTime += ( simulationEnd.tv_sec - simulationStart.tv_sec );
 
-	if ( rank_ == 0 && ( int(time_/mesh_.timeShift_ * 1000.0) !=  int(timem1_/mesh_.timeShift_ * 1000.0) ) )
+	if ( rank_ == 0 && ( int(time_/mesh_.timeShift_ * 100.0) !=  int(timem1_/mesh_.timeShift_ * 100.0) ) )
 	  {
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Percentage of the initial simulation completed (%)      = ") +
-			 stringify( fabs( time_ / mesh_.timeShift_ ) * 100.0 ) );
+			 stringify( ( 1.0 - fabs( time_ / mesh_.timeShift_ ) ) * 100.0 ) );
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Average calculation time for each time step (s) = ") +
 			 stringify(deltaTime/(double)(nTime_))     );
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" Estimated remaining time of the initial simulation (min)                  = ") +
-			 stringify( ( fabs( mesh_.timeShift_ / time_ ) - 1 ) * deltaTime / 60 ) );
+			 stringify( fabs( time_ / mesh_.timeShift_ ) / ( 1.0 - fabs( time_ / mesh_.timeShift_ ) ) * deltaTime / 60 ) );
 	  }
       }
 

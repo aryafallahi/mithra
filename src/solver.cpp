@@ -481,6 +481,22 @@ namespace MITHRA
   }
 
   /******************************************************************************************************
+   * Recycle particles removes the particles that no more belong to the processor.
+   ******************************************************************************************************/
+
+  void Solver::recycleParticles ()
+  {
+    std::list<Charge>::iterator it = chargeVectorn_.begin();
+    while(it != chargeVectorn_.end())
+      {
+	if ( particleInProcessor( it->rnp[2] ) )
+	  it++;
+	else
+	  it = chargeVectorn_.erase(it);
+      }
+  }
+
+  /******************************************************************************************************
    * Get the average gamma and average direction of a bunch read in from a file.
    ******************************************************************************************************/
   void Solver::computeFileGamma 		(BunchInitialize & bunchInit)
@@ -1240,7 +1256,7 @@ namespace MITHRA
 
 	/* If profiling of the bunch is enabled and the time for profiling is achieved, write the bunch
 	 * profile and save the data in the given file name.						*/
-	if (bunch_.bunchProfile_ > 0)
+	if (bunch_.bunchProfile_)
 	  {
 	    for (unsigned int i = 0; i < (bunch_.bunchProfileTime_).size(); i++)
 	      if ( time_ - bunch_.bunchProfileTime_[i] < mesh_.timeStep_ && time_ > bunch_.bunchProfileTime_[i] )
@@ -1248,6 +1264,10 @@ namespace MITHRA
 	    if ( fmod(time_ + mesh_.timeShift_ , bunch_.bunchProfileRhythm_) < mesh_.timeStep_ && ( time_ + mesh_.timeShift_ > 0.0 ) && ( bunch_.bunchProfileRhythm_ != 0.0 ) )
 	      bunchProfile();
 	  }
+
+	/* After the current deposition, a recycling of the charges is needed so that the charges that
+	 * have left the processor domain are deleted from the processor.				*/
+	recycleParticles();
 
 	timem1_ += mesh_.timeStep_;
 	time_   += mesh_.timeStep_;
@@ -1351,7 +1371,7 @@ namespace MITHRA
 
 	/* If profiling of the bunch is enabled and the time for profiling is achieved, write the bunch
 	 * profile and save the data in the given file name.						*/
-	if (bunch_.bunchProfile_ > 0)
+	if (bunch_.bunchProfile_)
 	  {
 	    for (unsigned int i = 0; i < (bunch_.bunchProfileTime_).size(); i++)
 	      if ( time_ - bunch_.bunchProfileTime_[i] < mesh_.timeStep_ && time_ > bunch_.bunchProfileTime_[i] )
@@ -1359,6 +1379,10 @@ namespace MITHRA
 	    if ( fmod(time_ + mesh_.timeShift_ , bunch_.bunchProfileRhythm_) < mesh_.timeStep_ && ( time_ + mesh_.timeShift_ > 0.0 ) && ( bunch_.bunchProfileRhythm_ != 0.0 ) )
 	      bunchProfile();
 	  }
+
+	/* After the current deposition, a recycling of the charges is needed so that the charges that
+	 * have left the processor domain are deleted from the processor.				*/
+	recycleParticles();
 
 	/* If radiation power of the FEL output is enabled and the rhythm for sampling is achieved.
 	 * Sample the radiation power at the given position and save them into the file.		*/

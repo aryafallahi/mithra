@@ -132,7 +132,7 @@ namespace MITHRA
 
     Double			q;		/* Charge of the point in the unit of electron charge.	*/
     FieldVector<Double>		rnp, rnm;	/* Position vector of the charge.			*/
-    FieldVector<Double>		gbnp, gbnm;	/* Normalized velocity vector of the charge.		*/
+    FieldVector<Double>		gb;		/* Normalized velocity vector of the charge.		*/
 
     /* Double flag determining if the particle is passing the entrance point of the undulator. This flag
      * can be used for better boosting the bunch to the moving frame. We need to consider it to be double,

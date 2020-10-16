@@ -308,16 +308,16 @@ namespace MITHRA
 	    {
 	      i = 1;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m+N1_],	time_, atemp); (*anp1_)[m].mmv(uf_.a[1], atemp);
+	      seed_.fields(rc(m+N1_),	time_, atemp); (*anp1_)[m].mmv(uf_.a[1], atemp);
 	      i = 2;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m-N1_],	time_, atemp); (*anp1_)[m].pmv(uf_.a[1], atemp);
+	      seed_.fields(rc(m-N1_),	time_, atemp); (*anp1_)[m].pmv(uf_.a[1], atemp);
 	      i = N0_-2;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m-N1_],	time_, atemp); (*anp1_)[m].mmv(uf_.a[1], atemp);
+	      seed_.fields(rc(m-N1_),	time_, atemp); (*anp1_)[m].mmv(uf_.a[1], atemp);
 	      i = N0_-3;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m+N1_],	time_, atemp); (*anp1_)[m].pmv(uf_.a[1], atemp);
+	      seed_.fields(rc(m+N1_),	time_, atemp); (*anp1_)[m].pmv(uf_.a[1], atemp);
 	    }
 
 	for ( int i = 2; i < N0_-2; i++)
@@ -325,16 +325,16 @@ namespace MITHRA
 	    {
 	      j = 1;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m+1], time_, atemp); (*anp1_)[m].mmv(uf_.a[2], atemp);
+	      seed_.fields(rc(m+1), time_, atemp); (*anp1_)[m].mmv(uf_.a[2], atemp);
 	      j = 2;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m-1], time_, atemp); (*anp1_)[m].pmv(uf_.a[2], atemp);
+	      seed_.fields(rc(m-1), time_, atemp); (*anp1_)[m].pmv(uf_.a[2], atemp);
 	      j = N1_-2;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m-1], time_, atemp); (*anp1_)[m].mmv(uf_.a[2], atemp);
+	      seed_.fields(rc(m-1), time_, atemp); (*anp1_)[m].mmv(uf_.a[2], atemp);
 	      j = N1_-3;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m+1],		time_, atemp); (*anp1_)[m].pmv(uf_.a[2], atemp);
+	      seed_.fields(rc(m+1),		time_, atemp); (*anp1_)[m].pmv(uf_.a[2], atemp);
 	    }
 
 	if ( rank_ == 0 )
@@ -344,10 +344,10 @@ namespace MITHRA
 		{
 		  k = 1;
 		  m = N1N0_ * k + N1_ * i + j;
-		  seed_.fields(r_[m+N1N0_], time_, atemp); (*anp1_)[m].mmv(uf_.a[3], atemp);
+		  seed_.fields(rc(m+N1N0_), time_, atemp); (*anp1_)[m].mmv(uf_.a[3], atemp);
 		  k = 2;
 		  m = N1N0_ * k + N1_ * i + j;
-		  seed_.fields(r_[m-N1N0_], time_, atemp); (*anp1_)[m].pmv(uf_.a[3], atemp);
+		  seed_.fields(rc(m-N1N0_), time_, atemp); (*anp1_)[m].pmv(uf_.a[3], atemp);
 		}
 	  }
 
@@ -358,10 +358,10 @@ namespace MITHRA
 		{
 		  k = np_-2;
 		  m = N1N0_ * k + N1_ * i + j;
-		  seed_.fields(r_[m-N1N0_],	time_, atemp); (*anp1_)[m].mmv(uf_.a[3], atemp);
+		  seed_.fields(rc(m-N1N0_),	time_, atemp); (*anp1_)[m].mmv(uf_.a[3], atemp);
 		  k = np_-3;
 		  m = N1N0_ * k + N1_ * i + j;
-		  seed_.fields(r_[m+N1N0_],	time_, atemp); (*anp1_)[m].pmv(uf_.a[3], atemp);
+		  seed_.fields(rc(m+N1N0_),	time_, atemp); (*anp1_)[m].pmv(uf_.a[3], atemp);
 		}
 	  }
       }
@@ -377,9 +377,9 @@ namespace MITHRA
 	  uf_.af.advanceBoundaryF(
 	      uf_.anp1+l,	uf_.anm1+l,	uf_.an  +l,
 	      uf_.anm1+l+L0,	uf_.an  +l+L0, 	uf_.anp1+l+L0,
-	      uf_.an  +l+L6,  uf_.an  +l-L7,	uf_.an  +l+L2,
+	      uf_.an  +l+L6,  	uf_.an  +l-L7,	uf_.an  +l+L2,
 	      uf_.an  +l+L3, 	uf_.an  +l+3,   uf_.an  +l-3,
-	      uf_.an  +l+L1,  uf_.an  +l-L1);
+	      uf_.an  +l+L1,  	uf_.an  +l-L1);
 	}
 
     /* Loop over the points in the mesh on the x = xmax boundary and update the fields using the first
@@ -394,7 +394,7 @@ namespace MITHRA
 	      uf_.anm1+l-L0,	uf_.an  +l-L0,	uf_.anp1+l-L0,
 	      uf_.an  +l+L7,	uf_.an  +l-L6,	uf_.an  +l-L3,
 	      uf_.an  +l-L2, 	uf_.an  +l+3,	uf_.an  +l-3,
-	      uf_.an  +l+L1,  uf_.an  +l-L1 );
+	      uf_.an  +l+L1,  	uf_.an  +l-L1 );
 	}
 
     /* Loop over the points in the mesh on the y = ymin boundary and update the fields using the first
@@ -407,10 +407,10 @@ namespace MITHRA
 
 	  uf_.af.advanceBoundaryF(
 	      uf_.anp1+l,	uf_.anm1+l,	uf_.an  +l,
-	      uf_.anm1+l+3,   uf_.an  +l+3,   uf_.anp1+l+3,
-	      uf_.an  +l+L6,  uf_.an  +l+L7, 	uf_.an  +l+L4,
+	      uf_.anm1+l+3,   	uf_.an  +l+3,   uf_.anp1+l+3,
+	      uf_.an  +l+L6,  	uf_.an  +l+L7, 	uf_.an  +l+L4,
 	      uf_.an  +l+L5, 	uf_.an  +l+L0,  uf_.an  +l-L0,
-	      uf_.an  +l+L1,  uf_.an  +l-L1);
+	      uf_.an  +l+L1,  	uf_.an  +l-L1);
 	}
 
     /* Loop over the points in the mesh on the y = ymax boundary and update the fields using the first
@@ -1014,12 +1014,14 @@ namespace MITHRA
     /* Insert the coordinates of the grid for the charge points.                                      	*/
     *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
     *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+    FieldVector<Double> r (0.0);
     for (int k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
       for (int j = 0; j < N1_; j++)
 	for (int i = 0; i < N0_; i++)
 	  {
 	    m = k * N1_ * N0_ + i * N1_ + j;
-	    *vf_[ivtk].file << r_[m][0] << " " << r_[m][1] << " " << r_[m][2] 			<< std::endl;
+	    r = rc(m);
+	    *vf_[ivtk].file << r[0] << " " << r[1] << " " << r[2] 					<< std::endl;
 	  }
     *vf_[ivtk].file << "</DataArray>"                                                       		<< std::endl;
     *vf_[ivtk].file << "</Points>"                                                         		<< std::endl;
@@ -1194,12 +1196,13 @@ namespace MITHRA
     /* Insert the coordinates of the grid for the charge points.                                      	*/
     *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
     *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+    FieldVector<Double> r1 (0.0), r2 (0.0);
     for (int k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
       for (int j = 0; j < N1_; j++)
 	{
 	  m = k * N1_ * N0_ + i * N1_ + j;
-	  *vf_[ivtk].file << r_[m][0] * ( 1.0 - dxr ) + r_[m + N1_][0] * dxr << " "
-	      << r_[m][1] << " " << r_[m][2] 								<< std::endl;
+	  r1 = rc(m); r2 = rc(m + N1_);
+	  *vf_[ivtk].file << r1[0] * ( 1.0 - dxr ) + r2[0] * dxr << " " << r1[1] << " " << r1[2] 	<< std::endl;
 	}
     *vf_[ivtk].file << "</DataArray>"                                                       		<< std::endl;
     *vf_[ivtk].file << "</Points>"                                                         		<< std::endl;
@@ -1358,12 +1361,13 @@ namespace MITHRA
     /* Insert the coordinates of the grid for the charge points.                                      	*/
     *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
     *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+    FieldVector<Double> r1 (0.0), r2 (0.0);
     for (int k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
       for (int i = 0; i < N0_; i++)
 	{
 	  m = k * N1_ * N0_ + i * N1_ + j;
-	  *vf_[ivtk].file << r_[m][0] * ( 1.0 - dyr ) + r_[m + 1][0] * dyr << " "
-	      << r_[m][1] << " " << r_[m][2] 			<< std::endl;
+	  r1 = rc(m); r2 = rc(m + 1);
+	  *vf_[ivtk].file << r1[0] * ( 1.0 - dyr ) + r2[0] * dyr << " " << r1[1] << " " << r1[2] 	<< std::endl;
 	}
     *vf_[ivtk].file << "</DataArray>"                                                       		<< std::endl;
     *vf_[ivtk].file << "</Points>"                                                         		<< std::endl;
@@ -1520,12 +1524,13 @@ namespace MITHRA
     /* Insert the coordinates of the grid for the charge points.                                      	*/
     *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
     *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+    FieldVector<Double> r1 (0.0), r2 (0.0);
     for (int j = 0; j < N1_; j++)
       for (int i = 0; i < N0_; i++)
 	{
 	  m = k * N1_ * N0_ + i * N1_ + j;
-	  *vf_[ivtk].file << r_[m][0] * ( 1.0 - dzr ) + r_[m + N1N0_][0] * dzr << " "
-	      << r_[m][1] << " " << r_[m][2] 								<< std::endl;
+	  r1 = rc(m); r2 = rc(m + N1N0_);
+	  *vf_[ivtk].file << r1[0] * ( 1.0 - dzr ) + r2[0] * dzr << " " << r1[1] << " " << r1[2] 	<< std::endl;
 	}
     *vf_[ivtk].file << "</DataArray>"                                                       		<< std::endl;
     *vf_[ivtk].file << "</Points>"                                                         		<< std::endl;
@@ -1570,14 +1575,14 @@ namespace MITHRA
     pf_.file->precision(4);
 
     /* Perform a loop over the points of the mesh and save the field data into a text file.		*/
+    FieldVector<Double> r (0.0);
     for (int i = 0; i < N0_; i++ )
       for (int j = 0; j < N1_; j++ )
 	for (int k = ( (rank_ == 0) ? 0 : 1 ); k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++ )
 	  {
 	    pf_.m = k * N1_ * N0_ + i * N1_ + j;
-	    *pf_.file << r_[pf_.m][0] << "\t" ;
-	    *pf_.file << r_[pf_.m][1] << "\t" ;
-	    *pf_.file << r_[pf_.m][2] << "\t" ;
+	    r = rc(pf_.m);
+	    *pf_.file << r[0] << "\t" << r[1] << "\t" << r[2] << "\t" ;
 
 	    for (unsigned l = 0; l < seed_.profileField_.size(); l++)
 	      {

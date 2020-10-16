@@ -33,7 +33,6 @@ namespace MITHRA
     fn_   = new std::vector<Double> ();
     fnm1_ = new std::vector<Double> ();
 
-    r_.clear();
     chargeVectorn_.clear();
 
     /* Reset the number of nodes to zero.								*/
@@ -51,6 +50,10 @@ namespace MITHRA
     MPI_Comm_size(MPI_COMM_WORLD,&size_);
     rankB_ = ( rank_ == 0 ) ? size_ - 1 : rank_ - 1;
     rankF_ = ( rank_ == size_ - 1 ) ? 0 : rank_ + 1;
+
+    /* Initialize the MPI data type for charges.							*/
+    MPI_Type_contiguous(11, MPI_DOUBLE, &MPI_CHARGE);
+    MPI_Type_commit(&MPI_CHARGE);
 
     /* Initialize the speed of light value according to the given length scale and time scale.		*/
     c0_ = C0 / mesh_.lengthScale_ * mesh_.timeScale_;
@@ -287,10 +290,10 @@ namespace MITHRA
     Double zmaxL = -1.0e100, zmaxG;
     for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
       {
-	Double g  	= std::sqrt(1.0 + iterQ->gbnp.norm2());
-	Double bz 	= iterQ->gbnp[2] / g;
+	Double g  	= std::sqrt(1.0 + iterQ->gb.norm2());
+	Double bz 	= iterQ->gb[2] / g;
 	iterQ->rnp[2]  *= gamma_;
-	iterQ->gbnp[2] 	= gamma_ * g * ( bz - beta_ );
+	iterQ->gb[2] 	= gamma_ * g * ( bz - beta_ );
 
 	zmaxL 		= std::max( zmaxL , iterQ->rnp[2] );
       }
@@ -333,10 +336,10 @@ namespace MITHRA
 
     for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
       {
-	Double g	= std::sqrt(1.0 + iterQ->gbnp.norm2());
-	iterQ->rnp[0]  += iterQ->gbnp[0] / g * ( iterQ->rnp[2] - bunch_.zu_ ) * beta_;
-	iterQ->rnp[1]  += iterQ->gbnp[1] / g * ( iterQ->rnp[2] - bunch_.zu_ ) * beta_;
-	iterQ->rnp[2]  += iterQ->gbnp[2] / g * ( iterQ->rnp[2] - bunch_.zu_ ) * beta_;
+	Double g	= std::sqrt(1.0 + iterQ->gb.norm2());
+	iterQ->rnp[0]  += iterQ->gb[0] / g * ( iterQ->rnp[2] - bunch_.zu_ ) * beta_;
+	iterQ->rnp[1]  += iterQ->gb[1] / g * ( iterQ->rnp[2] - bunch_.zu_ ) * beta_;
+	iterQ->rnp[2]  += iterQ->gb[2] / g * ( iterQ->rnp[2] - bunch_.zu_ ) * beta_;
       }
 
 
@@ -351,7 +354,7 @@ namespace MITHRA
 	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
 	  {
 	    zL += iterQ->rnp[2];
-	    bzL += iterQ->gbnp[2] / std::sqrt( 1 + iterQ->gbnp.norm2() );
+	    bzL += iterQ->gb[2] / std::sqrt( 1 + iterQ->gb.norm2() );
 	  }
 	MPI_Allreduce(&zL, &zG, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 	MPI_Allreduce(&bzL, &bzG, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
@@ -401,7 +404,7 @@ namespace MITHRA
 	for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
 	  {
 	    zMin = std::min(zMin, iter->rnp[2]);
-	    bz += iter->gbnp[2] / std::sqrt(1 + iter->gbnp.norm2());
+	    bz += iter->gb[2] / std::sqrt(1 + iter->gb.norm2());
 	  }
 	MPI_Allreduce(&zMin, &zMin, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
 	MPI_Allreduce(&bz, &bz, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
@@ -435,9 +438,9 @@ namespace MITHRA
 	    sendCV.push_back(it->rnp[0]);
 	    sendCV.push_back(it->rnp[1]);
 	    sendCV.push_back(it->rnp[2]);
-	    sendCV.push_back(it->gbnp[0]);
-	    sendCV.push_back(it->gbnp[1]);
-	    sendCV.push_back(it->gbnp[2]);
+	    sendCV.push_back(it->gb[0]);
+	    sendCV.push_back(it->gb[1]);
+	    sendCV.push_back(it->gb[2]);
 	    it = chargeVector.erase(it);
 	  }
       }
@@ -469,9 +472,9 @@ namespace MITHRA
 		charge.rnp[0] 	= recvCV[i++];
 		charge.rnp[1] 	= recvCV[i++];
 		charge.rnp[2] 	= recvCV[i++];
-		charge.gbnp[0] 	= recvCV[i++];
-		charge.gbnp[1] 	= recvCV[i++];
-		charge.gbnp[2] 	= recvCV[i++];
+		charge.gb[0] 	= recvCV[i++];
+		charge.gb[1] 	= recvCV[i++];
+		charge.gb[2] 	= recvCV[i++];
 		chargeVector.push_back(charge);
 	      }
 	    else
@@ -640,7 +643,6 @@ namespace MITHRA
     an_   = new std::vector<FieldVector<Double> > (N1N0_*np_, ZERO_VECTOR);
     anm1_ = new std::vector<FieldVector<Double> > (N1N0_*np_, ZERO_VECTOR);
     jn_  .resize(N1N0_*np_, ZERO_VECTOR);
-    r_   .resize(N1N0_*np_, ZERO_VECTOR);
     en_  .resize(N1N0_*np_, ZERO_VECTOR);
     bn_  .resize(N1N0_*np_, ZERO_VECTOR);
     pic_ .resize(N1N0_*np_, false);
@@ -662,19 +664,18 @@ namespace MITHRA
     zmax_ = mesh_.meshCenter_[2] + mesh_.meshLength_[2] / 2.0;
 
     /* Now set up the coordinate of nodes according to the number of nodes and mesh-length.		*/
+    FieldVector<Double> r (0.0);
     for (int i = 0; i < N0_; i++)
       for (int j = 0; j < N1_; j++)
 	for (int k = 0; k < np_; k++)
 	  {
 	    m = N1N0_*k+N1_*i+j;
-	    r_[m][0] = xmin_ + i         * mesh_.meshResolution_[0];
-	    r_[m][1] = ymin_ + j         * mesh_.meshResolution_[1];
-	    r_[m][2] = zmin_ + (k + k0_) * mesh_.meshResolution_[2];
+	    r = rc(m);
 
 	    if 		( k == 0 ) 		
-	      zp_[0] = r_[m][2];
+	      zp_[0] = r[2];
 	    else if 	( k == np_ - ( ( rank_ == size_ - 1 ) ? 1 : 2 ) ) 	
-	      zp_[1] = r_[m][2];
+	      zp_[1] = r[2];
 	  }
 
     /* Initialize the time values for the field update.							*/
@@ -824,13 +825,14 @@ namespace MITHRA
      * the mesh points within the TF domain.								*/
     if (seed_.amplitude_ > 1.0e-50)
       {
+	FieldVector<Double> r (0.0);
 	for (int i = 2; i < N0_ - 2; i++)
 	  for (int j = 2; j < N1_ - 2; j++)
 	    for (int k = 2 * abs(signof(rank_) - 1 ) ; k < np_ - 2 * abs(signof(rank_ - size_ + 1) + 1 ); k++)
 	      {
-		m = N1N0_ * k + N1_ * i + j;
-		seed_.fields(r_[m], time_,   (*an_)[m]   );
-		seed_.fields(r_[m], timem1_, (*anm1_)[m] );
+		m = N1N0_ * k + N1_ * i + j; r = rc(m);
+		seed_.fields(r, time_,   (*an_)[m]   );
+		seed_.fields(r, timem1_, (*anm1_)[m] );
 	      }
       }
 
@@ -1191,8 +1193,8 @@ namespace MITHRA
 	/* To shift the bunch back in time the values of rnm and rnp shoud be manipulated.		*/
 	for (auto iterQ = chargeVectorn_.begin(); iterQ != chargeVectorn_.end(); iterQ++ )
 	  {
-	    Double t  	= c0_ * mesh_.timeShift_ / std::sqrt(1.0 + iterQ->gbnp.norm2());
-	    iterQ->rnp.mmv( t , iterQ->gbnp );
+	    Double t  	= c0_ * mesh_.timeShift_ / std::sqrt(1.0 + iterQ->gb.norm2());
+	    iterQ->rnp.mmv( t , iterQ->gb );
 	  }
 
 	/* Distribute particles in their respective processor, depending on their longitudinal
@@ -1229,10 +1231,7 @@ namespace MITHRA
       {
 	/* Update the position and velocity parameters.							*/
 	for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
-	  {
-	    iter->rnm  = iter->rnp;
-	    iter->gbnm = iter->gbnp;
-	  }
+	  iter->rnm  = iter->rnp;
 
 	/* Update the bunch till the time of the bunch properties reaches the time instant of the
 	 * field.											*/
@@ -1338,10 +1337,7 @@ namespace MITHRA
 
 	/* Update the position and velocity parameters.							*/
 	for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
-	  {
-	    iter->rnm  = iter->rnp;
-	    iter->gbnm = iter->gbnp;
-	  }
+	  iter->rnm  = iter->rnp;
 
 	/* Update the bunch till the time of the bunch properties reaches the time instant of the
 	 * field.											*/
@@ -1518,7 +1514,7 @@ namespace MITHRA
 	/* Update the velocity of the particle according to the calculated electric and magnetic field.	*/
 
 	/* First, calculate the value of (gamma*beta)-.							*/
-	ubp.gbm = iter->gbnp;
+	ubp.gbm = iter->gb;
 	ubp.gbm.pmv( ub_.r1 , ubp.et );
 
 	/* Second, calculate the value of (gamma*beta)'.				                */
@@ -1533,11 +1529,11 @@ namespace MITHRA
 	ubp.gbpl += ubp.gbm;
 
 	/* Fourth, update the (gamma*beta) vector.						        */
-	iter->gbnp = ubp.gbpl;
-	iter->gbnp.pmv( ub_.r1 , ubp.et );
+	iter->gb = ubp.gbpl;
+	iter->gb.pmv( ub_.r1 , ubp.et );
 
 	/* Determine the movement of the particle.							*/
-	ubp.dr.mv( ub_.dtb / sqrt (1.0 + iter->gbnp.norm2()) , iter->gbnp );
+	ubp.dr.mv( ub_.dtb / sqrt (1.0 + iter->gb.norm2()) , iter->gb );
 
 	/* Determine the final position of the particle.				                */
 	iter->rnp += ubp.dr;
@@ -1546,98 +1542,28 @@ namespace MITHRA
 	ubp.zr += ubp.dr[2];
 
 	/* If the particle enters the adjacent computational domain, save it to communication buffer. 	*/
-	if ( ubp.zr < zp_[0] )
-	  {
-	    ubp.qSB.push_back( iter->q       );
-	    ubp.qSB.push_back( iter->rnp [0] );
-	    ubp.qSB.push_back( iter->rnp [1] );
-	    ubp.qSB.push_back( iter->rnp [2] );
-	    ubp.qSB.push_back( iter->gbnp[0] );
-	    ubp.qSB.push_back( iter->gbnp[1] );
-	    ubp.qSB.push_back( iter->gbnp[2] );
-	    ubp.qSB.push_back( iter->rnm [0] );
-	    ubp.qSB.push_back( iter->rnm [1] );
-	    ubp.qSB.push_back( iter->rnm [2] );
-	    ubp.qSB.push_back( iter->gbnm[0] );
-	    ubp.qSB.push_back( iter->gbnm[1] );
-	    ubp.qSB.push_back( iter->gbnm[2] );
-	    ubp.qSB.push_back( iter->e 	     );
-	  }
-	else if ( ubp.zr >= zp_[1] )
-	  {
-	    ubp.qSF.push_back( iter->q       );
-	    ubp.qSF.push_back( iter->rnp [0] );
-	    ubp.qSF.push_back( iter->rnp [1] );
-	    ubp.qSF.push_back( iter->rnp [2] );
-	    ubp.qSF.push_back( iter->gbnp[0] );
-	    ubp.qSF.push_back( iter->gbnp[1] );
-	    ubp.qSF.push_back( iter->gbnp[2] );
-	    ubp.qSF.push_back( iter->rnm [0] );
-	    ubp.qSF.push_back( iter->rnm [1] );
-	    ubp.qSF.push_back( iter->rnm [2] );
-	    ubp.qSF.push_back( iter->gbnm[0] );
-	    ubp.qSF.push_back( iter->gbnm[1] );
-	    ubp.qSF.push_back( iter->gbnm[2] );
-	    ubp.qSF.push_back( iter->e 	     );
-	  }
+	if 	( ubp.zr <  zp_[0] )	ubp.qSB.push_back( *iter );
+	else if ( ubp.zr >= zp_[1] )	ubp.qSF.push_back( *iter );
       }
 
     /* Now communicate the charges which propagate throughout the borders to other processors.		*/
-    MPI_Send(&ubp.qSB[0],ubp.qSB.size(),MPI_DOUBLE,rankB_,msgtag1,MPI_COMM_WORLD);
+    MPI_Send(&ubp.qSB[0],ubp.qSB.size(),MPI_CHARGE,rankB_,msgtag1,MPI_COMM_WORLD);
 
     MPI_Probe(rankF_,msgtag1,MPI_COMM_WORLD,&status);
-    MPI_Get_count(&status,MPI_DOUBLE,&ub_.nL);
+    MPI_Get_count(&status,MPI_CHARGE,&ub_.nL);
     ubp.qRF.resize(ub_.nL);
-    MPI_Recv(&ubp.qRF[0],ub_.nL,MPI_DOUBLE,rankF_,msgtag1,MPI_COMM_WORLD,&status);
+    MPI_Recv(&ubp.qRF[0],ub_.nL,MPI_CHARGE,rankF_,msgtag1,MPI_COMM_WORLD,&status);
 
-    MPI_Send(&ubp.qSF[0],ubp.qSF.size(),MPI_DOUBLE,rankF_,msgtag2,MPI_COMM_WORLD);
+    MPI_Send(&ubp.qSF[0],ubp.qSF.size(),MPI_CHARGE,rankF_,msgtag2,MPI_COMM_WORLD);
 
     MPI_Probe(rankB_,msgtag2,MPI_COMM_WORLD,&status);
-    MPI_Get_count(&status,MPI_DOUBLE,&ub_.nL);
+    MPI_Get_count(&status,MPI_CHARGE,&ub_.nL);
     ubp.qRB.resize(ub_.nL);
-    MPI_Recv(&ubp.qRB[0],ub_.nL,MPI_DOUBLE,rankB_,msgtag2,MPI_COMM_WORLD,&status);
+    MPI_Recv(&ubp.qRB[0],ub_.nL,MPI_CHARGE,rankB_,msgtag2,MPI_COMM_WORLD,&status);
 
     /* Now insert the newly incoming particles in this processor to the list of particles.            */
-    unsigned i = 0;
-    while ( i < ubp.qRF.size() )
-      {
-	ub_.Q.q       = ubp.qRF[i++];
-	ub_.Q.rnp [0] = ubp.qRF[i++];
-	ub_.Q.rnp [1] = ubp.qRF[i++];
-	ub_.Q.rnp [2] = ubp.qRF[i++];
-	ub_.Q.gbnp[0] = ubp.qRF[i++];
-	ub_.Q.gbnp[1] = ubp.qRF[i++];
-	ub_.Q.gbnp[2] = ubp.qRF[i++];
-	ub_.Q.rnm [0] = ubp.qRF[i++];
-	ub_.Q.rnm [1] = ubp.qRF[i++];
-	ub_.Q.rnm [2] = ubp.qRF[i++];
-	ub_.Q.gbnm[0] = ubp.qRF[i++];
-	ub_.Q.gbnm[1] = ubp.qRF[i++];
-	ub_.Q.gbnm[2] = ubp.qRF[i++];
-	ub_.Q.e       = ubp.qRF[i++];
-
-	chargeVectorn_.push_back(ub_.Q);
-      }
-    i = 0;
-    while ( i < ubp.qRB.size() )
-      {
-	ub_.Q.q       = ubp.qRB[i++];
-	ub_.Q.rnp [0] = ubp.qRB[i++];
-	ub_.Q.rnp [1] = ubp.qRB[i++];
-	ub_.Q.rnp [2] = ubp.qRB[i++];
-	ub_.Q.gbnp[0] = ubp.qRB[i++];
-	ub_.Q.gbnp[1] = ubp.qRB[i++];
-	ub_.Q.gbnp[2] = ubp.qRB[i++];
-	ub_.Q.rnm [0] = ubp.qRB[i++];
-	ub_.Q.rnm [1] = ubp.qRB[i++];
-	ub_.Q.rnm [2] = ubp.qRB[i++];
-	ub_.Q.gbnm[0] = ubp.qRB[i++];
-	ub_.Q.gbnm[1] = ubp.qRB[i++];
-	ub_.Q.gbnm[2] = ubp.qRB[i++];
-	ub_.Q.e       = ubp.qRB[i++];
-
-	chargeVectorn_.push_back(ub_.Q);
-      }
+    std::copy( ubp.qRF.begin(), ubp.qRF.end(), std::back_inserter(chargeVectorn_) );
+    std::copy( ubp.qRB.begin(), ubp.qRB.end(), std::back_inserter(chargeVectorn_) );
 
     /* Add the number of charge points that do not reside in the transverse size of the domain from
      * different processors.										*/
@@ -1669,12 +1595,12 @@ namespace MITHRA
 	  {
 	    sb_.q	 += iter->q;
 	    sb_.r .pmv(   iter->q, iter->rnp );
-	    sb_.gb.pmv(   iter->q, iter->gbnp);
+	    sb_.gb.pmv(   iter->q, iter->gb);
 
 	    for (int l = 0; l < 3; l++)
 	      {
 		sb_.r2 [l] += iter->rnp[l]  * iter->rnp[l]  * iter->q;
-		sb_.gb2[l] += iter->gbnp[l] * iter->gbnp[l] * iter->q;
+		sb_.gb2[l] += iter->gb[l] * iter->gb[l] * iter->q;
 	      }
 	  }
       }
@@ -1751,7 +1677,7 @@ namespace MITHRA
 	  *vb_.file << iter->rnp[0] << " " << iter->rnp[1] << " " << iter->rnp[2] 		<< std::endl;
       }
 
-    *vb_.file << r_[0][0] << " " << r_[0][1] << " " << r_[0][2]         			<< std::endl;
+    *vb_.file << xmin_ << " " << ymin_ << " " << zmin_        					<< std::endl;
     *vb_.file << "</DataArray>"                                                          	<< std::endl;
     *vb_.file << "</Points>"                                                              	<< std::endl;
 
@@ -1776,8 +1702,8 @@ namespace MITHRA
       {
 	if ( particleInProcessor(iter->rnp[2]) )
 	  {
-	    gamma = sqrt( 1.0 + iter->gbnp.norm2() );
-	    beta  = iter->gbnp[2] / gamma;
+	    gamma = sqrt( 1.0 + iter->gb.norm2() );
+	    beta  = iter->gb[2] / gamma;
 	    *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
             											    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	  }
@@ -1853,9 +1779,9 @@ namespace MITHRA
 	    *pb_.file << iter->rnp[0]  	<< "\t";
 	    *pb_.file << iter->rnp[1]  	<< "\t";
 	    *pb_.file << iter->rnp[2]  	<< "\t";
-	    *pb_.file << iter->gbnp[0] 	<< "\t";
-	    *pb_.file << iter->gbnp[1] 	<< "\t";
-	    *pb_.file << iter->gbnp[2] 	<< std::endl;
+	    *pb_.file << iter->gb[0] 	<< "\t";
+	    *pb_.file << iter->gb[1] 	<< "\t";
+	    *pb_.file << iter->gb[2] 	<< std::endl;
 	  }
       }
 
@@ -2025,6 +1951,7 @@ namespace MITHRA
   void Solver::initializeEnergySample ()
   {
     printmessage(std::string(__FILE__), __LINE__, std::string("::: Initializing the FEL radiation energy data.") );
+
     re_.clear(); re_.resize(FEL_.size());
 
     /* Loop over the different FEL output parameters and calculate the radiation energy if the energy
@@ -2102,6 +2029,7 @@ namespace MITHRA
 	re_[jf].dz = mesh_.meshResolution_[2];
 
 	re_[jf].pc  = 2.0 * re_[jf].dx * re_[jf].dy / ( m0_ * re_[jf].Nf * re_[jf].Nf ) * pow(mesh_.lengthScale_,2) / pow(mesh_.timeScale_,3);
+
       }
 
     printmessage(std::string(__FILE__), __LINE__, std::string(" The FEL radiation energy data is initialized. :::") );
@@ -2302,18 +2230,24 @@ namespace MITHRA
 		    Double tp  = gamma_ * ( timeBunch_ + dt_	  		+ beta_ / c0_ * iter->rnp[2] );
 		    *scrp_[jf].files[i] << interp( lzm, lzp, tm, tp, lzScreen ) << "\t";
 
-		    /* Use different positions since momenta are found at (time - 1/2*bunchTimeStep).	*/
-		    Double gm = sqrt( 1 + pow(iter->gbnm[0], 2) + pow(iter->gbnm[1], 2) + pow(iter->gbnm[2], 2) );
-		    lzm -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnm[2] / gm + beta_ );
-		    Double gp = sqrt( 1 + pow(iter->gbnp[0], 2) + pow(iter->gbnp[1], 2) + pow(iter->gbnp[2], 2) );
-		    lzp -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnp[2] / gp + beta_ );
-		    Double gbzm = gamma_ * ( iter->gbnm[2] + beta_ * gm );
-		    Double gbzp = gamma_ * ( iter->gbnp[2] + beta_ * gp );
+//		    /* Use different positions since momenta are found at (time - 1/2*bunchTimeStep).	*/
+//		    Double gm = sqrt( 1 + pow(iter->gbnm[0], 2) + pow(iter->gbnm[1], 2) + pow(iter->gbnm[2], 2) );
+//		    lzm -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnm[2] / gm + beta_ );
+//		    Double gp = sqrt( 1 + pow(iter->gbnp[0], 2) + pow(iter->gbnp[1], 2) + pow(iter->gbnp[2], 2) );
+//		    lzp -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnp[2] / gp + beta_ );
+//		    Double gbzm = gamma_ * ( iter->gbnm[2] + beta_ * gm );
+//		    Double gbzp = gamma_ * ( iter->gbnp[2] + beta_ * gp );
+//
+//		    /* Write the momentum data into the file.						*/
+//		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[0], iter->gbnp[0], lzScreen ) << "\t";
+//		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[1], iter->gbnp[1], lzScreen ) << "\t";
+//		    *scrp_[jf].files[i] << interp( lzm, lzp, gbzm, gbzp, lzScreen ) << std::endl;
 
-		    /* Write the momentum data into the file.						*/
-		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[0], iter->gbnp[0], lzScreen ) << "\t";
-		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[1], iter->gbnp[1], lzScreen ) << "\t";
-		    *scrp_[jf].files[i] << interp( lzm, lzp, gbzm, gbzp, lzScreen ) << std::endl;
+		    /* Here, we use the stair-case approximation and set the momentum during the whole
+		     * whole time step constant.							*/
+		    *scrp_[jf].files[i] << iter->gb[0] << "\t";
+		    *scrp_[jf].files[i] << iter->gb[1] << "\t";
+		    *scrp_[jf].files[i] << iter->gb[2] << std::endl;
 		  }
 	      }
 	  }
@@ -2357,6 +2291,25 @@ namespace MITHRA
   {
     Double zr = pmod( z - zmin_ , mesh_.meshLength_[2] ) + zmin_;
     return ( ( zr >= zp_[0] ) && ( zr < zp_[1] ) );
+  }
+
+  /****************************************************************************************************
+   * Define the function for returning the real coordianates from the cell index.
+   ****************************************************************************************************/
+
+  FieldVector<Double> Solver::rc( const long int& m )
+  {
+    unsigned int i, j, k;
+    k = m / N1N0_;
+    i = ( m % N1N0_ ) / N1_;
+    j = m - ( N1N0_*k+N1_*i );
+
+    FieldVector<Double> v;
+    v[0] = xmin_ + i         * mesh_.meshResolution_[0];
+    v[1] = ymin_ + j         * mesh_.meshResolution_[1];
+    v[2] = zmin_ + (k + k0_) * mesh_.meshResolution_[2];
+
+    return (v);
   }
 
 }

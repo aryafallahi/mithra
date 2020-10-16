@@ -81,7 +81,7 @@ namespace MITHRA
     /* Determine the properties of each charge point and add them to the charge vector.               	*/
     charge.q  	= bunchInit.cloudCharge_;
     charge.rnp    	= bunchInit.position_[ia];
-    charge.gbnp.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
+    charge.gb.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
 
     /* Insert this charge to the charge list if and only if it resides in the processor's portion.    	*/
     if ( ( charge.rnp[2] < zp[1] || rank == size - 1 ) && ( charge.rnp[2] >= zp[0] || rank == 0 ) )
@@ -224,8 +224,8 @@ namespace MITHRA
 	    charge.rnp    = bunchInit.position_[ia];
 	    charge.rnp   += r;
 
-	    charge.gbnp   = gb;
-	    charge.gbnp  += t;
+	    charge.gb   = gb;
+	    charge.gb  += t;
 
 	    /* Insert this charge and the mirrored ones into the charge vector.				*/
 	    insertCharge(charge);
@@ -255,8 +255,8 @@ namespace MITHRA
 	      charge.rnp   = bunchInit.position_[ia];
 	      charge.rnp  += r;
 
-	      charge.gbnp  = gb;
-	      charge.gbnp += t;
+	      charge.gb  = gb;
+	      charge.gb += t;
 
 	      /* Insert this charge and the mirrored ones into the charge vector.			*/
 	      insertCharge(charge);
@@ -312,10 +312,10 @@ namespace MITHRA
 		    charge.rnp[1] += 0.5 * bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(2,i) ) ) * sin( 2.0 * PI * halton(3,i) );
 		    charge.rnp[2] += 0.5 * bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(4,i) ) ) * sin( 2.0 * PI * halton(5,i) );
 
-		    charge.gbnp     = gb;
-		    charge.gbnp[0] += bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(6,i) ) ) * sin( 2.0 * PI * halton(7,i) );
-		    charge.gbnp[1] += bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(8,i) ) ) * sin( 2.0 * PI * halton(9,i) );
-		    charge.gbnp[2] += bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(10,i)) ) * sin( 2.0 * PI * halton(11,i));
+		    charge.gb     = gb;
+		    charge.gb[0] += bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(6,i) ) ) * sin( 2.0 * PI * halton(7,i) );
+		    charge.gb[1] += bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(8,i) ) ) * sin( 2.0 * PI * halton(9,i) );
+		    charge.gb[2] += bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(10,i)) ) * sin( 2.0 * PI * halton(11,i));
 
 		    /* Insert this charge to the charge list if and only if it resides in the processor
 		     * portion.    									*/
@@ -353,9 +353,9 @@ namespace MITHRA
 	myfile >> charge.rnp[1];
 	myfile >> charge.rnp[2];
 
-	myfile >> charge.gbnp[0];
-	myfile >> charge.gbnp[1];
-	myfile >> charge.gbnp[2];
+	myfile >> charge.gb[0];
+	myfile >> charge.gb[1];
+	myfile >> charge.gb[2];
 
 	charge.rnp += bunchInit.position_[ia];
 
@@ -642,7 +642,7 @@ namespace MITHRA
   }
 
   /* Return the potentials at any desired location and time.                    			*/
-  void Seed::fields (FieldVector <Double> & aufpunkt, Double & time, FieldVector <Double> & a)
+  void Seed::fields (const FieldVector<Double>& aufpunkt, const Double& time, FieldVector<Double>& a)
   {
     /* Transfer the coordinate from the bunch rest frame to the lab frame.				*/
     rl[0] = aufpunkt[0]; rl[1] = aufpunkt[1];

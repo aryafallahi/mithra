@@ -252,7 +252,7 @@ namespace MITHRA
     long int                            m;
     bool                                b1x, b1y, b1z;
     int					nt;
-    std::vector<Double>                 qSB, qSF, qRB, qRF;
+    std::vector<Charge>                 qSB, qSF, qRB, qRF;
     bool				dq;
 
     FieldVector<Double>			et, bt;
@@ -366,7 +366,7 @@ namespace MITHRA
   };
 
   
-  /* Structure of data required for bunch profile from screens.							*/
+  /* Structure of data required for bunch profile from screens.						*/
   struct SampleScreenProfile
   {
     std::vector<std::ofstream*> 	files;

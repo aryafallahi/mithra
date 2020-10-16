@@ -132,6 +132,9 @@ namespace MITHRA
     /* Shift the time of the bunch and undulator according to the given time shift.			*/
     void    		shiftBackInTime			();
 
+    /* Return the real coordinate in the lab-frame from the grid index values.				*/
+    FieldVector<Double> rc				(const long int& i);
+
     /* Reset the currents to zero.									*/
     virtual void currentReset () = 0;
 
@@ -246,9 +249,6 @@ namespace MITHRA
     /* The charge density at the nodes in the computational mesh at three different time points.	*/
     std::vector<Double> 						rn_;
 
-    /* The coordinate of the nodes in the computational mesh.						*/
-    std::vector<FieldVector<Double> > 					r_;
-
     /* Number of nodes in each direction.								*/
     int									N0_, N1_, N2_, N1N0_;
 
@@ -286,6 +286,9 @@ namespace MITHRA
     Double								gamma_;
     Double								beta_;
     Double								dt_;
+
+    /* The MPI datatype used for communicating charges.							*/
+    MPI_Datatype 							MPI_CHARGE;
 
     /* Define a structure containing the parameters needed to update the values. These parameters are
      * defined once in the class to avoid declaring them every time a field is updated.			*/

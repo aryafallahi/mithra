@@ -273,7 +273,7 @@ namespace MITHRA
   public:
 
     /* Return the potentials at any desired location and time.                    			*/
-    void fields (FieldVector <Double> & aufpunkt, Double & time, FieldVector <Double> & a);
+    void fields (const FieldVector<Double>& aufpunkt, const Double& time, FieldVector<Double>& a);
 
     /* Store the data required for sampling the radiated field in a point.                              */
     bool                                sampling_;

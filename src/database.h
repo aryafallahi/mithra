@@ -89,49 +89,50 @@ namespace MITHRA
   {
   public:
 
-    typedef Double* P;
+    typedef const Double* 	P;
+    typedef Double* 		Q;
 
-    void advanceMagneticPotentialNSFD 	(P v0 , P v1 , P v2 ,
+    void advanceMagneticPotentialNSFD 	(Q v0 , P v1 , P v2 ,
 					 P v3 , P v31, P v32,
 					 P v4 , P v41, P v42,
 					 P v5 , P v51, P v52,
 					 P v6 , P v61, P v62,
 					 P v7 , P v8 , P v9 );
 
-    void advanceScalarPotentialNSFD 	(P v0 , P v1 , P v2 ,
+    void advanceScalarPotentialNSFD 	(Q v0 , P v1 , P v2 ,
 					 P v3 , P v31, P v32,
 					 P v4 , P v41, P v42,
 					 P v5 , P v51, P v52,
 					 P v6 , P v61, P v62,
 					 P v7 , P v8 , P v9 );
 
-    void advanceMagneticPotentialFD 	(P v0 , P v1 , P v2 ,
+    void advanceMagneticPotentialFD 	(Q v0 , P v1 , P v2 ,
 					 P v3 , P v31, P v32,
 					 P v4 , P v41, P v42,
 					 P v5 , P v51, P v52,
 					 P v6 , P v61, P v62,
 					 P v7 , P v8 , P v9 );
 
-    void advanceScalarPotentialFD 	(P v0 , P v1 , P v2 ,
+    void advanceScalarPotentialFD 	(Q v0 , P v1 , P v2 ,
 					 P v3 , P v31, P v32,
 					 P v4 , P v41, P v42,
 					 P v5 , P v51, P v52,
 					 P v6 , P v61, P v62,
 					 P v7 , P v8 , P v9 );
 
-    void advanceBoundaryF 		(P v0 , P v1 , P v2 ,
+    void advanceBoundaryF 		(Q v0 , P v1 , P v2 ,
 					 P v3 , P v4 , P v5 ,
 					 P v6 , P v7 , P v8 ,
 					 P v9 , P v10, P v11,
 					 P v12, P v13);
 
-    void advanceBoundaryS 		(P v0 , P v1 , P v2 ,
+    void advanceBoundaryS 		(Q v0 , P v1 , P v2 ,
 					 P v3 , P v4 , P v5 ,
 					 P v6 , P v7 , P v8 ,
 					 P v9 , P v10, P v11,
 					 P v12, P v13);
 
-    void advanceEdgeF 			(P v0 , P v1 , P v2 ,
+    void advanceEdgeF 			(Q v0 , P v1 , P v2 ,
 					 P v3 , P v4 , P v5 ,
 					 P v6 , P v7 , P v8 ,
 					 P v9 , P v10, P v11,
@@ -139,7 +140,7 @@ namespace MITHRA
 					 P v15, P v16, P v17,
 					 P v18, P v19);
 
-    void advanceEdgeS 			(P v0 , P v1 , P v2 ,
+    void advanceEdgeS 			(Q v0 , P v1 , P v2 ,
 					 P v3 , P v4 , P v5 ,
 					 P v6 , P v7 , P v8 ,
 					 P v9 , P v10, P v11,
@@ -147,7 +148,7 @@ namespace MITHRA
 					 P v15, P v16, P v17,
 					 P v18, P v19);
 
-    void advanceCornerF 		(P v0 , P v1 , P v2 ,
+    void advanceCornerF 		(Q v0 , P v1 , P v2 ,
 					 P v3 , P v4 , P v5 ,
 					 P v6 , P v7 , P v8 ,
 					 P v9 , P v10, P v11,
@@ -156,7 +157,7 @@ namespace MITHRA
 					 P v18, P v19, P v20,
 					 P v21, P v22, P v23);
 
-    void advanceCornerS 		(P v0 , P v1 , P v2 ,
+    void advanceCornerS 		(Q v0 , P v1 , P v2 ,
 					 P v3 , P v4 , P v5 ,
 					 P v6 , P v7 , P v8 ,
 					 P v9 , P v10, P v11,
@@ -203,7 +204,7 @@ namespace MITHRA
     Double				*anp1, *an, *anm1;
     Double				*fnp1, *fn, *fnm1;
     Double				*jn,   *rn;
-    Double				*en,   *bn;
+    float				*en,   *bn;
 
     unsigned int			N0m1, N1m1, npm1;
   };

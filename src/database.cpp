@@ -41,7 +41,7 @@ namespace MITHRA
   }
 
   /* Advance the magnetic potential using the Non-standard Finite-Difference algorithm.			*/
-  void AdvanceField::advanceMagneticPotentialNSFD (P v0 , P v1 , P v2 ,
+  void AdvanceField::advanceMagneticPotentialNSFD (Q v0 , P v1 , P v2 ,
 						   P v3 , P v31, P v32,
 						   P v4 , P v41, P v42,
 						   P v5 , P v51, P v52,
@@ -72,7 +72,7 @@ namespace MITHRA
   };
 
   /* Advance the scalar potential using the Non-standard Finite-Difference algorithm.			*/
-  void AdvanceField::advanceScalarPotentialNSFD (P v0 , P v1 , P v2 ,
+  void AdvanceField::advanceScalarPotentialNSFD (Q v0 , P v1 , P v2 ,
 						 P v3 , P v31, P v32,
 						 P v4 , P v41, P v42,
 						 P v5 , P v51, P v52,
@@ -88,7 +88,7 @@ namespace MITHRA
   };
 
   /* Advance the magnetic potential using the Standard Finite-Difference algorithm.			*/
-  void AdvanceField::advanceMagneticPotentialFD (P v0 , P v1 , P v2 ,
+  void AdvanceField::advanceMagneticPotentialFD (Q v0 , P v1 , P v2 ,
 						 P v3 , P v31, P v32,
 						 P v4 , P v41, P v42,
 						 P v5 , P v51, P v52,
@@ -118,7 +118,7 @@ namespace MITHRA
   };
 
   /* Advance the scalar potential using the Standard Finite-Difference algorithm.			*/
-  void AdvanceField::advanceScalarPotentialFD	(P v0 , P v1 , P v2 ,
+  void AdvanceField::advanceScalarPotentialFD	(Q v0 , P v1 , P v2 ,
 						 P v3 , P v31, P v32,
 						 P v4 , P v41, P v42,
 						 P v5 , P v51, P v52,
@@ -134,7 +134,7 @@ namespace MITHRA
   }
 
   /* Advance the magnetic potential at the boundaries of the computational domain.			*/
-  void AdvanceField::advanceBoundaryF 		(P v0 , P v1 , P v2 ,
+  void AdvanceField::advanceBoundaryF 		(Q v0 , P v1 , P v2 ,
 						 P v3 , P v4 , P v5 ,
 						 P v6 , P v7 , P v8 ,
 						 P v9 , P v10, P v11,
@@ -161,7 +161,7 @@ namespace MITHRA
   }
 
   /* Advance the scalar potential at the boundaries of the computational domain.			*/
-  void AdvanceField::advanceBoundaryS 		(P v0 , P v1 , P v2 ,
+  void AdvanceField::advanceBoundaryS 		(Q v0 , P v1 , P v2 ,
 						 P v3 , P v4 , P v5 ,
 						 P v6 , P v7 , P v8 ,
 						 P v9 , P v10, P v11,
@@ -176,7 +176,7 @@ namespace MITHRA
   }
 
   /* Advance the magnetic potential at the edges of the computational domain.				*/
-  void AdvanceField::advanceEdgeF 		(P v0 , P v1 , P v2 ,
+  void AdvanceField::advanceEdgeF 		(Q v0 , P v1 , P v2 ,
 						 P v3 , P v4 , P v5 ,
 						 P v6 , P v7 , P v8 ,
 						 P v9 , P v10, P v11,
@@ -211,7 +211,7 @@ namespace MITHRA
   }
 
   /* Advance the scalar potential at the edges of the computational domain.				*/
-  void AdvanceField::advanceEdgeS 		(P v0 , P v1 , P v2 ,
+  void AdvanceField::advanceEdgeS 		(Q v0 , P v1 , P v2 ,
 						 P v3 , P v4 , P v5 ,
 						 P v6 , P v7 , P v8 ,
 						 P v9 , P v10, P v11,
@@ -229,7 +229,7 @@ namespace MITHRA
   }
 
   /* Advance the magnetic potential at the corners of the computational domain.				*/
-  void AdvanceField::advanceCornerF 		(P v0 , P v1 , P v2 ,
+  void AdvanceField::advanceCornerF 		(Q v0 , P v1 , P v2 ,
 						 P v3 , P v4 , P v5 ,
 						 P v6 , P v7 , P v8 ,
 						 P v9 , P v10, P v11,
@@ -268,7 +268,7 @@ namespace MITHRA
   }
 
   /* Advance the scalar potential at the corners of the computational domain.				*/
-  void AdvanceField::advanceCornerS 		(P v0 , P v1 , P v2 ,
+  void AdvanceField::advanceCornerS 		(Q v0 , P v1 , P v2 ,
 						 P v3 , P v4 , P v5 ,
 						 P v6 , P v7 , P v8 ,
 						 P v9 , P v10, P v11,

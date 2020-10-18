@@ -226,7 +226,8 @@ namespace MITHRA
     std::vector<ExtField>&                                              extField_;
     std::vector<FreeElectronLaser>&					FEL_;
 
-    /* The vector potential at the nodes in the computational mesh at three different time points.	*/
+    /* The vector potential at the nodes in the computational mesh at three different time points. The
+     * vector anp1_ is also used for storing the currents after the field shift is performed.		*/
     std::vector<FieldVector<Double> >* 					anp1_;
     std::vector<FieldVector<Double> >* 					an_;
     std::vector<FieldVector<Double> >* 					anm1_;
@@ -240,14 +241,8 @@ namespace MITHRA
     std::vector<bool>                                                   pic_;
 
     /* The vector potential at the nodes in the computational mesh at three different time points.	*/
-    std::vector<FieldVector<Double> > 					en_;
-    std::vector<FieldVector<Double> > 					bn_;
-
-    /* The current density at the nodes in the computational mesh at three different time points.	*/
-    std::vector<FieldVector<Double> > 					jn_;
-
-    /* The charge density at the nodes in the computational mesh at three different time points.	*/
-    std::vector<Double> 						rn_;
+    std::vector<FieldVector<float> > 					en_;
+    std::vector<FieldVector<float> > 					bn_;
 
     /* Number of nodes in each direction.								*/
     int									N0_, N1_, N2_, N1N0_;

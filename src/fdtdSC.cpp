@@ -22,14 +22,14 @@ namespace MITHRA
 
   void FdTdSC::currentReset ()
   {
-    Double*  jn = &jn_[0][0];
-    Double*  je = &jn_[(long)N1N0_*np_-1][2];
+    Double*  jn = &(*anp1_)[0][0];
+    Double*  je = &(*anp1_)[(long)N1N0_*np_-1][2];
     while ( jn != je )
       *(jn++) = 0.0;
     *je = 0.0;
 
-    Double*  rn = &rn_[0];
-    Double*  re = &rn_[(long)N1N0_*np_-1];
+    Double*  rn = &(*fnp1_)[0];
+    Double*  re = &(*fnp1_)[(long)N1N0_*np_-1];
     while ( rn != re )
       *(rn++) = 0.0;
     *re = 0.0;
@@ -41,8 +41,8 @@ namespace MITHRA
 
   void FdTdSC::currentUpdate ()
   {
-    FieldVector<Double>*	        jn   = &jn_[0];
-    Double*			        rn   = &rn_[0];
+    FieldVector<Double>*	      jn   = &(*anp1_)[0];
+    Double*			      rn   = &(*fnp1_)[0];
     bool                              bp, bm;
     std::list<Charge>::iterator       it = chargeVectorn_.begin();
 
@@ -222,8 +222,8 @@ namespace MITHRA
     /* Add the contribution of each processor to the charge and current density at the boundaries.    	*/
     if (rank_ != 0)
       {
-	MPI_Send(&jn_[0][0],          3*N1N0_,MPI_DOUBLE,rank_-1,msgtag9, MPI_COMM_WORLD);
-	MPI_Send(&rn_[0],               N1N0_,MPI_DOUBLE,rank_-1,msgtag10,MPI_COMM_WORLD);
+	MPI_Send(&(*anp1_)[0][0],       3*N1N0_,MPI_DOUBLE,rank_-1,msgtag9, MPI_COMM_WORLD);
+	MPI_Send(&(*fnp1_)[0],               N1N0_,MPI_DOUBLE,rank_-1,msgtag10,MPI_COMM_WORLD);
       }
 
     if (rank_ != size_ - 1)
@@ -233,8 +233,8 @@ namespace MITHRA
 
 	for (int i = 0; i < N1N0_; i++)
 	  {
-	    jn_[(np_-2)*N1N0_+i] += uc_.jt[i];
-	    rn_[(np_-2)*N1N0_+i] += uc_.rt[i];
+	    (*anp1_)[(np_-2)*N1N0_+i] += uc_.jt[i];
+	    (*fnp1_)[(np_-2)*N1N0_+i] += uc_.rt[i];
 	  }
       }
 
@@ -270,14 +270,14 @@ namespace MITHRA
     uf_.anp1 = &(*anp1_)[0][0];
     uf_.an   = &(*an_)  [0][0];
     uf_.anm1 = &(*anm1_)[0][0];
-    uf_.jn   = &jn_[0][0];
+    uf_.jn   = &(*anp1_)[0][0];
     uf_.en   = &en_[0][0];
     uf_.bn   = &bn_[0][0];
 
     uf_.fnp1 = &(*fnp1_)[0];
     uf_.fn   = &(*fn_)  [0];
     uf_.fnm1 = &(*fnm1_)[0];
-    uf_.rn   = &rn_[0];
+    uf_.rn   = &(*fnp1_)[0];
 
     const long int M0  = N1_;
     const long int M1  = N1N0_;
@@ -1208,14 +1208,14 @@ namespace MITHRA
 	    sf_.at.pmv((1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr,         (*an_)[sf_.m+N1N0_+1]);
 	    sf_.at.pmv(sf_.dxr         * sf_.dyr           * sf_.dzr,         (*an_)[sf_.m+N1N0_+N1_+1]);
 
-	    sf_.jt.mv ((1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr), jn_[sf_.m]);
-	    sf_.jt.pmv(sf_.dxr         * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr), jn_[sf_.m+N1_]);
-	    sf_.jt.pmv((1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr), jn_[sf_.m+1]);
-	    sf_.jt.pmv(sf_.dxr         * sf_.dyr           * (1.0 - sf_.dzr), jn_[sf_.m+N1_+1]);
-	    sf_.jt.pmv((1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * sf_.dzr,         jn_[sf_.m+N1N0_]);
-	    sf_.jt.pmv(sf_.dxr         * (1.0 - sf_.dyr)   * sf_.dzr,         jn_[sf_.m+N1N0_+N1_]);
-	    sf_.jt.pmv((1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr,         jn_[sf_.m+N1N0_+1]);
-	    sf_.jt.pmv(sf_.dxr         * sf_.dyr           * sf_.dzr,         jn_[sf_.m+N1N0_+N1_+1]);
+	    sf_.jt.mv ((1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr), (*anp1_)[sf_.m]);
+	    sf_.jt.pmv(sf_.dxr         * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr), (*anp1_)[sf_.m+N1_]);
+	    sf_.jt.pmv((1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr), (*anp1_)[sf_.m+1]);
+	    sf_.jt.pmv(sf_.dxr         * sf_.dyr           * (1.0 - sf_.dzr), (*anp1_)[sf_.m+N1_+1]);
+	    sf_.jt.pmv((1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * sf_.dzr,         (*anp1_)[sf_.m+N1N0_]);
+	    sf_.jt.pmv(sf_.dxr         * (1.0 - sf_.dyr)   * sf_.dzr,         (*anp1_)[sf_.m+N1N0_+N1_]);
+	    sf_.jt.pmv((1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr,         (*anp1_)[sf_.m+N1N0_+1]);
+	    sf_.jt.pmv(sf_.dxr         * sf_.dyr           * sf_.dzr,         (*anp1_)[sf_.m+N1N0_+N1_+1]);
 
 	    sf_.f  =   (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * (*fn_)[sf_.m];
 	    sf_.f +=	  sf_.dxr        * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * (*fn_)[sf_.m+N1_];
@@ -1226,14 +1226,14 @@ namespace MITHRA
 	    sf_.f +=	 (1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr         * (*fn_)[sf_.m+N1N0_+1];
 	    sf_.f +=	  sf_.dxr        * sf_.dyr           * sf_.dzr         * (*fn_)[sf_.m+N1N0_+N1_+1];
 
-	    sf_.q  = 	 (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * rn_[sf_.m];
-	    sf_.q +=	  sf_.dxr        * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * rn_[sf_.m+N1_];
-	    sf_.q +=   (1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr) * rn_[sf_.m+1];
-	    sf_.q +=	  sf_.dxr        * sf_.dyr           * (1.0 - sf_.dzr) * rn_[sf_.m+N1_+1];
-	    sf_.q +=   (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * sf_.dzr         * rn_[sf_.m+N1N0_];
-	    sf_.q +=    sf_.dxr        * (1.0 - sf_.dyr)   * sf_.dzr         * rn_[sf_.m+N1N0_+N1_];
-	    sf_.q +=   (1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr         * rn_[sf_.m+N1N0_+1];
-	    sf_.q +=    sf_.dxr        * sf_.dyr           * sf_.dzr         * rn_[sf_.m+N1N0_+N1_+1];
+	    sf_.q  = 	 (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * (*fnp1_)[sf_.m];
+	    sf_.q +=	  sf_.dxr        * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr) * (*fnp1_)[sf_.m+N1_];
+	    sf_.q +=   (1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr) * (*fnp1_)[sf_.m+1];
+	    sf_.q +=	  sf_.dxr        * sf_.dyr           * (1.0 - sf_.dzr) * (*fnp1_)[sf_.m+N1_+1];
+	    sf_.q +=   (1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * sf_.dzr         * (*fnp1_)[sf_.m+N1N0_];
+	    sf_.q +=    sf_.dxr        * (1.0 - sf_.dyr)   * sf_.dzr         * (*fnp1_)[sf_.m+N1N0_+N1_];
+	    sf_.q +=   (1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr         * (*fnp1_)[sf_.m+N1N0_+1];
+	    sf_.q +=    sf_.dxr        * sf_.dyr           * sf_.dzr         * (*fnp1_)[sf_.m+N1N0_+N1_+1];
 
 	    /* Write the coordinates in the next column.						*/
 	    *(sf_.file) << sf_.position[0] << "\t";
@@ -1318,10 +1318,10 @@ namespace MITHRA
 		else if 	( seed_.vtk_[ivtk].field_[l] == Ax )	vf_[ivtk].v[m][l] = (*an_)[m][0];
 		else if 	( seed_.vtk_[ivtk].field_[l] == Ay )	vf_[ivtk].v[m][l] = (*an_)[m][1];
 		else if 	( seed_.vtk_[ivtk].field_[l] == Az )	vf_[ivtk].v[m][l] = (*an_)[m][2];
-		else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[m][l] = jn_[m][0];
-		else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[m][l] = jn_[m][1];
-		else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[m][l] = jn_[m][2];
-		else if 	( seed_.vtk_[ivtk].field_[l] == Q  ) 	vf_[ivtk].v[m][l] = rn_[m];
+		else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[m][l] = (*anp1_)[m][0];
+		else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[m][l] = (*anp1_)[m][1];
+		else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[m][l] = (*anp1_)[m][2];
+		else if 	( seed_.vtk_[ivtk].field_[l] == Q  ) 	vf_[ivtk].v[m][l] = (*fnp1_)[m];
 		else if 	( seed_.vtk_[ivtk].field_[l] == F  ) 	vf_[ivtk].v[m][l] = (*fn_)[m];
 	      }
 	  }
@@ -1502,10 +1502,10 @@ namespace MITHRA
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Ax )	vf_[ivtk].v[n][l] = (*an_)[m][0] * ( 1.0 - dxr ) + (*an_)[m + N1_][0] * dxr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Ay )	vf_[ivtk].v[n][l] = (*an_)[m][1] * ( 1.0 - dxr ) + (*an_)[m + N1_][1] * dxr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Az )	vf_[ivtk].v[n][l] = (*an_)[m][2] * ( 1.0 - dxr ) + (*an_)[m + N1_][2] * dxr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[n][l] = jn_[m][0] * ( 1.0 - dxr ) + jn_[m + N1_][0] * dxr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[n][l] = jn_[m][1] * ( 1.0 - dxr ) + jn_[m + N1_][1] * dxr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[n][l] = jn_[m][2] * ( 1.0 - dxr ) + jn_[m + N1_][2] * dxr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Q  )	vf_[ivtk].v[n][l] = rn_[m]    * ( 1.0 - dxr ) + rn_[m + N1_]    * dxr;
+	      else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[n][l] = (*anp1_)[m][0] * ( 1.0 - dxr ) + (*anp1_)[m + N1_][0] * dxr;
+	      else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[n][l] = (*anp1_)[m][1] * ( 1.0 - dxr ) + (*anp1_)[m + N1_][1] * dxr;
+	      else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[n][l] = (*anp1_)[m][2] * ( 1.0 - dxr ) + (*anp1_)[m + N1_][2] * dxr;
+	      else if 	( seed_.vtk_[ivtk].field_[l] == Q  )	vf_[ivtk].v[n][l] = (*fnp1_)[m]    * ( 1.0 - dxr ) + (*fnp1_)[m + N1_]    * dxr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == F  )	vf_[ivtk].v[n][l] = (*fn_)[m] * ( 1.0 - dxr ) + (*fn_)[m + N1_] * dxr;
 	    }
 	}
@@ -1669,10 +1669,10 @@ namespace MITHRA
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Ax )	vf_[ivtk].v[n][l] = (*an_)[m][0] * ( 1.0 - dyr ) + (*an_)[m + 1][0] * dyr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Ay )	vf_[ivtk].v[n][l] = (*an_)[m][1] * ( 1.0 - dyr ) + (*an_)[m + 1][1] * dyr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Az )	vf_[ivtk].v[n][l] = (*an_)[m][2] * ( 1.0 - dyr ) + (*an_)[m + 1][2] * dyr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[n][l] = jn_[m][0] * ( 1.0 - dyr ) + jn_[m + 1][0] * dyr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[n][l] = jn_[m][1] * ( 1.0 - dyr ) + jn_[m + 1][1] * dyr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[n][l] = jn_[m][2] * ( 1.0 - dyr ) + jn_[m + 1][2] * dyr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Q  )	vf_[ivtk].v[n][l] = rn_[m]    * ( 1.0 - dyr ) + rn_[m + 1]    * dyr;
+	      else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[n][l] = (*anp1_)[m][0] * ( 1.0 - dyr ) + (*anp1_)[m + 1][0] * dyr;
+	      else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[n][l] = (*anp1_)[m][1] * ( 1.0 - dyr ) + (*anp1_)[m + 1][1] * dyr;
+	      else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[n][l] = (*anp1_)[m][2] * ( 1.0 - dyr ) + (*anp1_)[m + 1][2] * dyr;
+	      else if 	( seed_.vtk_[ivtk].field_[l] == Q  )	vf_[ivtk].v[n][l] = (*fnp1_)[m]    * ( 1.0 - dyr ) + (*fnp1_)[m + 1]    * dyr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == F  )	vf_[ivtk].v[n][l] = (*fn_)[m] * ( 1.0 - dyr ) + (*fn_)[m + 1] * dyr;
 	    }
 	}
@@ -1836,10 +1836,10 @@ namespace MITHRA
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Ax )	vf_[ivtk].v[n][l] = (*an_)[m][0] * ( 1.0 - dzr ) + (*an_)[m + N1N0_][0] * dzr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Ay )	vf_[ivtk].v[n][l] = (*an_)[m][1] * ( 1.0 - dzr ) + (*an_)[m + N1N0_][1] * dzr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Az )	vf_[ivtk].v[n][l] = (*an_)[m][2] * ( 1.0 - dzr ) + (*an_)[m + N1N0_][2] * dzr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[n][l] = jn_[m][0] * ( 1.0 - dzr ) + jn_[m + N1N0_][0] * dzr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[n][l] = jn_[m][1] * ( 1.0 - dzr ) + jn_[m + N1N0_][1] * dzr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[n][l] = jn_[m][2] * ( 1.0 - dzr ) + jn_[m + N1N0_][2] * dzr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Q  )	vf_[ivtk].v[n][l] = rn_[m]    * ( 1.0 - dzr ) + rn_[m + N1N0_]    * dzr;
+	      else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[n][l] = (*anp1_)[m][0] * ( 1.0 - dzr ) + (*anp1_)[m + N1N0_][0] * dzr;
+	      else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[n][l] = (*anp1_)[m][1] * ( 1.0 - dzr ) + (*anp1_)[m + N1N0_][1] * dzr;
+	      else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[n][l] = (*anp1_)[m][2] * ( 1.0 - dzr ) + (*anp1_)[m + N1N0_][2] * dzr;
+	      else if 	( seed_.vtk_[ivtk].field_[l] == Q  )	vf_[ivtk].v[n][l] = (*fnp1_)[m]    * ( 1.0 - dzr ) + (*fnp1_)[m + N1N0_]    * dzr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == F  )	vf_[ivtk].v[n][l] = (*fn_)[m] * ( 1.0 - dzr ) + (*fn_)[m + N1N0_] * dzr;
 	    }
 	}
@@ -1940,16 +1940,16 @@ namespace MITHRA
 		  *pf_.file << (*an_)[pf_.m][2] << "\t";
 
 		else if 	( seed_.profileField_[l] == Jx )
-		  *pf_.file << jn_[pf_.m][0] << "\t";
+		  *pf_.file << (*anp1_)[pf_.m][0] << "\t";
 		else if 	( seed_.profileField_[l] == Jy )
-		  *pf_.file << jn_[pf_.m][1] << "\t";
+		  *pf_.file << (*anp1_)[pf_.m][1] << "\t";
 		else if 	( seed_.profileField_[l] == Jz )
-		  *pf_.file << jn_[pf_.m][2] << "\t";
+		  *pf_.file << (*anp1_)[pf_.m][2] << "\t";
 
 		else if 	( seed_.profileField_[l] == F  )
 		  *pf_.file << (*fn_)[pf_.m] << "\t";
 		else if 	( seed_.profileField_[l] == Q  )
-		  *pf_.file << rn_[pf_.m] << "\t";
+		  *pf_.file << (*fnp1_)[pf_.m] << "\t";
 	      }
 
 	    *pf_.file << std::endl;

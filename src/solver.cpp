@@ -638,13 +638,13 @@ namespace MITHRA
       }
 
     /* Now according to the number of nodes, initialize each of the field and coordinate matrices.	*/
-    FieldVector<Double> ZERO_VECTOR (0.0);
+    FieldVector<Double> ZERO_VECTOR 		(0.0);
+    FieldVector<float>  ZERO_VECTOR_FLOAT 	(0.0);
     anp1_ = new std::vector<FieldVector<Double> > (N1N0_*np_, ZERO_VECTOR);
     an_   = new std::vector<FieldVector<Double> > (N1N0_*np_, ZERO_VECTOR);
     anm1_ = new std::vector<FieldVector<Double> > (N1N0_*np_, ZERO_VECTOR);
-    jn_  .resize(N1N0_*np_, ZERO_VECTOR);
-    en_  .resize(N1N0_*np_, ZERO_VECTOR);
-    bn_  .resize(N1N0_*np_, ZERO_VECTOR);
+    en_  .resize(N1N0_*np_, ZERO_VECTOR_FLOAT);
+    bn_  .resize(N1N0_*np_, ZERO_VECTOR_FLOAT);
     pic_ .resize(N1N0_*np_, false);
 
     if ( mesh_.spaceCharge_ )
@@ -652,7 +652,6 @@ namespace MITHRA
 	fnp1_ = new std::vector<Double> (N1N0_*np_, 0.0 );
 	fn_   = new std::vector<Double> (N1N0_*np_, 0.0 );
 	fnm1_ = new std::vector<Double> (N1N0_*np_, 0.0 );
-	rn_   .resize(N1N0_*np_, 0.0);
       }
 
     /* Set the borders of the computational mesh.                                                     	*/
@@ -1300,6 +1299,48 @@ namespace MITHRA
 	/* Update the fields for one time step using the FDTD algorithm.				*/
 	fieldUpdate();
 
+	/* For the sake of having correct charge conservation in the implementation of PIC model, we
+	 * need to first update the charge motion with having the initial position saved in the memory.
+	 * Then, the current and charge update should all happen using the very first and the very last
+	 * charge positions. THIS IS VERY IMPORTANT AND SHOULD NOT BE CHANGED IN THE FUTURE.		*/
+
+	/* Update the position and velocity parameters.							*/
+	for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
+	  iter->rnm  = iter->rnp;
+
+	/* Update the bunch till the time of the bunch properties reaches the time instant of the
+	 * field.											*/
+	for (Double t = 0.0; t < nUpdateBunch_; t += 1.0)
+	  {
+	    bunchUpdate();
+	    timeBunch_ += bunch_.timeStep_;
+	    ++nTimeBunch_;
+	  }
+
+	/* After the current deposition, a recycling of the charges is needed so that the charges that
+	 * have left the processor domain are deleted from the processor.				*/
+	recycleParticles();
+
+	/* If radiation power of the FEL output is enabled and the rhythm for sampling is achieved.
+	 * Sample the radiation power at the given position and save them into the file.		*/
+	powerSample(); powerVisualize();
+
+	/* If radiation energy of the FEL output is enabled and the rhythm for sampling is achieved.
+	 * Sample the radiation energy at the given position and save them into the file.		*/
+	energySample();
+
+	/* Shift the computed fields and the time points for the fields.				*/
+	fieldShift();
+
+	/* Reset the charge and current values to zero.							*/
+	currentReset();
+
+	/* Update the values of the current.								*/
+	currentUpdate();
+
+	/* Communicate the current among processors.							*/
+	currentCommunicate();
+
 	/* If sampling of the field is enabled and the rhythm for sampling is achieved. Sample the
 	 * field at the given position and save them into the file.					*/
 	if ( seed_.sampling_ && fmod(time_, seed_.samplingRhythm_) < mesh_.timeStep_ && time_ > 0.0 ) fieldSample();
@@ -1327,36 +1368,6 @@ namespace MITHRA
 	      fieldProfile();
 	  }
 
-	/* Reset the charge and current values to zero.							*/
-	currentReset();
-
-	/* For the sake of having correct charge conservation in the implementation of PIC model, we
-	 * need to first update the charge motion with having the initial position saved in the memory.
-	 * Then, the current and charge update should all happen using the very first and the very last
-	 * charge positions. THIS IS VERY IMPORTANT AND SHOULD NOT BE CHANGED IN THE FUTURE.		*/
-
-	/* Update the position and velocity parameters.							*/
-	for (auto iter = chargeVectorn_.begin(); iter != chargeVectorn_.end(); iter++)
-	  iter->rnm  = iter->rnp;
-
-	/* Update the bunch till the time of the bunch properties reaches the time instant of the
-	 * field.											*/
-	for (Double t = 0.0; t < nUpdateBunch_; t += 1.0)
-	  {
-	    bunchUpdate();
-	    timeBunch_ += bunch_.timeStep_;
-	    ++nTimeBunch_;
-	  }
-
-	/* Record particles that have gone through the diagnostics screens.					*/
-	screenProfile();
-
-	/* Update the values of the current.								*/
-	currentUpdate();
-
-	/* Communicate the current among processors.							*/
-	currentCommunicate();
-
 	/* If sampling of the bunch is enabled and the rhythm for sampling is achieved. Sample the
 	 * bunch and save them into the file.								*/
 	if ( bunch_.sampling_ && fmod(time_ + mesh_.timeShift_ , bunch_.rhythm_) < mesh_.timeStep_ && ( time_ + mesh_.timeShift_ > 0.0 ) ) bunchSample();
@@ -1376,20 +1387,8 @@ namespace MITHRA
 	      bunchProfile();
 	  }
 
-	/* After the current deposition, a recycling of the charges is needed so that the charges that
-	 * have left the processor domain are deleted from the processor.				*/
-	recycleParticles();
-
-	/* If radiation power of the FEL output is enabled and the rhythm for sampling is achieved.
-	 * Sample the radiation power at the given position and save them into the file.		*/
-	powerSample(); powerVisualize();
-
-	/* If radiation energy of the FEL output is enabled and the rhythm for sampling is achieved.
-	 * Sample the radiation energy at the given position and save them into the file.		*/
-	energySample();
-
-	/* Shift the computed fields and the time points for the fields.				*/
-	fieldShift();
+	/* Record particles that have gone through the diagnostics screens.				*/
+	screenProfile();
 
 	timem1_ += mesh_.timeStep_;
 	time_   += mesh_.timeStep_;
@@ -1705,7 +1704,7 @@ namespace MITHRA
 	    gamma = sqrt( 1.0 + iter->gb.norm2() );
 	    beta  = iter->gb[2] / gamma;
 	    *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
-            											    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
+            												<< " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	  }
       }
     *vb_.file << 0.0 << " " << 0.0 << " " << 0.0						<< std::endl;
@@ -2230,18 +2229,18 @@ namespace MITHRA
 		    Double tp  = gamma_ * ( timeBunch_ + dt_	  		+ beta_ / c0_ * iter->rnp[2] );
 		    *scrp_[jf].files[i] << interp( lzm, lzp, tm, tp, lzScreen ) << "\t";
 
-//		    /* Use different positions since momenta are found at (time - 1/2*bunchTimeStep).	*/
-//		    Double gm = sqrt( 1 + pow(iter->gbnm[0], 2) + pow(iter->gbnm[1], 2) + pow(iter->gbnm[2], 2) );
-//		    lzm -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnm[2] / gm + beta_ );
-//		    Double gp = sqrt( 1 + pow(iter->gbnp[0], 2) + pow(iter->gbnp[1], 2) + pow(iter->gbnp[2], 2) );
-//		    lzp -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnp[2] / gp + beta_ );
-//		    Double gbzm = gamma_ * ( iter->gbnm[2] + beta_ * gm );
-//		    Double gbzp = gamma_ * ( iter->gbnp[2] + beta_ * gp );
-//
-//		    /* Write the momentum data into the file.						*/
-//		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[0], iter->gbnp[0], lzScreen ) << "\t";
-//		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[1], iter->gbnp[1], lzScreen ) << "\t";
-//		    *scrp_[jf].files[i] << interp( lzm, lzp, gbzm, gbzp, lzScreen ) << std::endl;
+		    //		    /* Use different positions since momenta are found at (time - 1/2*bunchTimeStep).	*/
+		    //		    Double gm = sqrt( 1 + pow(iter->gbnm[0], 2) + pow(iter->gbnm[1], 2) + pow(iter->gbnm[2], 2) );
+		    //		    lzm -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnm[2] / gm + beta_ );
+		    //		    Double gp = sqrt( 1 + pow(iter->gbnp[0], 2) + pow(iter->gbnp[1], 2) + pow(iter->gbnp[2], 2) );
+		    //		    lzp -= gamma_ * c0_ *  .5 * bunch_.timeStep_ * ( iter->gbnp[2] / gp + beta_ );
+		    //		    Double gbzm = gamma_ * ( iter->gbnm[2] + beta_ * gm );
+		    //		    Double gbzp = gamma_ * ( iter->gbnp[2] + beta_ * gp );
+		    //
+		    //		    /* Write the momentum data into the file.						*/
+		    //		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[0], iter->gbnp[0], lzScreen ) << "\t";
+		    //		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[1], iter->gbnp[1], lzScreen ) << "\t";
+		    //		    *scrp_[jf].files[i] << interp( lzm, lzp, gbzm, gbzp, lzScreen ) << std::endl;
 
 		    /* Here, we use the stair-case approximation and set the momentum during the whole
 		     * whole time step constant.							*/

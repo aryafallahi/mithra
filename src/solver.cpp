@@ -1321,26 +1321,6 @@ namespace MITHRA
 	 * have left the processor domain are deleted from the processor.				*/
 	recycleParticles();
 
-	/* If radiation power of the FEL output is enabled and the rhythm for sampling is achieved.
-	 * Sample the radiation power at the given position and save them into the file.		*/
-	powerSample(); powerVisualize();
-
-	/* If radiation energy of the FEL output is enabled and the rhythm for sampling is achieved.
-	 * Sample the radiation energy at the given position and save them into the file.		*/
-	energySample();
-
-	/* Shift the computed fields and the time points for the fields.				*/
-	fieldShift();
-
-	/* Reset the charge and current values to zero.							*/
-	currentReset();
-
-	/* Update the values of the current.								*/
-	currentUpdate();
-
-	/* Communicate the current among processors.							*/
-	currentCommunicate();
-
 	/* If sampling of the field is enabled and the rhythm for sampling is achieved. Sample the
 	 * field at the given position and save them into the file.					*/
 	if ( seed_.sampling_ && fmod(time_, seed_.samplingRhythm_) < mesh_.timeStep_ && time_ > 0.0 ) fieldSample();
@@ -1389,6 +1369,26 @@ namespace MITHRA
 
 	/* Record particles that have gone through the diagnostics screens.				*/
 	screenProfile();
+
+	/* If radiation power of the FEL output is enabled and the rhythm for sampling is achieved.
+	 * Sample the radiation power at the given position and save them into the file.		*/
+	powerSample(); powerVisualize();
+
+	/* If radiation energy of the FEL output is enabled and the rhythm for sampling is achieved.
+	 * Sample the radiation energy at the given position and save them into the file.		*/
+	energySample();
+
+	/* Shift the computed fields and the time points for the fields.				*/
+	fieldShift();
+
+	/* Reset the charge and current values to zero.							*/
+	currentReset();
+
+	/* Update the values of the current.								*/
+	currentUpdate();
+
+	/* Communicate the current among processors.							*/
+	currentCommunicate();
 
 	timem1_ += mesh_.timeStep_;
 	time_   += mesh_.timeStep_;
@@ -1704,7 +1704,7 @@ namespace MITHRA
 	    gamma = sqrt( 1.0 + iter->gb.norm2() );
 	    beta  = iter->gb[2] / gamma;
 	    *vb_.file << iter->q << " " <<  gamma * gamma_ * ( 1.0 + beta_ * beta )
-            												<< " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
+            												    << " " << gamma * gamma_ * ( 1.0 + beta_ * beta ) * 0.512   << std::endl;
 	  }
       }
     *vb_.file << 0.0 << " " << 0.0 << " " << 0.0						<< std::endl;

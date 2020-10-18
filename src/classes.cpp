@@ -809,10 +809,6 @@ namespace MITHRA
     else if ( fieldType.compare("Ax") == 0 )  return(Ax);
     else if ( fieldType.compare("Ay") == 0 )  return(Ay);
     else if ( fieldType.compare("Az") == 0 )  return(Az);
-    else if ( fieldType.compare("Jx") == 0 )  return(Jx);
-    else if ( fieldType.compare("Jy") == 0 )  return(Jy);
-    else if ( fieldType.compare("Jz") == 0 )  return(Jz);
-    else if ( fieldType.compare("Q") == 0 )   return(Q);
     else if ( fieldType.compare("F") == 0 )   return(F);
     else { std::cout << fieldType << " is an unknown sampling field." << std::endl; exit(1); }
   }

@@ -31,7 +31,7 @@ namespace MITHRA
   enum PlaneType     		{XNORMAL, YNORMAL, ZNORMAL};
 
   /* Define the types of the fields to be sampled.                                                      */
-  enum FieldType		{Ex, Ey, Ez, Bx, By, Bz, Ax, Ay, Az, Jx, Jy, Jz, Q, F};
+  enum FieldType		{Ex, Ey, Ez, Bx, By, Bz, Ax, Ay, Az, F};
 
   /* Define the types of the undulator supported by the code.                                           */
   enum UndulatorType		{STATIC, OPTICAL};

@@ -215,8 +215,8 @@ namespace MITHRA
     std::ofstream*			file;
     FieldVector<Double>			position;
     int					i, j, k, m;
-    FieldVector<Double>			et, at, bt, jt;
-    Double				f, q;
+    FieldVector<Double>			et, at, bt;
+    Double				f;
     Double				dxr, dyr, dzr;
     Double				c2, jw, p;
     double				c1;

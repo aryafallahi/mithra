@@ -159,7 +159,7 @@ namespace MITHRA
     Signal ();
 
     /* Initializer with signal type, time offset, variance, frequency and carrier-envelope-phase.       */
-    void initialize (std::string type, Double l0, Double s, Double l, Double cep);
+    void initialize (std::string type, Double l0, Double s, Double l, Double cep, unsigned int nR);
 
   public:
 
@@ -175,6 +175,9 @@ namespace MITHRA
 
     /* Frequency of the modulation.                                                                     */
     Double     				f0_;
+
+    /* Rising cycles for the flat-top pulse.								*/
+    unsigned int			nR_;
 
     /* Carrier envelope phase of the modulation.                                                        */
     Double     				cep_;

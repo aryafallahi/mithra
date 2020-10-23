@@ -311,7 +311,7 @@ namespace MITHRA
      * cases.)												*/
     if ( undulator_.size() > 0 )
       {
-	Double nl = ( undulator_[0].type_ == STATIC ) ? 2.0 : 10.0;
+	Double nl = ( undulator_[0].type_ == STATIC ) ? 2.0 : 5.0 * undulator_[0].signal_.nR_;
 	if (undulator_[0].dist_ == 0.0)
 	  undulator_[0].dist_ = nl * undulator_[0].lu_;
 	else if (undulator_[0].dist_ < nl * undulator_[0].lu_)

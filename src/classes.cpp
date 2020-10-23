@@ -448,7 +448,7 @@ namespace MITHRA
   }
 
   /* Initializer with signal type, time offset, variance, frequency and carrier-envelope-phase.       	*/
-  void Signal::initialize (std::string type, Double l0, Double s, Double l, Double cep)
+  void Signal::initialize (std::string type, Double l0, Double s, Double l, Double cep, unsigned int nR)
   {
     /* Initialize the signal type.                                                                    	*/
     if      ( type.compare("neumann") == 0 )             signalType_ = NEUMANN;
@@ -464,6 +464,9 @@ namespace MITHRA
 
     /* Initialize the carrier envelope phase.                                                         	*/
     cep_ = cep * PI / 180;
+
+    /* Initialize the number of rising cylces for the flat-top pulse.					*/
+    nR_  = nR;
 
     /* Check if variance is unequal zero.                                                             	*/
     if (s_ == 0.0)
@@ -493,11 +496,11 @@ namespace MITHRA
 	else if  ( signalType_ == FLATTOP )
 	  {
 	    if      ( t - t0_ <= - s_ / 2.0 )
-	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) * exp( - pow( (t-t0_+s_/2.0)*f0_/2.0, 2) ) );
+	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) * exp( - pow( (t-t0_+s_/2.0)*f0_/nR_, 2) ) );
 	    else if ( t - t0_ <= s_ / 2.0   )
 	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) );
 	    else
-	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) * exp( - pow( (t-t0_-s_/2.0)*f0_/2.0, 2) ) );
+	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) * exp( - pow( (t-t0_-s_/2.0)*f0_/nR_, 2) ) );
 	  }
       }
     return (0.0);

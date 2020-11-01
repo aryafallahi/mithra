@@ -1063,26 +1063,26 @@ namespace MITHRA
     /* Communicate the calculated fields throughout the processors.					*/
     if (rank_ != size_ - 1)
       {
-	MPI_Send(uf_.en+3*(np_-2)*N1N0_, 	3*N1N0_,MPI_DOUBLE,rank_+1,msgtag5,MPI_COMM_WORLD);
-	MPI_Send(uf_.bn+3*(np_-2)*N1N0_,	3*N1N0_,MPI_DOUBLE,rank_+1,msgtag6,MPI_COMM_WORLD);
+	MPI_Send(uf_.en+3*(np_-2)*N1N0_, 	3*N1N0_,MPI_FLOAT,rank_+1,msgtag5,MPI_COMM_WORLD);
+	MPI_Send(uf_.bn+3*(np_-2)*N1N0_,	3*N1N0_,MPI_FLOAT,rank_+1,msgtag6,MPI_COMM_WORLD);
       }
 
     if (rank_ != 0)
       {
-	MPI_Recv(uf_.en,			3*N1N0_,MPI_DOUBLE,rank_-1,msgtag5,MPI_COMM_WORLD,&status);
-	MPI_Recv(uf_.bn,		  	3*N1N0_,MPI_DOUBLE,rank_-1,msgtag6,MPI_COMM_WORLD,&status);
+	MPI_Recv(uf_.en,			3*N1N0_,MPI_FLOAT,rank_-1,msgtag5,MPI_COMM_WORLD,&status);
+	MPI_Recv(uf_.bn,		  	3*N1N0_,MPI_FLOAT,rank_-1,msgtag6,MPI_COMM_WORLD,&status);
       }
 
     if (rank_ != 0)
       {
-	MPI_Send(uf_.en+3*N1N0_,	 	3*N1N0_,MPI_DOUBLE,rank_-1,msgtag7,MPI_COMM_WORLD);
-	MPI_Send(uf_.bn+3*N1N0_,		3*N1N0_,MPI_DOUBLE,rank_-1,msgtag8,MPI_COMM_WORLD);
+	MPI_Send(uf_.en+3*N1N0_,	 	3*N1N0_,MPI_FLOAT,rank_-1,msgtag7,MPI_COMM_WORLD);
+	MPI_Send(uf_.bn+3*N1N0_,		3*N1N0_,MPI_FLOAT,rank_-1,msgtag8,MPI_COMM_WORLD);
       }
 
     if (rank_ != size_ - 1)
       {
-	MPI_Recv(uf_.en+3*(np_-1)*N1N0_,	3*N1N0_,MPI_DOUBLE,rank_+1,msgtag7,MPI_COMM_WORLD,&status);
-	MPI_Recv(uf_.bn+3*(np_-1)*N1N0_,	3*N1N0_,MPI_DOUBLE,rank_+1,msgtag8,MPI_COMM_WORLD,&status);
+	MPI_Recv(uf_.en+3*(np_-1)*N1N0_,	3*N1N0_,MPI_FLOAT,rank_+1,msgtag7,MPI_COMM_WORLD,&status);
+	MPI_Recv(uf_.bn+3*(np_-1)*N1N0_,	3*N1N0_,MPI_FLOAT,rank_+1,msgtag8,MPI_COMM_WORLD,&status);
       }
   }
 

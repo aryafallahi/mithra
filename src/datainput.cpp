@@ -283,6 +283,7 @@ namespace MITHRA
 	    /* Initialize variables with values from class constructors.				*/
 	    Double                	amplitude = 0.0, offset = 0.0,
 					pulseLength = 0.0, wavelength = 0.0, cep = 0.0;
+	    unsigned int		nR = 2;
 	    std::vector<Double>   	radius (2,0.0);
 	    std::vector<int>		order  (2,0);
 
@@ -301,6 +302,7 @@ namespace MITHRA
 		else if (parameterName(*iter) == "offset")                      offset          = doubleValue(*iter);
 		else if (parameterName(*iter) == "pulse-length")                pulseLength     = doubleValue(*iter);
 		else if (parameterName(*iter) == "wavelength")                  wavelength      = doubleValue(*iter);
+		else if (parameterName(*iter) == "rising-cycles")              	nR      	= intValue(*iter);
 		else if (parameterName(*iter) == "CEP")                         cep             = doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in seed-initialization group." << std::endl; exit(1); }
 		++iter;
@@ -309,7 +311,7 @@ namespace MITHRA
 
 	    if          (signalType.compare("neumann") == 0 || signalType.compare("gaussian") == 0 || signalType.compare("secant-hyperbolic") == 0 ||
 		signalType.compare("flat-top") == 0 )
-	      signal.initialize(signalType, offset, pulseLength, wavelength, cep);
+	      signal.initialize(signalType, offset, pulseLength, wavelength, cep, nR);
 	    else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
 
 	    seed_.initialize(type, position, direction, polarization, amplitude, radius, order, signal);
@@ -502,6 +504,7 @@ namespace MITHRA
 	    /* Initialize variables with default variables from the constructor.			*/
 	    std::vector<Double>		position (3,0.0), direction (3,0.0), polarization (3,0.0);
 	    Double              	a0, offset, pulseLength, wavelength, cep;
+	    unsigned int		nR = 2;
 	    std::vector<Double> 	radius (2,0.0);
 	    std::vector<int>          	order  (2,0);
 
@@ -521,6 +524,7 @@ namespace MITHRA
 		else if (parameterName(*iter) == "offset")			offset                  = doubleValue(*iter);
 		else if (parameterName(*iter) == "pulse-length")		pulseLength             = doubleValue(*iter);
 		else if (parameterName(*iter) == "wavelength")			wavelength              = doubleValue(*iter);
+		else if (parameterName(*iter) == "rising-cycles")		nR              	= intValue(*iter);
 		else if (parameterName(*iter) == "CEP")				cep                     = doubleValue(*iter);
 		else if (parameterName(*iter) == "distance-to-bunch-head")	undulator.dist_		= doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the optical-undulator group." << std::endl; exit(1); }
@@ -530,7 +534,7 @@ namespace MITHRA
 
 	    if (signalType.compare("neumann") == 0 || signalType.compare("gaussian") == 0 || signalType.compare("secant-hyperbolic") == 0 ||
 		signalType.compare("flat-top") == 0 )
-	      signal.initialize(signalType, offset, pulseLength, wavelength, cep);
+	      signal.initialize(signalType, offset, pulseLength, wavelength, cep, nR);
 	    else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
 
 	    undulator.initialize(type, position, direction, polarization, a0, radius, wavelength, order, signal);
@@ -567,6 +571,7 @@ namespace MITHRA
 	    std::string               type, signalType;
 	    std::vector<Double>       position (3,0.0), direction (3,0.0), polarization (3,0.0);
 	    Double                    a0 = extField.a0_, offset = signal.t0_, pulseLength = signal.s_, wavelength = 1 / signal.f0_, cep = signal.cep_;
+	    unsigned int	      nR = 2;
 	    std::vector<Double>       radius (2,0.0);
 	    std::vector<int>          order  (2,0);
 
@@ -585,6 +590,7 @@ namespace MITHRA
 		else if (parameterName(*iter) == "offset")                            	offset                  = doubleValue(*iter);
 		else if (parameterName(*iter) == "pulse-length")			pulseLength		= doubleValue(*iter);
 		else if (parameterName(*iter) == "wavelength")                        	wavelength              = doubleValue(*iter);
+		else if (parameterName(*iter) == "rising-cycles")			nR              	= intValue(*iter);
 		else if (parameterName(*iter) == "CEP")                               	cep                     = doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the electromagnetic external field group." << std::endl; exit(1); }
 		++iter;
@@ -593,7 +599,7 @@ namespace MITHRA
 
 	    if (signalType.compare("neumann") == 0 || signalType.compare("gaussian") == 0 || signalType.compare("secant-hyperbolic") == 0 ||
 		signalType.compare("flat-top") == 0 )
-	      signal.initialize(signalType, offset, pulseLength, wavelength, cep);
+	      signal.initialize(signalType, offset, pulseLength, wavelength, cep, nR);
 	    else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
 
 	    extField.initialize(type, position, direction, polarization, a0, radius, wavelength, order, signal);

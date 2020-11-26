@@ -179,24 +179,19 @@ namespace MITHRA
     ubp.t   = exp( - pow( ubp.x0/s.radius_[0], 2) - pow( ubp.y0/s.radius_[1], 2) ) / sqrt(ubp.wrs*ubp.wrp);
     ubp.t  *= s.amplitude_;
 
-    ubp.ex.mv( ubp.t,                                	s.polarization_ );
-    ubp.ez.mv( ubp.t * ( - ubp.x0 / s.zR_[0] ),       	s.direction_    );
-    ubp.bz.mv( ubp.t * ( - ubp.y0 / s.zR_[1] ) / c0_, 	s.direction_    );
-    ubp.by  = cross( s.direction_, ubp.ex);
-    ubp.by /= c0_;
-
     /* Retrieve signal value at corrected time.                                           		*/
     ubp.p1         = ubp.p0 - PI/2.0;
     ubp.tsignal    = s.signal_.self(ubp.tl, ubp.p1);
-    ubp.ex        *= ubp.tsignal; ubp.by *= ubp.tsignal;
+    ubp.ex.mv( ubp.t * ubp.tsignal,					s.polarization_ );
+    ubp.by.mv( ubp.t * ubp.tsignal / c0_,				ubp.yv 		);
 
     ubp.p1         = ubp.p0 + ubp.atanP;
     ubp.tsignal    = s.signal_.self(ubp.tl, ubp.p1);
-    ubp.ez        *= ubp.tsignal;
+    ubp.ez.mv( ubp.t * ( - ubp.x0 / s.zR_[0] ) * ubp.tsignal, 		s.direction_);
 
     ubp.p1         = ubp.p0 + ubp.atanS;
     ubp.tsignal    = s.signal_.self(ubp.tl, ubp.p1);
-    ubp.bz        *= ubp.tsignal;
+    ubp.bz.mv( ubp.t * ( - ubp.y0 / s.zR_[1] ) / c0_ * ubp.tsignal, 	s.direction_);
 
     /* Calculate the total electric and magnetic field.                                   		*/
     ubp.eT = ubp.ex; ubp.eT += ubp.ez;
@@ -378,10 +373,6 @@ namespace MITHRA
 	return;
       }
 
-    /* Provide vector to store transverse, longitudinal and total  electric field.        		*/
-    ubp.ex = s.polarization_;
-    ubp.ez = s.direction_;
-
     /* Get the required atan data.									*/
     ubp.atanP = atan( ubp.z / s.zR_[0] );
     ubp.atanS = atan( ubp.z / s.zR_[1] );
@@ -392,31 +383,25 @@ namespace MITHRA
     ubp.t   = exp( - pow( ubp.x0/s.radius_[0], 2) - pow( ubp.y0/s.radius_[1], 2) ) / sqrt(ubp.wrs*ubp.wrp);
     ubp.t  *= s.amplitude_;
 
-    ubp.ex.mv( ubp.t,                                	s.polarization_ );
-    ubp.ez.mv( ubp.t * ( - ubp.x0 / s.zR_[0] ),       	s.direction_    );
-    ubp.bz.mv( ubp.t * ( - ubp.y0 / s.zR_[1] ) / c0_, 	s.direction_    );
-    ubp.by  = cross( s.direction_, ubp.ex);
-    ubp.by /= c0_;
-
     /* Retrieve signal value at corrected time.                                           		*/
     ubp.p1         = ubp.p0 - PI/2.0;
     ubp.tsignal    = s.signal_.self(ubp.tl,  ubp.p1);
     ubp.p1	   = ubp.p0 - PI/2.0;
     ubp.tsignalm   = s.signal_.self(ubp.tlm, ubp.p1);
-    ubp.ex        *= ( ubp.tsignal + ubp.tsignalm );
-    ubp.by 	  *= ( ubp.tsignal - ubp.tsignalm );
+    ubp.ex.mv( ubp.t * ( ubp.tsignal + ubp.tsignalm ),					s.polarization_ );
+    ubp.by.mv( ubp.t / c0_ * ( ubp.tsignal - ubp.tsignalm ),				ubp.yv);
 
     ubp.p1         = ubp.p0 + ubp.atanP;
     ubp.tsignal    = s.signal_.self(ubp.tl,  ubp.p1);
     ubp.p1	   = -ubp.p1;
     ubp.tsignalm   = s.signal_.self(ubp.tlm, ubp.p1);
-    ubp.ez        *= ( ubp.tsignal - ubp.tsignalm );
+    ubp.ez.mv( ubp.t * ( - ubp.x0 / s.zR_[0] ) * ( ubp.tsignal - ubp.tsignalm ), 	s.direction_ );
 
     ubp.p1         = ubp.p0 + ubp.atanS;
     ubp.tsignal    = s.signal_.self(ubp.tl,  ubp.p1);
     ubp.p1	   = -ubp.p1;
     ubp.tsignalm   = s.signal_.self(ubp.tlm, ubp.p1);
-    ubp.bz        *= ( ubp.tsignal - ubp.tsignalm );
+    ubp.bz.mv( ubp.t * ( - ubp.y0 / s.zR_[1] ) / c0_ * ( ubp.tsignal - ubp.tsignalm ), 	s.direction_ );
 
     /* Calculate the total electric and magnetic field.                                   		*/
     ubp.eT = ubp.ex; ubp.eT += ubp.ez;
@@ -457,10 +442,6 @@ namespace MITHRA
 	ubp.bT = 0.0;
 	return;
       }
-
-    /* Provide vector to store transverse, longitudinal and total  electric field.        		*/
-    ubp.ex = s.polarization_;
-    ubp.ez = s.direction_;
 
     /* Get the required atan data.									*/
     ubp.atanP = atan( ubp.z / s.zR_[0] );

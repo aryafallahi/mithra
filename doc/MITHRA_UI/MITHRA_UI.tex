@@ -404,6 +404,8 @@ In what follows, the parameters in each group are introduced:
 	%
 	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal.
 	%
+	\item {\tt \small \em rising-cycles} is the number of cycles that it takes for the flattop pulse to reach the flat time interval. Default value is two cycles.
+	%
 	\item {\tt \small \em CEP} is the carrier envelope phase $\phi_{\mathrm{CEP}}$ of the modulated signal in degrees.
 \end{itemize}
 %
@@ -487,6 +489,7 @@ FIELD
 		offset  				 = < real >
 		pulse-length  			 = < real >
 		wavelength  			 = < real >
+		rising-cycles			 = < int >
 		CEP  					 = < real >
 	\}
 
@@ -494,8 +497,7 @@ FIELD
 	\{
 		sample  				 = < true | false >
 		type  					 = < over-line | at-point >
-		\textcolor{red}{field} 					\textcolor{red}{ = < Ex | Ey | Ez | Bx | By | Bz | Ax | Ay | Az | Jx | Jy | Jz | }
-									 \textcolor{red}{F  | Q >}
+		\textcolor{red}{field} 					\textcolor{red}{ = < Ex | Ey | Ez | Bx | By | Bz | Ax | Ay | Az | F >}
 		directory  				 = < /path/to/location >
 		base-name  				 = < string >
 		rhythm  				 = < real >
@@ -511,8 +513,7 @@ FIELD
 		type					 = < in-plane | all-domain >
 		plane					 = < xy | yz | xz >
 		position  				 = < ( real, real, real ) >
-		\textcolor{red}{field} 					\textcolor{red}{ = < Ex | Ey | Ez | Bx | By | Bz | Ax | Ay | Az | Jx | Jy | Jz | }
-									 \textcolor{red}{F  | Q >}
+		\textcolor{red}{field} 					\textcolor{red}{ = < Ex | Ey | Ez | Bx | By | Bz | Ax | Ay | Az | F >}
 		directory  				 = < /path/to/location >
 		base-name  				 = < string >
 		rhythm  				 = < real >
@@ -521,8 +522,7 @@ FIELD
 	field-profile
 	\{
 		sample  				 = < true | false >
-		\textcolor{red}{field} 					\textcolor{red}{ = < Ex | Ey | Ez | Bx | By | Bz | Ax | Ay | Az | Jx | Jy | Jz | }
-									 \textcolor{red}{F  | Q >}
+		\textcolor{red}{field} 					\textcolor{red}{ = < Ex | Ey | Ez | Bx | By | Bz | Ax | Ay | Az | F >}
 		directory  				 = < /path/to/location >
 		base-name  				 = < string >
 		rhythm  				 = < real >
@@ -550,6 +550,7 @@ FIELD
 		offset					  = 0.00
 		pulse-length			  = 1.00
 		wavelength				  = 0.0
+		rising-cycles			  = 2
 		CEP						  = 0.0
 	\}
 	
@@ -673,11 +674,13 @@ Note that the reference undulator for initializing bunches or setting the electr
 	%
 	\item {\tt \small \em pulse-length} is the pulse duration of the signal in length units $c\tau$. The pulse duration is defined as the interval in which the pulse intensity is larger than half the maximum intensity of the pulse, i.e. FWHM of the intensity.
 	%
-	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal.
+	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal. Default value is two cycles.
+	%
+	\item {\tt \small \em rising-cycles} is the number of cycles that it takes for the flattop pulse to reach the flat time interval.
 	%
 	\item {\tt \small \em CEP} is the carrier envelope phase $\phi_{\mathrm{CEP}}$ of the modulated signal.
 	%
-	\item {\tt \small \em distance-to-bunch-head} determines the distance between the reference position of the optical undulator and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default ten undulator periods for optical undulators. In MITHRA, the radiation of the particles are calculated after they pass through this point. Therefore, this value has a different effect compared to the {\tt \small \em initial-time-back-shift} parameter that only shifts the particle in time.
+	\item {\tt \small \em distance-to-bunch-head} determines the distance between the reference position of the optical undulator and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default five time the undulator periods for optical undulators. In MITHRA, the radiation of the particles are calculated after they pass through this point. Therefore, this value has a different effect compared to the {\tt \small \em initial-time-back-shift} parameter that only shifts the particle in time.
 \end{itemize}
 %
 \end{enumerate}
@@ -727,6 +730,7 @@ UNDULATOR
 		offset					  = < real >
 		pulse-length			  = < real >
 		wavelength				  = < real >
+		rising-cylces			  = < int >
 		CEP						  = < real >
 		distance-to-bunch-head    = < real >
 	\textcolor{red}{\}}
@@ -775,7 +779,8 @@ UNDULATOR
 		signal-type				  = flat-top
 		wavelength				  = 1.0e3
 		pulse-length			  = 1200.0e3
-		offset					  = 600118.0
+		offset					  = 600.e3
+		rising-cycles			  = 2
 		CEP						  = 0.0
   \}
 \}
@@ -833,6 +838,8 @@ The current version of MITHRA accepts the following set of external fields:
 	%
 	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal.
 	%
+	\item {\tt \small \em rising-cycles} is the number of cycles that it takes for the flattop pulse to reach the flat time interval.
+	%
 	\item {\tt \small \em CEP} is the carrier envelope phase $\phi_{\mathrm{CEP}}$ of the modulated signal.
 	%
 \end{itemize}
@@ -861,6 +868,7 @@ EXTERNAL-FIELD
 		offset					  = < real >
 		pulse-length			  = < real >
 		wavelength				  = < real >
+		rising-cycles			  = < int >
 		CEP						  = < real >
 	\textcolor{red}{\}}
 \}
@@ -883,6 +891,7 @@ EXTERNAL-FIELD
     	offset					  = 0.00
     	pulse-length			  = 1.00
     	wavelength				  = 0.0
+    	rising-cycles			  = 2
     	CEP						  = 0.0
 	\}
 	
@@ -897,6 +906,7 @@ EXTERNAL-FIELD
 		offset					  = 0.00
 		pulse-length			  = 1.00
 		wavelength				  = 0.0
+		rising-cycles			  = 2
 		CEP						  = 0.0
 	\}
 \}

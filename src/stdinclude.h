@@ -31,7 +31,7 @@ namespace MITHRA
   enum PlaneType     		{XNORMAL, YNORMAL, ZNORMAL};
 
   /* Define the types of the fields to be sampled.                                                      */
-  enum FieldType		{Ex, Ey, Ez, Bx, By, Bz, Ax, Ay, Az, Jx, Jy, Jz, Q, F};
+  enum FieldType		{Ex, Ey, Ez, Bx, By, Bz, Ax, Ay, Az, F};
 
   /* Define the types of the undulator supported by the code.                                           */
   enum UndulatorType		{STATIC, OPTICAL};
@@ -132,7 +132,7 @@ namespace MITHRA
 
     Double			q;		/* Charge of the point in the unit of electron charge.	*/
     FieldVector<Double>		rnp, rnm;	/* Position vector of the charge.			*/
-    FieldVector<Double>		gbnp, gbnm;	/* Normalized velocity vector of the charge.		*/
+    FieldVector<Double>		gb;		/* Normalized velocity vector of the charge.		*/
 
     /* Double flag determining if the particle is passing the entrance point of the undulator. This flag
      * can be used for better boosting the bunch to the moving frame. We need to consider it to be double,

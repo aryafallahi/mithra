@@ -412,12 +412,14 @@ namespace MITHRA
 		/* Insert the coordinates of the grid for the charge points.				*/
 		*rp_[jf].file[0] << "<Points>"                                                        	<< std::endl;
 		*rp_[jf].file[0] << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"<< std::endl;
+		FieldVector<Double> r1 (0.0), r2 (0.0);
 		for (int j = 0; j < N1_; j++)
 		  for (int i = 0; i < N0_; i++)
 		    {
 		      m = rp_[jf].k * N1_ * N0_ + i * N1_ + j;
-		      *rp_[jf].file[0] << r_[m][0] * ( 1.0 - rp_[jf].dzr ) + r_[m + N1N0_][0] * rp_[jf].dzr << " "
-			  << r_[m][1] << " " << r_[m][2] 						<< std::endl;
+		      r1 = rc(m); r2 = rc(m + N1N0_);
+		      *rp_[jf].file[0] << r1[0] * ( 1.0 - rp_[jf].dzr ) + r2[0] * rp_[jf].dzr << " "
+			  << r1[1] << " " << r1[2] 							<< std::endl;
 		    }
 		*rp_[jf].file[0] << "</DataArray>"                                                    	<< std::endl;
 		*rp_[jf].file[0] << "</Points>"                                                       	<< std::endl;

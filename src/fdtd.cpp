@@ -22,8 +22,10 @@ namespace MITHRA
 
   void FdTd::currentReset ()
   {
-    Double*  jn = &jn_[0][0];
-    Double*  je = &jn_[(long)N1N0_*np_-1][2];
+    /* To reduce the requirements in memory consumption, we use the vector anp1 to store the currents.	*/
+
+    Double*  jn = &(*anp1_)[0][0];
+    Double*  je = &(*anp1_)[(long)N1N0_*np_-1][2];
     while ( jn != je )
       *(jn++) = 0.0;
     *je = 0.0;
@@ -35,7 +37,9 @@ namespace MITHRA
 
   void FdTd::currentUpdate ()
   {
-    FieldVector<Double>*	        jn   = &jn_[0];
+    /* To reduce the requirements in memory consumption, we use the vector anp1 to store the currents.	*/
+
+    FieldVector<Double>*	      jn   = &(*anp1_)[0];
     bool                              bp, bm;
     std::list<Charge>::iterator       it = chargeVectorn_.begin();
 
@@ -186,6 +190,8 @@ namespace MITHRA
 
   void FdTd::currentCommunicate ()
   {
+    /* To reduce the requirements in memory consumption, we use the vector anp1 to store the currents.	*/
+
     int                       	msgtag9 = 9;
     MPI_Status                	status;
     std::list<Charge>::iterator	it = chargeVectorn_.begin();
@@ -193,14 +199,14 @@ namespace MITHRA
 
     /* Add the contribution of each processor to the charge and current density at the boundaries.    	*/
     if (rank_ != 0)
-      MPI_Send(&jn_[0][0],                                    3*N1N0_,MPI_DOUBLE,rank_-1,msgtag9, MPI_COMM_WORLD);
+      MPI_Send(&(*anp1_)[0][0],                                    3*N1N0_,MPI_DOUBLE,rank_-1,msgtag9, MPI_COMM_WORLD);
 
     if (rank_ != size_ - 1)
       {
 	MPI_Recv(&uc_.jt[0][0],                               3*N1N0_,MPI_DOUBLE,rank_+1,msgtag9, MPI_COMM_WORLD,&status);
 
 	for (int i = 0; i < N1N0_; i++)
-	  jn_[(np_-2)*N1N0_+i] += uc_.jt[i];
+	  (*anp1_)[(np_-2)*N1N0_+i] += uc_.jt[i];
       }
 
     /* Now that the charge and current densities are deposited, remove the out of domain charges from the
@@ -225,17 +231,17 @@ namespace MITHRA
   void FdTd::fieldUpdate ()
   {
     /* Define the values temporally needed for updating the fields.					*/
-    unsigned int 		i, j, k;
-    long int                  m, l;
+    unsigned int 	i, j, k;
+    long int            m, l;
     MPI_Status 		status;
-    int 			msgtag1 = 1, msgtag3 = 3;
-    int                       msgtag5 = 5, msgtag6 = 6, msgtag7 = 7, msgtag8 = 8;
+    int 		msgtag1 = 1, msgtag3 = 3;
+    int                 msgtag5 = 5, msgtag6 = 6, msgtag7 = 7, msgtag8 = 8;
     FieldVector<Double>	atemp; atemp = 0.0;
 
     uf_.anp1 = &(*anp1_)[0][0];
     uf_.an   = &(*an_)  [0][0];
     uf_.anm1 = &(*anm1_)[0][0];
-    uf_.jn   = &jn_[0][0];
+    uf_.jn   = &(*anp1_)[0][0];
     uf_.en   = &en_[0][0];
     uf_.bn   = &bn_[0][0];
 
@@ -308,16 +314,16 @@ namespace MITHRA
 	    {
 	      i = 1;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m+N1_],	time_, atemp); (*anp1_)[m].mmv(uf_.a[1], atemp);
+	      seed_.fields(rc(m+N1_),	time_, atemp); (*anp1_)[m].mmv(uf_.a[1], atemp);
 	      i = 2;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m-N1_],	time_, atemp); (*anp1_)[m].pmv(uf_.a[1], atemp);
+	      seed_.fields(rc(m-N1_),	time_, atemp); (*anp1_)[m].pmv(uf_.a[1], atemp);
 	      i = N0_-2;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m-N1_],	time_, atemp); (*anp1_)[m].mmv(uf_.a[1], atemp);
+	      seed_.fields(rc(m-N1_),	time_, atemp); (*anp1_)[m].mmv(uf_.a[1], atemp);
 	      i = N0_-3;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m+N1_],	time_, atemp); (*anp1_)[m].pmv(uf_.a[1], atemp);
+	      seed_.fields(rc(m+N1_),	time_, atemp); (*anp1_)[m].pmv(uf_.a[1], atemp);
 	    }
 
 	for ( int i = 2; i < N0_-2; i++)
@@ -325,16 +331,16 @@ namespace MITHRA
 	    {
 	      j = 1;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m+1], time_, atemp); (*anp1_)[m].mmv(uf_.a[2], atemp);
+	      seed_.fields(rc(m+1), time_, atemp); (*anp1_)[m].mmv(uf_.a[2], atemp);
 	      j = 2;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m-1], time_, atemp); (*anp1_)[m].pmv(uf_.a[2], atemp);
+	      seed_.fields(rc(m-1), time_, atemp); (*anp1_)[m].pmv(uf_.a[2], atemp);
 	      j = N1_-2;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m-1], time_, atemp); (*anp1_)[m].mmv(uf_.a[2], atemp);
+	      seed_.fields(rc(m-1), time_, atemp); (*anp1_)[m].mmv(uf_.a[2], atemp);
 	      j = N1_-3;
 	      m = N1N0_ * k + N1_ * i + j;
-	      seed_.fields(r_[m+1],		time_, atemp); (*anp1_)[m].pmv(uf_.a[2], atemp);
+	      seed_.fields(rc(m+1),		time_, atemp); (*anp1_)[m].pmv(uf_.a[2], atemp);
 	    }
 
 	if ( rank_ == 0 )
@@ -344,10 +350,10 @@ namespace MITHRA
 		{
 		  k = 1;
 		  m = N1N0_ * k + N1_ * i + j;
-		  seed_.fields(r_[m+N1N0_], time_, atemp); (*anp1_)[m].mmv(uf_.a[3], atemp);
+		  seed_.fields(rc(m+N1N0_), time_, atemp); (*anp1_)[m].mmv(uf_.a[3], atemp);
 		  k = 2;
 		  m = N1N0_ * k + N1_ * i + j;
-		  seed_.fields(r_[m-N1N0_], time_, atemp); (*anp1_)[m].pmv(uf_.a[3], atemp);
+		  seed_.fields(rc(m-N1N0_), time_, atemp); (*anp1_)[m].pmv(uf_.a[3], atemp);
 		}
 	  }
 
@@ -358,10 +364,10 @@ namespace MITHRA
 		{
 		  k = np_-2;
 		  m = N1N0_ * k + N1_ * i + j;
-		  seed_.fields(r_[m-N1N0_],	time_, atemp); (*anp1_)[m].mmv(uf_.a[3], atemp);
+		  seed_.fields(rc(m-N1N0_),	time_, atemp); (*anp1_)[m].mmv(uf_.a[3], atemp);
 		  k = np_-3;
 		  m = N1N0_ * k + N1_ * i + j;
-		  seed_.fields(r_[m+N1N0_],	time_, atemp); (*anp1_)[m].pmv(uf_.a[3], atemp);
+		  seed_.fields(rc(m+N1N0_),	time_, atemp); (*anp1_)[m].pmv(uf_.a[3], atemp);
 		}
 	  }
       }
@@ -377,9 +383,9 @@ namespace MITHRA
 	  uf_.af.advanceBoundaryF(
 	      uf_.anp1+l,	uf_.anm1+l,	uf_.an  +l,
 	      uf_.anm1+l+L0,	uf_.an  +l+L0, 	uf_.anp1+l+L0,
-	      uf_.an  +l+L6,  uf_.an  +l-L7,	uf_.an  +l+L2,
+	      uf_.an  +l+L6,  	uf_.an  +l-L7,	uf_.an  +l+L2,
 	      uf_.an  +l+L3, 	uf_.an  +l+3,   uf_.an  +l-3,
-	      uf_.an  +l+L1,  uf_.an  +l-L1);
+	      uf_.an  +l+L1,  	uf_.an  +l-L1);
 	}
 
     /* Loop over the points in the mesh on the x = xmax boundary and update the fields using the first
@@ -394,7 +400,7 @@ namespace MITHRA
 	      uf_.anm1+l-L0,	uf_.an  +l-L0,	uf_.anp1+l-L0,
 	      uf_.an  +l+L7,	uf_.an  +l-L6,	uf_.an  +l-L3,
 	      uf_.an  +l-L2, 	uf_.an  +l+3,	uf_.an  +l-3,
-	      uf_.an  +l+L1,  uf_.an  +l-L1 );
+	      uf_.an  +l+L1,  	uf_.an  +l-L1 );
 	}
 
     /* Loop over the points in the mesh on the y = ymin boundary and update the fields using the first
@@ -407,10 +413,10 @@ namespace MITHRA
 
 	  uf_.af.advanceBoundaryF(
 	      uf_.anp1+l,	uf_.anm1+l,	uf_.an  +l,
-	      uf_.anm1+l+3,   uf_.an  +l+3,   uf_.anp1+l+3,
-	      uf_.an  +l+L6,  uf_.an  +l+L7, 	uf_.an  +l+L4,
+	      uf_.anm1+l+3,   	uf_.an  +l+3,   uf_.anp1+l+3,
+	      uf_.an  +l+L6,  	uf_.an  +l+L7, 	uf_.an  +l+L4,
 	      uf_.an  +l+L5, 	uf_.an  +l+L0,  uf_.an  +l-L0,
-	      uf_.an  +l+L1,  uf_.an  +l-L1);
+	      uf_.an  +l+L1,  	uf_.an  +l-L1);
 	}
 
     /* Loop over the points in the mesh on the y = ymax boundary and update the fields using the first
@@ -423,9 +429,9 @@ namespace MITHRA
 	  uf_.af.advanceBoundaryF(
 	      uf_.anp1+l,	uf_.anm1+l,	uf_.an  +l,
 	      uf_.anm1+l-3, 	uf_.an  +l-3,  	uf_.anp1+l-3,
-	      uf_.an  +l-L7,  uf_.an  +l-L6, 	uf_.an  +l-L5,
+	      uf_.an  +l-L7,  	uf_.an  +l-L6, 	uf_.an  +l-L5,
 	      uf_.an  +l-L4,	uf_.an  +l+L0,  uf_.an  +l-L0,
-	      uf_.an  +l+L1,  uf_.an  +l-L1);
+	      uf_.an  +l+L1,  	uf_.an  +l-L1);
 	}
 
     /* Loop over the points in the mesh on the z = zmin boundary and update the fields using the first
@@ -478,41 +484,41 @@ namespace MITHRA
 
 	    uf_.af.advanceEdgeF(
 		uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
-		uf_.anp1+l+L0,	uf_.an+l+L0,	uf_.anm1+l+L0,
+		uf_.anp1+l+L0,		uf_.an+l+L0,	uf_.anm1+l+L0,
 		uf_.anp1+l+3,		uf_.an+l+3,	uf_.anm1+l+3,
-		uf_.anp1+l+L6,	uf_.an+l+L6,	uf_.anm1+l+L6,
-		uf_.an  +l-L1,	uf_.an+l+L3,	uf_.an  +l+L5,	uf_.an+l+L9,
-		uf_.an  +l+L1,	uf_.an+l+L2,	uf_.an  +l+L4,	uf_.an+l+L8);
+		uf_.anp1+l+L6,		uf_.an+l+L6,	uf_.anm1+l+L6,
+		uf_.an  +l-L1,		uf_.an+l+L3,	uf_.an  +l+L5,	uf_.an+l+L9,
+		uf_.an  +l+L1,		uf_.an+l+L2,	uf_.an  +l+L4,	uf_.an+l+L8);
 
 	    l = 3 * ( N1N0_ * k + N1_ * uf_.N0m1 );
 
 	    uf_.af.advanceEdgeF(
 		uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
-		uf_.anp1+l-L0,	uf_.an+l-L0,	uf_.anm1+l-L0,
+		uf_.anp1+l-L0,		uf_.an+l-L0,	uf_.anm1+l-L0,
 		uf_.anp1+l+3,		uf_.an+l+3,	uf_.anm1+l+3,
-		uf_.anp1+l+L7,	uf_.an+l+L7,	uf_.anm1+l+L7,
-		uf_.an  +l-L1,	uf_.an+l-L2,	uf_.an  +l+L5,	uf_.an+l+L11,
-		uf_.an  +l+L1,	uf_.an+l-L3,	uf_.an  +l+L4,	uf_.an+l+L10);
+		uf_.anp1+l+L7,		uf_.an+l+L7,	uf_.anm1+l+L7,
+		uf_.an  +l-L1,		uf_.an+l-L2,	uf_.an  +l+L5,	uf_.an+l+L11,
+		uf_.an  +l+L1,		uf_.an+l-L3,	uf_.an  +l+L4,	uf_.an+l+L10);
 
 	    l = 3 * ( N1N0_ * k + uf_.N1m1 );
 
 	    uf_.af.advanceEdgeF(
 		uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
-		uf_.anp1+l+L0,	uf_.an+l+L0,	uf_.anm1+l+L0,
+		uf_.anp1+l+L0,		uf_.an+l+L0,	uf_.anm1+l+L0,
 		uf_.anp1+l-3,		uf_.an+l-3,	uf_.anm1+l-3,
-		uf_.anp1+l-L7,	uf_.an+l-L7,	uf_.anm1+l-L7,
-		uf_.an  +l-L1,	uf_.an+l+L3,	uf_.an  +l-L4,	uf_.an+l-L10,
-		uf_.an  +l+L1,	uf_.an+l+L2,	uf_.an  +l-L5,	uf_.an+l-L11);
+		uf_.anp1+l-L7,		uf_.an+l-L7,	uf_.anm1+l-L7,
+		uf_.an  +l-L1,		uf_.an+l+L3,	uf_.an  +l-L4,	uf_.an+l-L10,
+		uf_.an  +l+L1,		uf_.an+l+L2,	uf_.an  +l-L5,	uf_.an+l-L11);
 
 	    l = 3 * ( N1N0_ * k + N1_ * uf_.N0m1 + uf_.N1m1 );
 
 	    uf_.af.advanceEdgeF(
 		uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
-		uf_.anp1+l-L0,	uf_.an+l-L0,	uf_.anm1+l-L0,
+		uf_.anp1+l-L0,		uf_.an+l-L0,	uf_.anm1+l-L0,
 		uf_.anp1+l-3,		uf_.an+l-3,	uf_.anm1+l-3,
-		uf_.anp1+l-L6,	uf_.an+l-L6,	uf_.anm1+l-L6,
-		uf_.an  +l-L1,	uf_.an+l-L2,	uf_.an  +l-L4,	uf_.an+l-L8,
-		uf_.an  +l+L1,	uf_.an+l-L3,	uf_.an  +l-L5,	uf_.an+l-L9);
+		uf_.anp1+l-L6,		uf_.an+l-L6,	uf_.anm1+l-L6,
+		uf_.an  +l-L1,		uf_.an+l-L2,	uf_.an  +l-L4,	uf_.an+l-L8,
+		uf_.an  +l+L1,		uf_.an+l-L3,	uf_.an  +l-L5,	uf_.an+l-L9);
 	  }
 
 	/* Loop over the edge points in the mesh on the z = (zmin,zmax) and y = (ymin,ymax) boundary and
@@ -526,7 +532,7 @@ namespace MITHRA
 		l = 3 * ( N1_ * i );
 
 		uf_.af.advanceEdgeF(
-		    uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
+		    uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
 		    uf_.anp1+l+3,	uf_.an+l+3,	uf_.anm1+l+3,
 		    uf_.anp1+l+L1,	uf_.an+l+L1,	uf_.anm1+l+L1,
 		    uf_.anp1+l+L4,	uf_.an+l+L4,	uf_.anm1+l+L4,
@@ -536,7 +542,7 @@ namespace MITHRA
 		l = 3 * ( N1_ * i + uf_.N1m1 );
 
 		uf_.af.advanceEdgeF(
-		    uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
+		    uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
 		    uf_.anp1+l-3,	uf_.an+l-3,	uf_.anm1+l-3,
 		    uf_.anp1+l+L1,	uf_.an+l+L1,	uf_.anm1+l+L1,
 		    uf_.anp1+l-L5,	uf_.an+l-L5,	uf_.anm1+l-L5,
@@ -549,7 +555,7 @@ namespace MITHRA
 		l = 3 * ( N1_ * i + N1N0_ * uf_.npm1 );
 
 		uf_.af.advanceEdgeF(
-		    uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
+		    uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
 		    uf_.anp1+l+3,	uf_.an+l+3,	uf_.anm1+l+3,
 		    uf_.anp1+l-L1,	uf_.an+l-L1,	uf_.anm1+l-L1,
 		    uf_.anp1+l+L5,	uf_.an+l+L5,	uf_.anm1+l+L5,
@@ -559,7 +565,7 @@ namespace MITHRA
 		l = 3 * ( N1_ * i + N1N0_ * uf_.npm1 + uf_.N1m1 );
 
 		uf_.af.advanceEdgeF(
-		    uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
+		    uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
 		    uf_.anp1+l-3,	uf_.an+l-3,	uf_.anm1+l-3,
 		    uf_.anp1+l-L1,	uf_.an+l-L1,	uf_.anm1+l-L1,
 		    uf_.anp1+l-L4,	uf_.an+l-L4,	uf_.anm1+l-L4,
@@ -579,22 +585,22 @@ namespace MITHRA
 		l = 3 * j;
 
 		uf_.af.advanceEdgeF(
-		    uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
+		    uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
 		    uf_.anp1+l+L1,	uf_.an+l+L1,	uf_.anm1+l+L1,
 		    uf_.anp1+l+L0,	uf_.an+l+L0,	uf_.anm1+l+L0,
 		    uf_.anp1+l+L2,	uf_.an+l+L2,	uf_.anm1+l+L2,
-		    uf_.an+l-3,	uf_.an+l-L5,	uf_.an+l-L7,	uf_.an+l-L11,
-		    uf_.an+l+3,	uf_.an+l+L4,	uf_.an+l+L6,	uf_.an+l+L8);
+		    uf_.an+l-3,		uf_.an+l-L5,	uf_.an+l-L7,	uf_.an+l-L11,
+		    uf_.an+l+3,		uf_.an+l+L4,	uf_.an+l+L6,	uf_.an+l+L8);
 
 		l = 3 * ( N1N0_ - N1_ + j );
 
 		uf_.af.advanceEdgeF(
-		    uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
+		    uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
 		    uf_.anp1+l+L1,	uf_.an+l+L1,	uf_.anm1+l+L1,
 		    uf_.anp1+l-L0,	uf_.an+l-L0,	uf_.anm1+l-L0,
 		    uf_.anp1+l-L3,	uf_.an+l-L3,	uf_.anm1+l-L3,
-		    uf_.an+l-3,	uf_.an+l-L5,	uf_.an+l-L6,	uf_.an+l-L9,
-		    uf_.an+l+3,	uf_.an+l+L4,	uf_.an+l+L7,	uf_.an+l+L10);
+		    uf_.an+l-3,		uf_.an+l-L5,	uf_.an+l-L6,	uf_.an+l-L9,
+		    uf_.an+l+3,		uf_.an+l+L4,	uf_.an+l+L7,	uf_.an+l+L10);
 	      }
 
 	    if ( rank_ == size_ - 1 )
@@ -602,22 +608,22 @@ namespace MITHRA
 		l = 3 * ( N1N0_ * uf_.npm1 + j );
 
 		uf_.af.advanceEdgeF(
-		    uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
+		    uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
 		    uf_.anp1+l-L1,	uf_.an+l-L1,	uf_.anm1+l-L1,
 		    uf_.anp1+l+L0,	uf_.an+l+L0,	uf_.anm1+l+L0,
 		    uf_.anp1+l+L3,	uf_.an+l+L3,	uf_.anm1+l+L3,
-		    uf_.an+l-3,	uf_.an+l-L4,	uf_.an+l-L7,	uf_.an+l-L10,
-		    uf_.an+l+3,	uf_.an+l+L5,	uf_.an+l+L6,	uf_.an+l+L9);
+		    uf_.an+l-3,		uf_.an+l-L4,	uf_.an+l-L7,	uf_.an+l-L10,
+		    uf_.an+l+3,		uf_.an+l+L5,	uf_.an+l+L6,	uf_.an+l+L9);
 
 		l = 3 * ( N1N0_ * uf_.npm1 + N1_ * uf_.N0m1 + j );
 
 		uf_.af.advanceEdgeF(
-		    uf_.anp1+l,	uf_.an+l,	uf_.anm1+l,
+		    uf_.anp1+l,		uf_.an+l,	uf_.anm1+l,
 		    uf_.anp1+l-L1,	uf_.an+l-L1,	uf_.anm1+l-L1,
 		    uf_.anp1+l-L0,	uf_.an+l-L0,	uf_.anm1+l-L0,
 		    uf_.anp1+l-L2,	uf_.an+l-L2,	uf_.anm1+l-L2,
-		    uf_.an+l-3,	uf_.an+l-L4,	uf_.an+l-L6,	uf_.an+l-L8,
-		    uf_.an+l+3,	uf_.an+l+L5,	uf_.an+l+L7,	uf_.an+l+L11);
+		    uf_.an+l-3,		uf_.an+l-L4,	uf_.an+l-L6,	uf_.an+l-L8,
+		    uf_.an+l+3,		uf_.an+l+L5,	uf_.an+l+L7,	uf_.an+l+L11);
 	      }
 	  }
 
@@ -633,7 +639,7 @@ namespace MITHRA
 		uf_.anp1+3*(m+N1N0_),		uf_.an+3*(m+N1N0_),		uf_.anm1+3*(m+N1N0_),
 		uf_.anp1+3*(m+N1_+1),		uf_.an+3*(m+N1_+1),		uf_.anm1+3*(m+N1_+1),
 		uf_.anp1+3*(m+N1N0_+N1_),	uf_.an+3*(m+N1N0_+N1_),		uf_.anm1+3*(m+N1N0_+N1_),
-		uf_.anp1+3*(m+N1N0_+1),	uf_.an+3*(m+N1N0_+1),		uf_.anm1+3*(m+N1N0_+1),
+		uf_.anp1+3*(m+N1N0_+1),		uf_.an+3*(m+N1N0_+1),		uf_.anm1+3*(m+N1N0_+1),
 		uf_.anp1+3*(m+N1N0_+N1_+1),	uf_.an+3*(m+N1N0_+N1_+1),	uf_.anm1+3*(m+N1N0_+N1_+1));
 
 	    m = N1N0_ - N1_;
@@ -644,7 +650,7 @@ namespace MITHRA
 		uf_.anp1+3*(m+N1N0_),		uf_.an+3*(m+N1N0_),		uf_.anm1+3*(m+N1N0_),
 		uf_.anp1+3*(m-N1_+1),		uf_.an+3*(m-N1_+1),		uf_.anm1+3*(m-N1_+1),
 		uf_.anp1+3*(m+N1N0_-N1_),	uf_.an+3*(m+N1N0_-N1_),		uf_.anm1+3*(m+N1N0_-N1_),
-		uf_.anp1+3*(m+N1N0_+1),	uf_.an+3*(m+N1N0_+1),		uf_.anm1+3*(m+N1N0_+1),
+		uf_.anp1+3*(m+N1N0_+1),		uf_.an+3*(m+N1N0_+1),		uf_.anm1+3*(m+N1N0_+1),
 		uf_.anp1+3*(m+N1N0_-N1_+1),	uf_.an+3*(m+N1N0_-N1_+1),	uf_.anm1+3*(m+N1N0_-N1_+1));
 
 	    m = uf_.N1m1;
@@ -655,7 +661,7 @@ namespace MITHRA
 		uf_.anp1+3*(m+N1N0_),		uf_.an+3*(m+N1N0_),		uf_.anm1+3*(m+N1N0_),
 		uf_.anp1+3*(m+N1_-1),		uf_.an+3*(m+N1_-1),		uf_.anm1+3*(m+N1_-1),
 		uf_.anp1+3*(m+N1N0_+N1_),	uf_.an+3*(m+N1N0_+N1_),		uf_.anm1+3*(m+N1N0_+N1_),
-		uf_.anp1+3*(m+N1N0_-1),	uf_.an+3*(m+N1N0_-1),		uf_.anm1+3*(m+N1N0_-1),
+		uf_.anp1+3*(m+N1N0_-1),		uf_.an+3*(m+N1N0_-1),		uf_.anm1+3*(m+N1N0_-1),
 		uf_.anp1+3*(m+N1N0_+N1_-1),	uf_.an+3*(m+N1N0_+N1_-1),	uf_.anm1+3*(m+N1N0_+N1_-1));
 
 	    m = N1N0_ - N1_ + uf_.N1m1;
@@ -666,7 +672,7 @@ namespace MITHRA
 		uf_.anp1+3*(m+N1N0_),		uf_.an+3*(m+N1N0_),		uf_.anm1+3*(m+N1N0_),
 		uf_.anp1+3*(m-N1_-1),		uf_.an+3*(m-N1_-1),		uf_.anm1+3*(m-N1_-1),
 		uf_.anp1+3*(m+N1N0_-N1_),	uf_.an+3*(m+N1N0_-N1_),		uf_.anm1+3*(m+N1N0_-N1_),
-		uf_.anp1+3*(m+N1N0_-1),	uf_.an+3*(m+N1N0_-1),		uf_.anm1+3*(m+N1N0_-1),
+		uf_.anp1+3*(m+N1N0_-1),		uf_.an+3*(m+N1N0_-1),		uf_.anm1+3*(m+N1N0_-1),
 		uf_.anp1+3*(m+N1N0_-N1_-1),	uf_.an+3*(m+N1N0_-N1_-1),	uf_.anm1+3*(m+N1N0_-N1_-1));
 	  }
 
@@ -680,7 +686,7 @@ namespace MITHRA
 		uf_.anp1+3*(m-N1N0_),		uf_.an+3*(m-N1N0_),		uf_.anm1+3*(m-N1N0_),
 		uf_.anp1+3*(m+N1_+1),		uf_.an+3*(m+N1_+1),		uf_.anm1+3*(m+N1_+1),
 		uf_.anp1+3*(m-N1N0_+N1_),	uf_.an+3*(m-N1N0_+N1_),		uf_.anm1+3*(m-N1N0_+N1_),
-		uf_.anp1+3*(m-N1N0_+1),	uf_.an+3*(m-N1N0_+1),		uf_.anm1+3*(m-N1N0_+1),
+		uf_.anp1+3*(m-N1N0_+1),		uf_.an+3*(m-N1N0_+1),		uf_.anm1+3*(m-N1N0_+1),
 		uf_.anp1+3*(m-N1N0_+N1_+1),	uf_.an+3*(m-N1N0_+N1_+1),	uf_.anm1+3*(m-N1N0_+N1_+1));
 
 	    m = N1N0_ * uf_.npm1 + N1N0_ - N1_;
@@ -691,7 +697,7 @@ namespace MITHRA
 		uf_.anp1+3*(m-N1N0_),		uf_.an+3*(m-N1N0_),		uf_.anm1+3*(m-N1N0_),
 		uf_.anp1+3*(m-N1_+1),		uf_.an+3*(m-N1_+1),		uf_.anm1+3*(m-N1_+1),
 		uf_.anp1+3*(m-N1N0_-N1_),	uf_.an+3*(m-N1N0_-N1_),		uf_.anm1+3*(m-N1N0_-N1_),
-		uf_.anp1+3*(m-N1N0_+1),	uf_.an+3*(m-N1N0_+1),		uf_.anm1+3*(m-N1N0_+1),
+		uf_.anp1+3*(m-N1N0_+1),		uf_.an+3*(m-N1N0_+1),		uf_.anm1+3*(m-N1N0_+1),
 		uf_.anp1+3*(m-N1N0_-N1_+1),	uf_.an+3*(m-N1N0_-N1_+1),	uf_.anm1+3*(m-N1N0_-N1_+1));
 
 	    m = N1N0_ * uf_.npm1 + uf_.N1m1;
@@ -702,7 +708,7 @@ namespace MITHRA
 		uf_.anp1+3*(m-N1N0_),		uf_.an+3*(m-N1N0_),		uf_.anm1+3*(m-N1N0_),
 		uf_.anp1+3*(m+N1_-1),		uf_.an+3*(m+N1_-1),		uf_.anm1+3*(m+N1_-1),
 		uf_.anp1+3*(m-N1N0_+N1_),	uf_.an+3*(m-N1N0_+N1_),		uf_.anm1+3*(m-N1N0_+N1_),
-		uf_.anp1+3*(m-N1N0_-1),	uf_.an+3*(m-N1N0_-1),		uf_.anm1+3*(m-N1N0_-1),
+		uf_.anp1+3*(m-N1N0_-1),		uf_.an+3*(m-N1N0_-1),		uf_.anm1+3*(m-N1N0_-1),
 		uf_.anp1+3*(m-N1N0_+N1_-1),	uf_.an+3*(m-N1N0_+N1_-1),	uf_.anm1+3*(m-N1N0_+N1_-1));
 
 	    m = N1N0_ * uf_.npm1 + N1N0_ - N1_ + uf_.N1m1;
@@ -713,7 +719,7 @@ namespace MITHRA
 		uf_.anp1+3*(m-N1N0_),		uf_.an+3*(m-N1N0_),		uf_.anm1+3*(m-N1N0_),
 		uf_.anp1+3*(m-N1_-1),		uf_.an+3*(m-N1_-1),		uf_.anm1+3*(m-N1_-1),
 		uf_.anp1+3*(m-N1N0_-N1_),	uf_.an+3*(m-N1N0_-N1_),		uf_.anm1+3*(m-N1N0_-N1_),
-		uf_.anp1+3*(m-N1N0_-1),	uf_.an+3*(m-N1N0_-1),		uf_.anm1+3*(m-N1N0_-1),
+		uf_.anp1+3*(m-N1N0_-1),		uf_.an+3*(m-N1N0_-1),		uf_.anm1+3*(m-N1N0_-1),
 		uf_.anp1+3*(m-N1N0_-N1_-1),	uf_.an+3*(m-N1N0_-N1_-1),	uf_.anm1+3*(m-N1N0_-N1_-1));
 	  }
       }
@@ -770,26 +776,26 @@ namespace MITHRA
     /* Communicate the calculated fields throughout the processors.					*/
     if (rank_ != size_ - 1)
       {
-	MPI_Send(uf_.en+3*(np_-2)*N1N0_, 	3*N1N0_,MPI_DOUBLE,rank_+1,msgtag5,MPI_COMM_WORLD);
-	MPI_Send(uf_.bn+3*(np_-2)*N1N0_,	3*N1N0_,MPI_DOUBLE,rank_+1,msgtag6,MPI_COMM_WORLD);
+	MPI_Send(uf_.en+3*(np_-2)*N1N0_, 	3*N1N0_,MPI_FLOAT,rank_+1,msgtag5,MPI_COMM_WORLD);
+	MPI_Send(uf_.bn+3*(np_-2)*N1N0_,	3*N1N0_,MPI_FLOAT,rank_+1,msgtag6,MPI_COMM_WORLD);
       }
 
     if (rank_ != 0)
       {
-	MPI_Recv(uf_.en,			3*N1N0_,MPI_DOUBLE,rank_-1,msgtag5,MPI_COMM_WORLD,&status);
-	MPI_Recv(uf_.bn,		  	3*N1N0_,MPI_DOUBLE,rank_-1,msgtag6,MPI_COMM_WORLD,&status);
+	MPI_Recv(uf_.en,			3*N1N0_,MPI_FLOAT,rank_-1,msgtag5,MPI_COMM_WORLD,&status);
+	MPI_Recv(uf_.bn,		  	3*N1N0_,MPI_FLOAT,rank_-1,msgtag6,MPI_COMM_WORLD,&status);
       }
 
     if (rank_ != 0)
       {
-	MPI_Send(uf_.en+3*N1N0_,	 	3*N1N0_,MPI_DOUBLE,rank_-1,msgtag7,MPI_COMM_WORLD);
-	MPI_Send(uf_.bn+3*N1N0_,		3*N1N0_,MPI_DOUBLE,rank_-1,msgtag8,MPI_COMM_WORLD);
+	MPI_Send(uf_.en+3*N1N0_,	 	3*N1N0_,MPI_FLOAT,rank_-1,msgtag7,MPI_COMM_WORLD);
+	MPI_Send(uf_.bn+3*N1N0_,		3*N1N0_,MPI_FLOAT,rank_-1,msgtag8,MPI_COMM_WORLD);
       }
 
     if (rank_ != size_ - 1)
       {
-	MPI_Recv(uf_.en+3*(np_-1)*N1N0_,	3*N1N0_,MPI_DOUBLE,rank_+1,msgtag7,MPI_COMM_WORLD,&status);
-	MPI_Recv(uf_.bn+3*(np_-1)*N1N0_,	3*N1N0_,MPI_DOUBLE,rank_+1,msgtag8,MPI_COMM_WORLD,&status);
+	MPI_Recv(uf_.en+3*(np_-1)*N1N0_,	3*N1N0_,MPI_FLOAT,rank_+1,msgtag7,MPI_COMM_WORLD,&status);
+	MPI_Recv(uf_.bn+3*(np_-1)*N1N0_,	3*N1N0_,MPI_FLOAT,rank_+1,msgtag8,MPI_COMM_WORLD,&status);
       }
   }
 
@@ -907,15 +913,6 @@ namespace MITHRA
 	    sf_.at.pmv((1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr,         (*an_)[sf_.m+N1N0_+1]);
 	    sf_.at.pmv(sf_.dxr         * sf_.dyr           * sf_.dzr,         (*an_)[sf_.m+N1N0_+N1_+1]);
 
-	    sf_.jt.mv ((1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr), jn_[sf_.m]);
-	    sf_.jt.pmv(sf_.dxr         * (1.0 - sf_.dyr)   * (1.0 - sf_.dzr), jn_[sf_.m+N1_]);
-	    sf_.jt.pmv((1.0 - sf_.dxr) * sf_.dyr           * (1.0 - sf_.dzr), jn_[sf_.m+1]);
-	    sf_.jt.pmv(sf_.dxr         * sf_.dyr           * (1.0 - sf_.dzr), jn_[sf_.m+N1_+1]);
-	    sf_.jt.pmv((1.0 - sf_.dxr) * (1.0 - sf_.dyr)   * sf_.dzr,         jn_[sf_.m+N1N0_]);
-	    sf_.jt.pmv(sf_.dxr         * (1.0 - sf_.dyr)   * sf_.dzr,         jn_[sf_.m+N1N0_+N1_]);
-	    sf_.jt.pmv((1.0 - sf_.dxr) * sf_.dyr           * sf_.dzr,         jn_[sf_.m+N1N0_+1]);
-	    sf_.jt.pmv(sf_.dxr         * sf_.dyr           * sf_.dzr,         jn_[sf_.m+N1N0_+N1_+1]);
-
 	    /* Write the coordinates in the next column.						*/
 	    *(sf_.file) << sf_.position[0] << "\t";
 	    *(sf_.file) << sf_.position[1] << "\t";
@@ -944,13 +941,6 @@ namespace MITHRA
 		  *(sf_.file) << sf_.at[1] * sf_.Ca << "\t";
 		else if	( seed_.samplingField_[i] == Az )
 		  *(sf_.file) << sf_.at[2] * sf_.Ca << "\t";
-
-		else if	( seed_.samplingField_[i] == Jx )
-		  *(sf_.file) << sf_.jt[0] * sf_.Cj << "\t";
-		else if	( seed_.samplingField_[i] == Jy )
-		  *(sf_.file) << sf_.jt[1] * sf_.Cj << "\t";
-		else if	( seed_.samplingField_[i] == Jz )
-		  *(sf_.file) << sf_.jt[2] * sf_.Cj << "\t";
 	      }
 	  }
 
@@ -994,9 +984,6 @@ namespace MITHRA
 		else if 	( seed_.vtk_[ivtk].field_[l] == Ax )	vf_[ivtk].v[m][l] = (*an_)[m][0];
 		else if 	( seed_.vtk_[ivtk].field_[l] == Ay )	vf_[ivtk].v[m][l] = (*an_)[m][1];
 		else if 	( seed_.vtk_[ivtk].field_[l] == Az )	vf_[ivtk].v[m][l] = (*an_)[m][2];
-		else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[m][l] = jn_[m][0];
-		else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[m][l] = jn_[m][1];
-		else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[m][l] = jn_[m][2];
 	      }
 	  }
 
@@ -1014,12 +1001,14 @@ namespace MITHRA
     /* Insert the coordinates of the grid for the charge points.                                      	*/
     *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
     *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+    FieldVector<Double> r (0.0);
     for (int k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
       for (int j = 0; j < N1_; j++)
 	for (int i = 0; i < N0_; i++)
 	  {
 	    m = k * N1_ * N0_ + i * N1_ + j;
-	    *vf_[ivtk].file << r_[m][0] << " " << r_[m][1] << " " << r_[m][2] 			<< std::endl;
+	    r = rc(m);
+	    *vf_[ivtk].file << r[0] << " " << r[1] << " " << r[2] 					<< std::endl;
 	  }
     *vf_[ivtk].file << "</DataArray>"                                                       		<< std::endl;
     *vf_[ivtk].file << "</Points>"                                                         		<< std::endl;
@@ -1174,9 +1163,6 @@ namespace MITHRA
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Ax )	vf_[ivtk].v[n][l] = (*an_)[m][0] * ( 1.0 - dxr ) + (*an_)[m + N1_][0] * dxr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Ay )	vf_[ivtk].v[n][l] = (*an_)[m][1] * ( 1.0 - dxr ) + (*an_)[m + N1_][1] * dxr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Az )	vf_[ivtk].v[n][l] = (*an_)[m][2] * ( 1.0 - dxr ) + (*an_)[m + N1_][2] * dxr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[n][l] = jn_[m][0] * ( 1.0 - dxr ) + jn_[m + N1_][0] * dxr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[n][l] = jn_[m][1] * ( 1.0 - dxr ) + jn_[m + N1_][1] * dxr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[n][l] = jn_[m][2] * ( 1.0 - dxr ) + jn_[m + N1_][2] * dxr;
 	    }
 	}
 
@@ -1194,12 +1180,13 @@ namespace MITHRA
     /* Insert the coordinates of the grid for the charge points.                                      	*/
     *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
     *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+    FieldVector<Double> r1 (0.0), r2 (0.0);
     for (int k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
       for (int j = 0; j < N1_; j++)
 	{
 	  m = k * N1_ * N0_ + i * N1_ + j;
-	  *vf_[ivtk].file << r_[m][0] * ( 1.0 - dxr ) + r_[m + N1_][0] * dxr << " "
-	      << r_[m][1] << " " << r_[m][2] 								<< std::endl;
+	  r1 = rc(m); r2 = rc(m + N1_);
+	  *vf_[ivtk].file << r1[0] * ( 1.0 - dxr ) + r2[0] * dxr << " " << r1[1] << " " << r1[2] 	<< std::endl;
 	}
     *vf_[ivtk].file << "</DataArray>"                                                       		<< std::endl;
     *vf_[ivtk].file << "</Points>"                                                         		<< std::endl;
@@ -1338,9 +1325,6 @@ namespace MITHRA
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Ax )	vf_[ivtk].v[n][l] = (*an_)[m][0] * ( 1.0 - dyr ) + (*an_)[m + 1][0] * dyr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Ay )	vf_[ivtk].v[n][l] = (*an_)[m][1] * ( 1.0 - dyr ) + (*an_)[m + 1][1] * dyr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Az )	vf_[ivtk].v[n][l] = (*an_)[m][2] * ( 1.0 - dyr ) + (*an_)[m + 1][2] * dyr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[n][l] = jn_[m][0] * ( 1.0 - dyr ) + jn_[m + 1][0] * dyr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[n][l] = jn_[m][1] * ( 1.0 - dyr ) + jn_[m + 1][1] * dyr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[n][l] = jn_[m][2] * ( 1.0 - dyr ) + jn_[m + 1][2] * dyr;
 	    }
 	}
 
@@ -1358,12 +1342,13 @@ namespace MITHRA
     /* Insert the coordinates of the grid for the charge points.                                      	*/
     *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
     *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+    FieldVector<Double> r1 (0.0), r2 (0.0);
     for (int k = 0 ; k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++)
       for (int i = 0; i < N0_; i++)
 	{
 	  m = k * N1_ * N0_ + i * N1_ + j;
-	  *vf_[ivtk].file << r_[m][0] * ( 1.0 - dyr ) + r_[m + 1][0] * dyr << " "
-	      << r_[m][1] << " " << r_[m][2] 			<< std::endl;
+	  r1 = rc(m); r2 = rc(m + 1);
+	  *vf_[ivtk].file << r1[0] * ( 1.0 - dyr ) + r2[0] * dyr << " " << r1[1] << " " << r1[2] 	<< std::endl;
 	}
     *vf_[ivtk].file << "</DataArray>"                                                       		<< std::endl;
     *vf_[ivtk].file << "</Points>"                                                         		<< std::endl;
@@ -1502,9 +1487,6 @@ namespace MITHRA
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Ax )	vf_[ivtk].v[n][l] = (*an_)[m][0] * ( 1.0 - dzr ) + (*an_)[m + N1N0_][0] * dzr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Ay )	vf_[ivtk].v[n][l] = (*an_)[m][1] * ( 1.0 - dzr ) + (*an_)[m + N1N0_][1] * dzr;
 	      else if 	( seed_.vtk_[ivtk].field_[l] == Az )	vf_[ivtk].v[n][l] = (*an_)[m][2] * ( 1.0 - dzr ) + (*an_)[m + N1N0_][2] * dzr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jx )	vf_[ivtk].v[n][l] = jn_[m][0] * ( 1.0 - dzr ) + jn_[m + N1N0_][0] * dzr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jy )	vf_[ivtk].v[n][l] = jn_[m][1] * ( 1.0 - dzr ) + jn_[m + N1N0_][1] * dzr;
-	      else if 	( seed_.vtk_[ivtk].field_[l] == Jz )	vf_[ivtk].v[n][l] = jn_[m][2] * ( 1.0 - dzr ) + jn_[m + N1N0_][2] * dzr;
 	    }
 	}
 
@@ -1520,12 +1502,13 @@ namespace MITHRA
     /* Insert the coordinates of the grid for the charge points.                                      	*/
     *vf_[ivtk].file << "<Points>"                                                                	<< std::endl;
     *vf_[ivtk].file << "<DataArray type = \"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"	<< std::endl;
+    FieldVector<Double> r1 (0.0), r2 (0.0);
     for (int j = 0; j < N1_; j++)
       for (int i = 0; i < N0_; i++)
 	{
 	  m = k * N1_ * N0_ + i * N1_ + j;
-	  *vf_[ivtk].file << r_[m][0] * ( 1.0 - dzr ) + r_[m + N1N0_][0] * dzr << " "
-	      << r_[m][1] << " " << r_[m][2] 								<< std::endl;
+	  r1 = rc(m); r2 = rc(m + N1N0_);
+	  *vf_[ivtk].file << r1[0] * ( 1.0 - dzr ) + r2[0] * dzr << " " << r1[1] << " " << r1[2] 	<< std::endl;
 	}
     *vf_[ivtk].file << "</DataArray>"                                                       		<< std::endl;
     *vf_[ivtk].file << "</Points>"                                                         		<< std::endl;
@@ -1570,14 +1553,14 @@ namespace MITHRA
     pf_.file->precision(4);
 
     /* Perform a loop over the points of the mesh and save the field data into a text file.		*/
+    FieldVector<Double> r (0.0);
     for (int i = 0; i < N0_; i++ )
       for (int j = 0; j < N1_; j++ )
 	for (int k = ( (rank_ == 0) ? 0 : 1 ); k < np_ - ( ( rank_ == size_  - 1 ) ? 0 : 1 ); k++ )
 	  {
 	    pf_.m = k * N1_ * N0_ + i * N1_ + j;
-	    *pf_.file << r_[pf_.m][0] << "\t" ;
-	    *pf_.file << r_[pf_.m][1] << "\t" ;
-	    *pf_.file << r_[pf_.m][2] << "\t" ;
+	    r = rc(pf_.m);
+	    *pf_.file << r[0] << "\t" << r[1] << "\t" << r[2] << "\t" ;
 
 	    for (unsigned l = 0; l < seed_.profileField_.size(); l++)
 	      {
@@ -1601,13 +1584,6 @@ namespace MITHRA
 		  *pf_.file << (*an_)[pf_.m][1] << "\t";
 		else if 	( seed_.profileField_[l] == Az )
 		  *pf_.file << (*an_)[pf_.m][2] << "\t";
-
-		else if 	( seed_.profileField_[l] == Jx )
-		  *pf_.file << jn_[pf_.m][0] << "\t";
-		else if 	( seed_.profileField_[l] == Jy )
-		  *pf_.file << jn_[pf_.m][1] << "\t";
-		else if 	( seed_.profileField_[l] == Jz )
-		  *pf_.file << jn_[pf_.m][2] << "\t";
 	      }
 
 	    *pf_.file << std::endl;

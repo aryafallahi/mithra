@@ -109,6 +109,7 @@ FIELD
 		offset  								= < real >
 		pulse-length  					= < real >
 		wavelength  						= < real >
+		rising-cycles				   = < int >
 		CEP  									 = < real >
 	\}
 
@@ -118,9 +119,7 @@ field-sampling
 		type  									= < over-line | at-point >
 		\textcolor{red}{field  								 = < Ex | Ey | Ez |}
 		\textcolor{red}{														Bx | By | Bz |}
-		\textcolor{red}{														Ax | Ay | Az |}
-		\textcolor{red}{														Jx | Jy | Jz |}
-		\textcolor{red}{														F  | Q >}
+		\textcolor{red}{														Ax | Ay | Az | F >}
 		directory  						 = < /path/to/location >
 		base-name  						 = < string >
 		rhythm  								= < real >
@@ -139,9 +138,7 @@ field-sampling
 		position  							= < ( real, real, real ) >
 		\textcolor{red}{field  								 = < Ex | Ey | Ez |}
 		\textcolor{red}{														Bx | By | Bz |}
-		\textcolor{red}{														Ax | Ay | Az |}
-		\textcolor{red}{														Jx | Jy | Jz |}
-		\textcolor{red}{														F  | Q >}
+		\textcolor{red}{														Ax | Ay | Az | F >}
 		directory  						 = < /path/to/location >
 		base-name  						 = < string >
 		rhythm  								= < real >
@@ -152,9 +149,7 @@ field-profile
 		sample  								= < true | false >
 		\textcolor{red}{field  								 = < Ex | Ey | Ez |}
 		\textcolor{red}{														Bx | By | Bz |}
-		\textcolor{red}{														Ax | Ay | Az |}
-		\textcolor{red}{														Jx | Jy | Jz |}
-		\textcolor{red}{														F  | Q >}
+		\textcolor{red}{														Ax | Ay | Az | F >}
 		directory  						 = < /path/to/location >
 		base-name  						 = < string >
 		rhythm  								= < real >
@@ -206,6 +201,7 @@ UNDULATOR
 		offset  								= < real >
 		pulse-length  					= < real >
 		wavelength  						= < real >
+		rising-cycles				   = < int >
 		CEP  									 = < real >
 		distance-to-bunch-head  = < real >
 	\textcolor{red}{\}}
@@ -233,6 +229,7 @@ EXTERNAL-FIELD
 		offset  								= < real >
 		pulse-length  					= < real >
 		wavelength  						= < real >
+		rising-cycles					 = < int >
 		CEP  									 = < real >
 	\textcolor{red}{\}}
 \}

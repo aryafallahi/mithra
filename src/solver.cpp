@@ -2242,11 +2242,12 @@ namespace MITHRA
 		    //		    *scrp_[jf].files[i] << interp( lzm, lzp, iter->gbnm[1], iter->gbnp[1], lzScreen ) << "\t";
 		    //		    *scrp_[jf].files[i] << interp( lzm, lzp, gbzm, gbzp, lzScreen ) << std::endl;
 
-		    /* Here, we use the stair-case approximation and set the momentum during the whole
+		    /* Here, we use the stair-case approximation and set the momentum during the
 		     * whole time step constant.							*/
 		    *scrp_[jf].files[i] << iter->gb[0] << "\t";
 		    *scrp_[jf].files[i] << iter->gb[1] << "\t";
 		    *scrp_[jf].files[i] << iter->gb[2] << std::endl;
+		    *scrp_[jf].files[i] << gamma_ * (iter->gb[2] + beta_ * std::sqrt(1.0 + iter->gb.norm2())) << std::endl;
 		  }
 	      }
 	  }

@@ -1,0 +1,135 @@
+#  Mithra input file
+#
+#  physics - model an inverse compton scattering interaction for 5 MeV trapped electron beam and 10 um laser
+#
+#  ICS-TRAP paper: Fig. ?? (simulation results without space-charge)
+#
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS-TRAP.job
+#
+#  in the LSF system:
+#  bsub -n 128 -W 24:00 -J "FEL-ICS-TRAP" -o FEL-ICS-TRAP.out 'mpirun ../MITHRA ./job-files/FEL-ICS-TRAP.job'
+
+MESH
+{
+    length-scale		= MICROMETER
+    time-scale			= FEMTOSECOND
+    mesh-lengths                = (  70.0,  70.0, 11.5  )
+    mesh-resolution             = ( 0.250, 0.250, 0.002 )
+    mesh-center                 = (   0.0,   0.0, 0.0   )
+    total-time			= 30000
+    bunch-time-step             = 0.3
+    mesh-truncation-order	= 2
+    space-charge		= false
+    solver			= NSFD
+    optimize-bunch-position     = true
+    initial-time-back-shift     = 40000.0
+}
+
+BUNCH
+{
+    bunch-initialization
+    {
+        type                    = ellipsoid
+        distribution            = uniform
+        charge                  = 2000000
+        number-of-particles     = 2000000
+        gamma                   = 10.0
+        direction               = (   0.0,    0.0,     1.0    )
+        position                = (   0.0,    0.0,     0.0    )
+        sigma-position          = (   5.0,    5.0,     5.0    )
+        sigma-momentum          = (  0.01,   0.01,     0.0025 )
+        transverse-truncation   = 30.0
+        longitudinal-truncation = 5.5
+        shot-noise              = true
+    }
+
+    bunch-profile
+    {
+        sample                  = false
+        directory               = /cluster/scratch/afallahi/
+        base-name               = bunch-profile-on/bunch
+        rhythm                  = 100.0
+    }
+
+    bunch-visualization
+    {
+        sample                  = false
+        directory               = /cluster/scratch/afallahi/
+        base-name               = bunch-visualization-on/bunch
+        rhythm                  = 100.0
+    }
+
+    bunch-sampling
+    {
+        sample                  = true
+        directory               = /cluster/scratch/afallahi/
+        base-name               = bunch-sampling-on/bunch
+        rhythm                  = 100.0
+    }
+}
+
+EXTERNAL-FIELD
+{
+    electromagnetic-wave
+    {
+        beam-type               = standing-gaussian-beam
+        radius-parallel         = 100
+        radius-perpendicular    = 7000
+        position                = ( 0.0, 0.0, 8400)
+        direction               = ( 1.0, 0.0, 0.0 )
+        polarization            = ( 0.0, 1.0, 0.0 )
+        strength-parameter      = 0.07
+        signal-type             = gaussian
+        wavelength              = 11.8
+        pulse-length            = 1.0e6
+        offset                  = 0.0
+        CEP                     = 0.0
+    }
+    
+    electromagnetic-wave
+    {
+        beam-type               = standing-gaussian-beam
+        radius-parallel         = 100
+        radius-perpendicular    = 7000
+        position                = ( 0.0, 0.0, 8400)
+        direction               = ( 0.0, 1.0, 0.0 )
+        polarization            = ( 1.0, 0.0, 0.0 )
+        strength-parameter      = 0.07
+        signal-type             = gaussian
+        wavelength              = 11.8
+        pulse-length            = 1.0e6
+        offset                  = 0.0
+        CEP                     = 0.0
+    }
+}
+
+UNDULATOR
+{
+    optical-undulator
+    {
+        beam-type               = plane-wave
+        position                = ( 0.0, 0.0, 0.0 )
+        direction               = ( 0.0, 0.0,-1.0 )
+        polarization            = ( 0.0, 1.0, 0.0 )
+        strength-parameter      = 1.0
+        signal-type             = flat-top
+        wavelength              = 10.0
+        pulse-length            = 18000.0
+        offset                  = 9000.0
+        rising-cycles           = 5
+        CEP                     = 0.0
+    }
+}
+
+FEL-OUTPUT
+{
+    power-visualization
+    {
+        sample                  = false
+        directory               = /cluster/scratch/afallahi/
+        base-name               = power-visualization-on/power
+        plane-position          = 5.7
+        normalized-frequency    = 1.00
+        rhythm                  = 100.0
+    }
+}

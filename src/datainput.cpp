@@ -153,6 +153,15 @@ namespace MITHRA
 	      {
 		if      (parameterName(*iter) == "type")              	bunchInit.bunchType_		= stringValue(*iter);
 		else if (parameterName(*iter) == "distribution") 	bunchInit.distribution_		= stringValue(*iter);
+		else if (parameterName(*iter) == "generator")
+		  {
+		    bunchInit.generator_ = stringValue(*iter);
+		    if ( ( bunchInit.generator_ != "halton" ) && ( bunchInit.generator_ != "random" ) )
+		      {
+			printmessage(std::string(__FILE__), __LINE__, std::string("The inserted generator is not accepted !!!") );
+			exit(1);
+		      }
+		  }
 		else if (parameterName(*iter) == "charge")            	bunchInit.cloudCharge_		= doubleValue(*iter);
 		else if (parameterName(*iter) == "number-of-particles") bunchInit.numberOfParticles_    = intValue(*iter);
 		else if (parameterName(*iter) == "gamma")		bunchInit.initialGamma_ 	= doubleValue(*iter);

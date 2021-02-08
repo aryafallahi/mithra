@@ -131,7 +131,10 @@ namespace MITHRA
     /* Declare the generator function depending on the input.						*/
     auto generate = [&] (unsigned int n, unsigned int m) {
       if 	( bunchInit.generator_ == "random" )
-	return  ( ( (double) rand() ) / RAND_MAX );
+	{
+	  srand ( time(NULL) );
+	  return  ( ( (double) rand() ) / RAND_MAX );
+	}
       else
 	return 	( halton(n,m) );
       {

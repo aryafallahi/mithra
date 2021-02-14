@@ -134,13 +134,9 @@ namespace MITHRA
     /* Declare the generator function depending on the input.						*/
     auto generate = [&] (unsigned int n, unsigned int m) {
       if 	( bunchInit.generator_ == "random" )
-	  return  ( ( (double) rand() ) / RAND_MAX );
+	return  ( ( (double) rand() ) / RAND_MAX );
       else
 	return 	( halton(n,m) );
-      {
-	  printmessage(std::string(__FILE__), __LINE__, std::string("The inserted generator is not accepted !!!") );
-	  exit(1);
-      }
     };
 
     /* Declare the function for injecting the shot noise.						*/

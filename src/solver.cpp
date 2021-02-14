@@ -546,8 +546,8 @@ namespace MITHRA
     /* Using the parsed data, set the required parameters for simulation.				*/
     setSimulationParameters();
 
-    /* As the first step, initialize the given bunch according to to the parameters given in the
-     * datainput file.											*/
+    /* As the first step, initialize the given bunch according to the parameters given in the datainput
+     * file.												*/
     initializeBunch();
     timeBunch_ = time_;
 

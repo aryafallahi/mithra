@@ -116,9 +116,7 @@ namespace MITHRA
     Double		zmin = 1e100;
     Double		Ne, bF, bFi;
     unsigned int	bmi;
-    
-    /* Initialize the random number generator.								*/
-    srand ( time(NULL) );
+    std::vector<Double>	randomNumbers;
 
     /* The initialization in group of four particles should only be done if there exists an undulator in
      * the interaction.											*/
@@ -131,10 +129,22 @@ namespace MITHRA
 	exit(1);
       }
 
+    /* If the generator is random we should make sure that different processors do not produce the same
+     * random numbers.											*/
+    if 	( bunchInit.generator_ == "random" )
+      {
+	/* Initialize the random number generator.								*/
+	srand ( time(NULL) );
+	/* Np / ng * 20 is the maximum number of particles.							*/
+	randomNumbers.resize( Np / ng * 20, 0.0);
+	for ( unsigned int ri = 0; ri < Np / ng * 20; ri++)
+	  randomNumbers[ri] = ( (double) rand() ) / RAND_MAX;
+      }
+
     /* Declare the generator function depending on the input.						*/
     auto generate = [&] (unsigned int n, unsigned int m) {
       if 	( bunchInit.generator_ == "random" )
-	return  ( ( (double) rand() ) / RAND_MAX );
+	return  ( randomNumbers[ n * 2 * Np/ng + m ] );
       else
 	return 	( halton(n,m) );
     };

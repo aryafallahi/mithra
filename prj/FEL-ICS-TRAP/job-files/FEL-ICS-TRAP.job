@@ -2,7 +2,7 @@
 #
 #  physics - model an inverse compton scattering interaction for 5 MeV trapped electron beam and 10 um laser
 #
-#  ICS-TRAP paper: Fig. ?? (simulation results without space-charge)
+#  ICS-TRAP paper: Fig. 4, Fig. 5, and Fig. 6 (simulation results without space-charge)
 #
 #  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS-TRAP.job
 #
@@ -61,7 +61,7 @@ BUNCH
 
     bunch-sampling
     {
-        sample                  = true
+        sample                  = false
         directory               = /cluster/scratch/afallahi/
         base-name               = bunch-sampling-on/bunch
         rhythm                  = 100.0

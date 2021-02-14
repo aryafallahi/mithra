@@ -2,7 +2,7 @@
 #
 #  physics - model an inverse compton scattering interaction for 5 MeV trapped electrons and 10 um laser
 #
-#  ICS-TRAP paper: Fig. ?? (simulation results with space-charge)
+#  ICS-TRAP paper: Fig. 4-7  (simulation results with space-charge)
 #
 #  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS-TRAP-SC.job
 #
@@ -61,11 +61,55 @@ BUNCH
  
     bunch-sampling
     {
-        sample                  = true
+        sample                  = false
         directory               = /cluster/scratch/afallahi/
         base-name               = bunch-sampling-onsc/bunch
         rhythm                  = 100.0
     }
+}
+
+FIELD
+{
+  field-sampling
+  {
+    sample			= true
+    type			= at-point
+    field			= Ex
+    field      			= Ey
+    field      			= Ez
+    directory			= ./
+    base-name			= field-sampling/field
+    rhythm			= 1.0
+    position			= (0.0, 0.0, 5.7)
+  }
+
+  field-visualization
+  {
+    sample                      = false
+    type                        = in-plane
+    field                       = Ex
+    field                       = Ey
+    field                       = Ez
+    plane                       = yz
+    position                    = (0.0, 0.0, 5.7)
+    directory                   = /cluster/scratch/afallahi/
+    base-name                   = field-visualization/field-yz-antinode
+    rhythm                      = 100.0
+  }
+
+  field-visualization
+  {
+    sample                      = false
+    type                        = in-plane
+    field                       = Ex
+    field                       = Ey
+    field                       = Ez
+    plane                       = yz
+    position                    = (5.9, 0.0, 5.7)
+    directory                   = /cluster/scratch/afallahi/
+    base-name                   = field-visualization/field-yz-node
+    rhythm                      = 100.0
+  }
 }
 
 EXTERNAL-FIELD

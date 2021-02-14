@@ -116,6 +116,9 @@ namespace MITHRA
     Double		zmin = 1e100;
     Double		Ne, bF, bFi;
     unsigned int	bmi;
+    
+    /* Initialize the random number generator.								*/
+    srand ( time(NULL) );
 
     /* The initialization in group of four particles should only be done if there exists an undulator in
      * the interaction.											*/
@@ -131,10 +134,7 @@ namespace MITHRA
     /* Declare the generator function depending on the input.						*/
     auto generate = [&] (unsigned int n, unsigned int m) {
       if 	( bunchInit.generator_ == "random" )
-	{
-	  srand ( time(NULL) );
 	  return  ( ( (double) rand() ) / RAND_MAX );
-	}
       else
 	return 	( halton(n,m) );
       {

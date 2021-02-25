@@ -2,7 +2,7 @@
 #
 #  physics - model an inverse compton scattering interaction for 5 MeV trapped electrons and 10 um laser
 #
-#  ICS-TRAP paper: Fig. 9 (simulation results with space-charge and random initialization of bunch)
+#  ICS-TRAP paper: Fig. 9 (simulation results with space-charge and cavity fields with random initialization of bunch)
 #
 #  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS-TRAP-SC-RAND.job
 #

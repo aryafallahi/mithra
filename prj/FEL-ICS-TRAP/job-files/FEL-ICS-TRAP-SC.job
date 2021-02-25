@@ -8,6 +8,7 @@
 #
 #  in the LSF system:
 #  bsub -n 128 -W 48:00 -J "FEL-ICS-TRAP-SC" -o FEL-ICS-TRAP-SC.out 'mpirun ../MITHRA ./job-files/FEL-ICS-TRAP-SC.job'
+#  bsub -n 64  -W 48:00 -J "FEL-ICS-TRAP-SC" -o FEL-ICS-TRAP-SC.out -R "rusage[mem=2048]" 'mpirun ../MITHRA ./job-files/FEL-ICS-TRAP-SC.job'
 
 MESH
 {

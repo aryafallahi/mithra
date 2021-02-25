@@ -8,6 +8,7 @@
 #
 #  in the LSF system:
 #  bsub -n 128 -W 48:00 -J "FEL-ICS-TRAP-SC-RAND" -o FEL-ICS-TRAP-SC-RAND.out 'mpirun ../MITHRA ./job-files/FEL-ICS-TRAP-SC-RAND.job'
+#  bsub -n 64  -W 48:00 -J "FEL-ICS-TRAP-SC-RAND" -o FEL-ICS-TRAP-SC-RAND.out -R "rusage[mem=2048]" 'mpirun ../MITHRA ./job-files/FEL-ICS-TRAP-SC-RAND.job'
 
 MESH
 {

@@ -72,7 +72,7 @@ FIELD
 {
   field-sampling
   {
-    sample                      = true
+    sample                      = false
     type                        = at-point
     field                       = Ex
     field                       = Ey
@@ -81,6 +81,34 @@ FIELD
     base-name                   = field-sampling/field-nocavity
     rhythm                      = 1.0
     position                    = (0.0, 0.0, 5.7)
+  }
+
+  field-visualization
+  {
+    sample                      = true
+    type                        = in-plane
+    field                       = Ex
+    field                       = Ey
+    field                       = Ez
+    plane                       = yz
+    position                    = (0.0, 0.0, 5.7)
+    directory                   = /cluster/scratch/afallahi/
+    base-name                   = field-visualization-nocavity/field-yz-antinode
+    rhythm                      = 100.0
+  }
+
+  field-visualization
+  {
+    sample                      = true
+    type                        = in-plane
+    field                       = Ex
+    field                       = Ey
+    field                       = Ez
+    plane                       = yz
+    position                    = (5.9, 0.0, 5.7)
+    directory                   = /cluster/scratch/afallahi/
+    base-name                   = field-visualization-nocavity/field-yz-node
+    rhythm                      = 100.0
   }
 }
 

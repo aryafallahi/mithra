@@ -25,6 +25,9 @@ namespace MITHRA
     /* Type of the distributions (transverse or longitudinal) in the bunch.				*/
     std::string     			distribution_;
 
+    /* Type of the generator for creating the bunch distribution.					*/
+    std::string				generator_;
+
     /* Total number of macroparticles in the bunch.                                                     */
     unsigned int       			numberOfParticles_;
 

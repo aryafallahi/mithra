@@ -6,6 +6,8 @@
 #define CLASSES_H_
 
 #include <list>
+#include <stdlib.h>
+#include <time.h>
 
 #include "database.h"
 #include "fieldvector.h"

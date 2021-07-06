@@ -1,0 +1,121 @@
+#  Mithra input file
+#
+#  physics - model an inverse compton scattering interaction for 5 MeV trapped electrons and 10 um laser
+#
+#  ICS-TRAP paper: Fig. 9 (simulation results with space-charge and cavity fields with random initialization of bunch)
+#
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS-TRAP-SC-RAND.job
+#
+#  in the LSF system:
+#  bsub -n 128 -W 48:00 -J "FEL-ICS-TRAP-SC-RAND" -o FEL-ICS-TRAP-SC-RAND.out 'mpirun ../MITHRA ./job-files/FEL-ICS-TRAP-SC-RAND.job'
+#  bsub -n 64  -W 48:00 -J "FEL-ICS-TRAP-SC-RAND" -o FEL-ICS-TRAP-SC-RAND.out -R "rusage[mem=2048]" 'mpirun ../MITHRA ./job-files/FEL-ICS-TRAP-SC-RAND.job'
+
+MESH
+{
+    length-scale		= MICROMETER
+    time-scale			= FEMTOSECOND
+    mesh-lengths                = (  70.0,  70.0, 11.5  )
+    mesh-resolution             = (  0.25,  0.25, 0.002 )
+    mesh-center                 = (   0.0,   0.0, 0.0   )
+    total-time			= 30000
+    bunch-time-step             = 0.3
+    mesh-truncation-order	= 2
+    space-charge		= true
+    solver			= NSFD
+    optimize-bunch-position     = true
+    initial-time-back-shift     = 40000.0
+}
+
+BUNCH
+{
+    bunch-initialization
+    {
+        type                    = ellipsoid
+        distribution            = uniform
+        charge                  = 2000000
+        number-of-particles     = 2000000
+        gamma                   = 10.0
+        direction               = (   0.0,    0.0,     1.0    )
+        position                = (   0.0,    0.0,     0.0    )
+        sigma-position          = (   5.0,    5.0,     5.0    )
+        sigma-momentum          = (  0.01,   0.01,     0.0025 )
+        transverse-truncation   = 30.0
+        longitudinal-truncation = 5.5
+        shot-noise              = false
+        generator		= random
+    }
+
+    bunch-profile
+    {
+        sample                  = true
+        directory               = /cluster/scratch/afallahi/
+        base-name               = bunch-profile-onsc-random/bunch
+        rhythm                  = 100.0
+    }
+}
+
+EXTERNAL-FIELD
+{
+    electromagnetic-wave
+    {
+        beam-type               = standing-gaussian-beam
+        radius-parallel         = 100
+        radius-perpendicular    = 7000
+        position                = ( 0.0, 0.0, 8400)
+        direction               = ( 1.0, 0.0, 0.0 )
+        polarization            = ( 0.0, 1.0, 0.0 )
+        strength-parameter      = 0.07
+        signal-type             = gaussian
+        wavelength              = 11.8
+        pulse-length            = 1.0e6
+        offset                  = 0.0
+        CEP                     = 0.0
+    }
+    
+    electromagnetic-wave
+    {
+        beam-type               = standing-gaussian-beam
+        radius-parallel         = 100
+        radius-perpendicular    = 7000
+        position                = ( 0.0, 0.0, 8400)
+        direction               = ( 0.0, 1.0, 0.0 )
+        polarization            = ( 1.0, 0.0, 0.0 )
+        strength-parameter      = 0.07
+        signal-type             = gaussian
+        wavelength              = 11.8
+        pulse-length            = 1.0e6
+        offset                  = 0.0
+        CEP                     = 0.0
+    }
+}
+
+UNDULATOR
+{
+    optical-undulator
+    {
+        beam-type               = plane-wave
+        position                = ( 0.0, 0.0, 0.0 )
+        direction               = ( 0.0, 0.0,-1.0 )
+        polarization            = ( 0.0, 1.0, 0.0 )
+        strength-parameter      = 1.0
+        signal-type             = flat-top
+        wavelength              = 10.0
+        pulse-length            = 18000.0
+        offset                  = 9000.0
+        rising-cycles           = 5
+        CEP                     = 0.0
+    }
+}
+
+FEL-OUTPUT
+{
+    radiation-power
+    {
+        sample			= true
+        type			= at-point
+        directory		= ./
+        base-name               = power-sampling/power-random
+        plane-position          = 5.7
+        normalized-frequency    = 1.0
+    }
+}

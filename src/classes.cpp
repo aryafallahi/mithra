@@ -80,7 +80,7 @@ namespace MITHRA
 
     /* Determine the properties of each charge point and add them to the charge vector.               	*/
     charge.q  	= bunchInit.cloudCharge_;
-    charge.rnp    	= bunchInit.position_[ia];
+    charge.rnp  = bunchInit.position_[ia];
     charge.gb.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
 
     /* Insert this charge to the charge list if and only if it resides in the processor's portion.    	*/
@@ -108,14 +108,15 @@ namespace MITHRA
     unsigned int	Np = bunchInit.numberOfParticles_, i, Np0 = chargeVector.size();
 
     /* Declare the required parameters for the initialization of charge vectors.                      	*/
-    Charge            charge; charge.q  = bunchInit.cloudCharge_ / Np;
+    Charge            	charge; charge.q  = bunchInit.cloudCharge_ / Np;
     FieldVector<Double> gb (0.0); gb.mv( bunchInit.initialGamma_, bunchInit.betaVector_ );
     FieldVector<Double> r  (0.0);
     FieldVector<Double> t  (0.0);
-    Double            t0, g;
+    Double            	t0, g;
     Double		zmin = 1e100;
     Double		Ne, bF, bFi;
     unsigned int	bmi;
+    std::vector<Double>	randomNumbers;
 
     /* The initialization in group of four particles should only be done if there exists an undulator in
      * the interaction.											*/
@@ -127,6 +128,26 @@ namespace MITHRA
 	printmessage(std::string(__FILE__), __LINE__, std::string("The bunching factor can not be larger than one or a negative value !!!") );
 	exit(1);
       }
+
+    /* If the generator is random we should make sure that different processors do not produce the same
+     * random numbers.											*/
+    if 	( bunchInit.generator_ == "random" )
+      {
+	/* Initialize the random number generator.								*/
+	srand ( time(NULL) );
+	/* Np / ng * 20 is the maximum number of particles.							*/
+	randomNumbers.resize( Np / ng * 20, 0.0);
+	for ( unsigned int ri = 0; ri < Np / ng * 20; ri++)
+	  randomNumbers[ri] = ( (double) rand() ) / RAND_MAX;
+      }
+
+    /* Declare the generator function depending on the input.						*/
+    auto generate = [&] (unsigned int n, unsigned int m) {
+      if 	( bunchInit.generator_ == "random" )
+	return  ( randomNumbers[ n * 2 * Np/ng + m ] );
+      else
+	return 	( halton(n,m) );
+    };
 
     /* Declare the function for injecting the shot noise.						*/
     auto insertCharge = [&] (Charge q) {
@@ -140,11 +161,11 @@ namespace MITHRA
 	      bmi = int( ( charge.rnp[2] - zmin ) / bunchInit.lambda_ );
 
 	      /* Obtain the phase and amplitude of the modulation.					*/
-	      bFi = bF * sqrt( - 2.0 * log( halton( 8 , bmi ) ) );
+	      bFi = bF * sqrt( - 2.0 * log( generate( 8 , bmi ) ) );
 
 	      q.rnp[2]  = charge.rnp[2] - bunchInit.lambda_ / 4 * ii;
 
-	      q.rnp[2] -= bunchInit.lambda_ / PI * bFi * sin( 2.0 * PI / bunchInit.lambda_ * q.rnp[2] + 2.0 * PI * halton( 9 , bmi ) );
+	      q.rnp[2] -= bunchInit.lambda_ / PI * bFi * sin( 2.0 * PI / bunchInit.lambda_ * q.rnp[2] + 2.0 * PI * generate( 9 , bmi ) );
 	    }
 	  else if ( bunchInit.lambda_ != 0.0)
 	    {
@@ -165,9 +186,9 @@ namespace MITHRA
 	for (i = 0; i < Np / ng; i++)
 	  {
 	    if ( bunchInit.distribution_ == "uniform" )
-	      zmin = std::min(   ( 2.0 * halton(2, i + Np0) - 1.0 ) * bunchInit.sigmaPosition_[2] , zmin );
+	      zmin = std::min(   ( 2.0 * generate(2, i + Np0) - 1.0 ) * bunchInit.sigmaPosition_[2] , zmin );
 	    else if ( bunchInit.distribution_ == "gaussian" )
-	      zmin = std::min(   bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(2, i + Np0) ) ) * sin( 2.0 * PI * halton(3, i + Np0) ) , zmin );
+	      zmin = std::min(   bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( generate(2, i + Np0) ) ) * sin( 2.0 * PI * generate(3, i + Np0) ) , zmin );
 	    else
 	      {
 		printmessage(std::string(__FILE__), __LINE__, std::string("The longitudinal type is not correctly given to the code !!!") );
@@ -178,7 +199,7 @@ namespace MITHRA
 	if ( bunchInit.distribution_ == "uniform" )
 	  for ( ; i < unsigned( Np / ng * ( 1.0 + 2.0 * bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i++)
 	    {
-	      t0  = 2.0 * bunchInit.lambda_ * sqrt( - 2.0 * log( halton( 2, i + Np0 ) ) ) * sin( 2.0 * PI * halton( 3, i + Np0 ) );
+	      t0  = 2.0 * bunchInit.lambda_ * sqrt( - 2.0 * log( generate( 2, i + Np0 ) ) ) * sin( 2.0 * PI * generate( 3, i + Np0 ) );
 	      t0 += ( t0 < 0.0 ) ? ( - bunchInit.sigmaPosition_[2] ) : ( bunchInit.sigmaPosition_[2] );
 
 	      zmin = std::min(   t0 , zmin );
@@ -199,14 +220,14 @@ namespace MITHRA
     for (i = rank; i < Np / ng; i += size)
       {
 	/* Determine the transverse coordinate.								*/
-	r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * cos( 2.0 * PI * halton(1, i + Np0) );
-	r[1] = bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * sin( 2.0 * PI * halton(1, i + Np0) );
+	r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( generate(0, i + Np0) ) ) * cos( 2.0 * PI * generate(1, i + Np0) );
+	r[1] = bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( generate(0, i + Np0) ) ) * sin( 2.0 * PI * generate(1, i + Np0) );
 
 	/* Determine the longitudinal coordinate.							*/
 	if ( bunchInit.distribution_ == "uniform" )
-	  r[2] = ( 2.0 * halton(2, i + Np0) - 1.0 ) * bunchInit.sigmaPosition_[2];
+	  r[2] = ( 2.0 * generate(2, i + Np0) - 1.0 ) * bunchInit.sigmaPosition_[2];
 	else if ( bunchInit.distribution_ == "gaussian" )
-	  r[2] = bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( halton(2, i + Np0) ) ) * sin( 2.0 * PI * halton(3, i + Np0) );
+	  r[2] = bunchInit.sigmaPosition_[2] * sqrt( - 2.0 * log( generate(2, i + Np0) ) ) * sin( 2.0 * PI * generate(3, i + Np0) );
 	else
 	  {
 	    printmessage(std::string(__FILE__), __LINE__, std::string("The longitudinal type is not correctly given to the code !!!") );
@@ -214,9 +235,9 @@ namespace MITHRA
 	  }
 
 	/* Determine the transverse momentum.								*/
-	t[0] = bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * cos( 2.0 * PI * halton(5, i + Np0) );
-	t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * sin( 2.0 * PI * halton(5, i + Np0) );
-	t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
+	t[0] = bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( generate(4, i + Np0) ) ) * cos( 2.0 * PI * generate(5, i + Np0) );
+	t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( generate(4, i + Np0) ) ) * sin( 2.0 * PI * generate(5, i + Np0) );
+	t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( generate(6, i + Np0) ) ) * cos( 2.0 * PI * generate(7, i + Np0) );
 
 	if ( fabs(r[0]) < bunchInit.tranTrun_ && fabs(r[1]) < bunchInit.tranTrun_ && fabs(r[2]) < bunchInit.longTrun_)
 	  {
@@ -237,17 +258,17 @@ namespace MITHRA
     if ( bunchInit.distribution_ == "uniform" )
       for ( ; i < unsigned( Np / ng * ( 1.0 + 2.0 * bunchInit.lambda_ * sqrt( 2.0 * PI ) / ( 2.0 * bunchInit.sigmaPosition_[2] ) ) ); i += size)
 	{
-	  r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * cos( 2.0 * PI * halton(1, i + Np0) );
-	  r[1] = bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( halton(0, i + Np0) ) ) * sin( 2.0 * PI * halton(1, i + Np0) );
+	  r[0] = bunchInit.sigmaPosition_[0] * sqrt( - 2.0 * log( generate(0, i + Np0) ) ) * cos( 2.0 * PI * generate(1, i + Np0) );
+	  r[1] = bunchInit.sigmaPosition_[1] * sqrt( - 2.0 * log( generate(0, i + Np0) ) ) * sin( 2.0 * PI * generate(1, i + Np0) );
 
 	  /* Determine the longitudinal coordinate.							*/
-	  r[2] = 2.0 * bunchInit.lambda_ * sqrt( - 2.0 * log( halton(2, i + Np0) ) ) * sin( 2.0 * PI * halton(3, i + Np0) );
+	  r[2] = 2.0 * bunchInit.lambda_ * sqrt( - 2.0 * log( generate(2, i + Np0) ) ) * sin( 2.0 * PI * generate(3, i + Np0) );
 	  r[2] += ( r[2] < 0.0 ) ? ( - bunchInit.sigmaPosition_[2] ) : ( bunchInit.sigmaPosition_[2] );
 
 	  /* Determine the transverse momentum.								*/
-	  t[0] = bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * cos( 2.0 * PI * halton(5, i + Np0) );
-	  t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( halton(4, i + Np0) ) ) * sin( 2.0 * PI * halton(5, i + Np0) );
-	  t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( halton(6, i + Np0) ) ) * cos( 2.0 * PI * halton(7, i + Np0) );
+	  t[0] = bunchInit.sigmaGammaBeta_[0] * sqrt( - 2.0 * log( generate(4, i + Np0) ) ) * cos( 2.0 * PI * generate(5, i + Np0) );
+	  t[1] = bunchInit.sigmaGammaBeta_[1] * sqrt( - 2.0 * log( generate(4, i + Np0) ) ) * sin( 2.0 * PI * generate(5, i + Np0) );
+	  t[2] = bunchInit.sigmaGammaBeta_[2] * sqrt( - 2.0 * log( generate(6, i + Np0) ) ) * cos( 2.0 * PI * generate(7, i + Np0) );
 
 	  if ( fabs(r[0]) < bunchInit.tranTrun_ && fabs(r[1]) < bunchInit.tranTrun_ && fabs(r[2]) < bunchInit.longTrun_)
 	    {

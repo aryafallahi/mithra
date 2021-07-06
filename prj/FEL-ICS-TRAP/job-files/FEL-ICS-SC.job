@@ -1,0 +1,144 @@
+#  Mithra input file
+#
+#  physics - model an inverse compton scattering interaction for 5 MeV electron and 10 um laser
+#
+#  ICS-TRAP paper: Fig. 2 and Fig. 7 (simulation results with space-charge)
+#
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS-SC.job
+#
+#  in the LSF system:
+#  bsub -n 128 -W 48:00 -J "FEL-ICS-SC" -o FEL-ICS-SC.out 'mpirun ../MITHRA ./job-files/FEL-ICS-SC.job'
+
+MESH
+{
+    length-scale		= MICROMETER
+    time-scale			= FEMTOSECOND
+    mesh-lengths                = (  70.0,  70.0, 11.5  )
+    mesh-resolution             = ( 0.250, 0.250, 0.002 )
+    mesh-center                 = (   0.0,   0.0, 0.0   )
+    total-time                  = 30000
+    bunch-time-step             = 0.3
+    mesh-truncation-order       = 2
+    space-charge                = true
+    solver			= NSFD
+    optimize-bunch-position     = true
+    initial-time-back-shift     = 0.0
+}
+
+BUNCH
+{
+    bunch-initialization
+    {
+        type                    = ellipsoid
+        distribution            = uniform
+        charge                  = 2000000
+        number-of-particles     = 2000000
+        gamma                   = 10.0
+        direction               = (   0.0,    0.0,     1.0   )
+        position                = (   0.0,    0.0,     0.0   )
+        sigma-position          = (   5.0,    5.0,     5.0   )
+        sigma-momentum          = (  0.01,   0.01,    0.0025 )
+        transverse-truncation   = 30.0
+        longitudinal-truncation = 5.5
+        shot-noise              = true
+    }
+
+    bunch-profile
+    {
+        sample                  = false
+        directory               = /cluster/scratch/afallahi/
+        base-name               = bunch-profile-offsc/bunch
+        rhythm                  = 100.0
+    }
+
+    bunch-visualization
+    {
+        sample                  = false
+        directory               = /cluster/scratch/afallahi/
+        base-name               = bunch-visualization-offsc/bunch
+        rhythm                  = 100.0
+    }
+
+    bunch-sampling
+    {
+        sample                  = false
+        directory               = /cluster/scratch/afallahi/
+        base-name               = bunch-sampling-offsc/bunch
+        rhythm                  = 100.0
+    }
+}
+
+FIELD
+{
+  field-sampling
+  {
+    sample                      = false
+    type                        = at-point
+    field                       = Ex
+    field                       = Ey
+    field                       = Ez
+    directory                   = ./
+    base-name                   = field-sampling/field-nocavity
+    rhythm                      = 1.0
+    position                    = (0.0, 0.0, 5.7)
+  }
+
+  field-visualization
+  {
+    sample                      = true
+    type                        = in-plane
+    field                       = Ex
+    field                       = Ey
+    field                       = Ez
+    plane                       = yz
+    position                    = (0.0, 0.0, 5.7)
+    directory                   = /cluster/scratch/afallahi/
+    base-name                   = field-visualization-nocavity/field-yz-antinode
+    rhythm                      = 100.0
+  }
+
+  field-visualization
+  {
+    sample                      = true
+    type                        = in-plane
+    field                       = Ex
+    field                       = Ey
+    field                       = Ez
+    plane                       = yz
+    position                    = (5.9, 0.0, 5.7)
+    directory                   = /cluster/scratch/afallahi/
+    base-name                   = field-visualization-nocavity/field-yz-node
+    rhythm                      = 100.0
+  }
+}
+
+UNDULATOR
+{
+    optical-undulator
+    {
+        beam-type               = plane-wave
+        position                = ( 0.0, 0.0, 0.0 )
+        direction               = ( 0.0, 0.0,-1.0 )
+        polarization            = ( 0.0, 1.0, 0.0 )
+        strength-parameter      = 1.0
+        signal-type             = flat-top
+        wavelength              = 10.0
+        pulse-length            = 18000.0
+        offset                  = 9000.0
+        rising-cycles           = 5
+        CEP                     = 0.0
+    }
+}
+
+FEL-OUTPUT
+{
+    power-visualization
+    {
+        sample                  = false
+        directory               = /cluster/scratch/afallahi/
+        base-name               = power-visualization-offsc/power
+        plane-position          = 5.7
+        normalized-frequency    = 1.00
+        rhythm                  = 100.0
+    }
+}

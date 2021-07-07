@@ -2246,7 +2246,6 @@ namespace MITHRA
 		     * whole time step constant.							*/
 		    *scrp_[jf].files[i] << iter->gb[0] << "\t";
 		    *scrp_[jf].files[i] << iter->gb[1] << "\t";
-		    *scrp_[jf].files[i] << iter->gb[2] << std::endl;
 		    *scrp_[jf].files[i] << gamma_ * (iter->gb[2] + beta_ * std::sqrt(1.0 + iter->gb.norm2())) << std::endl;
 		  }
 	      }

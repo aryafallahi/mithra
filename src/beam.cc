@@ -309,7 +309,7 @@ namespace MITHRA
     ubp.yv = cross( s.direction_, s.polarization_ );
     ubp.y  = ubp.rv * ubp.yv;
 
-    if ( (ubp.x/s.radius_[0],2) + pow(ubp.y/s.radius_[1],2) > 1.0 )
+    if ( pow(ubp.x/s.radius_[0],2) + pow(ubp.y/s.radius_[1],2) > 1.0 )
       {
 	ubp.eT = 0.0;
 	ubp.bT = 0.0;

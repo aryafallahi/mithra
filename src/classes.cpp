@@ -49,6 +49,9 @@ namespace MITHRA
   /* The constructor clears and initializes the internal data structure.				*/
   Bunch::Bunch ()
   {
+    /* Initialize the bunchInit vector.                      						*/
+    bunchInit_.clear();
+
     /* Initialize the parameters for the bunch to some first values.                      		*/
     timeStep_			= 0.0;
 
@@ -70,6 +73,10 @@ namespace MITHRA
     bunchProfileBasename_     	= "";
     bunchProfileTime_.clear();
     bunchProfileRhythm_		= 0.0;
+
+    /* Initialize the zu and beta parameters.								*/
+    zu_ 			= 0.0;
+    beta_			= 0.0;
   }
 
   /* Initialize a bunch with a manual type. This bunch produces one charge equal to the cloudCharge_. 	*/
@@ -465,7 +472,8 @@ namespace MITHRA
     s_  		= 0.0;
     f0_ 		= 1.0;
     cep_		= 0.0;
-    signalType_	= GAUSSIAN;
+    signalType_		= GAUSSIAN;
+    nR_			= 1;
   }
 
   /* Initializer with signal type, time offset, variance, frequency and carrier-envelope-phase.       	*/
@@ -550,8 +558,28 @@ namespace MITHRA
   {
     seedType_ 			= PLANEWAVE;
     c0_				= 0.0;
+    position_			= 0.0;
+    direction_			= 0.0;
+    polarization_		= 0.0;
     amplitude_			= 0.0;
+    a0_				= 0.0;
     radius_.resize(2,0.0);
+    order_.resize(2,0);
+
+    l_				= 0.0;
+
+    zR_.resize(2,0.0);
+
+    beta_ 			= 0.0;
+    gamma_			= 1.0;
+    dt_				= 0.0;
+
+    gamma 			= 1.0;
+    tsignal			= 0.0;
+    d = l = zRp = wrp = zRs = wrs = x = y = x0 = y0 = z = p = t = 0.0;
+    rv = yv = ax = az 		= 0.0;
+    rl 				= 0.0;
+    tl 				= 0.0;
 
     sampling_			= false;
     samplingType_		= ATPOINT;
@@ -560,6 +588,10 @@ namespace MITHRA
     samplingBasename_		= "";
     samplingRhythm_		= 0.0;
     samplingPosition_.clear();
+    samplingLineBegin_		= 0.0;
+    samplingLineEnd_		= 0.0;
+    samplingSurfaceBegin_	= 0.0;
+    samplingSurfaceEnd_		= 0.0;
     samplingRes_		= 0.0;
 
     vtk_.clear();
@@ -901,20 +933,27 @@ namespace MITHRA
 
   Undulator::Undulator ()
   {
-    k_		= 0.0;
-    lu_		= 0.0;
-    rb_		= 0.0;
-    length_	= 0.0;
-    dist_	= 0.0;
-    beta_	= 0.0;
-    gamma_	= 1.0;
-    dt_		= 0.0;
-    theta_	= 0.0;
-    type_	= STATIC;
-    seedType_ 	= PLANEWAVE;
-    c0_		= 0.0;
-    amplitude_	= 0.0;
+    k_			= 0.0;
+    lu_			= 0.0;
+    rb_			= 0.0;
+    length_		= 0;
+    dist_		= 0.0;
+    beta_		= 0.0;
+    gamma_		= 1.0;
+    dt_			= 0.0;
+    theta_		= 0.0;
+    type_		= STATIC;
+    seedType_ 		= PLANEWAVE;
+    c0_			= 0.0;
+    position_		= 0.0;
+    direction_		= 0.0;
+    polarization_	= 0.0;
+    amplitude_		= 0.0;
+    a0_			= 0.0;
     radius_.resize(2,0.0);
+    order_.resize(2,0);
+    l_			= 0.0;
+    zR_.resize(2,0.0);
   }
 
   /* Set the type of the undulator.                                                                   	*/
@@ -1065,7 +1104,20 @@ namespace MITHRA
   /*** ExtField class ***********************************************************************************/
 
   ExtField::ExtField ()
-  {}
+  {
+    type_ 		= EMWAVE;
+    seedType_		= PLANEWAVE;
+    c0_			= 0.0;
+    position_		= 0.0;
+    direction_		= 0.0;
+    polarization_	= 0.0;
+    amplitude_ 		= 0.0;
+    a0_			= 0.0;
+    radius_.resize(2,0.0);
+    order_.resize(2,0);
+    l_			= 0.0;
+    zR_.resize(2,0.0);
+  }
 
   /* Initialize the data of the undulator according to the input parameters.				*/
   void ExtField::initialize (std::string                type,

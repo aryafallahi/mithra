@@ -406,10 +406,10 @@ namespace MITHRA
 	    zMin = std::min(zMin, iter->rnp[2]);
 	    bz += iter->gb[2] / std::sqrt(1 + iter->gb.norm2());
 	  }
-	MPI_Allreduce(&zMin, &zMin, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
-	MPI_Allreduce(&bz, &bz, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	MPI_Allreduce(MPI_IN_PLACE, &zMin, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+	MPI_Allreduce(MPI_IN_PLACE, &bz, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 	unsigned int Nq = chargeVectorn_.size();
-	MPI_Allreduce(&Nq, &Nq, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+	MPI_Allreduce(MPI_IN_PLACE, &Nq, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 	bz /= Nq;
 
 	mesh_.totalTime_ = 1 / (c0_ * (bz + beta_)) * (zEnd - beta_ * c0_ * dt_ - zMin + bz / beta_* Lu);
@@ -2246,7 +2246,6 @@ namespace MITHRA
 		     * whole time step constant.							*/
 		    *scrp_[jf].files[i] << iter->gb[0] << "\t";
 		    *scrp_[jf].files[i] << iter->gb[1] << "\t";
-		    *scrp_[jf].files[i] << iter->gb[2] << std::endl;
 		    *scrp_[jf].files[i] << gamma_ * (iter->gb[2] + beta_ * std::sqrt(1.0 + iter->gb.norm2())) << std::endl;
 		  }
 	      }

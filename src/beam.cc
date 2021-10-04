@@ -283,8 +283,8 @@ namespace MITHRA
     /* Retrieve signal value at corrected time.                                               		*/
     ubp.tsignal  = s.signal_.self(ubp.tl,  ubp.p0);
     ubp.tsignalm = s.signal_.self(ubp.tlm, ubp.p0);
-    ubp.tsignale = ubp.tsignal + ubp.tsignalm;
-    ubp.tsignalb = ubp.tsignal - ubp.tsignalm;
+    ubp.tsignale = ubp.tsignal - ubp.tsignalm;
+    ubp.tsignalb = ubp.tsignal + ubp.tsignalm;
 
     /* Calculate the fields only if the signal value is larger than a limit.				*/
     if ( fabs(ubp.tsignale) < 1.0e-6 && fabs(ubp.tsignalb) < 1.0e-6 )
@@ -319,8 +319,8 @@ namespace MITHRA
     /* Retrieve signal value at corrected time.                                               		*/
     ubp.tsignal  = s.signal_.self(ubp.tl,  ubp.p0);
     ubp.tsignalm = s.signal_.self(ubp.tlm, ubp.p0);
-    ubp.tsignale = ubp.tsignal + ubp.tsignalm;
-    ubp.tsignalb = ubp.tsignal - ubp.tsignalm;
+    ubp.tsignale = ubp.tsignal - ubp.tsignalm;
+    ubp.tsignalb = ubp.tsignal + ubp.tsignalm;
 
     /* Calculate the fields only if the signal value is larger than a limit.				*/
     if ( fabs(ubp.tsignale) < 1.0e-6 && fabs(ubp.tsignalb) < 1.0e-6 )
@@ -363,8 +363,8 @@ namespace MITHRA
     /* Retrieve signal value at corrected time.                                               		*/
     ubp.tsignal  = s.signal_.self(ubp.tl,  ubp.p0);
     ubp.tsignalm = s.signal_.self(ubp.tlm, ubp.p0);
-    ubp.tsignale = ubp.tsignal + ubp.tsignalm;
-    ubp.tsignalb = ubp.tsignal - ubp.tsignalm;
+    ubp.tsignale = ubp.tsignal - ubp.tsignalm;
+    ubp.tsignalb = ubp.tsignal + ubp.tsignalm;
 
     if ( fabs(ubp.tsignale) < 1.0e-6 && fabs(ubp.tsignalb) < 1.0e-6 )
       {
@@ -388,8 +388,8 @@ namespace MITHRA
     ubp.tsignal    = s.signal_.self(ubp.tl,  ubp.p1);
     ubp.p1	   = ubp.p0 - PI/2.0;
     ubp.tsignalm   = s.signal_.self(ubp.tlm, ubp.p1);
-    ubp.ex.mv( ubp.t * ( ubp.tsignal + ubp.tsignalm ),					s.polarization_ );
-    ubp.by.mv( ubp.t / c0_ * ( ubp.tsignal - ubp.tsignalm ),				ubp.yv);
+    ubp.ex.mv( ubp.t * ( ubp.tsignal - ubp.tsignalm ),					s.polarization_ );
+    ubp.by.mv( ubp.t / c0_ * ( ubp.tsignal + ubp.tsignalm ),				ubp.yv);
 
     ubp.p1         = ubp.p0 + ubp.atanP;
     ubp.tsignal    = s.signal_.self(ubp.tl,  ubp.p1);
@@ -433,8 +433,8 @@ namespace MITHRA
     /* Retrieve signal value at corrected time.                                               		*/
     ubp.tsignal  = s.signal_.self(ubp.tl,  ubp.p0);
     ubp.tsignalm = s.signal_.self(ubp.tlm, ubp.p0);
-    ubp.tsignale = ubp.tsignal + ubp.tsignalm;
-    ubp.tsignalb = ubp.tsignal - ubp.tsignalm;
+    ubp.tsignale = ubp.tsignal - ubp.tsignalm;
+    ubp.tsignalb = ubp.tsignal + ubp.tsignalm;
 
     if ( fabs(ubp.tsignale) < 1.0e-6 && fabs(ubp.tsignalb) < 1.0e-6 )
       {
@@ -472,8 +472,8 @@ namespace MITHRA
 	  ubp.p1	 = ubp.p0 - PI/2.0;
 	  ubp.tsignalm   = s.signal_.self(ubp.tlm, ubp.p1);
 
-	  ubp.ex.pmv( ubp.t * ( ubp.tsignal + ubp.tsignalm ),					s.polarization_ 	);
-	  ubp.by.pmv( ubp.t * ( ubp.tsignal - ubp.tsignalm ) / c0_,				ubp.yv 			);
+	  ubp.ex.pmv( ubp.t * ( ubp.tsignal - ubp.tsignalm ),					s.polarization_ 	);
+	  ubp.by.pmv( ubp.t * ( ubp.tsignal + ubp.tsignalm ) / c0_,				ubp.yv 			);
 
 	  ubp.p1         = ubp.p0 + ubp.atanP;
 	  ubp.tsignal    = s.signal_.self(ubp.tl,  ubp.p1);

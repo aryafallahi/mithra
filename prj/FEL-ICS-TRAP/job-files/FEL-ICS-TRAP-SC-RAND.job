@@ -2,20 +2,20 @@
 #
 #  physics - model an inverse compton scattering interaction for 5 MeV trapped electrons and 10 um laser
 #
-#  ICS-TRAP paper: Fig. 4-7  (simulation results with space-charge)
+#  ICS-TRAP paper: Fig. 9 (simulation results with space-charge and cavity fields with random initialization of bunch)
 #
-#  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS-TRAP-SC.job
+#  mpirun -np 4 ../MITHRA ./job-files/FEL-ICS-TRAP-SC-RAND.job
 #
 #  in the LSF system:
-#  bsub -n 128 -W 48:00 -J "FEL-ICS-TRAP-SC" -o FEL-ICS-TRAP-SC.out 'mpirun ../MITHRA ./job-files/FEL-ICS-TRAP-SC.job'
-#  bsub -n 64  -W 48:00 -J "FEL-ICS-TRAP-SC" -o FEL-ICS-TRAP-SC.out -R "rusage[mem=2048]" 'mpirun ../MITHRA ./job-files/FEL-ICS-TRAP-SC.job'
+#  bsub -n 128 -W 48:00 -J "FEL-ICS-TRAP-SC-RAND" -o FEL-ICS-TRAP-SC-RAND.out 'mpirun ../MITHRA ./job-files/FEL-ICS-TRAP-SC-RAND.job'
+#  bsub -n 64  -W 48:00 -J "FEL-ICS-TRAP-SC-RAND" -o FEL-ICS-TRAP-SC-RAND.out -R "rusage[mem=2048]" 'mpirun ../MITHRA ./job-files/FEL-ICS-TRAP-SC-RAND.job'
 
 MESH
 {
     length-scale		= MICROMETER
     time-scale			= FEMTOSECOND
     mesh-lengths                = (  70.0,  70.0, 11.5  )
-    mesh-resolution             = ( 0.250, 0.250, 0.002 )
+    mesh-resolution             = (  0.25,  0.25, 0.002 )
     mesh-center                 = (   0.0,   0.0, 0.0   )
     total-time			= 30000
     bunch-time-step             = 0.3
@@ -41,76 +41,17 @@ BUNCH
         sigma-momentum          = (  0.01,   0.01,     0.0025 )
         transverse-truncation   = 30.0
         longitudinal-truncation = 5.5
-        shot-noise              = true
+        shot-noise              = false
+        generator		= random
     }
 
     bunch-profile
     {
-        sample                  = false
+        sample                  = true
         directory               = /cluster/scratch/afallahi/
-        base-name               = bunch-profile-onsc/bunch
+        base-name               = bunch-profile-onsc-random/bunch
         rhythm                  = 100.0
     }
-
-    bunch-visualization
-    {
-        sample                  = false
-        directory               = /cluster/scratch/afallahi/
-        base-name               = bunch-visualization-onsc/bunch
-        rhythm                  = 100.0
-    }
- 
-    bunch-sampling
-    {
-        sample                  = false
-        directory               = /cluster/scratch/afallahi/
-        base-name               = bunch-sampling-onsc/bunch
-        rhythm                  = 100.0
-    }
-}
-
-FIELD
-{
-  field-sampling
-  {
-    sample			= true
-    type			= at-point
-    field			= Ex
-    field      			= Ey
-    field      			= Ez
-    directory			= ./
-    base-name			= field-sampling/field
-    rhythm			= 1.0
-    position			= (0.0, 0.0, 5.7)
-  }
-
-  field-visualization
-  {
-    sample                      = false
-    type                        = in-plane
-    field                       = Ex
-    field                       = Ey
-    field                       = Ez
-    plane                       = yz
-    position                    = (0.0, 0.0, 5.7)
-    directory                   = /cluster/scratch/afallahi/
-    base-name                   = field-visualization/field-yz-antinode
-    rhythm                      = 100.0
-  }
-
-  field-visualization
-  {
-    sample                      = false
-    type                        = in-plane
-    field                       = Ex
-    field                       = Ey
-    field                       = Ez
-    plane                       = yz
-    position                    = (5.9, 0.0, 5.7)
-    directory                   = /cluster/scratch/afallahi/
-    base-name                   = field-visualization/field-yz-node
-    rhythm                      = 100.0
-  }
 }
 
 EXTERNAL-FIELD
@@ -168,13 +109,13 @@ UNDULATOR
 
 FEL-OUTPUT
 {
-    power-visualization
+    radiation-power
     {
-        sample                  = false
-        directory               = /cluster/scratch/afallahi/
-        base-name               = power-visualization-onsc/power
+        sample			= true
+        type			= at-point
+        directory		= ./
+        base-name               = power-sampling/power-random
         plane-position          = 5.7
-        normalized-frequency    = 1.00
-        rhythm                  = 100.0
+        normalized-frequency    = 1.0
     }
 }

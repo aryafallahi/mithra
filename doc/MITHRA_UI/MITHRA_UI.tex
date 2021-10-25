@@ -172,6 +172,8 @@ In what follows, the parameters in each group are introduced:
 %
 \item {\tt \small \em distribution} determines if the initialized particle distribution should have a uniform or Gaussian current profile. In MITHRA, the transverse distributions are always Gaussian, unless the bunch is given manually. This parameter merely affects the distribution along the traveling path, i.e. $z$.
 %
+\item {\tt \small \em file-name} returns the name of the file where the bunch data is written for a bunch of type {\tt \small \em file}. If the file does not reside in the current directory file-name should contain the file address.
+%
 \item {\tt \small \em number-of-particles} is the total number of particles (or macro-particles) considered in the bunch. The value should be a multiple of 4. Otherwise, the solver automatically changes the given value to the closest multiple of 4.
 %
 \item {\tt \small \em charge} is the total charge of the bunch in one electron charge unit. In other words, it stands for the total number of electrons in the bunch.
@@ -252,6 +254,7 @@ BUNCH
 	\textcolor{red}{\{}
 		type  					 = < manual | ellipsoid | 3D-crystal | file >
 		distribution  			 = < uniform | gaussian >
+		file-name				 = < string >
 		charge  				 = < real >
 		number-of-particles		 = < int >
 		gamma  					 = < real >

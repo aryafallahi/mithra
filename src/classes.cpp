@@ -363,8 +363,9 @@ namespace MITHRA
   {
 
     /* Declare the required parameters for the initialization of charge vectors.                	*/
-    Charge                    charge;
-    int saveRank = 0;
+    Charge                    	charge;
+    int 			saveRank = 0;
+    bool 			flag = false;
 
     /* Clear the charge vector for adding the charges.							*/
     chargeVector.clear();
@@ -392,10 +393,15 @@ namespace MITHRA
 	  chargeVector.push_back(charge);
 	saveRank = ( saveRank == size - 1 ) ? 0 : saveRank + 1;
 
-	if ( fabs(charge.rnp[0]) > bunchInit.tranTrun_ || fabs(charge.rnp[1]) > bunchInit.tranTrun_ )
-	  printmessage(std::string(__FILE__), __LINE__, std::string("Warning: The particle coordinate is out of the truncation bunch. "
-	      "The results may be inaccurate !!!") );
+	if ( bunchInit.tranTrun_ > 0.0 )
+	  if ( fabs(charge.rnp[0]) > bunchInit.tranTrun_ || fabs(charge.rnp[1]) > bunchInit.tranTrun_ )
+	    flag = true;
       }
+
+    /* Write the warning about truncation parameters.							*/
+    if ( flag )
+      printmessage(std::string(__FILE__), __LINE__, std::string("Warning: Some particle coordinates are out of the transverse truncation length for the bunch. "
+    	      "The results may be inaccurate !!!") );
 
     /* Calculate the total amount of installed particles.						*/
     unsigned int NqL = chargeVector.size(), NqG = 0;

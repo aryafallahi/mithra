@@ -165,7 +165,10 @@ namespace MITHRA
       }
 
     /* Set the gamma of the moving frame equal to the average of the maximum and minimum gamma.		*/
-    gamma_ = ( undulator_.size() == 0 ) ? gamma : ( gmin + gmax ) / 2.0;
+    if ( mesh_.gamma_ == -1.0 )
+      gamma_ = ( undulator_.size() == 0 ) ? gamma : ( gmin + gmax ) / 2.0;
+    else
+      gamma_ = mesh_.gamma_;
 
     /****************************************************************************************************/
 

@@ -126,6 +126,7 @@ namespace MITHRA
 		exit(1);
 	      }
 	  }
+	else if (parameterName(*iter) == "lorentz-factor")		mesh_.gamma_      	= doubleValue(*iter);
 	else { std::cout << parameterName(*iter) << " is not defined in solver group." << std::endl; exit(1); }
 	++iter;
       }

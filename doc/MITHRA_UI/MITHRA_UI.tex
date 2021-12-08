@@ -88,6 +88,9 @@ The mesh and update parameters of the solver are defined through the following t
 	\item {\tt \em \small optimize-bunch-position} is a boolean flag that tells the solver to automatically shift the bunch so that it resides in the middle of the computational domain after passing through the undulator entrance. This parameter is by default set to false.
 	%
 	\item {\tt \em \small initial-time-back-shift} is a real positive value that tells the solver to start the simulation from a time before the standard initial condition of solver. We comment that the solver automatically places the bunch head in a given distance from the undulator entrance.
+	%
+	%
+	\item {\tt \em \small lorentz-factor} is a the Lorentz factor of the moving mesh. If this value if not given the solver automatically computes an optimal value. It is generally recommended to leave this option so that the solver does the autoomatic computation. However, in some rare cases setting manually the Lorentz factor of the mesh is needed.
 \end{itemize}
 
 The format of the {\tt \em \small MESH} group is:
@@ -110,6 +113,7 @@ MESH
 	solver						= < NSFD | FD >
 	optimize-bunch-position		= < true | false >
 	initial-time-back-shift 	= < real >
+	lorentz-factor		 		= < real >
 \}
 \end{Verbatim}
 %%

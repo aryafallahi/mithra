@@ -52,6 +52,9 @@ namespace MITHRA
     /* Solver type that will be used to update the field values.					*/
     SolverType			solver_;
 
+    /* Lorentz factor of the moving mesh given by the user.						*/
+    Double			gamma_;
+
     /* Show the stored values for the mesh.                                                      	*/
     void show ();
 

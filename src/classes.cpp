@@ -481,11 +481,12 @@ namespace MITHRA
     cep_		= 0.0;
     signalType_		= GAUSSIAN;
     nR_			= 1;
-    sigmaInvG_		= 0.0;
+    sigmaInvG_[0]	= 0.0;
+    sigmaInvG_[1]	= 0.0;
   }
 
   /* Initializer with signal type, time offset, variance, frequency and carrier-envelope-phase.       	*/
-  void Signal::initialize (std::string type, Double l0, Double s, Double l, Double cep, unsigned int nR, Double sigmaInvG)
+  void Signal::initialize (std::string type, Double l0, Double s, Double l, Double cep, unsigned int nR, std::vector<Double> sigmaInvG)
   {
     /* Initialize the signal type.                                                                    	*/
     if      ( type.compare("neumann") == 0 )            signalType_ = NEUMANN;
@@ -521,17 +522,10 @@ namespace MITHRA
     /* Check if sigma value of the inverse-gaussian signal is unequal zero.				*/
     if ( signalType_ == INVGAUSSIAN )
       {
-	if ( sigmaInvG_ == 0.0 )
+	if ( sigmaInvG_[0] * sigmaInvG_[1] == 0.0 )
 	  {
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" sigma of the inverse-gaussian signal is set to zero. "));
 	    printmessage(std::string(__FILE__), __LINE__, std::string(" This is not allowed because we divide through the sigma value. "));
-	    printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
-	    exit(1);
-	  }
-	else if ( sigmaInvG_ < nR_ / f0_ * sqrt( 1.3863 ) )
-	  {
-	    printmessage(std::string(__FILE__), __LINE__, std::string(" The parameters for inverse-gaussian signal leads to nonzero values at long times. "));
-	    printmessage(std::string(__FILE__), __LINE__, std::string(" This is not allowed because the signal should start from zero and end to zero. "));
 	    printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
 	    exit(1);
 	  }
@@ -568,13 +562,14 @@ namespace MITHRA
 	  {
 	    if      ( t - t0_ <= - s_ / 2.0 )
 	      return ( cos( 2 * PI * f0_ * ( t - t0_ ) + cep_ + phase ) *
-		       exp( 1.3863 * pow( ( t - t0_ ) / sigmaInvG_ , 2 ) ) *
+		       pow( ( 1.0 + pow( ( t - t0_ ) / sigmaInvG_[0] , 2 ) ) * ( 1.0 + pow( ( t - t0_ ) / sigmaInvG_[1] , 2 ) ) , 0.25 ) *
 		       exp( - pow( ( t - t0_ + s_/2.0 ) * f0_ / nR_, 2 ) ) );
 	    else if ( t - t0_ <= s_ / 2.0   )
-	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) * exp( 1.3863 * pow( ( t - t0_ ) / sigmaInvG_ , 2 ) ) );
+	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) *
+		       pow( ( 1.0 + pow( ( t - t0_ ) / sigmaInvG_[0] , 2 ) ) * ( 1.0 + pow( ( t - t0_ ) / sigmaInvG_[1] , 2 ) ) , 0.25 ) );
 	    else
 	      return ( cos( 2 * PI * f0_ * ( t - t0_ ) + cep_ + phase ) *
-		       exp( 1.3863 * pow( ( t - t0_ ) / sigmaInvG_ , 2 ) ) *
+		       pow( ( 1.0 + pow( ( t - t0_ ) / sigmaInvG_[0] , 2 ) ) * ( 1.0 + pow( ( t - t0_ ) / sigmaInvG_[1] , 2 ) ) , 0.25 ) *
 		       exp( - pow( ( t - t0_ - s_/2.0 ) * f0_ / nR_, 2 ) ) );
 	  }
       }

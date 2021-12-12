@@ -424,7 +424,7 @@ In what follows, the parameters in each group are introduced:
 	    \item {\tt \small \em inverse-gaussian:}
 	    %
 	    \begin{equation}
-	    	f(t) = \displaystyle \frac{A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) }{\sqrt[\leftroot{-3}\uproot{3}4]{ (1+t^2/\sigma_1^2) (1+t^2/\sigma_1^2) } } \left\{ \begin{array}{ll} e^{- (t - t_0-\tau/2)^2/(N/f)^2} & \|t-t_0\| \ \geq \tau/2 \\ 1.0 & \|t-t_0\| \ \leq \tau/2 \end{array} \right.
+	    	f(t) = \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) \sqrt[4]{ \left(1+\frac{t^2}{\sigma_1^2}\right) \left(1+\frac{t^2}{\sigma_2^2}\right)}  \left\{ \begin{array}{ll} e^{- (t - t_0-\tau/2)^2/(N/f)^2} & \|t-t_0\| \ \geq \tau/2 \\ 1.0 & \|t-t_0\| \ \leq \tau/2 \end{array} \right.
 	    	\label{inverseGaussian}
 	    \end{equation}
 	\end{enumerate}
@@ -892,7 +892,7 @@ The current version of MITHRA accepts the following set of external fields:
 		\item {\tt \small \em inverse-gaussian:}
 		%\textit{
 		\begin{equation}
-			f(t) = \displaystyle \frac{A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) }{\sqrt[\leftroot{-3}\uproot{3}4]{ (1+t^2/\sigma_1^2) (1+t^2/\sigma_1^2) } } \left\{ \begin{array}{ll} e^{- (t - t_0-\tau/2)^2/(N/f)^2} & \|t-t_0\| \ \geq \tau/2 \\ 1.0 & \|t-t_0\| \ \leq \tau/2 \end{array} \right.
+			f(t) = \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) \sqrt[4]{ \left(1+\frac{t^2}{\sigma_1^2}\right) \left(1+\frac{t^2}{\sigma_2^2}\right)  } \left\{ \begin{array}{ll} e^{- (t - t_0-\tau/2)^2/(N/f)^2} & \|t-t_0\| \ \geq \tau/2 \\ 1.0 & \|t-t_0\| \ \leq \tau/2 \end{array} \right.
 			\label{inverseGaussianE}
 		\end{equation}
 	\end{enumerate}

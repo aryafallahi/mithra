@@ -90,7 +90,7 @@ The mesh and update parameters of the solver are defined through the following t
 	\item {\tt \em \small initial-time-back-shift} is a real positive value that tells the solver to start the simulation from a time before the standard initial condition of solver. We comment that the solver automatically places the bunch head in a given distance from the undulator entrance.
 	%
 	%
-	\item {\tt \em \small lorentz-factor} is a the Lorentz factor of the moving mesh. If this value if not given the solver automatically computes an optimal value. It is generally recommended to leave this option so that the solver does the autoomatic computation. However, in some rare cases setting manually the Lorentz factor of the mesh is needed.
+	\item {\tt \em \small lorentz-factor} is a the Lorentz factor of the moving mesh. If this value is not given the solver automatically computes an optimal value. It is generally recommended to leave this option so that the solver does the automatic computation. However, in some rare cases setting manually the Lorentz factor of the mesh is needed.
 \end{itemize}
 
 The format of the {\tt \em \small MESH} group is:
@@ -390,18 +390,44 @@ In what follows, the parameters in each group are introduced:
 	%
 	\item {\tt \small \em order-perpendicular} is the order of the super Gaussian beam perpendicular to the field polarization.
 	%
-	\item {\tt \small \em signal-type} determines the time signature of the signal exciting the fields according to the particular type. The accepted signal types in MITHRA include modulated Neumann, modulated Gaussian, modulated secant hyperbolic and the sinusoidal pulse. The equation representing the time domain variation of each pulse is as follows:
+	\item {\tt \small \em signal-type} determines the time signature of the signal exciting the fields according to the particular type. The accepted signal types in MITHRA include modulated Neumann, modulated Gaussian, modulated secant hyperbolic, sinusoidal (flat-top), and the inverse-Gaussian pulse. The equations representing the time domain variation of each pulse are as follows:
 	%
-	\begin{equation}
-	\label{signalTypes}
-	\renewcommand{\arraystretch}{1.5}
-	\begin{array}{lrcl}
-	\mbox{modulated Neumann:}  \qquad & f(t,t_0,\phi_\mathrm{CEP}) & = & \displaystyle - A_0 4 \ln 2 \: \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) \frac{t - t_0}{\tau^2} e^{-2 \ln 2 \: (t - t_0)^2/\tau^2 } \\
-	\mbox{modulated Gaussian:} \qquad & f(t,t_0,\phi_\mathrm{CEP}) & = & \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) e^{-2 \ln 2 \: (t - t_0)^2/\tau^2 } \\
-	\mbox{modulated hyperbolic secant:} \qquad & f(t,t_0,\phi_\mathrm{CEP}) & = & \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) \frac{1}{\cosh ( (t - t_0)/\tau ) } \\
-	\mbox{sinusoidal pulse:}   \qquad & f(t,t_0,\phi_\mathrm{CEP}) & = & \displaystyle \left\{ \begin{array}{ll} A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) e^{-2 \ln 2 \: (t - t_0)^2/\tau^2 } & t \leq t_0 \\ A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) & t > t_0 \end{array} \right.
-	\end{array}
-	\end{equation}
+	\begin{enumerate}
+		\item {\tt \small \em neumann:}
+		%
+		\begin{equation}
+			f(t) = \displaystyle - A_0 4 \ln 2 \: \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) \frac{t - t_0}{\tau^2} e^{-2 \ln 2 \: (t - t_0)^2/\tau^2 }
+			\label{neumann}
+		\end{equation}
+		%
+		\item {\tt \small \em gaussian:}
+		%
+		\begin{equation}
+			f(t) = \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) e^{-2 \ln 2 \: (t - t_0)^2/\tau^2 }
+			\label{gaussian}
+		\end{equation}
+	    %
+		\item {\tt \small \em secant-hyperbolic:}
+		%
+		\begin{equation}
+			f(t) = \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) \frac{1}{\cosh ( (t - t_0)/\tau ) }
+			\label{secantHyperbolic}
+		\end{equation}
+		%
+		\item {\tt \small \em flat-top:}
+		%
+		\begin{equation}
+			f(t) = \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) \left\{ \begin{array}{ll} e^{- (t - t_0-\tau/2)^2/(N/f)^2} & \|t-t_0\| \ \geq \tau/2 \\ 1.0 & \|t-t_0\| \ \leq \tau/2 \end{array} \right.
+			\label{flattop}
+		\end{equation}
+	    %
+	    \item {\tt \small \em inverse-gaussian:}
+	    %
+	    \begin{equation}
+	    	f(t) = \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) e^{2 \ln 2 \: (t - t_0)^2/\sigma^2 } \left\{ \begin{array}{ll} e^{- (t - t_0-\tau/2)^2/(N/f)^2} & \|t-t_0\| \ \geq \tau/2 \\ 1.0 & \|t-t_0\| \ \leq \tau/2 \end{array} \right.
+	    	\label{inverseGaussian}
+	    \end{equation}
+	\end{enumerate}
 	%
 	\item {\tt \small \em strength-parameter} is the normalized amplitude $a_0 = e A_0 / m_ec $ of the beam.
 	%
@@ -411,9 +437,11 @@ In what follows, the parameters in each group are introduced:
 	%
 	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal.
 	%
-	\item {\tt \small \em rising-cycles} is the number of cycles that it takes for the flattop pulse to reach the flat time interval. Default value is two cycles.
+	\item {\tt \small \em rising-cycles} is the number of cycles that it takes for the flat-top and inverse-Gaussian pulses to reach to the signal value in the corresponding time interval, i.e. $N$ in (\ref{flattop}) and (\ref{inverseGaussian}). Default value is two cycles.
 	%
 	\item {\tt \small \em CEP} is the carrier envelope phase $\phi_{\mathrm{CEP}}$ of the modulated signal in degrees.
+	%
+	\item {\tt \small \em sigma-inverse-gaussian} is the value of parameters $\sigma$ for the inverse-Gaussian pulse in (\ref{inverseGaussian}).
 \end{itemize}
 %
 \item {\tt \small \em field-sampling:} This group defines the required parameters for saving the field value at specific points with time. There are different parameters required for this definition which include:
@@ -498,6 +526,7 @@ FIELD
 		wavelength  			 = < real >
 		rising-cycles			 = < int >
 		CEP  					 = < real >
+		sigma-inverse-gaussian   = < real >
 	\}
 
 	field-sampling
@@ -683,9 +712,11 @@ Note that the reference undulator for initializing bunches or setting the electr
 	%
 	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal. Default value is two cycles.
 	%
-	\item {\tt \small \em rising-cycles} is the number of cycles that it takes for the flattop pulse to reach the flat time interval.
+	\item {\tt \small \em rising-cycles} is the number of cycles that it takes for the flat-top and inverse-Gaussian pulses to reach to the signal value in the corresponding time interval, i.e. $N$ in (\ref{flattop}) and (\ref{inverseGaussian}). Default value is two cycles.
 	%
 	\item {\tt \small \em CEP} is the carrier envelope phase $\phi_{\mathrm{CEP}}$ of the modulated signal.
+	%
+	\item {\tt \small \em sigma-inverse-gaussian} is the value of parameters $\sigma$ for the inverse-Gaussian pulse in (\ref{inverseGaussian}).
 	%
 	\item {\tt \small \em distance-to-bunch-head} determines the distance between the reference position of the optical undulator and the bunch head at the initialization time. This distance is needed to avoid particles experiencing a sudden change in the undulator field. The value of this parameter is by default five time the undulator periods for optical undulators. In MITHRA, the radiation of the particles are calculated after they pass through this point. Therefore, this value has a different effect compared to the {\tt \small \em initial-time-back-shift} parameter that only shifts the particle in time.
 \end{itemize}
@@ -739,6 +770,7 @@ UNDULATOR
 		wavelength				  = < real >
 		rising-cylces			  = < int >
 		CEP						  = < real >
+		sigma-inverse-gaussian    = < real >
 		distance-to-bunch-head    = < real >
 	\textcolor{red}{\}}
 \}
@@ -826,28 +858,58 @@ The current version of MITHRA accepts the following set of external fields:
 	%
 	\item {\tt \small \em order-perpendicular} is the order of the super Gaussian beam perpendicular to the field polarization.
 	%
-	\item {\tt \small \em signal-type} determines the time signature of the signal exciting the fields according to the particular type. The accepted signal types in MITHRA include modulated Neumann, modulated Gaussian, modulated secant-hyperbolic and the sinusoidal pulse. The equation representing the time domain variation of each pulse is as follows:
+	\item {\tt \small \em signal-type} determines the time signature of the signal exciting the fields according to the particular type. The accepted signal types in MITHRA include modulated Neumann, modulated Gaussian, modulated secant hyperbolic, sinusoidal (flat-top), and the inverse-Gaussian pulse. The equations representing the time domain variation of each pulse are as follows:
 	%
-	\begin{equation}
-	\renewcommand{\arraystretch}{1.5}
-	\begin{array}{lrcl}
-	\mbox{modulated Neumann:}  \qquad & f(t) & = & \displaystyle - A_0 4 \ln 2 \: \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) \frac{t - t_0}{\tau^2} e^{-2 \ln 2 \: (t - t_0)^2/\tau^2 } \\
-	\mbox{modulated Gaussian:} \qquad & f(t) & = & \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) e^{-2 \ln 2 \: (t - t_0)^2/\tau^2 } \\
-	\mbox{modulated hyperbolic secant:} \qquad & f(t) & = & \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) \frac{1}{\cosh ( (t - t_0)/\tau ) } \\
-	\mbox{sinusoidal pulse:}   \qquad & f(t) & = & \displaystyle \left\{ \begin{array}{ll} A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) e^{-2 \ln 2 \: (t - t_0)^2/\tau^2 } & t \leq t_0 \\ A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) & t > t_0 \end{array} \right.
-	\end{array}
-	\end{equation}
+	\begin{enumerate}
+		\item {\tt \small \em neumann:}
+		%
+		\begin{equation}
+			f(t) = \displaystyle - A_0 4 \ln 2 \: \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) \frac{t - t_0}{\tau^2} e^{-2 \ln 2 \: (t - t_0)^2/\tau^2 }
+			\label{neumannE}
+		\end{equation}
+		%
+		\item {\tt \small \em gaussian:}
+		%
+		\begin{equation}
+			f(t) = \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) e^{-2 \ln 2 \: (t - t_0)^2/\tau^2 }
+			\label{gaussianE}
+		\end{equation}
+		%
+		\item {\tt \small \em secant-hyperbolic:}
+		%
+		\begin{equation}
+			f(t) = \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) \frac{1}{\cosh ( (t - t_0)/\tau ) }
+			\label{secantHyperbolicE}
+		\end{equation}
+		%
+		\item {\tt \small \em flat-top:}
+		%
+		\begin{equation}
+			f(t) = \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) \left\{ \begin{array}{ll} e^{- (t - t_0-\tau/2)^2/(N/f)^2} & \|t-t_0\| \ \geq \tau/2 \\ 1.0 & \|t-t_0\| \ \leq \tau/2 \end{array} \right.
+			\label{flattopE}
+		\end{equation}
+		%
+		\item {\tt \small \em inverse-gaussian:}
+		%
+		\begin{equation}
+			f(t) = \displaystyle A_0 \cos( 2 \pi f (t - t_0) + \phi_\mathrm{CEP} ) e^{2 \ln 2 \: (t - t_0)^2/\sigma^2 } \left\{ \begin{array}{ll} e^{- (t - t_0-\tau/2)^2/(N/f)^2} & \|t-t_0\| \ \geq \tau/2 \\ 1.0 & \|t-t_0\| \ \leq \tau/2 \end{array} \right.
+			\label{inverseGaussianE}
+		\end{equation}
+	\end{enumerate}
+	%
 	\item {\tt \small \em strength-parameter} is the normalized amplitude $a_0 = e A_0 / m_ec $ of the beam.
 	%
-	\item {\tt \small \em offset} is the distance offset of the signal $ct_0$.
+	\item {\tt \small \em offset} is the distance offset of the signal $ct_0$ with respect to the reference position.
 	%
 	\item {\tt \small \em pulse-length} is the pulse duration of the signal in length units $c\tau$. The pulse duration is defined as the interval in which the pulse intensity is larger than half the maximum intensity of the pulse, i.e. FWHM of the intensity.
 	%
 	\item {\tt \small \em wavelength} is the modulation wavelength $\lambda_0$ of the modulated signal.
 	%
-	\item {\tt \small \em rising-cycles} is the number of cycles that it takes for the flattop pulse to reach the flat time interval.
+	\item {\tt \small \em rising-cycles} is the number of cycles that it takes for the flat-top and inverse-Gaussian pulses to reach to the signal value in the corresponding time interval, i.e. $N$ in (\ref{flattopE}) and (\ref{inverseGaussianE}). Default value is two cycles.
 	%
-	\item {\tt \small \em CEP} is the carrier envelope phase $\phi_{\mathrm{CEP}}$ of the modulated signal.
+	\item {\tt \small \em CEP} is the carrier envelope phase $\phi_{\mathrm{CEP}}$ of the modulated signal in degrees.
+	%
+	\item {\tt \small \em sigma-inverse-gaussian} is the value of parameters $\sigma$ for the inverse-Gaussian pulse in (\ref{inverseGaussianE}).
 	%
 \end{itemize}
 \end{enumerate}
@@ -877,6 +939,7 @@ EXTERNAL-FIELD
 		wavelength				  = < real >
 		rising-cycles			  = < int >
 		CEP						  = < real >
+		sigma-inverse-gaussian    = < real >
 	\textcolor{red}{\}}
 \}
 \end{Verbatim}

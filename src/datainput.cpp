@@ -292,7 +292,7 @@ namespace MITHRA
 
 	    /* Initialize variables with values from class constructors.				*/
 	    Double                	amplitude = 0.0, offset = 0.0,
-					pulseLength = 0.0, wavelength = 0.0, cep = 0.0;
+					pulseLength = 0.0, wavelength = 0.0, cep = 0.0, sigmaInvG = 0.0;
 	    unsigned int		nR = 2;
 	    std::vector<Double>   	radius (2,0.0);
 	    std::vector<int>		order  (2,0);
@@ -314,14 +314,15 @@ namespace MITHRA
 		else if (parameterName(*iter) == "wavelength")                  wavelength      = doubleValue(*iter);
 		else if (parameterName(*iter) == "rising-cycles")              	nR      	= intValue(*iter);
 		else if (parameterName(*iter) == "CEP")                         cep             = doubleValue(*iter);
+		else if (parameterName(*iter) == "sigma-inverse-gaussian")      sigmaInvG       = doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in seed-initialization group." << std::endl; exit(1); }
 		++iter;
 	      }
 	    while (*iter != "}");
 
-	    if          (signalType.compare("neumann") == 0 || signalType.compare("gaussian") == 0 || signalType.compare("secant-hyperbolic") == 0 ||
-		signalType.compare("flat-top") == 0 )
-	      signal.initialize(signalType, offset, pulseLength, wavelength, cep, nR);
+	    if (signalType.compare("neumann") == 0 || signalType.compare("gaussian") == 0 || signalType.compare("secant-hyperbolic") == 0 ||
+		signalType.compare("flat-top") == 0 || signalType.compare("inverse-gaussian") == 0 )
+	      signal.initialize(signalType, offset, pulseLength, wavelength, cep, nR, sigmaInvG);
 	    else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
 
 	    seed_.initialize(type, position, direction, polarization, amplitude, radius, order, signal);
@@ -337,11 +338,11 @@ namespace MITHRA
 	    do
 	      {
 		if      (parameterName(*iter) == "sample")         	seed_.sampling_			= boolValue(*iter);
-		else if (parameterName(*iter) == "type")              seed_.samplingType_ 		= seed_.samplingType(stringValue(*iter));
-		else if (parameterName(*iter) == "field")             seed_.samplingField_.push_back(seed_.fieldType(stringValue(*iter)));
-		else if (parameterName(*iter) == "directory")         seed_.samplingDirectory_       	= stringValue(*iter);
-		else if (parameterName(*iter) == "base-name")         seed_.samplingBasename_		= stringValue(*iter);
-		else if (parameterName(*iter) == "rhythm")            seed_.samplingRhythm_          	= doubleValue(*iter);
+		else if (parameterName(*iter) == "type")              	seed_.samplingType_ 		= seed_.samplingType(stringValue(*iter));
+		else if (parameterName(*iter) == "field")             	seed_.samplingField_.push_back(seed_.fieldType(stringValue(*iter)));
+		else if (parameterName(*iter) == "directory")         	seed_.samplingDirectory_       	= stringValue(*iter);
+		else if (parameterName(*iter) == "base-name")         	seed_.samplingBasename_		= stringValue(*iter);
+		else if (parameterName(*iter) == "rhythm")            	seed_.samplingRhythm_          	= doubleValue(*iter);
 		else if (parameterName(*iter) == "position")
 		  {
 		    std::vector<Double> position = vectorDoubleValue(*iter);
@@ -358,7 +359,7 @@ namespace MITHRA
 		    std::vector<Double> position = vectorDoubleValue(*iter);
 		    seed_.samplingLineEnd_ =  position;
 		  }
-		else if (parameterName(*iter) == "number-of-points")   seed_.samplingRes_ = intValue(*iter);
+		else if (parameterName(*iter) == "number-of-points")  	seed_.samplingRes_ = intValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in seed-sampling group." << std::endl; exit(1); }
 		++iter;
 	      }
@@ -379,12 +380,12 @@ namespace MITHRA
 	    do
 	      {
 		if      (parameterName(*iter) == "sample")         	seed_.vtk_[i].sample_		= boolValue(*iter);
-		else if (parameterName(*iter) == "directory")         seed_.vtk_[i].directory_	= stringValue(*iter);
+		else if (parameterName(*iter) == "directory")         	seed_.vtk_[i].directory_	= stringValue(*iter);
 		else if (parameterName(*iter) == "type")         	seed_.vtk_[i].type_		= seed_.vtkType(stringValue(*iter));
 		else if (parameterName(*iter) == "plane")         	seed_.vtk_[i].plane_ 		= seed_.planeType(stringValue(*iter));
-		else if (parameterName(*iter) == "base-name")         seed_.vtk_[i].basename_		= stringValue(*iter);
-		else if (parameterName(*iter) == "field")             seed_.vtk_[i].field_.push_back(seed_.fieldType(stringValue(*iter)));
-		else if (parameterName(*iter) == "rhythm")            seed_.vtk_[i].rhythm_   	= doubleValue(*iter);
+		else if (parameterName(*iter) == "base-name")         	seed_.vtk_[i].basename_		= stringValue(*iter);
+		else if (parameterName(*iter) == "field")             	seed_.vtk_[i].field_.push_back(seed_.fieldType(stringValue(*iter)));
+		else if (parameterName(*iter) == "rhythm")            	seed_.vtk_[i].rhythm_   	= doubleValue(*iter);
 		else if (parameterName(*iter) == "position")
 		  {
 		    std::vector<Double> position = vectorDoubleValue(*iter);
@@ -406,11 +407,11 @@ namespace MITHRA
 	    do
 	      {
 		if      (parameterName(*iter) == "sample")         	seed_.profile_		= boolValue(*iter);
-		else if (parameterName(*iter) == "directory")         seed_.profileDirectory_	= stringValue(*iter);
-		else if (parameterName(*iter) == "base-name")         seed_.profileBasename_	= stringValue(*iter);
+		else if (parameterName(*iter) == "directory")         	seed_.profileDirectory_	= stringValue(*iter);
+		else if (parameterName(*iter) == "base-name")         	seed_.profileBasename_	= stringValue(*iter);
 		else if (parameterName(*iter) == "time")            	seed_.profileTime_.push_back(doubleValue(*iter));
-		else if (parameterName(*iter) == "field")             seed_.profileField_.push_back(seed_.fieldType(stringValue(*iter)));
-		else if (parameterName(*iter) == "rhythm")            seed_.profileRhythm_    = doubleValue(*iter);
+		else if (parameterName(*iter) == "field")             	seed_.profileField_.push_back(seed_.fieldType(stringValue(*iter)));
+		else if (parameterName(*iter) == "rhythm")            	seed_.profileRhythm_    = doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in seed-profile group." << std::endl; exit(1); }
 		++iter;
 	      }
@@ -507,13 +508,13 @@ namespace MITHRA
 	    if (*iter != "{") { std::cout << "The optical undulator directory is empty" << std::endl; exit(1); }
 	    else ++iter;
 
-	    Signal          signal;
+	    Signal          	signal;
 	    Undulator 		undulator; undulator.type_ = OPTICAL;
 	    std::string		type, signalType;
 
 	    /* Initialize variables with default variables from the constructor.			*/
 	    std::vector<Double>		position (3,0.0), direction (3,0.0), polarization (3,0.0);
-	    Double              	a0, offset, pulseLength, wavelength, cep;
+	    Double              	a0, offset, pulseLength, wavelength, cep, sigmaInvG = 0.0;
 	    unsigned int		nR = 2;
 	    std::vector<Double> 	radius (2,0.0);
 	    std::vector<int>          	order  (2,0);
@@ -536,6 +537,7 @@ namespace MITHRA
 		else if (parameterName(*iter) == "wavelength")			wavelength              = doubleValue(*iter);
 		else if (parameterName(*iter) == "rising-cycles")		nR              	= intValue(*iter);
 		else if (parameterName(*iter) == "CEP")				cep                     = doubleValue(*iter);
+		else if (parameterName(*iter) == "sigma-inverse-gaussian")      sigmaInvG      		= doubleValue(*iter);
 		else if (parameterName(*iter) == "distance-to-bunch-head")	undulator.dist_		= doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the optical-undulator group." << std::endl; exit(1); }
 		++iter;
@@ -543,8 +545,8 @@ namespace MITHRA
 	    while (*iter != "}");
 
 	    if (signalType.compare("neumann") == 0 || signalType.compare("gaussian") == 0 || signalType.compare("secant-hyperbolic") == 0 ||
-		signalType.compare("flat-top") == 0 )
-	      signal.initialize(signalType, offset, pulseLength, wavelength, cep, nR);
+		signalType.compare("flat-top") == 0 || signalType.compare("inverse-gaussian") == 0 )
+	      signal.initialize(signalType, offset, pulseLength, wavelength, cep, nR, sigmaInvG);
 	    else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
 
 	    undulator.initialize(type, position, direction, polarization, a0, radius, wavelength, order, signal);
@@ -580,7 +582,12 @@ namespace MITHRA
 	    Signal                    signal;
 	    std::string               type, signalType;
 	    std::vector<Double>       position (3,0.0), direction (3,0.0), polarization (3,0.0);
-	    Double                    a0 = extField.a0_, offset = signal.t0_, pulseLength = signal.s_, wavelength = 1 / signal.f0_, cep = signal.cep_;
+	    Double                    a0 = extField.a0_,
+				      offset = signal.t0_,
+				      pulseLength = signal.s_,
+				      wavelength = 1 / signal.f0_,
+				      cep = signal.cep_,
+				      sigmaInvG = signal.sigmaInvG_;
 	    unsigned int	      nR = 2;
 	    std::vector<Double>       radius (2,0.0);
 	    std::vector<int>          order  (2,0);
@@ -594,22 +601,23 @@ namespace MITHRA
 		else if (parameterName(*iter) == "strength-parameter")              	a0               	= doubleValue(*iter);
 		else if (parameterName(*iter) == "radius-parallel")          	    	radius[0]               = doubleValue(*iter);
 		else if (parameterName(*iter) == "radius-perpendicular")     		radius[1]               = doubleValue(*iter);
-		else if (parameterName(*iter) == "order-parallel")          	    	order[0]               = doubleValue(*iter);
-		else if (parameterName(*iter) == "order-perpendicular")     		order[1]               = doubleValue(*iter);
+		else if (parameterName(*iter) == "order-parallel")          	    	order[0]                = doubleValue(*iter);
+		else if (parameterName(*iter) == "order-perpendicular")     		order[1]                = doubleValue(*iter);
 		else if (parameterName(*iter) == "signal-type")                       	signalType              = stringValue(*iter);
 		else if (parameterName(*iter) == "offset")                            	offset                  = doubleValue(*iter);
 		else if (parameterName(*iter) == "pulse-length")			pulseLength		= doubleValue(*iter);
 		else if (parameterName(*iter) == "wavelength")                        	wavelength              = doubleValue(*iter);
 		else if (parameterName(*iter) == "rising-cycles")			nR              	= intValue(*iter);
 		else if (parameterName(*iter) == "CEP")                               	cep                     = doubleValue(*iter);
+		else if (parameterName(*iter) == "sigma-inverse-gaussian")      	sigmaInvG      		= doubleValue(*iter);
 		else { std::cout << parameterName(*iter) << " is not defined in the electromagnetic external field group." << std::endl; exit(1); }
 		++iter;
 	      }
 	    while (*iter != "}");
 
 	    if (signalType.compare("neumann") == 0 || signalType.compare("gaussian") == 0 || signalType.compare("secant-hyperbolic") == 0 ||
-		signalType.compare("flat-top") == 0 )
-	      signal.initialize(signalType, offset, pulseLength, wavelength, cep, nR);
+		signalType.compare("flat-top") == 0 || signalType.compare("inverse-gaussian") == 0 )
+	      signal.initialize(signalType, offset, pulseLength, wavelength, cep, nR, sigmaInvG);
 	    else { std::cout << signalType << " is an unknown signal type." << std::endl; exit(1); }
 
 	    extField.initialize(type, position, direction, polarization, a0, radius, wavelength, order, signal);

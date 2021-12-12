@@ -164,7 +164,7 @@ namespace MITHRA
     Signal ();
 
     /* Initializer with signal type, time offset, variance, frequency and carrier-envelope-phase.       */
-    void initialize (std::string type, Double l0, Double s, Double l, Double cep, unsigned int nR);
+    void initialize (std::string type, Double l0, Double s, Double l, Double cep, unsigned int nR, Double sigmaInvG);
 
   public:
 
@@ -186,6 +186,9 @@ namespace MITHRA
 
     /* Carrier envelope phase of the modulation.                                                        */
     Double     				cep_;
+
+    /* Sigma value in the inverse-gaussian time profile.						*/
+    Double				sigmaInvG_;
 
     /* Provide the signal at time t.                                                                    */
     Double self (Double& t, Double& phase);

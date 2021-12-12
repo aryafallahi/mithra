@@ -481,16 +481,18 @@ namespace MITHRA
     cep_		= 0.0;
     signalType_		= GAUSSIAN;
     nR_			= 1;
+    sigmaInvG_		= 0.0;
   }
 
   /* Initializer with signal type, time offset, variance, frequency and carrier-envelope-phase.       	*/
-  void Signal::initialize (std::string type, Double l0, Double s, Double l, Double cep, unsigned int nR)
+  void Signal::initialize (std::string type, Double l0, Double s, Double l, Double cep, unsigned int nR, Double sigmaInvG)
   {
     /* Initialize the signal type.                                                                    	*/
-    if      ( type.compare("neumann") == 0 )             signalType_ = NEUMANN;
-    else if ( type.compare("gaussian") == 0 )            signalType_ = GAUSSIAN;
-    else if ( type.compare("secant-hyperbolic") == 0 )   signalType_ = SECANT;
-    else if ( type.compare("flat-top") == 0 )   	 signalType_ = FLATTOP;
+    if      ( type.compare("neumann") == 0 )            signalType_ = NEUMANN;
+    else if ( type.compare("gaussian") == 0 )           signalType_ = GAUSSIAN;
+    else if ( type.compare("secant-hyperbolic") == 0 )  signalType_ = SECANT;
+    else if ( type.compare("flat-top") == 0 )   	signalType_ = FLATTOP;
+    else if ( type.compare("inverse-gaussian") == 0 )   signalType_ = INVGAUSSIAN;
     else { std::cout << type << " is an unknown signal type for the given set of parameters." << std::endl; exit(1); }
 
     /* Initialize the time delay, variance and the frequency of the carrier.                          	*/
@@ -504,6 +506,9 @@ namespace MITHRA
     /* Initialize the number of rising cylces for the flat-top pulse.					*/
     nR_  = nR;
 
+    /* Initialize the value of the sigma in inverse-gaussian signal.					*/
+    sigmaInvG_ = sigmaInvG;
+
     /* Check if variance is unequal zero.                                                             	*/
     if (s_ == 0.0)
       {
@@ -512,6 +517,26 @@ namespace MITHRA
 	printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
 	exit(1);
       }
+
+    /* Check if sigma value of the inverse-gaussian signal is unequal zero.				*/
+    if ( signalType_ == INVGAUSSIAN )
+      {
+	if ( sigmaInvG_ == 0.0 )
+	  {
+	    printmessage(std::string(__FILE__), __LINE__, std::string(" sigma of the inverse-gaussian signal is set to zero. "));
+	    printmessage(std::string(__FILE__), __LINE__, std::string(" This is not allowed because we divide through the sigma value. "));
+	    printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
+	    exit(1);
+	  }
+	else if ( sigmaInvG_ < nR_ / f0_ * sqrt( 1.3863 ) )
+	  {
+	    printmessage(std::string(__FILE__), __LINE__, std::string(" The parameters for inverse-gaussian signal leads to nonzero values at long times. "));
+	    printmessage(std::string(__FILE__), __LINE__, std::string(" This is not allowed because the signal should start from zero and end to zero. "));
+	    printmessage(std::string(__FILE__), __LINE__, std::string("Exit!"));
+	    exit(1);
+	  }
+      }
+
   }
 
   Double Signal::self (Double & t, Double & phase)
@@ -521,10 +546,10 @@ namespace MITHRA
     else
       {
 	if  ( signalType_ == NEUMANN )
-	  return ( - cos( 2 * PI * f0_ * (t-t0_) + cep_ + phase) * 2.7724 * (t-t0_) / (s_*s_) * exp( -1.3862 * (t-t0_) * (t-t0_) / (s_*s_) ) );
+	  return ( - cos( 2 * PI * f0_ * (t-t0_) + cep_ + phase) * 2.7724 * (t-t0_) / (s_*s_) * exp( -1.3863 * (t-t0_) * (t-t0_) / (s_*s_) ) );
 
 	else if  ( signalType_ == GAUSSIAN )
-	  return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase) * exp( -1.3862 * (t-t0_) * (t-t0_) / (s_*s_) ) );
+	  return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase) * exp( -1.3863 * pow( (t-t0_) / s_ , 2 ) ) );
 
 	else if  ( signalType_ == SECANT )
 	  return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase) / cosh( (t-t0_) / s_ ) );
@@ -537,6 +562,20 @@ namespace MITHRA
 	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) );
 	    else
 	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) * exp( - pow( (t-t0_-s_/2.0)*f0_/nR_, 2) ) );
+	  }
+
+	else if  ( signalType_ == INVGAUSSIAN )
+	  {
+	    if      ( t - t0_ <= - s_ / 2.0 )
+	      return ( cos( 2 * PI * f0_ * ( t - t0_ ) + cep_ + phase ) *
+		       exp( 1.3863 * pow( ( t - t0_ ) / sigmaInvG_ , 2 ) ) *
+		       exp( - pow( ( t - t0_ + s_/2.0 ) * f0_ / nR_, 2 ) ) );
+	    else if ( t - t0_ <= s_ / 2.0   )
+	      return ( cos( 2*PI*f0_ * (t-t0_) + cep_ + phase ) * exp( 1.3863 * pow( ( t - t0_ ) / sigmaInvG_ , 2 ) ) );
+	    else
+	      return ( cos( 2 * PI * f0_ * ( t - t0_ ) + cep_ + phase ) *
+		       exp( 1.3863 * pow( ( t - t0_ ) / sigmaInvG_ , 2 ) ) *
+		       exp( - pow( ( t - t0_ - s_/2.0 ) * f0_ / nR_, 2 ) ) );
 	  }
       }
     return (0.0);

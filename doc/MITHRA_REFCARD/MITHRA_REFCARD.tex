@@ -105,14 +105,16 @@ FIELD
 		radius-parallel  			 = < real >
 		radius-perpendicular  	= < real >
 		signal-type  					 = < neumann | gaussian | 
-		secant-hyperbolic | 
-		flat-top >
+																secant-hyperbolic | 
+																inverse-gaussian |
+																flat-top >
 		strength-parameter  		= < real >
 		offset  								= < real >
 		pulse-length  					= < real >
 		wavelength  						= < real >
 		rising-cycles				   = < int >
 		CEP  									 = < real >
+		sigma-inverse-gaussian  = < real >
 	\}
 
 field-sampling
@@ -198,6 +200,7 @@ UNDULATOR
 		radius-perpendicular  	= < real >
 		signal-type  					 = < neumann | gaussian | 
 																secant-hyperbolic | 
+																inverse-gaussian |
 																flat-top >
 		strength-parameter  		= < real >
 		offset  								= < real >
@@ -205,6 +208,7 @@ UNDULATOR
 		wavelength  						= < real >
 		rising-cycles				   = < int >
 		CEP  									 = < real >
+		sigma-inverse-gaussian  = < real >
 		distance-to-bunch-head  = < real >
 	\textcolor{red}{\}}
 \}
@@ -225,7 +229,8 @@ EXTERNAL-FIELD
 		radius-parallel  			 = < real >
 		radius-perpendicular  	= < real >
 		signal-type  					 = < neumann | gaussian | 
-																secant-hyperbolic | 
+																secant-hyperbolic |
+																inverse-gaussian |
 																flat-top >
 		strength-parameter  		= < real >
 		offset  								= < real >
@@ -233,6 +238,7 @@ EXTERNAL-FIELD
 		wavelength  						= < real >
 		rising-cycles					 = < int >
 		CEP  									 = < real >
+		sigma-inverse-gaussian  = < real >
 	\textcolor{red}{\}}
 \}
 

@@ -15,7 +15,7 @@
 namespace MITHRA
 {
   /* Define the types of the time domain signals.                                                       */
-  enum SignalType       	{NEUMANN, GAUSSIAN, SECANT, FLATTOP};
+  enum SignalType       	{NEUMANN, GAUSSIAN, SECANT, FLATTOP, INVGAUSSIAN};
 
   /* Define the types of the excitations.                                                               */
   enum SeedType   		{PLANEWAVE, PLANEWAVETRUNCATED, GAUSSIANBEAM, SUPERGAUSSIANBEAM,

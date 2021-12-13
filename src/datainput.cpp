@@ -519,7 +519,6 @@ namespace MITHRA
 	    std::vector<Double> 	radius (2,0.0);
 	    std::vector<int>          	order  (2,0);
 
-
 	    do
 	      {
 		if 	(parameterName(*iter) == "beam-type")			type                    = stringValue(*iter);

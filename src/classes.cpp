@@ -481,8 +481,7 @@ namespace MITHRA
     cep_		= 0.0;
     signalType_		= GAUSSIAN;
     nR_			= 1;
-    sigmaInvG_[0]	= 0.0;
-    sigmaInvG_[1]	= 0.0;
+    sigmaInvG_.resize(2,0.0);
   }
 
   /* Initializer with signal type, time offset, variance, frequency and carrier-envelope-phase.       	*/
@@ -530,7 +529,6 @@ namespace MITHRA
 	    exit(1);
 	  }
       }
-
   }
 
   Double Signal::self (Double & t, Double & phase)
